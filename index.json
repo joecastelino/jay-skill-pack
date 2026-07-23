@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-23T15:30:03",
+ "generated": "2026-07-23T15:45:22",
  "skill_count": 158,
  "skills": [
   {
@@ -39,7 +39,7 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 45,
+   "times_used": 46,
    "last_used": "2026-07-23"
   },
   {
@@ -243,6 +243,14 @@
    "last_used": "2026-07-21"
   },
   {
+   "name": "tekion-roles-permissions",
+   "path": "automotive/tekion-roles-permissions",
+   "category": "automotive",
+   "description": "Create/duplicate a Tekion custom ROLE and toggle its PERMISSIONS via the Roles admin page (/core/roles). Verified live at Blackstone Chevrolet 2026-07-10 (created \"Concierge\" cloned from ServiceAdvisor + enabled deal viewing). Covers the no-duplicate-button trap, permission pill mechanics, and save/verify flow.",
+   "times_used": 7,
+   "last_used": "2026-07-23"
+  },
+  {
    "name": "dealerdetail-api-pipeline-build",
    "path": "automotive/dealerdetail-api-pipeline-build",
    "category": "automotive",
@@ -265,14 +273,6 @@
    "description": "Scrape any Tekion Report Builder CUSTOM report (e.g. \"SCT Menu Sales Opened\") headlessly \u2014 find the report id, open it under the right dealer, expand grouped rows, parse to JSON, render a manager-ready scorecard (PNG+PDF), and email it via Stacey. Use whenever Joe/managers want recurring Tekion report data without downloading PDFs from Tekion's emailed reports.",
    "times_used": 6,
    "last_used": "2026-07-01"
-  },
-  {
-   "name": "tekion-roles-permissions",
-   "path": "automotive/tekion-roles-permissions",
-   "category": "automotive",
-   "description": "Create/duplicate a Tekion custom ROLE and toggle its PERMISSIONS via the Roles admin page (/core/roles). Verified live at Blackstone Chevrolet 2026-07-10 (created \"Concierge\" cloned from ServiceAdvisor + enabled deal viewing). Covers the no-duplicate-button trap, permission pill mechanics, and save/verify flow.",
-   "times_used": 6,
-   "last_used": "2026-07-23"
   },
   {
    "name": "tekion-service-settings",

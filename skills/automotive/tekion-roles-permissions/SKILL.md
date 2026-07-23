@@ -146,6 +146,38 @@ yields nothing. DOM pill scraping is THE working read path.
 Appointment Slot Override rode in via BDCSpecialist on the Appraiser merge) so he can
 decide whether to strip them.
 
+## Merging two roles into one (verified BC 2026-07-23, "Appraiser" = Sales Person + BDCSpecialist)
+The Create modal takes ONE template only. Merge recipe:
+1. Dump BOTH source roles' pills with `/home/itadmin/tekion-reports/role_dump.py <roleQuery> <out.json>`
+   (expands each center category, reads every `core_switch` button's group+name+state).
+2. Diff: delta = ON-in-B minus ON-in-A. Create the new role from the BIGGER template (A).
+3. Toggle the delta ON with `role_toggle_appraiser.py` pattern: per CATEGORY toggle then Save
+   (Save button ~1196,687 appears per unsaved batch; save-per-category, guard `location.href`
+   against session dealer/nav drift between toggles).
+4. Verify: hard remount (/home then back), re-dump, assert union == new role's ON set exactly.
+BC "Appraiser" role id = `6a629362f110bc589bf37706` (Sales Person template, persona Sales Person,
+254+27=281 perms; **Appointment Slot Override deliberately OFF** per Joe 2026-07-23).
+
+## Assigning a user to a role via USER SETUP (Joe-approved path, verified BC 2026-07-23)
+Joe's employee-record rule still applies (explicit approval required) — but when he says
+"assign in User Setup only, don't touch Employee Onboarding," the path is:
+1. `/core/user-setup` (sidebar US). Search = the EXPANDABLE search (collapsed to w=0!):
+   `/mouse` click at its coords (~1070,160) to expand FIRST, then set value via native
+   setter + input event, focus, `/press` Enter. (Enter via KeyboardEvent does NOT filter;
+   `/type` page.fill times out while collapsed — "element is not visible".)
+2. Click the user's Display Name cell → `/core/user-setup/edit/<userId>`.
+3. Dealership Roles row: "Role Name" = react-select singleValue (click, pick option);
+   "Secondary Roles" = multiSelectDropdown (click widget → ant-dropdown portal with
+   checkboxes; uncheck to remove). **PITFALL: reopening the multi-select can silently
+   check the FIRST option ("95/5") — always re-open and read checked[] before saving.**
+4. Save = bottom-right **Update** button. **`/mouse` click at its coords can MISS (no XHR
+   fires, nothing persists, no error) — use JS `b.click()` on the button element and
+   confirm via XHR hook: `PUT /api/userservice/u/user-access-settings/<userId>` → 200
+   "User and access settings updated successfully".** Then verify with true remount AND
+   OpenAPI `GET /users/{id}` (userRoleDetails).
+Ivan Govea (BC, empNo 5654, id db4c2a79-690c-44d9-9387-d0db8837528d) = Appraiser primary,
+no secondaries, as of 2026-07-23.
+
 ## Finding WHO holds a role (OpenAPI users fan-out)
 Roles pages don't list members. Use OpenAPI `GET /openapi/v4.0.0/users` (tekion_client at
 `/home/itadmin/tekion-api/`), but note THREE traps:
