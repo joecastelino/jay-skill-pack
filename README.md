@@ -2,7 +2,7 @@
 
 Skill library for **Jay**, the Tekion DMS specialist agent at American Motors Group — plus general-purpose agent skills. Built for the [Hermes Agent](https://github.com/NousResearch) skill system (`SKILL.md` + YAML frontmatter, with optional `references/`, `scripts/`, `templates/`).
 
-**158 skills** · auto-synced from the live agent · last sync: 2026-07-23 14:45
+**158 skills** · auto-synced from the live agent · last sync: 2026-07-23 15:00
 
 ## Install into another agent
 
@@ -18,7 +18,7 @@ Secrets (passwords, app passwords, tokens) are redacted with `<PLACEHOLDER>` mar
 | # | Skill | Category | Uses | Last used | Description |
 |---|-------|----------|-----:|-----------|-------------|
 | 1 | [`persistent-browser-server`](skills/automotive/persistent-browser-server/SKILL.md) | automotive | 71 | 2026-07-23 | Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the "browser blanks to about... |
-| 2 | [`jay-brain-and-skill-index`](skills/automotive/jay-brain-and-skill-index/SKILL.md) | automotive | 52 | 2026-07-23 | Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is "command not found", w... |
+| 2 | [`jay-brain-and-skill-index`](skills/automotive/jay-brain-and-skill-index/SKILL.md) | automotive | 53 | 2026-07-23 | Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is "command not found", w... |
 | 3 | [`agent-to-agent-bridge`](skills/automotive/agent-to-agent-bridge/SKILL.md) | automotive | 49 | 2026-07-22 | Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine. |
 | 4 | [`bt-tony-menu-rebuild`](skills/automotive/bt-tony-menu-rebuild/SKILL.md) | automotive | 47 | 2026-07-22 | The Blackstone Toyota (BT, dealer 1249) service-menu rebuild project for Tony Garcia (Service Manager). Tony wants menus restructured into Factory Recs / Factory Recs Plus with 25 ordered add-on services. Contains the... |
 | 5 | [`tekion-openapi-repair-orders`](skills/automotive/tekion-openapi-repair-orders/SKILL.md) | automotive | 45 | 2026-07-23 | Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI — no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape A... |
