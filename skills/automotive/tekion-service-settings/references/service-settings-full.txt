@@ -1,0 +1,619 @@
+Home Knowledge Knowledge Base - General (Knowledge Base) Services - Service Settings
+Search
+SERVICE SETTINGS: Service Settings
+ Revised by Mahesh Vasal
+•
+ about a year ago  •   1603 Views •  
+Service Settings is used to configure many aspects of the service workflows, including
+general setups, default cost centers, RO and Job flags, pre-invoicing rules, and many
+others. This article defines all of the Service Settings.
+PREREQUISITES:
+You need the following permissions enabled to view and edit the Service Settings app
+tile.
+Service Setup
+Access Service Settings
+Edit Service Settings
+Take me to the Permissions
+Navigation to these permissions: Go to the Roles page > Permissions tab > Service drop-
+down > RO section.
+NAVIGATION: 
+Take the following steps below to view and modify the Service Settings app tile:
+Step 1. Open Service Settings app by clicking the App Grid menu > Settings tab >
+Services Settings section > Service Settings app tile.
+Take me to Service Settings
+Navigate to the different sections within Service Settings to view or modify the settings
+as needed. The following navigation options are available: 
+
+
+
+Click the tabs along the left side of the page.
+Hold and drag the scroll bar.
+Click the up and down arrows to reveal additional sections.
+Click the left-facing arrow to expand or hide the sections.
+Below are descriptions of each setting within the tabs:
+General Setup:
+Field Name
+Description
+Job Sequence
+Jobs can be designated with an alpha or numeric sequence. 
+Alphabet: Jobs on the RO will be labeled as job A, job
+B, job C, etc.
+Numerical: Jobs on the RO will be labeled as job 1,
+job 2, job 3, etc.
+Recommendation Opcode
+Select the opcode to be used as a default when a
+recommendation is created without selecting a specific
+opcode. This opcode is added to the recommendation when
+the option to 'Create Recommendation' is used in the
+Recommendations tab of a repair order.
+**Note: The opcode must exist in Opcode Management.
+Take me to Opcode Management
+Flag Tech on
+Select whether tech hours should be flagged to match the bill
+hours and, if so, when. 
+Manual: Tech time flagged will remain as entered and
+will not automatically update based on bill time. When
+set to 'Manual,' the flag and bill hours are not required to
+match unless the Pre-Invoice rule in Service Settings to
+match tech and bill time is set to an error.
+Job Save: Flag time will be automatically set to
+match bill time each time a job is saved.
+RO Invoiced: Flag time will be automatically set to
+match bill time when the RO is invoiced. Tech flag hours
+cannot be adjusted once the RO is invoiced.
+Job Completed: Flag time will be automatically set to
+match bill time when the job is marked completed.
+To learn more about flagging tech time, click here
+**Note: Tech hours can be set to flag based on bill hours,
+actual hours, or labor hours under Wage Types Config in the
+Employment Details tab of Employee Onboarding. Wage
+Type Configurations do not apply when 'Manual' is selected
+in the dropdown for 'Flag Tech on.' 
+Take me to Employee Onboarding 
+Click here to learn more about setting up multiple tech rates for
+payroll
+Display Amount On Estimate
+When toggled on, the total amount is displayed on the Estimate
+PDF. This setting is checked in addition to the PDF settings. 
+Take me to PDF Settings
+Include Fees in Estimates
+When toggled on, fee amounts display on the Estimate PDF.
+This setting is checked in addition to the PDF settings.
+Include Taxes in Estimates
+When toggled on, taxes display on the Estimate PDF. This
+setting is checked in addition to the PDF settings.
+Include Coupons in Estimates
+When toggled on, coupon amounts display on the Estimate
+PDF to customers. This setting is checked in addition to the PDF
+settings.
+Allow to close RO in details view
+When toggled on, the 'Close RO' option is available under the
+RO level 3-dot kebab if the user has permission to close
+customer, warranty, and/or internal ROs in Settings > Core >
+Roles > Service > Ro.
+Take me to Roles
+Allow customers to sign invoices
+online
+When toggled on, customers can sign invoices online.
+Show Service History of Other
+Dealerships in Vehicle Profile
+When toggled on, service history for other dealerships within
+the same tenant will display for the vehicle.
+Notify customer on invoice
+When toggled on, a customer can be notified their RO has been
+invoiced if also set to do so in Settings > Core > Dealer
+Configurations > Customer Notifications.
+Take me to Dealer Configurations
+Round Up Settings 
+Technician Actual
+Hours to the nearest tenth
+of an hour
+Round up Labor/Bill
+Hours to the nearest tenth
+of an hour
+Round up Flag Hours to
+nearest tenth of an hour
+In service, actual, labor, bill, and flag hours can be entered to
+the hundredth place or two numbers after the decimal. For
+example, flag time can be entered as 1.56 hours. When toggled,
+times can be set to round to the nearest tenth. A box displays
+below the toggle to enter the value for the second decimal to
+use for rounding. 
+For example, if the toggle is set to round to the nearest tenth
+with the second decimal greater than 5, the flag time of 1.56
+hours will round to 1.60 hours. If the flag time is 1.53, the flag
+time will round down to 1.50.
+Allow technicians to clock in to
+multiple ROs/Jobs at the same
+time
+When toggled on, technicians can work on multiple ROs or
+Jobs at a time. For each pay type combination, toggle whether
+technicians can work on multiple jobs/ROs within those pay
+types. For example, if technicians can only work on multiple
+customer jobs, the first line for 'For Customer Pay Jobs' is
+toggled on and the rest are off. If technicians work on multiple
+customer pay and internal jobs, but only one warranty job at a
+time, the 'For Customer - Internal Jobs' would be toggled to the
+on position.
+Accept Return RO after Last
+Service
+When toggled on, repair orders closed within the number of
+days entered for the same vehicle will display under the Return
+RO option when adding a job. Jobs added from a Return RO
+will display the tag 'Return RO' next to them on a repair order.
+The tag can be renamed to Comeback or a different name if
+desired in Keyword Configuration. 
+Take me to Keyword Configuration
+Restrict Entry of duplicate Tag#
+When toggled on, a tag number can only be used on one open
+RO at a time regardless of the vehicle attached to the repair
+order.
+Enable Onstar Integration
+When toggled on, Onstart data is populated in the MPVI forms
+for GM dealer partners with Onstar integration.
+Select Default Service Advisor
+for jobs
+When enabled by support, the service advisor can be changed
+at the RO level and on each job. Radio buttons are available to
+select which advisor is assigned to jobs. The radio buttons are 
+The same advisor as the RO - the advisor assigned to
+the RO and displayed in the repair order details tab will
+be the advisor assigned for each job.
+The advisor who created the job - the advisor who
+added the job will be assigned to the job regardless of
+the advisor assigned at the RO level.
+Make Cause a mandatory
+requirement for all
+recommendations
+When toggled on, the technicians are required to add a cause
+statement for each change or additional job that is
+recommended as a part of the inspection (MPI) process. The
+cause will be displayed on the consumer portal.
+The cause on jobs added to the repair order will not
+require a cause statement.
+Pre-Job Completion rules can be set in Service
+Settings to require a cause for jobs on the repair order.
+This setting requires a cause on recommendations
+added through the MPI form.
+Allow Creation of Custom
+Concern Opcode
+When toggled on, the option to 'Create' when entering an
+opcode manually in the 'Add Job' or 'Add Recommendation'
+workflows. The opcode is added and will be displayed on the
+repair order. The opcode will not have the criteria needed to
+dispatch for dealer partners with Auto Dispatch.
+When toggled off, an opcode already defined in Opcode
+Management must be selected when adding a job or
+recommendation. This helps ensure opcodes are selected have
+accurate details and pricing and will dispatch properly for
+dealer partners with Auto Dispatch.
+Service Module Selection:
+Service Module Selection determines which job types are available within each workflow
+when adding jobs. By default, all job types are available. In the Service Module Selection
+table, the application, or workflow, in which the job type should be available is selected
+from the dropdown. If a job type is not checked for a workflow, the option to add that job
+type will not be available. 
+Job types, including Return RO, Service Menu, Inspection, etc., can be set to
+hide or show in the Add Job or Add Recommendations workflows in Appointments,
+Repair Orders, Consumer Scheduling, Quotes, and Recommendations.
+For example, the option to add a service menu from consumer scheduling can
+be hidden but still display on a repair order.
+The label for the job types that display when adding a job or recommendation
+can be renamed in Keyword Configuration.
+Take me to Keyword Configuration
+Hold and drag the 6-dot kebab to change the order in which the job types
+display when adding a job or recommendation.
+Click Submit or refresh the page to save any changes.
+Parts Request:
+Service can send a request to parts automatically to bill parts to a repair order. For an
+automatic parts fulfillment request to be sent, check the box next to the action from the
+dropdown that will trigger the request. To automatically send a request at all trigger
+points, check all three boxes. 
+Customer Pay:
+The default Customer Pay Labor Rate is set in this section. 
+To view the labor pricing hierarchy, click here
+To learn more about labor pricing, click here
+Warranty:
+Field Name
+Description
+Allow to submit warranty claim
+This setting determines how warranty claims are submitted
+based on OEM. If toggled on, a pop-up will appear to complete
+the warranty information that will be transmitted to the
+manufacturer when closing the RO.
+Close RO on Submit of Warranty
+Claim
+Turning on this option allows the user to close the RO when a
+warranty claim is submitted.
+Default Warranty Labor Rate
+Enter the hourly labor rate for warranty jobs. 
+Click here to view the labor pricing hierarchy
+Cost Center and Split
+Select a cost center or warranty receivable account for warranty
+jobs. If multiple cost centers apply, enter the cost center with
+the split percentage between the cost centers. The percentage
+must equal 100%.
+To learn more about cost center setups, click here
+Internal Pay:
+Field Name
+Description
+On RO Invoice make
+labor sale equal to cost
+if sale is zero
+Turning this setting on will make the labor sale equal to the cost of labor
+if the sale value is zero.
+Set limit for Internal
+Pay on RO Level
+Sets the dollar amount limit for Internal Pay jobs on an RO level. When
+toggled on, permission to Internal Repair Order Review Close is needed
+to close the internal portion of the RO if the amount exceeds the set
+limit.
+Default Internal Labor
+Rate
+Enter the hourly rate for internal jobs.
+Click here to view the labor pricing hierarchy
+Cost Center and Split
+Enter the cost center for internal pay jobs. If multiple cost centers apply,
+enter the cost center and the percentage of the total labor charges for
+each split. The total must equal 100%.
+To learn more about cost centers, click here
+Insurance:
+This section allows you to input insurance details. You can add, modify, and delete
+insurance details here. This info is used to populate the insurance-related information
+when selecting an insurance/warranty split on a customer-pay job. 
+Reminders:
+Reminders can be sent to the service advisor when a customer's vehicle is approaching or
+has past the promise time. For example, a reminder could be set to send a notification
+every 15 minutes that the customer is still waiting. 
+Enter the number of minutes prior to the promise time entered on the RO to
+send the first reminder.
+If desired, enter additional reminders.
+To add additional reminders, enter the number of minutes in the open row. A
+new row automatically displays each time a reminder is entered.
+Click the trashcan icon to the right of the row to delete a reminder.
+Express Mode Setup:
+The Express mode service enables dealerships to quickly and efficiently complete
+services in their express or quick lanes through the automatic fulfillment of parts for
+opcodes done in Express mode. Once Express mode is enabled by Tekion support,
+settings need to be configured that will determine whether the RO will be written in
+Express mode or Regular mode.
+Click here to learn more about Express Mode
+Tags:
+Repair Orders can have RO Level Tags attached for filtering within the RO List and, in
+some cases, to report to the OEM through integration. For example, if an RO is created for
+the Body Shop, an RO Tag displays on the RO with the label of Body Shop.
+**Note: The RO tags configured here are different from the tag number on the repair order.
+RO tags will automatically appear on the RO List based on the filters set.
+Standard tags will be included by default and cannot be renamed. The standard tags are:
+Main Shop
+Body Shop
+Mobile Shop
+Express Shop
+New Vehicle Shop (for PDI)
+Used Vehicle Shop (for UVI)
+The standard RO tags are sent through OEM integrations for Mercedes-Benz and
+Toyota based on their requirements.
+Custom tags are displayed on the RO List and can be used as a filter within the
+RO List.
+A repair order can have multiple RO tags depending on the filters used to define
+the RO Tag.
+Click and drag the 6-dot kebab to indicate the order in which the RO tags should
+be displayed on the RO List. The first RO tag will display on the RO List. If more than
+one RO Tag is assigned to a repair order, a plus sign with the number of additional
+RO tags displays. Click the number to view the additional RO tags.
+Click the icon in the Archive column to remove the tag from the Active Tags list.
+The tag will move to the Archived Tags tab.
+Click the Archived Tags tab to move an archived tag back to active.
+Job Tags:
+Job tags allow you to define color-coded job tags that are seen on the RO and PDF
+screens. You can define both the flag color, as well as the text. Checking the boxes - RO
+and PDF - associated with the tag will change the visibility for those tags.
+RO Flag:
+RO Flags allow you to define color-coded flags used to convey information about the RO
+or its status. RO flags and their corresponding color are defined by the dealership. The RO
+flag can be selected under the RO Flag Column for the corresponding RO on the RO List
+and the RO Dashboard when the RO Dashboard has been enabled by support. The RO
+Flags are manually applied to the repair order.
+**Note: A white flag should be set up when using RO Flags to designate "No Flag." Once an
+RO Flag is selected on an RO, the flag can only be changed. There is no option to remove the
+flag. The flag can be changed to white indicating there are no flags on the RO.
+Hold:
+Users with permission to 'View and Edit Service Settings' can view and edit Hold Types.
+Hold Types can be added, removed, or renamed and any modifications made to hold
+types will be effective immediately. In cases where there are ROs associated with a hold
+type that is being removed, users will have the option of either removing the holds placed
+on those ROs ('un-hold') or replacing the hold type being removed with a different one.
+The following Hold Types are available by default: Hold for Parts, Hold for Authorization,
+Hold for Diagnostic, and Hold for Sublet. Any of these can be modified or removed. The
+following Hold Type is available by default: Hold for Parts, Hold for Authorization, Hold for
+Diagnostic, and Hold for Sublet, and cannot be modified or removed. 
+Pre-Job Completion, Pre-Invoice, Job, and Recommendation Addition Rules:
+These two fields allow a dealership to configure warning or error messages based on a
+certain set of rules, as seen under Validation Rules. Multiple jobs and pay types can be
+applied to this.
+Field Name
+Description
+Warning or Error
+An error will not allow a user to continue.
+Applicable
+Selecting this option makes the rule applicable.
+Pop-up Warning
+Selecting this option displays a pop-up warning.
+Validation Message
+The validation message to be displayed is input here,
+Condition
+Numerical conditions for certain rules are set here. Example - A
+condition for 5 characters only for a validation message.
+Validation Rules
+The validation rule that is being activated and configured.
+Applicable Job Types
+Multiple applicable job types can be selected here.
+Applicable Pay Types
+Multiple applicable pay types can be selected here.
+Rule Level
+States whether the condition is applied at an RO or Job level.
+RO KPI List:
+The metrics seen on the top of the RO list table can be configured here. To create a new
+KPI, enter the desired criteria using the filter funnel, select the role(s) to view the KPI, and
+select whether the role can view the KPI for all ROs, the team's ROs, or ROs specific to the
+user.
+**Note: This setting works in tandem with the permissions 'Show all Repair Orders in list'
+and 'Show only Team Repair Orders in list' under Service in the Roles app. 
+For example, if 'My Team' is selected under the 'Specific To' column, but permission is not
+granted to 'Show all Repair Orders in list' or 'Show only Team Repair Orders in list,' the user
+will see the numbers for the team on the RO List KPI, but will not be able to click the KPI to
+use as a filter on the RO List. The filter will be viewed only.
+Take me to Permissions page
+For Total Sales, select the pay type, the components of the repair order to include the
+total sales, the role(s) that can view the KPIs, and whether the role can view the KPI for all
+ROs, the team's ROs, or ROs specific to the user. 
+Quotes:
+The Quotes section has the following settings: 
+Quote Flags - Quote flags are color-coded indicators to convey information
+about the Quote or its status when viewing the quote from the main list within the
+Quotes application or viewing the details of an individual quote.
+Quote flags are defined at the dealership level. The service department
+defines the flag color and what that color represents.
+A color legend appears when clicking the quote flag in the Quotes app.  
+Take me to Quotes page
+Set quotes to expire after - Quotes can be set to expire after the number of
+days, months, or years designated in the 'Set quotes to expire after' prompt. This
+allows a quote to be honored for a set period and protects profit as prices fluctuate.
+Quotes that have not been converted to an appointment or an RO by the
+number of days set will automatically be set to expired status.
+Expired quotes can only be cloned or voided. The quote is not
+automatically set to a void status to retain the ability to clone and create a
+new quote without duplicate entry.
+The expiration date can be set to print on Quote PDFs through the PDF
+Configurator in PDF Settings.
+Take me to PDF Settings
+Role Configuration:
+The role configuration section is used to change the Vehicle Profile layout based on the
+role. The Vehicle Profile section is used to change access to specific sections of the vehicle
+profiles. The Roles section defines which roles are able to access the selected tabs within
+the vehicle profile. 
+Consumer Portal:
+The Consumer Portal settings control the information a customer can see on their
+customer portal.
+The following fields display:
+Field Name
+Description
+Phone Number (For calls)
+The number to be displayed on a consumer portal; this is
+the number a customer can call for support.
+Receive Consumer Portal texts
+through
+When a consumer chats or sends a text through the portal, it
+will appear on the dropdown option selected here.
+Custom Phone Number (For texts)
+The phone number at which customer texts are received
+Turn on Validation Code (OTP)
+When toggled on, a validation code or one-time passcode
+(OTP) is required for the customer to proceed with either of
+the following tasks:
+Approve Recommendations - an OTP is sent to
+approve recommendations on the consumer portal.
+Sign Invoice - an OTP is sent to sign an invoice on
+the consumer portal.
+If toggled on, a warning message displays if the validation
+code prompt is toggled off. To turn off the validation code
+requirement, check the box to accept the warning message
+displayed and click 'Accept and Continue.'
+Recommendation Setups
+When toggled on, a recommendation presented on the
+consumer portal will be added as a job to the repair order
+when the customer approves the recommendation on the
+consumer portal.
+Label Configuration
+Several messages that can be displayed on the consumer
+portal are configurable under Label Configuration. Enter the
+text the service department would like to appear on the
+consumer portal for the following points in the workflow:
+Message to be displayed on consumer portal after
+the RO is invoiced.
+Message to be displayed on consumer portal when
+the invoice is ready.
+Message to be displayed when the payment is
+complete and concierge is enabled.
+Message to be displayed for mandatory invoice
+signature.
+Customer Arrival Time
+Configuration
+The customer arrival time section provides options for the
+customer to share their arrival time with the service
+department from the consumer portal. The following
+prompts display:
+Receive customer arrival notifications before -
+Enter the number of minutes prior to the arrival time
+entered by the customer on the consumer portal for
+an email to be sent to the service department.
+Emails are sent to the users selected in the
+'Who should receive customer arrival
+notifications' box below this setting.
+Check the box to receive customer arrival
+notifications immediately when shared by the
+customer.
+Allow customers to share ETA after - Select whether
+the option to share an arrival time displays on the
+consumer portal after the RO is invoiced or after the
+customer signs the invoice on the consumer portal
+from the dropdown.
+Who should receive customer arrival notifications
+through email - Enter one or more emails to receive
+the arrival notifications. There are no restrictions on
+the email addresses entered. This allows valet
+managers and others who do not have a login to ARC
+(Automotive Retail Cloud) but are involved in the
+vehicle pick-up process to receive notifications.
+Approval Settings:
+The Approval Settings determine whether warranty jobs and recommendations need
+approval to be added and whether additional time beyond the allowed warranty time for
+a job is needed to complete warranty work. Approval settings are often needed for
+compliance with warranty audits. When toggled on, the RO Approval workflow is enabled.
+Click here to learn more about the RO Approval workflow
+The following information is set in the Approval Settings:
+Field Name
+Description
+Enable RO Approval Flow
+Turn the toggle on to populate the additional settings
+related to the different warranty approvals.
+Additional Jobs can be added for
+the following Paytypes
+Select the pay types for the operation codes that can be
+added to a repair order after check-in.
+For example, if only customer pay and internal jobs should
+be added once the RO is created, select CP (Customer Pay)
+and I (Internal Pay). In this case, a user with approval access
+would be required to add a warranty job to the repair order.
+Note: To set up a user as an approver, email
+support@tekion.com.
+Additional Jobs can be changed
+only to the following Paytypes
+In this section, for each pay type, select the other pay types
+that are permissible when changing pay types on a job on a
+repair order.
+For example, if a warranty job should not be added without
+approval, CP would be set to only change to I and I would
+be set to only change to CP. A user that is not set as an
+approver would not be able to change the pay type on a job
+from customer pay to warranty.
+Recommendations require Approval
+before sending to the Customer
+Use the toggle next to each pay type to determine if the pay
+type should require approval when adding a
+recommendation to a repair order. If the toggle is not on, a
+user set to approve the recommendation would need to
+approve the recommendation under RO Bulk Action in the
+RO level 3-dob kebab within the repair order.
+Deferred Recommendation Rules: 
+The Deferred Recommendation Rules determine how long a deferred recommendation
+will be displayed on the repair order and within the customer's vehicle profile. 
+Within the vehicle profile, all deferred services will be displayed with the
+deferring customer listed. The customer deferring the recommendation will be
+listed in the table.
+When adding a recommendation to a repair order, within the check-in process,
+and on the consumer portal, only the recommendations deferred by the current
+customer and within the time period established here will be displayed.
+Job Clock Setup:
+The Job Clock Setup determines whether a job clock reason is applicable and whether a
+job clock reason is required when a technician clocks in and out of work on a job. 
+The following sections are present:
+Section
+Description
+Job Click In/Out
+Reason Settings
+Check the box in the 'Applicable' and 'Mandatory' columns in the clock-in
+and clock-out rows. The reason displays in the 'Job Clocked Time' option
+when selected from the job level kebab. The reason will also be printed on
+the Accounting and Warranty invoice PDFs when 'Clock In Details' is toggled
+on in the PDF Configurator.
+Take me to PDF Settings 
+The following selections are available when a technician clocks in or out of a
+job:
+Applicable:
+When checked, the reason box displays under the hour
+dropdown. The technician can enter a reason for clocking in or
+out of a job. For example, a technician could enter 'Running
+straight time' when selecting 'Other' from the hour description
+dropdown above the reason.
+When unchecked, the reason box is not displayed.
+Mandatory:
+When checked, a reason is required. A reason must be
+entered to clock in or clock out. If a reason is not entered, the
+reason box is outlined in red and the technician cannot proceed
+with the clock-in or clock-out until a reason is entered.
+When unchecked, the reason box is available to enter a
+reason for running time however, the entry is not required.
+**Note: The red clock indicates that clock-in is required for the job. A job
+is marked to require clock-in in Opcode Management.
+Take me to Opcode Management
+Job Clock-out
+Actions
+A clock-out reason can be defined to apply automatically when several
+actions are taken on the repair order. 
+Enter the desired description for each action in the 'Reasons'
+column.
+The reason will be displayed in the Job Clocked Timetable through
+the job level kebab.
+The reason will be printed on the Accounting and Warranty Invoice
+PDFs when 'Clock In Details' is toggled on in the PDF Configurator.
+Take me to PDF Settings page
+Profit and Loss View Setup:
+Copy KB URL
+If desired, configure the range to designate when the gross profit reflects a decrease or an
+increase in the Service Settings. By default, gross profit amounts below zero will display a
+red arrow. Gross profit amounts above zero will display a green arrow. A gross profit of
+zero or in the middle of a range defined in Service Settings will display a black arrow.
+**Note: The Profit and Loss View is only available to users logged in with either the Service
+Manager or Service Advisor role and permission to Profit/Loss View.
+The following fields display:
+Field
+Description
+Checkbox
+Check the box to enable additional ranges. The range is used
+to designate when the gross profit reflects a decrease or an
+increase in the Service Settings based on the service
+department's goal. By default, gross profit amounts below
+zero will display a red arrow. Gross profit amounts above
+zero will display a green arrow. A gross profit of zero or in the
+middle of a range defined in Service Settings will display a
+black arrow.
+Mapped Symbol
+The mapped symbol indicates the arrow color that will
+display based on the range entered.
+P/L % Value
+Less Than - Enter the gross profit percentage to which a red
+arrow should display for a gross profit percentage below the
+entered value.
+More Than / Equal To - Enter the gross profit percentage to
+which a green arrow should display for a gross profit
+percentage above or equal to the entered value.
+Gross profit percentages between the range will display a
+black arrow in the Profit and Loss View within the repair
+order.
+Click Save to update any changes or Discard to exit the screen without saving changes.
+Country: United States, Canada
+Can Read: en_US: Users in USA with English, en_CA: Users in Canada with English
+Tags: bill hours, flag hours, approval, tag, labor rate, cost center setup, express, tags, ro flags, kpi, ro tag
+Post a comment...
+Yes
+No
+Helpful?
+Rate this article 
+
+Most Useful
+how to create a sold CRM report
+Chaitanya Savakar • 553 Views • 2y ago • 
+
+How to Schedule a Holiday in Scheduling Settings
+Brandon Peppard • 536 Views • 2y ago • 
+
+Financial statement page does not load
+Annie Kishore • 100 Views • 2y ago • 
+
+HOW TO: Deactivate a User from Employee Onboarding
+KB • 861 Views • 2y ago • 
+
+CRM INTEGRATION: Genesis Integration
+Sunita Vyas • 93 Views • 11mo ago • 
+
