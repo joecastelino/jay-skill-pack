@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-23T14:15:03",
+ "generated": "2026-07-23T14:30:18",
  "skill_count": 158,
  "skills": [
   {
@@ -39,8 +39,8 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 44,
-   "last_used": "2026-07-20"
+   "times_used": 45,
+   "last_used": "2026-07-23"
   },
   {
    "name": "tekion-quotes-menu-price-diagnosis",
@@ -267,6 +267,14 @@
    "last_used": "2026-07-01"
   },
   {
+   "name": "tekion-roles-permissions",
+   "path": "automotive/tekion-roles-permissions",
+   "category": "automotive",
+   "description": "Create/duplicate a Tekion custom ROLE and toggle its PERMISSIONS via the Roles admin page (/core/roles). Verified live at Blackstone Chevrolet 2026-07-10 (created \"Concierge\" cloned from ServiceAdvisor + enabled deal viewing). Covers the no-duplicate-button trap, permission pill mechanics, and save/verify flow.",
+   "times_used": 6,
+   "last_used": "2026-07-23"
+  },
+  {
    "name": "tekion-service-settings",
    "path": "automotive/tekion-service-settings",
    "category": "automotive",
@@ -289,14 +297,6 @@
    "description": "Log into the Tekion APC partner portal (apc.tekioncloud.com) and download the full OpenAPI 3.1 specs for every REST API endpoint and every webhook event. Single continuous Playwright session (APC sessions don't persist). Use when building/maintaining the DealerDetail Fixed Ops app or any tool that needs the authoritative Tekion API/webhook schemas.",
    "times_used": 5,
    "last_used": "2026-07-10"
-  },
-  {
-   "name": "tekion-roles-permissions",
-   "path": "automotive/tekion-roles-permissions",
-   "category": "automotive",
-   "description": "Create/duplicate a Tekion custom ROLE and toggle its PERMISSIONS via the Roles admin page (/core/roles). Verified live at Blackstone Chevrolet 2026-07-10 (created \"Concierge\" cloned from ServiceAdvisor + enabled deal viewing). Covers the no-duplicate-button trap, permission pill mechanics, and save/verify flow.",
-   "times_used": 5,
-   "last_used": "2026-07-21"
   },
   {
    "name": "tekion-source-code-parts-scrub",
