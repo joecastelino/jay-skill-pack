@@ -1,12 +1,12 @@
 {
- "generated": "2026-07-23T12:50:37",
+ "generated": "2026-07-23T12:51:32",
  "skill_count": 157,
  "skills": [
   {
    "name": "persistent-browser-server",
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
-   "description": ">",
+   "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
    "times_used": 71,
    "last_used": "2026-07-23"
   },
@@ -30,7 +30,7 @@
    "name": "bt-tony-menu-rebuild",
    "path": "automotive/bt-tony-menu-rebuild",
    "category": "automotive",
-   "description": ">",
+   "description": "The Blackstone Toyota (BT, dealer 1249) service-menu rebuild project for Tony Garcia (Service Manager). Tony wants menus restructured into Factory Recs / Factory Recs Plus with 25 ordered add-on services. Contains the FULL locked spec, Joe's approved decisions, the opcode audit results, and the build plan. Load for ANY \"BT menu\", \"Tony menu\", \"Factory Recs\", or Blackstone Toyota service menu work. STATUS 2026-07-21: full 5K\u2013200K range (5K-step) built, PUBLISHED, Tony-validated; Phase 7 generic Transmission Fluid placeholders DONE; Phase 8 Tony's BG MENU REVAMP 2026 part-match batch DONE + quote-verified (baseline tony-partmatch-baseline-20260721.json). Remaining: x2.5K half-step menus + EV rows only.",
    "times_used": 47,
    "last_used": "2026-07-22"
   },
@@ -54,7 +54,7 @@
    "name": "bc-gm-menu-build",
    "path": "automotive/bc-gm-menu-build",
    "category": "automotive",
-   "description": ">",
+   "description": "The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-override plan for vehicle-correct GM parts, and open decisions. Load for ANY \"GM menu\", \"BC menu build\", \"GMLOF\", or Blackstone Chevrolet service menu work.",
    "times_used": 30,
    "last_used": "2026-07-20"
   },
@@ -62,7 +62,7 @@
    "name": "tekion-service-menu-setups",
    "path": "automotive/tekion-service-menu-setups",
    "category": "automotive",
-   "description": ">",
+   "description": "Navigate to, read, and inspect Tekion Service Menu Setups (the service-menu builder where interval menus, tiers, tags, opcodes, included services and inspections are configured). Covers the non-obvious nav path, the page/tab structure, where free-text \"notes\"/tags live, and the headless storage_state harness that reaches it reliably. Use when asked to find/check/edit a service menu, a menu's tag/name, or \"the last service menu\".",
    "times_used": 27,
    "last_used": "2026-07-15"
   },
@@ -70,7 +70,7 @@
    "name": "bc-menu-sales-reports",
    "path": "automotive/bc-menu-sales-reports",
    "category": "automotive",
-   "description": ">",
+   "description": "Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards \u2014 Daily Closed (2x/day) and Closed Month-To-Date (1x/day) \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben Estrada (Restrada@blackstonegm.com). This is the GM-store sibling of the SCT/Kevin pipeline (sct-menu-sales-api-scorecard). Use for any \"BC menu report\", \"Blackstone Chevy/Cadillac menu sales\", or Ruben report request.",
    "times_used": 25,
    "last_used": "2026-07-18"
   },
@@ -86,7 +86,7 @@
    "name": "tekion-ghost-bin-negative-onhand",
    "path": "automotive/tekion-ghost-bin-negative-onhand",
    "category": "automotive",
-   "description": ">",
+   "description": "Diagnose a part showing NEGATIVE total on-hand in Tekion that stems from a CDK-migration \"ghost bin\" (a location-less legacy bin like 5005 / 5000 / 5001 / 5004 / RC1 / RC2 carried over at CDK\u2192Tekion cutover ~4 yrs ago). The negative lives ONLY on the bin record, has ZERO transactions, is invisible to physical inventory (out of count scope), and poisons the auto-replenishment math (OH+OnOrder stays under reorder point \u2192 perpetual over-ordering). Distinct from a real stock-out. Use when Joe says \"this part shows -11 on hand / negative on hand / auto replenishment isn't working\" AND the negative traces to a non-primary bin. Sibling of tekion-parts-autoorder-diagnosis (that one = velocity/BRP/BSL/Min stock-outs; THIS one = phantom bin balances). WRITE-SIDE FIX PATHS NOW LIVE (2026-07-03): Edit-Part redistribution (zero GL) vs bin-level OH adjustment \u2014 see FIX PATHS section. Case-B $ adjustments still require Joe's explicit go.",
    "times_used": 23,
    "last_used": "2026-07-14"
   },
@@ -102,7 +102,7 @@
    "name": "sct-menu-sales-api-scorecard",
    "path": "automotive/sct-menu-sales-api-scorecard",
    "category": "automotive",
-   "description": ">",
+   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters to the frozen 316 TEK* maintenance opcodes, resolves advisor names via the persistent browser session on :9223, renders a light-format PNG+PDF scorecard, vision-verifies, and emails. Use for the daily Menu Sales Opened Performance Report cron.",
    "times_used": 22,
    "last_used": "2026-07-21"
   },
@@ -118,7 +118,7 @@
    "name": "sct-backcounter-ro-sales-countsheet",
    "path": "automotive/sct-backcounter-ro-sales-countsheet",
    "category": "automotive",
-   "description": ">",
+   "description": "Build Joe's daily SCT Back Counter Bin Check count sheet \u2014 cross-reference a day's RO part sales (Tekion OpenAPI) against parts that stock in a back-counter bin (5000 section) and render a Tekion-bin-check-style sheet with Primary Bin and Back Counter Bin write-in Count boxes, emailed via Stacey. Use when Joe asks to \"verify counts daily\", \"which back counter parts sold today\", or re-run the back-counter check for a date. KEY DESIGN INSIGHT (Joe corrected me 2026-07-04): a bin-snapshot DIFF can NEVER catch a back-counter pull \u2014 Tekion only relieves the PRIMARY bin (2420), so the 5000s bin doesn't move when the sale posts. Detection must be sales-driven: today's RO parts INTERSECT back-counter roster.",
    "times_used": 20,
    "last_used": "2026-07-22"
   },
@@ -126,7 +126,7 @@
    "name": "tekion-opcode-api",
    "path": "automotive/tekion-opcode-api",
    "category": "automotive",
-   "description": ">",
+   "description": "Read, audit, and VERIFY Tekion opcode override rows directly from the backend REST API using the session's own auth token. This is the AUTHORITATIVE source of truth \u2014 the override UI grid frequently renders wrong/empty even when rows exist in the backend. Use to get the true committed row count before a batch, detect incomplete (part-less) rows, and confirm persistence after saving.",
    "times_used": 19,
    "last_used": "2026-07-21"
   },
@@ -134,7 +134,7 @@
    "name": "tekion-autonomous-login",
    "path": "automotive/tekion-autonomous-login",
    "category": "automotive",
-   "description": ">",
+   "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
    "times_used": 17,
    "last_used": "2026-07-22"
   },
@@ -142,7 +142,7 @@
    "name": "tekion-opcode-overrides",
    "path": "automotive/tekion-opcode-overrides",
    "category": "automotive",
-   "description": ">",
+   "description": "Add vehicle/part override rows to a Tekion opcode (Overrides tab) using the verified browser-tool cascading react-select method. This is the batch workflow used for cabin-filter part overrides (RACF etc.) \u2014 Make/Model/Year/ Trim/Part per row, driven by the __buildRow() helper toolkit. Covers the real-click trim rule, the Save Changes confirmation modal, and mandatory reload+API verification. The most complex Tekion workflow we run.",
    "times_used": 17,
    "last_used": "2026-07-12"
   },
@@ -166,7 +166,7 @@
    "name": "tekion-opcode-default-pricing",
    "path": "automotive/tekion-opcode-default-pricing",
    "category": "automotive",
-   "description": ">",
+   "description": "Set Default-tab labor pricing and add parts to a Tekion opcode in the opcodeManagementV2 UI. Covers reaching the edit page, the V2 flat-form layout, setting the dollar rate via the Customer/Manufacturer spinbuttons, adding parts via react-select (bare-number-first search), and the incremental Save Draft pattern that the browser tool requires. This is the SIMPLE common case \u2014 for vehicle/part override rows use tekion-opcode-overrides.",
    "times_used": 13,
    "last_used": "2026-07-21"
   },
@@ -182,7 +182,7 @@
    "name": "tekion-included-service-parts-override",
    "path": "automotive/tekion-included-service-parts-override",
    "category": "automotive",
-   "description": ">",
+   "description": "Build a vehicle-scoped PARTS override row on a Tekion menu-included opcode via Service Menu Setups \u2192 Included Services \u2192 Edit Service \u2192 Overrides \u2192 Parts, driven by the persistent-browser :9223 HTTP endpoints (/eval, /click, /type, /press). Covers the exact DOM (react-select Make, ant-dropdown checkbox Model/Year multi-selects, Trim Details modal), the verified click-paths, and the costly pitfalls (wrong /eval key, navigate-away row wipe, coordinate drift, disabled trim input). Use when swapping/adding parts on an opcode that lives INSIDE a service menu (e.g. BGCVTF CVT fluid \u2192 E-TAF for Corollas).",
    "times_used": 11,
    "last_used": "2026-07-13"
   },
@@ -190,7 +190,7 @@
    "name": "tekion-standard-reports-performance",
    "path": "automotive/tekion-standard-reports-performance",
    "category": "automotive",
-   "description": ">",
+   "description": "Pull Tekion Standard Reports from the REPORTS module (/core/reports) via the :9223 authenticated browser \u2014 especially the fixed-ops performance suite (Advisor Performance, Tech Performance / proficiency = assigned-billed vs attendance hours). Covers the filter funnel (Flag Date range, Make filter), Group By, and Export. Use when Joe wants advisor/tech performance numbers, or ANY report that is NOT a custom Report Builder report.",
    "times_used": 10,
    "last_used": "2026-07-20"
   },
@@ -262,7 +262,7 @@
    "name": "tekion-report-builder-scraper",
    "path": "automotive/tekion-report-builder-scraper",
    "category": "automotive",
-   "description": ">",
+   "description": "Scrape any Tekion Report Builder CUSTOM report (e.g. \"SCT Menu Sales Opened\") headlessly \u2014 find the report id, open it under the right dealer, expand grouped rows, parse to JSON, render a manager-ready scorecard (PNG+PDF), and email it via Stacey. Use whenever Joe/managers want recurring Tekion report data without downloading PDFs from Tekion's emailed reports.",
    "times_used": 6,
    "last_used": "2026-07-01"
   },
@@ -270,7 +270,7 @@
    "name": "tekion-service-settings",
    "path": "automotive/tekion-service-settings",
    "category": "automotive",
-   "description": ">",
+   "description": "Reference map of Tekion's Service Settings application (App Grid > Settings > Service Settings) \u2014 the master config for service/RO workflows: General Setup, Job Sequence, Flag Tech on, Round-Up rules, Default Service Advisor, RO/Job Flags, Holds, Parts Request, pay-type setups (Customer/Warranty/Internal/ Insurance), Reminders, Express Mode, Tags, RO KPI List, Quotes, Role Config, Consumer Portal, Approval Settings, Deferred Recommendation Rules, Job Clock Setup, P&L View Setup. Use when asked where/how a service workflow behavior is configured (e.g. \"why do tech flag hours auto-match bill time\", \"how is the recommendation opcode set\", \"where do return-RO / comeback tags come from\").",
    "times_used": 6,
    "last_used": "2026-07-23"
   },
@@ -326,7 +326,7 @@
    "name": "tekion-clock-time-by-opcode",
    "path": "automotive/tekion-clock-time-by-opcode",
    "category": "automotive",
-   "description": ">",
+   "description": "Build an \"actual tech clocked time vs billed time BY OPCODE\" report (over-clock / unapplied-time-at-opcode-grain) for any Tekion store. Uses the internal rosearchservice visibility-dashboard TECH_CLOCK datasource (the engine behind the custom \"Ro Actual Time Report\"), which carries opcode on every clock punch \u2014 something the standard Tech Performance report cannot do (its Unapplied Hours is per-technician only). Verified SV (826) 2026-07-20.",
    "times_used": 4,
    "last_used": "2026-07-22"
   },
@@ -334,7 +334,7 @@
    "name": "tekion-opcode-create",
    "path": "automotive/tekion-opcode-create",
    "category": "automotive",
-   "description": ">",
+   "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
    "times_used": 4,
    "last_used": "2026-07-12"
   },
@@ -422,7 +422,7 @@
    "name": "tekion-tek-opcode-part-replace",
    "path": "automotive/tekion-tek-opcode-part-replace",
    "category": "automotive",
-   "description": ">",
+   "description": "Swap a wrong factory part on a FACTORY \"TEK\"-prefixed Tekion opcode (e.g. TEK04020101 \"Cabin Air Filter Remove and Replace\") to the correct part, using the \"Replace Part Number\" action inside Opcode Management \u2192 Overrides \u2192 Parts \u2192 Modify System Parts. This is the fix-surface for FACTORY TEK opcodes used in a service menu (NOT custom/BG opcodes \u2014 those use tekion-included-service-parts-override). Covers the exact, painfully-learned order of operations (Identifier + Job BEFORE the part number), the 16th-row trick, the Replace-Part-Number modal, the validation-error trap, and the re-quote verification. Verified live at SCT (dealer 876) 2026-06-25: 87139-06030 \u2192 87139-YZZ81, quote $1,937.12 \u2192 $1,929.12. Use when Joe says a maintenance-menu line pulls the wrong factory part and the opcode starts with \"TEK\".",
    "times_used": 3,
    "last_used": "2026-07-20"
   },
@@ -438,7 +438,7 @@
    "name": "bt-menu-sales-reports",
    "path": "automotive/bt-menu-sales-reports",
    "category": "automotive",
-   "description": ">",
+   "description": "Run the Blackstone Toyota (BT, dealer 1249) Menu Sales scorecards \u2014 Daily Opened, Daily Closed, and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI. The 4th sibling of the SCT/Kevin, BC/Ruben, and TOL/Sean pipelines. Use for any \"BT menu report\", \"Blackstone Toyota menu sales\", or Tony Garcia menu-sales report request. (Menu REBUILD work is a different skill \u2014 bt-tony-menu-rebuild.)",
    "times_used": 2,
    "last_used": "2026-07-16"
   },
@@ -446,7 +446,7 @@
    "name": "hermes-slack-slash-commands",
    "path": "automotive/hermes-slack-slash-commands",
    "category": "automotive",
-   "description": ">",
+   "description": "Diagnose and fix Hermes slash commands on Slack \u2014 especially the \"/sethome failed because the app did not respond\" error. The Hermes gateway registers exactly ONE Slack slash command (/hermes); every other command (sethome, reset, model, new, status, \u2026) must be invoked as a SUBCOMMAND: `/hermes <sub>`. A bare `/sethome` is not registered with Slack, so Slack times out. Use when a Slack user reports a slash command \"doesn't respond\", goes to the wrong thread, or asks to set the Slack home channel. Also covers the \"Sending messages to this app has been turned off\" DM lockout (App Home Messages Tab disabled) and diagnosing any \"can't talk to <agent> on Slack\" report across fleet profiles.",
    "times_used": 2,
    "last_used": "2026-07-14"
   },
@@ -486,7 +486,7 @@
    "name": "amg-store-manager-meeting-prep",
    "path": "automotive/amg-store-manager-meeting-prep",
    "category": "automotive",
-   "description": ">",
+   "description": "Prep Joe for a working meeting with a store service manager (e.g. Ruben at BC, Kevin at SCT, Sean at TOL) \u2014 actionable items backed by LIVE store baselines computed from Jay's cached Tekion pipeline data, framed as what JOE (VP Fixed Ops) can do to help, drafted to Joe's own inbox. Use for any \"prep a meeting with <manager>\", \"action items for <store>\", \"what can I do to help him\" ask.",
    "times_used": 1,
    "last_used": "2026-07-07"
   },
@@ -510,7 +510,7 @@
    "name": "tekion-mom-service-gross-fleet",
    "path": "automotive/tekion-mom-service-gross-fleet",
    "category": "automotive",
-   "description": ">",
+   "description": "Produce a month-over-month (or any period-vs-period) SERVICE GROSS read across all 7 AMG stores from the live Tekion OpenAPI \u2014 who's winning, who's slipping, and whether it's a VOLUME story or a MARGIN story. Uses a throttle-safe sequential RO sample (labor GP + parts GP per RO) scaled by exact closed-RO counts, because the GL department-gross endpoint is still locked and a full penny-accurate fan-out trips the rate limit for hours. Use when Joe asks \"service gross month over month\", \"who's doing well / breaking numbers across the stores\", \"fleet service gross May vs June\", or any cross-store gross trend.",
    "times_used": 1,
    "last_used": "2026-06-30"
   },
@@ -534,7 +534,7 @@
    "name": "tekion-tech-clock-time-by-opcode",
    "path": "automotive/tekion-tech-clock-time-by-opcode",
    "category": "automotive",
-   "description": ">",
+   "description": "Get ACTUAL technician clocked time (punch time) per OPCODE / per RO / per tech from Tekion via the internal rosearchservice visibility-dashboard TECH_CLOCK datasource, and join it against billed hours to find over-clock / unapplied-time gaps by opcode. Use when Joe asks \"which opcode has the most unapplied time\", \"actual vs billed hours by opcode\", tech clock time analysis, or proficiency drill-downs below the per-technician grain. Verified SV (826) 2026-07-20.",
    "times_used": 1,
    "last_used": "2026-07-20"
   },
@@ -630,7 +630,7 @@
    "name": "install-agent-bridge-into-peer",
    "path": "automotive/install-agent-bridge-into-peer",
    "category": "automotive",
-   "description": ">",
+   "description": "Make ANOTHER AMG agent (e.g. Autumn, Don, Ralph) able to message Jay/peers DIRECTLY from their own sessions \u2014 not just be reachable BY Jay. Installs the ask-agent bridge helper + a MEMORY.md entry into the target agent's profile so the capability is discoverable in their real chats. Use when Joe says \"set up a pipeline between <agent> and Jay\" or \"<agent> needs to talk to you\".",
    "times_used": 0,
    "last_used": null
   },
@@ -662,7 +662,7 @@
    "name": "tekion-browser-automation",
    "path": "automotive/tekion-browser-automation",
    "category": "automotive",
-   "description": ">",
+   "description": "Log into Tekion DMS via browser automation or Puppeteer, retrieve OTP from Gmail IMAP, navigate to modules, switch dealerships, and update opcode pricing (Fixed Price labor rates, add parts, save). Covers Ant Design dropdown patterns, scrollable containers, and the complete opcode edit workflow.",
    "times_used": 0,
    "last_used": null
   },
@@ -670,7 +670,7 @@
    "name": "tekion-computer-use",
    "path": "automotive/tekion-computer-use",
    "category": "automotive",
-   "description": ">",
+   "description": "Autonomous vision-guided browser automation for Tekion DMS. Uses the persistent Playwright browser server (port 9223) as the interaction layer and Claude Sonnet 4 (via OpenRouter) as the vision/decision-making brain. Claude sees page snapshots, decides what to click/type, and the agent executes via HTTP API calls.",
    "times_used": 0,
    "last_used": null
   },
@@ -686,7 +686,7 @@
    "name": "tekion-opcode-pricing-v2",
    "path": "automotive/tekion-opcode-pricing-v2",
    "category": "automotive",
-   "description": ">",
+   "description": "DEEP REFERENCE / ARCHIVE for Tekion opcodeManagementV2. The day-to-day work is now split into three clean skills \u2014 use those FIRST: tekion-opcode-default-pricing (labor + parts), tekion-opcode-overrides (vehicle/part override batch rows), and tekion-opcode-api (read/audit/verify committed rows). Load THIS skill only when you need the full historical detail: complete dealer-switch code, Puppeteer scripts, every selector quirk, and the session-by-session debugging archaeology behind the verified recipes.",
    "times_used": 0,
    "last_used": null
   },
@@ -822,7 +822,7 @@
    "name": "popular-web-designs",
    "path": "creative/popular-web-designs",
    "category": "creative",
-   "description": ">",
+   "description": "54 production-quality design systems extracted from real websites. Load a template to generate HTML/CSS that matches the visual identity of sites like Stripe, Linear, Vercel, Notion, Airbnb, and more. Each template includes colors, typography, components, layout rules, and ready-to-use CSS values.",
    "times_used": 0,
    "last_used": null
   },
@@ -830,7 +830,7 @@
    "name": "songwriting-and-ai-music",
    "path": "creative/songwriting-and-ai-music",
    "category": "creative",
-   "description": ">",
+   "description": "Songwriting craft, AI music generation prompts (Suno focus), parody/adaptation techniques, phonetic tricks, and lessons learned. These are tools and ideas, not rules. Break any of them when the art calls for it.",
    "times_used": 0,
    "last_used": null
   },
@@ -838,7 +838,7 @@
    "name": "jupyter-live-kernel",
    "path": "data-science/jupyter-live-kernel",
    "category": "data-science",
-   "description": ">",
+   "description": "Use a live Jupyter kernel for stateful, iterative Python execution via hamelnb. Load this skill when the task involves exploration, iteration, or inspecting intermediate results \u2014 data science, ML experimentation, API exploration, or building up complex code step-by-step. Uses terminal to run CLI commands against a live Jupyter kernel. No new tools required.",
    "times_used": 0,
    "last_used": null
   },
@@ -974,7 +974,7 @@
    "name": "youtube-content",
    "path": "media/youtube-content",
    "category": "media",
-   "description": ">",
+   "description": "Fetch YouTube video transcripts and transform them into structured content (chapters, summaries, threads, blog posts). Use when the user shares a YouTube URL or video link, asks to summarize a video, requests a transcript, or wants to extract and reformat content from any YouTube video.",
    "times_used": 0,
    "last_used": null
   },
@@ -1110,7 +1110,7 @@
    "name": "maps",
    "path": "productivity/maps",
    "category": "productivity",
-   "description": ">",
+   "description": "Location intelligence \u2014 geocode a place, reverse-geocode coordinates, find nearby places (44 POI categories), driving/walking/cycling distance + time, turn-by-turn directions, timezone lookup, bounding box + area for a named place, and POI search within a rectangle. Uses OpenStreetMap + Overpass + OSRM. Free, no API key.",
    "times_used": 0,
    "last_used": null
   },
@@ -1222,7 +1222,7 @@
    "name": "requesting-code-review",
    "path": "software-development/requesting-code-review",
    "category": "software-development",
-   "description": ">",
+   "description": "Pre-commit verification pipeline \u2014 static security scan, baseline-aware quality gates, independent reviewer subagent, and auto-fix loop. Use after code changes and before committing, pushing, or opening a PR.",
    "times_used": 0,
    "last_used": null
   },
