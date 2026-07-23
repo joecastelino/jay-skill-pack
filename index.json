@@ -1,6 +1,6 @@
 {
- "generated": "2026-07-23T12:51:32",
- "skill_count": 157,
+ "generated": "2026-07-23T13:00:13",
+ "skill_count": 158,
  "skills": [
   {
    "name": "persistent-browser-server",
@@ -631,6 +631,14 @@
    "path": "automotive/install-agent-bridge-into-peer",
    "category": "automotive",
    "description": "Make ANOTHER AMG agent (e.g. Autumn, Don, Ralph) able to message Jay/peers DIRECTLY from their own sessions \u2014 not just be reachable BY Jay. Installs the ask-agent bridge helper + a MEMORY.md entry into the target agent's profile so the capability is discoverable in their real chats. Use when Joe says \"set up a pipeline between <agent> and Jay\" or \"<agent> needs to talk to you\".",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "jay-skill-pack-sync",
+   "path": "automotive/jay-skill-pack-sync",
+   "category": "automotive",
+   "description": "Maintain the PUBLIC skill-pack repo github.com/joecastelino/jay-skill-pack \u2014 the auto-synced, secret-redacted mirror of Jay's entire skill library, README sorted by usage count. Use when Joe asks about the skill pack repo, when a sync fails, when a new secret needs redaction, or when installing Jay's skills into another agent.",
    "times_used": 0,
    "last_used": null
   },

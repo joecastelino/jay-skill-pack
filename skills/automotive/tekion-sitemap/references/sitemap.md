@@ -182,3 +182,13 @@ Harvest at scale: in-page concurrent worker (conc=10) looping partIds, batches o
   Tekion work through `:9223` HTTP API in `execute_code`. Use `vision_analyze` on a saved
   `/screenshot` PNG (write to `/tmp/...`, the sandbox can't see `/home/itadmin`).
 - Sessions expire ~30 min idle / ~20h hard. Re-login when `t_token` missing.
+
+## Global Security Settings (session auto-logout, MFA, IP) — verified via KB 2026-07-23
+- Nav: App Grid → Settings → Core Settings → **Global Security Settings** tile → Default Policy → Configure Policy tab → left pane **Session Management**
+- Session Management (Auto Logout) is SPLIT: Web vs Mobile+iPad sections.
+  - Mobile+iPad: Session Timeout Duration 1/5/10/15/30 days (default 30); Inactive timeout 4h–72h (default 48h). Floor = 4h.
+  - Web: same duration options; Inactive timeout 5min–72h (default 24h).
+- Must click **Save and Activate** (bottom-right) for policy to take effect.
+- PER-DEALERSHIP policy — no copy mechanism between stores; configure each of the 7 individually.
+- Requires "Edit Security Settings" permission (Roles → Permissions → General → General).
+- KB0022240 (session mgmt how-to), KB0022401 (dealer security FAQ). Distilled: /home/itadmin/tekion-kb/distilled/mobile-auto-logout-session-management.md
