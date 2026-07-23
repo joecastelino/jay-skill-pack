@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-23T13:15:03",
+ "generated": "2026-07-23T13:30:33",
  "skill_count": 158,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 51,
-   "last_used": "2026-07-20"
+   "times_used": 52,
+   "last_used": "2026-07-23"
   },
   {
    "name": "agent-to-agent-bridge",
@@ -67,20 +67,20 @@
    "last_used": "2026-07-15"
   },
   {
+   "name": "tekion-sitemap",
+   "path": "automotive/tekion-sitemap",
+   "category": "automotive",
+   "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
+   "times_used": 26,
+   "last_used": "2026-07-23"
+  },
+  {
    "name": "bc-menu-sales-reports",
    "path": "automotive/bc-menu-sales-reports",
    "category": "automotive",
    "description": "Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards \u2014 Daily Closed (2x/day) and Closed Month-To-Date (1x/day) \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben Estrada (Restrada@blackstonegm.com). This is the GM-store sibling of the SCT/Kevin pipeline (sct-menu-sales-api-scorecard). Use for any \"BC menu report\", \"Blackstone Chevy/Cadillac menu sales\", or Ruben report request.",
    "times_used": 25,
    "last_used": "2026-07-18"
-  },
-  {
-   "name": "tekion-sitemap",
-   "path": "automotive/tekion-sitemap",
-   "category": "automotive",
-   "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 25,
-   "last_used": "2026-07-15"
   },
   {
    "name": "tekion-ghost-bin-negative-onhand",
@@ -163,20 +163,20 @@
    "last_used": "2026-07-22"
   },
   {
+   "name": "tekion-kb-search-scrape",
+   "path": "automotive/tekion-kb-search-scrape",
+   "category": "automotive",
+   "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
+   "times_used": 13,
+   "last_used": "2026-07-23"
+  },
+  {
    "name": "tekion-opcode-default-pricing",
    "path": "automotive/tekion-opcode-default-pricing",
    "category": "automotive",
    "description": "Set Default-tab labor pricing and add parts to a Tekion opcode in the opcodeManagementV2 UI. Covers reaching the edit page, the V2 flat-form layout, setting the dollar rate via the Customer/Manufacturer spinbuttons, adding parts via react-select (bare-number-first search), and the incremental Save Draft pattern that the browser tool requires. This is the SIMPLE common case \u2014 for vehicle/part override rows use tekion-opcode-overrides.",
    "times_used": 13,
    "last_used": "2026-07-21"
-  },
-  {
-   "name": "tekion-kb-search-scrape",
-   "path": "automotive/tekion-kb-search-scrape",
-   "category": "automotive",
-   "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 12,
-   "last_used": "2026-07-20"
   },
   {
    "name": "tekion-included-service-parts-override",
@@ -499,6 +499,14 @@
    "last_used": "2026-06-29"
   },
   {
+   "name": "jay-skill-pack-sync",
+   "path": "automotive/jay-skill-pack-sync",
+   "category": "automotive",
+   "description": "Maintain the PUBLIC skill-pack repo github.com/joecastelino/jay-skill-pack \u2014 the auto-synced, secret-redacted mirror of Jay's entire skill library, README sorted by usage count. Use when Joe asks about the skill pack repo, when a sync fails, when a new secret needs redaction, or when installing Jay's skills into another agent.",
+   "times_used": 1,
+   "last_used": "2026-07-23"
+  },
+  {
    "name": "tekion-generic-placeholder-part-swap",
    "path": "automotive/tekion-generic-placeholder-part-swap",
    "category": "automotive",
@@ -561,6 +569,14 @@
    "description": "Complete guide to using and extending Hermes Agent \u2014 CLI usage, setup, configuration, spawning additional agents, gateway platforms, skills, voice, tools, profiles, and a concise contributor reference. Load this skill when helping users configure Hermes, troubleshoot issues, spawn agent instances, or make code contributions.",
    "times_used": 1,
    "last_used": "2026-07-14"
+  },
+  {
+   "name": "github-repo-management",
+   "path": "github/github-repo-management",
+   "category": "github",
+   "description": "Clone, create, fork, configure, and manage GitHub repositories. Manage remotes, secrets, releases, and workflows. Works with gh CLI or falls back to git + GitHub REST API via curl.",
+   "times_used": 1,
+   "last_used": "2026-07-23"
   },
   {
    "name": "apple-notes",
@@ -631,14 +647,6 @@
    "path": "automotive/install-agent-bridge-into-peer",
    "category": "automotive",
    "description": "Make ANOTHER AMG agent (e.g. Autumn, Don, Ralph) able to message Jay/peers DIRECTLY from their own sessions \u2014 not just be reachable BY Jay. Installs the ask-agent bridge helper + a MEMORY.md entry into the target agent's profile so the capability is discoverable in their real chats. Use when Joe says \"set up a pipeline between <agent> and Jay\" or \"<agent> needs to talk to you\".",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "jay-skill-pack-sync",
-   "path": "automotive/jay-skill-pack-sync",
-   "category": "automotive",
-   "description": "Maintain the PUBLIC skill-pack repo github.com/joecastelino/jay-skill-pack \u2014 the auto-synced, secret-redacted mirror of Jay's entire skill library, README sorted by usage count. Use when Joe asks about the skill pack repo, when a sync fails, when a new secret needs redaction, or when installing Jay's skills into another agent.",
    "times_used": 0,
    "last_used": null
   },
@@ -927,14 +935,6 @@
    "path": "github/github-pr-workflow",
    "category": "github",
    "description": "Full pull request lifecycle \u2014 create branches, commit changes, open PRs, monitor CI status, auto-fix failures, and merge. Works with gh CLI or falls back to git + GitHub REST API via curl.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "github-repo-management",
-   "path": "github/github-repo-management",
-   "category": "github",
-   "description": "Clone, create, fork, configure, and manage GitHub repositories. Manage remotes, secrets, releases, and workflows. Works with gh CLI or falls back to git + GitHub REST API via curl.",
    "times_used": 0,
    "last_used": null
   },
