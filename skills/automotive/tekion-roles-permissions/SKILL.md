@@ -109,6 +109,43 @@ tekion.service-now.com — don't mix KB scraping with a roles edit session.
   gap requires removing BDCManager from her user record = employee-record change = needs Joe's
   explicit approval first (his standing HARD RULE). Flagged to Joe 2026-07-22, no go-ahead given.
 
+## MERGING two roles into one (PROVEN 2026-07-23 — BC "Appraiser" = Sales Person + BDCSpecialist)
+The Create modal accepts only ONE template, so a merge = **create from the bigger template,
+then diff the other role and toggle the delta ON**. Fully scripted, exact-verified:
+
+1. **Dump both roles' pill states** with `/home/itadmin/tekion-reports/role_dump.py <roleQuery> <out.json>`
+   (roleQuery = `1251_SALES_PERSON` style standard id or mongo id). It hard-navigates,
+   strips pendo, iterates every center collapse header (filter `getBoundingClientRect().x>300`
+   to skip left-rail dupes), expands each, and records `{group, name, on}` per pill.
+   Group title = nearest non-empty `previousSibling.textContent` of the
+   `core_roleDetails_permissionGroup` div. BC role universe = 1,345 pills across 18 categories.
+   **Standard-role URL ids are irregular** — Sales Person = `1251_SALES_PERSON` but
+   BDCSpecialist = `1251_BDCSpecialist` (not `1251_BDC_SPECIALIST`); when unsure, click the
+   role in the left rail and read the URL rather than guessing.
+2. **Compute delta** = `on(B) − on(A)` keyed on (category, group, name). SP∪BDC example:
+   254 ∪ 82 → 281 target, 27 delta.
+3. **Create the role** from template A via the Create Custom Role modal (clone verified
+   identical to template before toggling — dump the new role once and diff = 0).
+4. **Toggle delta + SAVE PER CATEGORY** with
+   `/home/itadmin/tekion-reports/role_toggle_appraiser.py` (adapt ROLE + delta file).
+   JS `button.click()` toggles fine; after each category's toggles click the Save button
+   (find by visible text, /mouse at its rect center). Save disappearing = saved — BUT the
+   LAST category's save-btn-count can stay 1 (Save re-rendered); re-check for a lingering
+   visible Save after the loop and click it once more.
+5. **Verify with a TRUE remount**: navigate to `/home` then re-dump the new role;
+   assert `on(new) == on(A) ∪ on(B)` exactly (0 missing / 0 extra).
+
+**Dead ends (don't retry):** the internal
+`/api/rolesandpermissionservice/u/admin/*` endpoints (roles-minimal, v3/permissions)
+return 500 "Token doesn't exist or is invalid" when called via bare in-page `fetch` with
+localStorage headers — the axios interceptor auth can't be replicated; and role-switching
+in the UI fires NO capturable XHR for permission data (it's preloaded), so an XHR hook
+yields nothing. DOM pill scraping is THE working read path.
+
+**Merge review tip for Joe:** flag any sensitive inherited pills in the report (e.g.
+Appointment Slot Override rode in via BDCSpecialist on the Appraiser merge) so he can
+decide whether to strip them.
+
 ## Finding WHO holds a role (OpenAPI users fan-out)
 Roles pages don't list members. Use OpenAPI `GET /openapi/v4.0.0/users` (tekion_client at
 `/home/itadmin/tekion-api/`), but note THREE traps:
@@ -117,7 +154,11 @@ Roles pages don't list members. Use OpenAPI `GET /openapi/v4.0.0/users` (tekion_
    silently ignored too). Loop until nextFetchKey is null (SCT = 1536 users, ~253 active).
 2. `userNameDetails.completeNames` is a **LIST** of `{nameType, value}` objects, not a dict —
    or just use `firstName`/`lastName`.
-3. The **list payload has NO role info** — you must `GET /users/{id}` per user
+3. The list payload MAY now include `userRoleDetails` (primary + secondaryRoles), `active`,
+   and `email` inline — verified at BC 2026-07-23 (371 users, 4 pages, `data` is a bare LIST
+   not a dict; Josh Williams lookup needed zero fan-out). If those fields are present, skip
+   the per-user fan-out entirely. Older behavior (**list payload has NO role info**) may
+   still apply on some queries — fall back to `GET /users/{id}` per user
    (`userRoleDetails.primaryRole` + `secondaryRoles[]`, each `{persona, roleName}`).
    Fan-out over ~250 users takes 15+ min with 429 backoff → run as a BACKGROUND script
    (foreground execute_code hits the 300s cap). Check secondaryRoles too — users like
