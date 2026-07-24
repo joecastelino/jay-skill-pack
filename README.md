@@ -2,7 +2,7 @@
 
 Skill library for **Jay**, the Tekion DMS specialist agent at American Motors Group — plus general-purpose agent skills. Built for the [Hermes Agent](https://github.com/NousResearch) skill system (`SKILL.md` + YAML frontmatter, with optional `references/`, `scripts/`, `templates/`).
 
-**158 skills** · auto-synced from the live agent · last sync: 2026-07-24 10:45
+**158 skills** · auto-synced from the live agent · last sync: 2026-07-24 11:00
 
 ## Install into another agent
 
@@ -31,7 +31,7 @@ Secrets (passwords, app passwords, tokens) are redacted with `<PLACEHOLDER>` mar
 | 12 | [`tol-menu-sales-reports`](skills/automotive/tol-menu-sales-reports/SKILL.md) | automotive | 23 | 2026-07-22 | Run the Toyota of Lancaster (TOL/TL, dealer 1092) Menu Sales scorecards — Daily Opened and Closed Month-To-Date — from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Sean Preston (spreston@tol-av.com). The Toy... |
 | 13 | [`sct-menu-sales-api-scorecard`](skills/automotive/sct-menu-sales-api-scorecard/SKILL.md) | automotive | 22 | 2026-07-21 | Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters ... |
 | 14 | [`tekion-vi-api-migration`](skills/automotive/tekion-vi-api-migration/SKILL.md) | automotive | 22 | 2026-07-12 | Migrate the Vehicle Inventory ("The Goods") browser scraper to the Tekion OpenAPI (vehicle-inventory:search) producing per-store JSON that byte-matches the legacy schema. Covers field mapping, the SOLD-pending rule, P... |
-| 15 | [`sct-backcounter-ro-sales-countsheet`](skills/automotive/sct-backcounter-ro-sales-countsheet/SKILL.md) | automotive | 20 | 2026-07-22 | Build Joe's daily SCT Back Counter Bin Check count sheet — cross-reference a day's RO part sales (Tekion OpenAPI) against parts that stock in a back-counter bin (5000 section) and render a Tekion-bin-check-style sheet... |
+| 15 | [`sct-backcounter-ro-sales-countsheet`](skills/automotive/sct-backcounter-ro-sales-countsheet/SKILL.md) | automotive | 21 | 2026-07-24 | Build Joe's daily SCT Back Counter Bin Check count sheet — cross-reference a day's RO part sales (Tekion OpenAPI) against parts that stock in a back-counter bin (5000 section) and render a Tekion-bin-check-style sheet... |
 | 16 | [`tekion-autonomous-login`](skills/automotive/tekion-autonomous-login/SKILL.md) | automotive | 19 | 2026-07-24 | Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session — no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the aut... |
 | 17 | [`tekion-opcode-api`](skills/automotive/tekion-opcode-api/SKILL.md) | automotive | 19 | 2026-07-21 | Read, audit, and VERIFY Tekion opcode override rows directly from the backend REST API using the session's own auth token. This is the AUTHORITATIVE source of truth — the override UI grid frequently renders wrong/empt... |
 | 18 | [`tekion-opcode-overrides`](skills/automotive/tekion-opcode-overrides/SKILL.md) | automotive | 17 | 2026-07-12 | Add vehicle/part override rows to a Tekion opcode (Overrides tab) using the verified browser-tool cascading react-select method. This is the batch workflow used for cabin-filter part overrides (RACF etc.) — Make/Model... |

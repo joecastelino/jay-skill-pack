@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-24T10:45:06",
+ "generated": "2026-07-24T11:00:25",
  "skill_count": 158,
  "skills": [
   {
@@ -119,8 +119,8 @@
    "path": "automotive/sct-backcounter-ro-sales-countsheet",
    "category": "automotive",
    "description": "Build Joe's daily SCT Back Counter Bin Check count sheet \u2014 cross-reference a day's RO part sales (Tekion OpenAPI) against parts that stock in a back-counter bin (5000 section) and render a Tekion-bin-check-style sheet with Primary Bin and Back Counter Bin write-in Count boxes, emailed via Stacey. Use when Joe asks to \"verify counts daily\", \"which back counter parts sold today\", or re-run the back-counter check for a date. KEY DESIGN INSIGHT (Joe corrected me 2026-07-04): a bin-snapshot DIFF can NEVER catch a back-counter pull \u2014 Tekion only relieves the PRIMARY bin (2420), so the 5000s bin doesn't move when the sale posts. Detection must be sales-driven: today's RO parts INTERSECT back-counter roster.",
-   "times_used": 20,
-   "last_used": "2026-07-22"
+   "times_used": 21,
+   "last_used": "2026-07-24"
   },
   {
    "name": "tekion-autonomous-login",
