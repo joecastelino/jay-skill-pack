@@ -147,13 +147,20 @@ browser-server state at all — use it first for unattended/cron runs.
 
 ### 3. Render: `render_backcounter_countsheet.py <YYYY-MM-DD>`
 Reads `backcounter-ro-sales/<date>-countsheet.json` (rows: part, desc, sold, n_ros,
-ros, prim_bin, prim_qty, back_bin, back_qty, total). Joe-approved format = Tekion
+ros, prim_bin, prim_qty, back_bin, back_qty, **other_bins** — a list of
+{bin, qty} for EVERY non-primary bin, 5000s first then the rest, added 2026-07-24
+per Joe \"some parts have more than 2 bins — add all the bins\"). Joe-approved format = Tekion
 bin-check style: red-rule header + SCT logo (logo_0.png base64), meta line
-(date / parts to verify / Counted by / Time), table with two 3-col groups —
+(date / parts to verify / Counted by / Time), table with two groups —
 **Primary Bin (front)** green header: Bin | System | empty Count box, and
-**Back Counter Bin** red header: Bin | System | empty Count box — negatives in red
+**All Other Bins** red header: ONE SUB-LINE PER BIN (rowspan on the part cells;
+bins outside the 5000 section — TXM, 1003, 4115… — get a grey \"*\" marker), each
+line Bin | System | empty Count box — negatives in red
 bold, how-to legend, two signature lines. Drop qty-0 rows. Outputs PNG (inline email)
-+ PDF via headless chromium; also write a CSV (Count columns blank) for sorting.
++ PDF via headless chromium; also write a CSV (Count columns blank; one CSV line per
+part+bin, part info only on the first line of its group). Negatives summary in the
+email/stdout is now per (part, bin) across ALL bins — surfaced new big negatives the
+2-bin sheet hid (e.g. 90430-12031 bin 1003 at -106, 90915-YZZD3 bin 1003 at -48).
 Vision-verify PNG before sending.
 
 ### 4. Email — DIRECT SMTP BY DESIGN (Stacey path RETIRED for this report, 2026-07-04)
