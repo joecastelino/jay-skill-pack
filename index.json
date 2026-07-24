@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-23T20:30:04",
+ "generated": "2026-07-23T20:45:35",
  "skill_count": 158,
  "skills": [
   {
@@ -87,8 +87,8 @@
    "path": "automotive/tekion-ghost-bin-negative-onhand",
    "category": "automotive",
    "description": "Diagnose a part showing NEGATIVE total on-hand in Tekion that stems from a CDK-migration \"ghost bin\" (a location-less legacy bin like 5005 / 5000 / 5001 / 5004 / RC1 / RC2 carried over at CDK\u2192Tekion cutover ~4 yrs ago). The negative lives ONLY on the bin record, has ZERO transactions, is invisible to physical inventory (out of count scope), and poisons the auto-replenishment math (OH+OnOrder stays under reorder point \u2192 perpetual over-ordering). Distinct from a real stock-out. Use when Joe says \"this part shows -11 on hand / negative on hand / auto replenishment isn't working\" AND the negative traces to a non-primary bin. Sibling of tekion-parts-autoorder-diagnosis (that one = velocity/BRP/BSL/Min stock-outs; THIS one = phantom bin balances). WRITE-SIDE FIX PATHS NOW LIVE (2026-07-03): Edit-Part redistribution (zero GL) vs bin-level OH adjustment \u2014 see FIX PATHS section. Case-B $ adjustments still require Joe's explicit go.",
-   "times_used": 23,
-   "last_used": "2026-07-14"
+   "times_used": 24,
+   "last_used": "2026-07-23"
   },
   {
    "name": "tol-menu-sales-reports",

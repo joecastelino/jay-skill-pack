@@ -31,7 +31,21 @@ Edit Part redistribution 5000s→2420 (zero GL; see tekion-ghost-bin-negative-on
 
 ## Pipeline (3 scripts, all in /home/itadmin/tekion-reports/)
 
-### 1. Scan: `sct_backcounter_ro_sales.py [--all] [--date YYYY-MM-DD]`
+### 1. Scan — PRIMARY METHOD (since 2026-07-23): `sct_backcounter_ledger_scan.py <YYYY-MM-DD>`
+Built 2026-07-23 (the method-migration note existed but no script did). Rebuilds
+`backcounter-ro-sales/<date>.json` from the internal parts activity-log API — keys on
+actual `transactionTime`, so the modifiedTime status-flip double-count bug cannot occur;
+returns net out automatically; **runs in ~2 min foreground, zero OpenAPI quota** (no more
+30-60 min background scans, no quota probe needed). Flow: roster from the day's
+`bin5000s-snapshots/<date>.json` (fallback newest) → withPart/search batches for
+inventoryIds → activity-log FULFILMENT hits in the Pacific-day window → net per (RO,part)
+excluding LOCK legs, drop ≤0 → scan-file in the same schema (ro_status/opcode = null,
+fulfillment="LEDGER"). Exit 0 = SCAN_OK or NO_HITS, 2 = stale headers (401), 3 = no
+snapshot. First live run 2026-07-23: 174-part roster, 251 ledger hits, 46 parts / 84 ROs,
+build+email clean. Uses the same api-headers.json as build_and_send — one 401 covers both.
+
+### 1-LEGACY. OpenAPI fan-out scan: `sct_backcounter_ro_sales.py [--all] [--date YYYY-MM-DD]`
+Demoted to opcode/RO-status ENRICHMENT only (modifiedTime double-count bug, Joe 2026-07-23).
 - Roster = newest snapshot in `bin5000s-snapshots/` (fallback `bin5005-snapshots/`),
   filtered to BACK_BINS {5000..5007}, keyed by normalized part# (dashes stripped).
 - ROs = OpenAPI `repair-orders:search` with `modifiedTime BTW [midnight, midnight+1d]`

@@ -2,7 +2,7 @@
 
 Skill library for **Jay**, the Tekion DMS specialist agent at American Motors Group — plus general-purpose agent skills. Built for the [Hermes Agent](https://github.com/NousResearch) skill system (`SKILL.md` + YAML frontmatter, with optional `references/`, `scripts/`, `templates/`).
 
-**158 skills** · auto-synced from the live agent · last sync: 2026-07-23 20:30
+**158 skills** · auto-synced from the live agent · last sync: 2026-07-23 20:45
 
 ## Install into another agent
 
@@ -27,7 +27,7 @@ Secrets (passwords, app passwords, tokens) are redacted with `<PLACEHOLDER>` mar
 | 8 | [`tekion-service-menu-setups`](skills/automotive/tekion-service-menu-setups/SKILL.md) | automotive | 27 | 2026-07-15 | Navigate to, read, and inspect Tekion Service Menu Setups (the service-menu builder where interval menus, tiers, tags, opcodes, included services and inspections are configured). Covers the non-obvious nav path, the p... |
 | 9 | [`tekion-sitemap`](skills/automotive/tekion-sitemap/SKILL.md) | automotive | 26 | 2026-07-23 | Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straig... |
 | 10 | [`bc-menu-sales-reports`](skills/automotive/bc-menu-sales-reports/SKILL.md) | automotive | 25 | 2026-07-18 | Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards — Daily Closed (2x/day) and Closed Month-To-Date (1x/day) — from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben... |
-| 11 | [`tekion-ghost-bin-negative-onhand`](skills/automotive/tekion-ghost-bin-negative-onhand/SKILL.md) | automotive | 23 | 2026-07-14 | Diagnose a part showing NEGATIVE total on-hand in Tekion that stems from a CDK-migration "ghost bin" (a location-less legacy bin like 5005 / 5000 / 5001 / 5004 / RC1 / RC2 carried over at CDK→Tekion cutover ~4 yrs ago... |
+| 11 | [`tekion-ghost-bin-negative-onhand`](skills/automotive/tekion-ghost-bin-negative-onhand/SKILL.md) | automotive | 24 | 2026-07-23 | Diagnose a part showing NEGATIVE total on-hand in Tekion that stems from a CDK-migration "ghost bin" (a location-less legacy bin like 5005 / 5000 / 5001 / 5004 / RC1 / RC2 carried over at CDK→Tekion cutover ~4 yrs ago... |
 | 12 | [`tol-menu-sales-reports`](skills/automotive/tol-menu-sales-reports/SKILL.md) | automotive | 23 | 2026-07-22 | Run the Toyota of Lancaster (TOL/TL, dealer 1092) Menu Sales scorecards — Daily Opened and Closed Month-To-Date — from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Sean Preston (spreston@tol-av.com). The Toy... |
 | 13 | [`sct-menu-sales-api-scorecard`](skills/automotive/sct-menu-sales-api-scorecard/SKILL.md) | automotive | 22 | 2026-07-21 | Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters ... |
 | 14 | [`tekion-vi-api-migration`](skills/automotive/tekion-vi-api-migration/SKILL.md) | automotive | 22 | 2026-07-12 | Migrate the Vehicle Inventory ("The Goods") browser scraper to the Tekion OpenAPI (vehicle-inventory:search) producing per-store JSON that byte-matches the legacy schema. Covers field mapping, the SOLD-pending rule, P... |
