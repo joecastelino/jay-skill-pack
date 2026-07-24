@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-24T08:00:05",
+ "generated": "2026-07-24T08:15:46",
  "skill_count": 158,
  "skills": [
   {
@@ -7,8 +7,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 71,
-   "last_used": "2026-07-23"
+   "times_used": 73,
+   "last_used": "2026-07-24"
   },
   {
    "name": "jay-brain-and-skill-index",
@@ -123,20 +123,20 @@
    "last_used": "2026-07-22"
   },
   {
+   "name": "tekion-autonomous-login",
+   "path": "automotive/tekion-autonomous-login",
+   "category": "automotive",
+   "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
+   "times_used": 19,
+   "last_used": "2026-07-24"
+  },
+  {
    "name": "tekion-opcode-api",
    "path": "automotive/tekion-opcode-api",
    "category": "automotive",
    "description": "Read, audit, and VERIFY Tekion opcode override rows directly from the backend REST API using the session's own auth token. This is the AUTHORITATIVE source of truth \u2014 the override UI grid frequently renders wrong/empty even when rows exist in the backend. Use to get the true committed row count before a batch, detect incomplete (part-less) rows, and confirm persistence after saving.",
    "times_used": 19,
    "last_used": "2026-07-21"
-  },
-  {
-   "name": "tekion-autonomous-login",
-   "path": "automotive/tekion-autonomous-login",
-   "category": "automotive",
-   "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
-   "times_used": 17,
-   "last_used": "2026-07-22"
   },
   {
    "name": "tekion-opcode-overrides",
@@ -187,6 +187,14 @@
    "last_used": "2026-07-13"
   },
   {
+   "name": "tekion-part-sales-ledger-report",
+   "path": "automotive/tekion-part-sales-ledger-report",
+   "category": "automotive",
+   "description": "Build a \"parts sold\" report (e.g. tires) for any Tekion store and period with ACTUAL invoiced dollars, split RO vs Sales Order (counter), by counterperson, from the internal part transaction ledger (activity-log API) \u2014 zero OpenAPI quota. Use when Joe asks \"how many X did we sell\" for a parts category, or when the OpenAPI quota is exhausted and RO-level pulls are blocked.",
+   "times_used": 10,
+   "last_used": "2026-07-24"
+  },
+  {
    "name": "tekion-standard-reports-performance",
    "path": "automotive/tekion-standard-reports-performance",
    "category": "automotive",
@@ -216,14 +224,6 @@
    "category": "automotive",
    "description": "Build a Tekion \"repair orders that closed under a DIFFERENT service writer than they were opened/created with\" report for any AMG store from the LIVE OpenAPI. Produces RO#, dollar total, opened-by writer, closed-by writer, date opened, date closed. Use when Joe asks for a service-writer handoff / reassignment audit (\"ROs that started with one writer and ended with another\", \"who opened vs who closed\", writer-change report).",
    "times_used": 9,
-   "last_used": "2026-07-15"
-  },
-  {
-   "name": "tekion-part-sales-ledger-report",
-   "path": "automotive/tekion-part-sales-ledger-report",
-   "category": "automotive",
-   "description": "Build a \"parts sold\" report (e.g. tires) for any Tekion store and period with ACTUAL invoiced dollars, split RO vs Sales Order (counter), by counterperson, from the internal part transaction ledger (activity-log API) \u2014 zero OpenAPI quota. Use when Joe asks \"how many X did we sell\" for a parts category, or when the OpenAPI quota is exhausted and RO-level pulls are blocked.",
-   "times_used": 8,
    "last_used": "2026-07-15"
   },
   {
@@ -265,6 +265,14 @@
    "description": "Produce the TRUE count + CP dollars + revenue/RO of customer-pay repair orders for a store per month OR per week (incl. prior-4-week trend averages) via Tekion OpenAPI \u2014 CP invoice dollars > $0.01, not the misleading CUSTOMER_PAY tag. Verified SCT June 2026 (1,928 of 5,381) and BC weekly 2026-07-05 (226 of 604).",
    "times_used": 6,
    "last_used": "2026-07-08"
+  },
+  {
+   "name": "tekion-parts-sold-by-source-report",
+   "path": "automotive/tekion-parts-sold-by-source-report",
+   "category": "automotive",
+   "description": "Build a \"units of X sold in a period\" report (tires, batteries, brakes, BG products, wipers...) for any Tekion store using the Source Code part list + bulk salehistory API \u2014 NO OpenAPI quota, no RO fan-out. Use when Joe asks \"how many tires/batteries/etc were sold last month/quarter\" and the category maps to a parts Source Code. Verified TOL tires Q2 2026.",
+   "times_used": 6,
+   "last_used": "2026-07-24"
   },
   {
    "name": "tekion-report-builder-scraper",
@@ -337,14 +345,6 @@
    "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
    "times_used": 4,
    "last_used": "2026-07-12"
-  },
-  {
-   "name": "tekion-parts-sold-by-source-report",
-   "path": "automotive/tekion-parts-sold-by-source-report",
-   "category": "automotive",
-   "description": "Build a \"units of X sold in a period\" report (tires, batteries, brakes, BG products, wipers...) for any Tekion store using the Source Code part list + bulk salehistory API \u2014 NO OpenAPI quota, no RO fan-out. Use when Joe asks \"how many tires/batteries/etc were sold last month/quarter\" and the category maps to a parts Source Code. Verified TOL tires Q2 2026.",
-   "times_used": 4,
-   "last_used": "2026-07-15"
   },
   {
    "name": "tekion-ro-close-blocked-triage",
