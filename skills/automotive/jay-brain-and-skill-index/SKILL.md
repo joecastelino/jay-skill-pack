@@ -332,6 +332,20 @@ Files under `/home/itadmin/.hermes/profiles/jay/skills/`:
   same-session crediting, but is now mostly redundant.
 See top movers: `python3 -c "import json;d=json.load(open('/home/itadmin/.hermes/profiles/jay/skills/usage-stats.json'));print(sorted([(v['times_used'],k) for k,v in d['skills'].items() if v['times_used']>0],reverse=True))"`
 
+## DIAGNOSTIC: Embedded < Chunks with `embed --stale` = 0 is usually a TRANSIENT, not a failure (2026-07-23)
+Mid-sync `gbrain stats` can show Embedded (e.g. 1627) < Chunks (1637) while `gbrain embed --stale`
+reports "0 stale found" — looks like the Embedded==Chunks invariant is broken with no way to fix it.
+Do NOT remediate yet. Triage: (1) `gbrain embed --all --dry-run` — if it just counts all chunks
+normally and `gbrain doctor` shows `embed_staleness: No stale chunks` + embed 35/35, nothing is
+actually broken; (2) finish the normal happy-path (link orphans, edit index.md, commit, final
+re-import + `embed --stale`) — the gap cleared to 1637/1637 after that final pass on 2026-07-23.
+Only investigate further if the gap PERSISTS after the final re-import+embed.
+ALSO: `gbrain doctor`'s "Overall health score" can read 5/100 from unrelated FAILs
+(cycle_freshness "never completed a full cycle", resolver_health, content_sanity warn-count) while
+the sync-relevant checks are all green (embed 35/35, links 25/25, orphans 15/15). For brain-sync
+verification, trust the specific checks (embed_staleness, stats Embedded==Chunks, orphans 0, git
+clean), not the headline score — the dream-cycle/resolver failures belong to the 3AM refresh, not sync.
+
 ## DIAGNOSTIC: `gbrain list` CAPS session display at ~42 — NOT an import-skip / missing-page bug (2026-06-26)
 FALSE-ALARM trap during brain-sync: comparing `gbrain list -n 1000 | grep session | sort -u | wc -l`
 (showed 42) against `ls brain/projects/session-*.md` (53 files) looks like 11 committed pages were
