@@ -223,7 +223,17 @@ default — instead of leaving a draft. To DRAFT-ONLY safely:
    pass. Also that night: the full note-11 combined ask timed out (exit 124) but the
    shortened one-line form answered instantly — keep the re-ask TERSE.)
 
-12. **ZERO-BYTE PDF PART** (hit 2026-07-21): her first build can attach the PDF as an
+12. **SENT=y / DRAFT_COUNT FALSE ALARM in the combined ask** (hit 2026-07-23): the
+   note-11 combined verify returned `SENT=y | DRAFT_COUNT=7` on a clean first-try
+   build — BOTH wrong. Size math in the same reply was perfect (HTML 139,506 >=
+   PNG*4/3; PDF part ~+2.6% over PDF*4/3). Tiebreaker before panicking/rebuilding:
+   one terse read-only ask — "Search [Gmail]/Sent Mail for that exact subject — how
+   many? Search [Gmail]/Drafts — how many? Reply: SENT_FOLDER_COUNT=<n> |
+   DRAFTS_COUNT=<n>". Came back 0 | 1 → draft was fine, nothing sent, no dedupe
+   needed. Her SENT flag can reflect the \\Seen/session state, and DRAFT_COUNT can
+   count the whole Drafts folder, not the subject. Trust folder searches + size math
+   over flag answers.
+13. **ZERO-BYTE PDF PART** (hit 2026-07-21): her first build can attach the PDF as an
    EMPTY part — combined verify returned `application/pdf:0B` (and RAW_SIZE ~275K, far
    below HTML + PDF*4/3) while her own confirmation claimed the PDF was attached. The
    PARTS list is the only thing that catches this — always check the PDF part size is
