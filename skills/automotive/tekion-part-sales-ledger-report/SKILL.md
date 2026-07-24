@@ -135,6 +135,55 @@ quantities.\" Same ledger endpoint, but WHOLE-STORE instead of one source code:
 - Deliver: table in email body + xlsx (e.g. TL-TXM-Cabinet-Stocking-List.xlsx)
   via Stacey; offer a printable count-sheet like the SCT back-counter sheet.
 
+## Variant: price-change TREND report by part-number PREFIX (proven TL 2026-07-24)
+
+Joe: "we adjusted cabin/air filter prices last week — have sales increased?" He wants
+a fast WEEKLY TREND, not a deep-dive. DON'T build a part universe first — skip the
+source-code export entirely:
+
+- Harvest the WHOLE-STORE ledger (no partId filter) for the trend window and filter
+  client-side inside the harvester by part-number PREFIX (`pn.startsWith('87139')`
+  cabin, `'17801'` air). Keeps only matching rows in `window.__L` — tiny payload out.
+- Bucket net units by ISO week (Monday start, Pacific); normalize to units/DAY and
+  compare like weekdays (Mon–Thu vs Mon–Thu) since weekends run ~half volume.
+- ALSO compute realized avg $/unit per week (Σrev/Σunits). If a "price change" doesn't
+  move realized $/unit, flag it — the change may be at menu/opcode level, not the part
+  sell price, and the better lens is menu-line attach.
+- Deliver as a plain text table in Slack + verdict. Joe explicitly does NOT want the
+  full scorecard/email pipeline for a quick trend question. Offer a recurring weekly
+  check + ask for the exact go-live date to split before/after cleanly.
+
+### Long-harvest execution pattern (the :9223 eval timeout trap)
+- A single `/eval` that runs >~130s returns **HTTP 500 from the server AND the in-page
+  work is LOST for that call** — don't await multi-week harvests in one eval.
+- **FIX = fire-and-forget + poll**: start an async runner in-page that sets flags:
+  `window.__done=false; (async()=>{for(const [a,b] of RANGES){await __harvest(a,b,0);window.__prog++} window.__done=true})(); return 'started'`
+  then poll `{done,prog,kept}` from Python every 10–15s. Also mind execute_code's own
+  300s cap — poll in a fresh execute_code call if needed.
+- ~1 week of whole-store TL ledger ≈ 30–60s of bisection; scan 1-week ranges.
+- After any harvest, verify NO zero-row days in the window (missing days = a range
+  that 500'd) and re-run just those gaps.
+
+### 2026-07-24 API drift (important)
+- `withPart/search` MOVED to `/api/wms/parts/u/inventory/**v2**/withPart/search`; old
+  body shape returns odd/empty results. v2 body = `{filters:[{operator:'BOOL',orFilters:[{field:'partNumber',values:[PN]},{field:'dmsPartNumber',values:[PN]}]}]}`,
+  response = `data.{count,hits,tekHits,nextPageToken}`. searchText/partNumber is
+  **EXACT match only** — prefix "87139" returns 0, full "8713906030" returns 1. So
+  withPart/search can NOT enumerate a category; use source-code export or the
+  prefix-filter ledger variant above.
+- **Header capture must take the FULL axios header set** (roleId, userId, tenantname,
+  dealerId, tek-siteId, original-userid, original-tenantid, clientId, locale, program,
+  applicationId, subApplicationId, productIds — ~14 keys). A minimal
+  {Accept, tekion-api-token} set → 500 "Token doesn't exist or is invalid". Hook
+  `send` and store per-URL: `window.__HA[url]=this.__hdrs`, then pick any /api/ entry
+  containing both tekion-api-token and dealerId.
+- **Captured `__H` goes stale mid-session** (token rotates ~hourly) → later calls 400.
+  Recapture by re-firing a real app XHR (type in a search box / SPA-nav via
+  pushState+PopStateEvent) and re-reading `window.__HA`. Patching in
+  `localStorage.t_token` manually does NOT work (400).
+- Chaining multiple open/send hooks across turns corrupts capture — after a hard
+  `/navigate` reinstall ONE clean hook, don't stack.
+
 ## Numbers reconciliation (Joe will ask)
 sale-history groupByMonth (gross events, list-price est.) ≥ ledger net invoiced.
 TOL Q2: 1,329 gross/est-$288K-list vs 1,176 net/$226,965 actual (avg $193 vs $217
