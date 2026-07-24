@@ -179,6 +179,29 @@ deletion or "every non-primary bin = 0" anymore. The operating model instead:
   `/home/itadmin/tekion-reports/bin5000s-snapshots/YYYY-MM-DD.json`, keyed by bin; legacy
   5005-only baselines live in `bin5005-snapshots/`).
 
+## DAILY DIFF TRIAGE RULES (verified on live run 2026-07-23)
+
+When diffing 5000-section snapshots, classify each qty change by the part's bin topology
+BEFORE flagging it as a missed transfer:
+- **`multipleBinNumbers: []` on the generate hit = the 5000s bin IS the part's ONLY (and
+  therefore Primary) bin** → a qty DROP there is a normal sale relieving its own primary.
+  No transfer needed, don't flag. (E.g. 08887-02809 grease lives only in 5006.) This is the
+  fast roster-level version of the "11 SCT parts have a 5000s bin as PRIMARY" exception.
+- Qty change on a bin that HAS other bins (esp. one that includes 2420/24xx) = non-primary
+  move → someone posted a redistribution/adjustment, or it's drift. Flag for verification.
+- **A negative that DEEPENS on a non-primary bin (e.g. -7→-8) = smoking gun** — a bin-level
+  decrement happened without stock; always flag loudly.
+- 65/175 parts having lastTransactionTime in 24h is NORMAL on a busy day — the 24h-activity
+  list is a reminder roster (sales relieve Primary only), not an alarm list. Only qty
+  changes/new negatives are alarms.
+
+Session-recovery note (2026-07-23): finding :9223 parked on an unexpected page (e.g.
+`/core/user-setup/edit/...`) on dealer 1251 does NOT mean the session is dead — just
+`/navigate /home`, confirm "Welcome back" + no Username, then dealer-pill switch to 876.
+Do NOT preemptively run login.py; also never run login.py inside an execute_code script —
+it can block on OTP polling and blow the 300s sandbox timeout. If needed, run it via
+terminal() with its own timeout or background=true.
+
 ## :9223 CONTENTION FALLBACK — headless standalone pull (verified 2026-07-12)
 
 If :9223 is being actively driven by ANOTHER session (symptom: your /navigate lands on
