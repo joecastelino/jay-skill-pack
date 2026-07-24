@@ -335,6 +335,15 @@ modifiedTime double-count bug in Pitfalls; the OpenAPI fan-out is enrichment-onl
   because the 8:15PM cron invokes the scan in `--all` mode, which deliberately skips
   state writes — so the dedup never advanced. Net effect: daily sold qtys can be
   inflated by any prior-day billed line whose RO was merely touched today.
+- **⚠️ COUNTER SALES (SALES_ORDER) MISSED — JOE CAUGHT IT 2026-07-24 (87139-YZZ93
+  \"7 on sheet vs 8 in Tekion\"):** the first ledger-scan version filtered
+  `refType IN [FULFILMENT]` only — FULFILMENT = RO parts sales; front-counter
+  Sales Orders post as `refType=SALES_ORDER` and were silently dropped (7/23: 25
+  missing SO lines across the sheet, incl. YZZ93's 8th sale = SO 326639). FIXED
+  2026-07-24: scan filter is now `IN [FULFILMENT, SALES_ORDER]` and SO lines get
+  refNumber prefixed \"SO \" so they're distinguishable from RO numbers on the sheet.
+  Joe compares the sheet against the part's full Tekion transaction history, so the
+  sheet must match TOTAL sold (RO + counter), not RO-only.
 - **FIX / METHOD MIGRATION (2026-07-23): the activity-log ledger is now the PRIMARY
   sold-qty source, not just the quota-outage fallback.** `/api/parts/activity-log/u/search`
   keys on actual `transactionTime` — "sold on 7/21" = billed 7/21, period; returns net
