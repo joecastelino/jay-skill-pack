@@ -152,6 +152,10 @@ source-code export entirely:
 - Deliver as a plain text table in Slack + verdict. Joe explicitly does NOT want the
   full scorecard/email pipeline for a quick trend question. Offer a recurring weekly
   check + ask for the exact go-live date to split before/after cleanly.
+- If Joe then says "email me that": render the scorecard as an HTML page +
+  Playwright screenshot (house style — NOT matplotlib), send via Stacey to Joe's
+  inbox with the weekly table + verdict in the body, verify landed in INBOX.
+  (Proven 2026-07-25: "TL Cabin and Air Filter Sales Trend – Jun 1 to Jul 24, 2026".)
 
 ### Long-harvest execution pattern (the :9223 eval timeout trap)
 - A single `/eval` that runs >~130s returns **HTTP 500 from the server AND the in-page
