@@ -255,6 +255,20 @@ default — instead of leaving a draft. To DRAFT-ONLY safely:
    (135,136 vs PNG*4/3=134,349) when her build omits the heavy HTML signature — a
    tight pass is still a PASS.
 
+14. **PDF part as application/octet-stream with AMBIGUOUS size + DECODE tiebreaker**
+   (2026-07-24): the combined verify listed the PDF part as
+   `application/octet-stream:387722` — content-type NOT application/pdf (don't
+   false-alarm on that), and the size matched NEITHER the decoded file (344,616)
+   NOR ~4/3 encoded (~459K). Same reply also had DRAFT_COUNT=8 (note-12 whole-folder
+   false alarm; folder search returned SENT_FOLDER_COUNT=0 | DRAFTS_COUNT=1 — fine).
+   When part sizes are ambiguous, the DEFINITIVE check is a terse read-only ask:
+   "decode the PDF attachment part of the newest matching draft and give decoded
+   byte count. Reply: PDF_DECODED_BYTES=<n>" — came back exactly the on-disk file
+   size (344,616). Decoded-bytes-equals-file-size beats all size-math heuristics;
+   use it whenever PARTS numbers don't reconcile. (The 3-question follow-up ask
+   timed out exit 124; splitting into two one-line asks answered instantly — keep
+   re-asks to ONE question each.)
+
 ## Cron (LIVE)
 Job `25ec117cfe72` "SCT Alignment MTD Closed — nightly 7pm draft to Kevin", schedule
 `0 19 * * *` (7pm Pacific), skills=[sct-alignment-by-advisor-report, agent-to-agent-bridge],
