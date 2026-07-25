@@ -250,6 +250,20 @@ AFTER the 8PM bin-snapshot job (d372a20d2889): background scan for today →
 build_and_send → on exit-2 refresh headers (prefer refresh_withpart_headers.py; :9223 recipe is the fallback) → Slack summary
 (top parts, negatives, EMAIL_SENT confirm); [SILENT] if NO_HITS.
 
+⚠️ **STALE CRON PROMPT (caught 2026-07-24):** the 8:15PM cron prompt STILL instructs
+the LEGACY `sct_backcounter_ro_sales.py --all --date $DATE` scan — it has NOT been
+updated for the 2026-07-23 ledger-scan migration. The 7/24 run followed it (25-min
+background fan-out, 67 parts, EMAIL_SENT clean) — meaning that sheet may still carry
+the modifiedTime double-count risk the ledger scan was built to eliminate. When
+running this pipeline (cron or manual), IGNORE a prompt that names the legacy scan
+and run `sct_backcounter_ledger_scan.py <date>` instead (~2 min foreground, zero
+OpenAPI quota, transactionTime-keyed, includes SALES_ORDER counter sales); update
+the cron prompt via `cronjob` when possible.
+7/24 run note: :9223 healthy AND already on 876 (3rd zero-drift run), pushState
+recapture <30s / 16 keys, build clean. Repeat client bug: passing the body dict in
+the api() helper's METHOD slot throws the http.client TypeError — always
+`api("/navigate", "POST", {...})`.
+
 ## Interpreting results (7/3 + 7/4 baselines)
 - Chronic flags are NORMAL: drain-plug gaskets (90430-12031 sold 138/day), wipers,
   air filter elements — the daily list converges on ~10 repeat offenders.
@@ -268,6 +282,9 @@ build_and_send → on exit-2 refresh headers (prefer refresh_withpart_headers.py
   (79 parts, 16 negatives). Negatives drift continues: **04500-1 now -96** (was -94
   on 7/21), and **17801-YZZ10 ELEMENT SUB-ASSY at -51 in 5007** is a new big-ticket
   negative alongside the chronic 87139-YZZ83 (-93) / 00475-1BF03 (-69) set.
+  7/24: 04500-1 now **-97**; bin-1003 negatives dominate the top (90430-12031 -106,
+  90915-YZZD3 -48) — 1003 is NOT a 5000s bin; Joe has not classified it (back-counter
+  vs legacy) — flagged for his ruling.
 - FULL-5000s coverage matters: the first full-section run (7/4, 38 parts across
   5000/5001/5002/5005/5006/5007) surfaced cabin filters **87139-YZZ83 at -93 and
   87139-YZZ93 at -90 in bin 5007** — big negatives invisible to any 5005-only watch.
