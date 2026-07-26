@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-25T20:00:08",
+ "generated": "2026-07-25T20:15:32",
  "skill_count": 158,
  "skills": [
   {
@@ -139,20 +139,20 @@
    "last_used": "2026-07-21"
   },
   {
+   "name": "sct-alignment-by-advisor-report",
+   "path": "automotive/sct-alignment-by-advisor-report",
+   "category": "automotive",
+   "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
+   "times_used": 17,
+   "last_used": "2026-07-25"
+  },
+  {
    "name": "tekion-opcode-overrides",
    "path": "automotive/tekion-opcode-overrides",
    "category": "automotive",
    "description": "Add vehicle/part override rows to a Tekion opcode (Overrides tab) using the verified browser-tool cascading react-select method. This is the batch workflow used for cabin-filter part overrides (RACF etc.) \u2014 Make/Model/Year/ Trim/Part per row, driven by the __buildRow() helper toolkit. Covers the real-click trim rule, the Save Changes confirmation modal, and mandatory reload+API verification. The most complex Tekion workflow we run.",
    "times_used": 17,
    "last_used": "2026-07-12"
-  },
-  {
-   "name": "sct-alignment-by-advisor-report",
-   "path": "automotive/sct-alignment-by-advisor-report",
-   "category": "automotive",
-   "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
-   "times_used": 16,
-   "last_used": "2026-07-24"
   },
   {
    "name": "tekion-declined-deferred-services-report",
