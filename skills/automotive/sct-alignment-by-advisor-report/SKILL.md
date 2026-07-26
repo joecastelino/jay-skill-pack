@@ -250,7 +250,10 @@ default — instead of leaving a draft. To DRAFT-ONLY safely:
    INITIAL build ask — state both file paths WITH their on-disk byte sizes and say
    "read and base64-attach the actual file bytes ... verify the PDF MIME part is
    NON-ZERO and matches the file size". Night after the 0-byte trap, this produced a
-   clean DRAFT_COUNT=1 with PDF part = exact on-disk size on the first ask. Also note:
+   clean DRAFT_COUNT=1 with PDF part = exact on-disk size on the first ask (confirmed
+   again 2026-07-25: clean first-try, DRAFT_COUNT=1, PDF part exactly file size,
+   HTML part 133,546 >= PNG*4/3=132,828 — the bake-sizes-into-build-ask prevention
+   is reliably producing clean one-shot drafts). Also note:
    the HTML-part lower-bound test can pass with only ~1KB headroom
    (135,136 vs PNG*4/3=134,349) when her build omits the heavy HTML signature — a
    tight pass is still a PASS.
@@ -276,8 +279,11 @@ deliver=origin (status back to the Slack thread). It runs `sct_align_mtd.py` (ba
 notify_on_complete), renders via `render_sct_align.py`, vision-verifies, then hands to Stacey
 as a **DRAFT ONLY to Kevin (kstapp@sctoyota.com), greeting "Kevin,"** in Joe's Gmail Drafts —
 Joe reviews + sends in the morning. Reset at month rollover is automatic (the MTD scan
-computes 1st-of-month → today, so nothing to reset). Scan is paced (~15-25 min) — the draft
-lands by ~7:25pm. Established 2026-07-01 on Joe's instruction.
+computes 1st-of-month → today, so nothing to reset). Scan is paced — early-month it runs
+~15-25 min, but LATE-MONTH the MTD window balloons (2026-07-25: 3,941 closed ROs, 1,252
+candidates → ~47 min, draft ~7:50pm). A 30-40 min silent scan late in the month is NORMAL —
+check checkpoint mtime (advances every ~20 ROs) before assuming it's stuck. Established
+2026-07-01 on Joe's instruction.
 
 To flip it to AUTO-SEND to Kevin later: update the cron prompt to have Stacey SEND (SMTP
 template-send) instead of draft-only, and drop the DRAFT-ONLY hard-stop language.
