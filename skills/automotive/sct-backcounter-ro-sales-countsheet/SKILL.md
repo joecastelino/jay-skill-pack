@@ -263,6 +263,16 @@ the cron prompt via `cronjob` when possible.
 recapture <30s / 16 keys, build clean. Repeat client bug: passing the body dict in
 the api() helper's METHOD slot throws the http.client TypeError — always
 `api("/navigate", "POST", {...})`.
+7/25 run note: the stale prompt bit AGAIN — ran the legacy `--all` background scan
+(~17 min, 307 ROs/925 lines, 60 parts) instead of the ledger scan. **Load this skill
+BEFORE launching the scan, not after** — by the time build_and_send runs, the 30-min
+legacy scan is already burned. Exit-2 hit; :9223 was healthy on 876 (4th zero-drift),
+pushState recapture 16 keys, build clean (EMAIL_SENT+INBOX_COPY_OK). The api() TypeError
+bug repeated a THIRD time — safest fix: write a dedicated `post(endpoint, body)` helper
+with method="POST" hardcoded instead of a positional method arg. Bin-1003 negatives
+persist (90430-12031 -106 with 96 sold today, 90915-YZZD3 -48, 90915-YZZN1 -3) —
+still awaiting Joe's back-counter-vs-legacy ruling on 1003. Cron prompt updated to
+the ledger scan same night (see below) — future runs should not repeat this.
 
 ## Interpreting results (7/3 + 7/4 baselines)
 - Chronic flags are NORMAL: drain-plug gaskets (90430-12031 sold 138/day), wipers,
