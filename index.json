@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-25T21:00:05",
+ "generated": "2026-07-25T21:15:40",
  "skill_count": 158,
  "skills": [
   {
@@ -91,20 +91,20 @@
    "last_used": "2026-07-23"
   },
   {
+   "name": "sct-backcounter-ro-sales-countsheet",
+   "path": "automotive/sct-backcounter-ro-sales-countsheet",
+   "category": "automotive",
+   "description": "Build Joe's daily SCT Back Counter Bin Check count sheet \u2014 cross-reference a day's RO part sales (Tekion OpenAPI) against parts that stock in a back-counter bin (5000 section) and render a Tekion-bin-check-style sheet with Primary Bin and Back Counter Bin write-in Count boxes, emailed via Stacey. Use when Joe asks to \"verify counts daily\", \"which back counter parts sold today\", or re-run the back-counter check for a date. KEY DESIGN INSIGHT (Joe corrected me 2026-07-04): a bin-snapshot DIFF can NEVER catch a back-counter pull \u2014 Tekion only relieves the PRIMARY bin (2420), so the 5000s bin doesn't move when the sale posts. Detection must be sales-driven: today's RO parts INTERSECT back-counter roster.",
+   "times_used": 23,
+   "last_used": "2026-07-25"
+  },
+  {
    "name": "tol-menu-sales-reports",
    "path": "automotive/tol-menu-sales-reports",
    "category": "automotive",
    "description": "Run the Toyota of Lancaster (TOL/TL, dealer 1092) Menu Sales scorecards \u2014 Daily Opened and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Sean Preston (spreston@tol-av.com). The Toyota-store sibling of the SCT/Kevin (sct-menu-sales-api-scorecard) and BC/Ruben (bc-menu-sales-reports) pipelines. Use for any \"TOL/TL/Toyota of Lancaster menu report\" or \"Sean Preston report\" request.",
    "times_used": 23,
    "last_used": "2026-07-22"
-  },
-  {
-   "name": "sct-backcounter-ro-sales-countsheet",
-   "path": "automotive/sct-backcounter-ro-sales-countsheet",
-   "category": "automotive",
-   "description": "Build Joe's daily SCT Back Counter Bin Check count sheet \u2014 cross-reference a day's RO part sales (Tekion OpenAPI) against parts that stock in a back-counter bin (5000 section) and render a Tekion-bin-check-style sheet with Primary Bin and Back Counter Bin write-in Count boxes, emailed via Stacey. Use when Joe asks to \"verify counts daily\", \"which back counter parts sold today\", or re-run the back-counter check for a date. KEY DESIGN INSIGHT (Joe corrected me 2026-07-04): a bin-snapshot DIFF can NEVER catch a back-counter pull \u2014 Tekion only relieves the PRIMARY bin (2420), so the 5000s bin doesn't move when the sale posts. Detection must be sales-driven: today's RO parts INTERSECT back-counter roster.",
-   "times_used": 22,
-   "last_used": "2026-07-24"
   },
   {
    "name": "sct-menu-sales-api-scorecard",
