@@ -201,8 +201,7 @@ told about the duplication (Jay drafts + Stacey auto-sends = Sean can get two ve
    catches this — treat count>1 as mandatory-fix. One-shot fix that worked: \"KEEP
    the latest draft (id X, the good one), DELETE the other older draft with that
    subject\" → she reported deleted id + remaining count 1. So: MIME quality and
-   dedupe are INDEPENDENT failure modes; a clean structure does not mean dedupe
-   happened.
+   dedupe are INDEPENDENT failure modes; a clean structure does not mean dedupe\n   happened. (7/25 EOD) Same trap inside the REBUILD ask: her \"old draft deleted:\n   yes\" in a delete-and-rebuild reply was FALSE — part-listing showed both the\n   malformed 41188 and the good rebuild 41189 still present. The explicit\n   \"KEEP id X / DELETE id Y\" follow-up fixed it in one shot; re-verify count=1\n   after ANY delete claim, including ones bundled into a rebuild.
 8. (7/13 EOD) NEW trap: she can nail the inline-PNG cid embedding but DROP the
    PDF attachment entirely, even with both files spelled out in the initial ask.
    Always include "does the draft have an application/pdf attachment?" as one of
