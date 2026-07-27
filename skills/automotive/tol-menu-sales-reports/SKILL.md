@@ -134,9 +134,7 @@ told about the duplication (Jay drafts + Stacey auto-sends = Sean can get two ve
    Verify the raw MIME: need an `image/png` part with `Content-ID: <scorecard>` (or a
    hosted https img src). If missing, ask her to rebuild multipart/related with the CID
    part and re-verify.
-3. Her read-only checks are flaky: she may reply "Drafts: 0" right after saving (search
-   lag / wrong subject), or say "sent results to Telegram" instead of answering inline —
-   instruct "print answers IN YOUR REPLY TEXT" and re-ask briefly on timeout (exit 124).
+3. Her read-only checks are flaky: she may reply "Drafts: 0" right after saving (search\n   lag / wrong subject), or say "sent results to Telegram" instead of answering inline —\n   instruct "print answers IN YOUR REPLY TEXT" and re-ask briefly on timeout (exit 124).\n   (7/26 EOD) The Telegram deflection recurred TWICE ("I have sent the results") even\n   with "reply in your text only" in the ask. Wording that finally worked: "IMPORTANT:\n   print the answer as plain text IN THIS REPLY, do not send it anywhere else" as the\n   FIRST sentence, plus an explicit output format ("'Sent: N' then per hit one line\n   'Subject | internalDate'. Nothing else."). Lead with the print-inline demand, not\n   trail with it. Expect 2-3 x exit-124/deflection cycles per verification question;\n   keep the sleep 30-60 retry cadence.
 4. (7/11) Multi-part verification asks (4 questions: draft count + raw MIME + attachment
    + Sent count in ONE message) time out repeatedly (exit 124). SPLIT verification into
    tiny single-question asks: "one word yes/no, single Gmail API call, no other tools" —
@@ -201,7 +199,7 @@ told about the duplication (Jay drafts + Stacey auto-sends = Sean can get two ve
    catches this — treat count>1 as mandatory-fix. One-shot fix that worked: \"KEEP
    the latest draft (id X, the good one), DELETE the other older draft with that
    subject\" → she reported deleted id + remaining count 1. So: MIME quality and
-   dedupe are INDEPENDENT failure modes; a clean structure does not mean dedupe\n   happened. (7/25 EOD) Same trap inside the REBUILD ask: her \"old draft deleted:\n   yes\" in a delete-and-rebuild reply was FALSE — part-listing showed both the\n   malformed 41188 and the good rebuild 41189 still present. The explicit\n   \"KEEP id X / DELETE id Y\" follow-up fixed it in one shot; re-verify count=1\n   after ANY delete claim, including ones bundled into a rebuild.
+   dedupe are INDEPENDENT failure modes; a clean structure does not mean dedupe\n   happened. (7/25 EOD) Same trap inside the REBUILD ask: her \"old draft deleted:\n   yes\" in a delete-and-rebuild reply was FALSE — part-listing showed both the\n   malformed 41188 and the good rebuild 41189 still present. The explicit\n   \"KEEP id X / DELETE id Y\" follow-up fixed it in one shot; re-verify count=1\n   after ANY delete claim, including ones bundled into a rebuild.\n   (7/26 EOD) First fully-clean run on record: the full prevention wording (MIME spec\n   + bundled dedupe instruction in ONE initial ask) produced a correct draft (html +\n   png cid + pdf) AND a TRUE dedupe (noon draft actually deleted, part-listing\n   count=1) in one shot — no rebuild, no fix cycle. So the one-shot CAN work; the\n   part-listing verification remains mandatory regardless, since 7/15/7/17/7/18/7/25\n   show the same wording failing silently.
 8. (7/13 EOD) NEW trap: she can nail the inline-PNG cid embedding but DROP the
    PDF attachment entirely, even with both files spelled out in the initial ask.
    Always include "does the draft have an application/pdf attachment?" as one of
