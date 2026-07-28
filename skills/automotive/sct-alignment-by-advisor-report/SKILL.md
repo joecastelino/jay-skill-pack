@@ -219,9 +219,16 @@ default — instead of leaving a draft. To DRAFT-ONLY safely:
    (2026-07-17: the ultra-short re-ask form "PARTS=?" can come back as just a part
    COUNT, e.g. `PARTS=3`, not the per-part type=size list. Don't re-ask endlessly —
    RAW_SIZE alone still verifies: RAW_SIZE ≈ HTML-with-inline-PNG (~PNG*4/3 + sig)
-   + PDF*4/3. Observed 552,379 ≈ ~174K + ~378K for a 97,845 B PNG + 283,334 B PDF —
+   + PDF*4/3.   Observed 552,379 ≈ ~174K + ~378K for a 97,845 B PNG + 283,334 B PDF —
    pass. Also that night: the full note-11 combined ask timed out (exit 124) but the
    shortened one-line form answered instantly — keep the re-ask TERSE.)
+   (2026-07-27: the combined ask timed out TWICE — even a moderately shortened form.
+   The pattern that worked: two ultra-terse asks, each ONE line — first
+   "TO=? RAW_SIZE=?" (answered instantly), then the note-12 folder search
+   "SENT_FOLDER_COUNT=? DRAFTS_COUNT=?". Skipped PARTS entirely; verified via
+   RAW_SIZE >= PNG*4/3 + PDF*4/3 (682,124 vs 139.6K+476.0K for a 104,691 B PNG +
+   356,988 B PDF) + DRAFTS_COUNT=1/SENT_FOLDER_COUNT=0. When combined asks keep
+   timing out, degrade straight to this two-ask minimal set — it is sufficient.)
 
 12. **SENT=y / DRAFT_COUNT FALSE ALARM in the combined ask** (hit 2026-07-23): the
    note-11 combined verify returned `SENT=y | DRAFT_COUNT=7` on a clean first-try
@@ -281,7 +288,8 @@ as a **DRAFT ONLY to Kevin (kstapp@sctoyota.com), greeting "Kevin,"** in Joe's G
 Joe reviews + sends in the morning. Reset at month rollover is automatic (the MTD scan
 computes 1st-of-month → today, so nothing to reset). Scan is paced — early-month it runs
 ~15-25 min, but LATE-MONTH the MTD window balloons (2026-07-25: 3,941 closed ROs, 1,252
-candidates → ~47 min, draft ~7:50pm). A 30-40 min silent scan late in the month is NORMAL —
+candidates → ~47 min, draft ~7:50pm; 2026-07-27: 1,330 candidates → ~58 min). A 30-60 min
+silent scan late in the month is NORMAL —
 check checkpoint mtime (advances every ~20 ROs) before assuming it's stuck. Established
 2026-07-01 on Joe's instruction.
 
