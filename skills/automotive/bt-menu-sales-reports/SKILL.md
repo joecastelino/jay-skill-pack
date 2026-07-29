@@ -29,8 +29,12 @@ BT-specific.
   `opcodeType==SERVICE_MENU && status==ACTIVE` — NOT SCT's 316 list.
 - **Slack delivery = BT menu thread `slack:C0B8EPN76GJ:1783013683.414359`**
   (Joe designated 7/2).
-- Email recipient TBD (likely Tony Garcia, agarcia@blackstonetoyota.com —
-  BT Service Manager — but Joe has NOT confirmed; ask before drafting).
+- Email recipient CONFIRMED (Joe 2026-07-28): Tony Garcia,
+  agarcia@blackstonetoyota.com — greeting **"Tony,"**. CLOSED MTD is auto-SENT
+  (not drafted) daily at 6 AM by cron job `7d023e4565a0` (runs the dated daily
+  append for YESTERDAY, renders, Stacey sends to Tony CC Joe; status posts to
+  the BT menu Slack thread C0BGTDR158S:1783876504.495759). Ad-hoc requests from
+  Joe still default to DRAFT to his inbox unless he says send.
 - Naming trap: opcode file is `bst-…` (Blackstone Toyota), scripts are `bt_…`.
   Don't confuse with `bc-…` (Blackstone Chevy, dealer 1251).
 
