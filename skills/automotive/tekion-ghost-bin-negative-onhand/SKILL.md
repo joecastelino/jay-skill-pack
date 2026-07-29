@@ -187,6 +187,18 @@ BEFORE flagging it as a missed transfer:
   therefore Primary) bin** → a qty DROP there is a normal sale relieving its own primary.
   No transfer needed, don't flag. (E.g. 08887-02809 grease lives only in 5006.) This is the
   fast roster-level version of the "11 SCT parts have a 5000s bin as PRIMARY" exception.
+- **⚠️ BUT a POPULATED `multipleBinNumbers` does NOT prove the 5000s bin is non-primary
+  (verified 2026-07-28):** 87139-YZZ93 dropped 45→29 in bin 5007 with
+  `multipleBinNumbers=['2422','4111','TXM']` — yet 5007 WAS its Primary (Part Details showed
+  "5007 … Primary Bin"), so the drop was a normal sale, NOT a missed transfer. The generate
+  hit never says WHICH bin is primary. Before flagging any 5000s qty DROP as needing a
+  5000s→2420 transfer, confirm primacy via the part's rendered Bin Details (headless
+  Playwright + storage_state, read `document.body.innerText` slice at `lastIndexOf('Bin
+  Details')` — the primary bin row carries the literal text "Primary Bin").
+- **Qty INCREASE on a NON-primary 5000s bin = someone posted a redistribution/transfer INTO
+  it** (sales can't touch non-primary). Usually an intentional back-counter restock or a
+  per-sale transfer landing — flag as "verify matches shelf", not as an alarm. (2026-07-28:
+  17801-F0020 5006 10→11, Primary 2417 confirmed separately.)
 - Qty change on a bin that HAS other bins (esp. one that includes 2420/24xx) = non-primary
   move → someone posted a redistribution/adjustment, or it's drift. Flag for verification.
 - **A negative that DEEPENS on a non-primary bin (e.g. -7→-8) = smoking gun** — a bin-level
