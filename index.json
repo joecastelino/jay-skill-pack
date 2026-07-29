@@ -1,6 +1,6 @@
 {
- "generated": "2026-07-29T11:00:07",
- "skill_count": 158,
+ "generated": "2026-07-29T11:15:11",
+ "skill_count": 159,
  "skills": [
   {
    "name": "persistent-browser-server",
@@ -735,6 +735,14 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-tech-flag-hours-pay",
+   "path": "automotive/tekion-tech-flag-hours-pay",
+   "category": "automotive",
+   "description": "Answer \"how do we pay techs for unapplied time / extra clocked hours\" questions and diagnose flag-hours pay problems in Tekion. Covers how tech pay actually flows (flag hours -> Flag Hours Report -> payroll), the manual flag entry modal, adjusting flag time on CLOSED ROs without reopening, the Wage Type Config $0.00 labor-cost trap, and the unapplied-hours definition. Verified via Tekion KB (KB0018796, KB0025203, KB0014998, KB0020953) on the SV RO 372190 case, 2026-07-29.",
    "times_used": 0,
    "last_used": null
   },
