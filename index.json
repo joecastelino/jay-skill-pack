@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-29T11:15:11",
+ "generated": "2026-07-29T11:30:43",
  "skill_count": 159,
  "skills": [
   {
@@ -7,8 +7,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 74,
-   "last_used": "2026-07-28"
+   "times_used": 76,
+   "last_used": "2026-07-29"
   },
   {
    "name": "jay-brain-and-skill-index",
@@ -27,20 +27,20 @@
    "last_used": "2026-07-28"
   },
   {
+   "name": "tekion-openapi-repair-orders",
+   "path": "automotive/tekion-openapi-repair-orders",
+   "category": "automotive",
+   "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
+   "times_used": 48,
+   "last_used": "2026-07-29"
+  },
+  {
    "name": "bt-tony-menu-rebuild",
    "path": "automotive/bt-tony-menu-rebuild",
    "category": "automotive",
    "description": "The Blackstone Toyota (BT, dealer 1249) service-menu rebuild project for Tony Garcia (Service Manager). Tony wants menus restructured into Factory Recs / Factory Recs Plus with 25 ordered add-on services. Contains the FULL locked spec, Joe's approved decisions, the opcode audit results, and the build plan. Load for ANY \"BT menu\", \"Tony menu\", \"Factory Recs\", or Blackstone Toyota service menu work. STATUS 2026-07-21: full 5K\u2013200K range (5K-step) built, PUBLISHED, Tony-validated; Phase 7 generic Transmission Fluid placeholders DONE; Phase 8 Tony's BG MENU REVAMP 2026 part-match batch DONE + quote-verified (baseline tony-partmatch-baseline-20260721.json). Remaining: x2.5K half-step menus + EV rows only.",
    "times_used": 47,
    "last_used": "2026-07-22"
-  },
-  {
-   "name": "tekion-openapi-repair-orders",
-   "path": "automotive/tekion-openapi-repair-orders",
-   "category": "automotive",
-   "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 46,
-   "last_used": "2026-07-23"
   },
   {
    "name": "tekion-quotes-menu-price-diagnosis",
@@ -123,20 +123,20 @@
    "last_used": "2026-07-12"
   },
   {
+   "name": "tekion-autonomous-login",
+   "path": "automotive/tekion-autonomous-login",
+   "category": "automotive",
+   "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
+   "times_used": 21,
+   "last_used": "2026-07-29"
+  },
+  {
    "name": "sct-alignment-by-advisor-report",
    "path": "automotive/sct-alignment-by-advisor-report",
    "category": "automotive",
    "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
    "times_used": 19,
    "last_used": "2026-07-28"
-  },
-  {
-   "name": "tekion-autonomous-login",
-   "path": "automotive/tekion-autonomous-login",
-   "category": "automotive",
-   "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
-   "times_used": 19,
-   "last_used": "2026-07-24"
   },
   {
    "name": "tekion-opcode-api",
@@ -167,8 +167,8 @@
    "path": "automotive/tekion-kb-search-scrape",
    "category": "automotive",
    "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 13,
-   "last_used": "2026-07-23"
+   "times_used": 15,
+   "last_used": "2026-07-29"
   },
   {
    "name": "tekion-opcode-default-pricing",
@@ -259,6 +259,14 @@
    "last_used": "2026-07-08"
   },
   {
+   "name": "tekion-clock-time-by-opcode",
+   "path": "automotive/tekion-clock-time-by-opcode",
+   "category": "automotive",
+   "description": "Build an \"actual tech clocked time vs billed time BY OPCODE\" report (over-clock / unapplied-time-at-opcode-grain) for any Tekion store. Uses the internal rosearchservice visibility-dashboard TECH_CLOCK datasource (the engine behind the custom \"Ro Actual Time Report\"), which carries opcode on every clock punch \u2014 something the standard Tech Performance report cannot do (its Unapplied Hours is per-technician only). Verified SV (826) 2026-07-20.",
+   "times_used": 6,
+   "last_used": "2026-07-29"
+  },
+  {
    "name": "tekion-customer-pay-ro-count",
    "path": "automotive/tekion-customer-pay-ro-count",
    "category": "automotive",
@@ -329,14 +337,6 @@
    "description": "Audit what changed after a Tekion APC API plan/scope/app-version upgrade \u2014 rescrape specs, diff the catalog, live-probe every section for scope (read AND write) safely without touching production data. Use whenever Joe says the API was upgraded, a new tier was purchased, premium docs were authorized, or the installed app version was bumped.",
    "times_used": 4,
    "last_used": "2026-07-10"
-  },
-  {
-   "name": "tekion-clock-time-by-opcode",
-   "path": "automotive/tekion-clock-time-by-opcode",
-   "category": "automotive",
-   "description": "Build an \"actual tech clocked time vs billed time BY OPCODE\" report (over-clock / unapplied-time-at-opcode-grain) for any Tekion store. Uses the internal rosearchservice visibility-dashboard TECH_CLOCK datasource (the engine behind the custom \"Ro Actual Time Report\"), which carries opcode on every clock punch \u2014 something the standard Tech Performance report cannot do (its Unapplied Hours is per-technician only). Verified SV (826) 2026-07-20.",
-   "times_used": 4,
-   "last_used": "2026-07-22"
   },
   {
    "name": "tekion-opcode-create",
@@ -547,6 +547,14 @@
    "last_used": "2026-07-20"
   },
   {
+   "name": "tekion-tech-flag-hours-pay",
+   "path": "automotive/tekion-tech-flag-hours-pay",
+   "category": "automotive",
+   "description": "Answer \"how do we pay techs for unapplied time / extra clocked hours\" questions and diagnose flag-hours pay problems in Tekion. Covers how tech pay actually flows (flag hours -> Flag Hours Report -> payroll), the manual flag entry modal, adjusting flag time on CLOSED ROs without reopening, the Wage Type Config $0.00 labor-cost trap, and the unapplied-hours definition. Verified via Tekion KB (KB0018796, KB0025203, KB0014998, KB0020953) on the SV RO 372190 case, 2026-07-29.",
+   "times_used": 1,
+   "last_used": "2026-07-29"
+  },
+  {
    "name": "tekion-warehouse-bin-management",
    "path": "automotive/tekion-warehouse-bin-management",
    "category": "automotive",
@@ -735,14 +743,6 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tekion-tech-flag-hours-pay",
-   "path": "automotive/tekion-tech-flag-hours-pay",
-   "category": "automotive",
-   "description": "Answer \"how do we pay techs for unapplied time / extra clocked hours\" questions and diagnose flag-hours pay problems in Tekion. Covers how tech pay actually flows (flag hours -> Flag Hours Report -> payroll), the manual flag entry modal, adjusting flag time on CLOSED ROs without reopening, the Wage Type Config $0.00 labor-cost trap, and the unapplied-hours definition. Verified via Tekion KB (KB0018796, KB0025203, KB0014998, KB0020953) on the SV RO 372190 case, 2026-07-29.",
    "times_used": 0,
    "last_used": null
   },
