@@ -228,7 +228,10 @@ default — instead of leaving a draft. To DRAFT-ONLY safely:
    "SENT_FOLDER_COUNT=? DRAFTS_COUNT=?". Skipped PARTS entirely; verified via
    RAW_SIZE >= PNG*4/3 + PDF*4/3 (682,124 vs 139.6K+476.0K for a 104,691 B PNG +
    356,988 B PDF) + DRAFTS_COUNT=1/SENT_FOLDER_COUNT=0. When combined asks keep
-   timing out, degrade straight to this two-ask minimal set — it is sufficient.)
+   timing out, degrade straight to this two-ask minimal set — it is sufficient.
+   Confirmed again 2026-07-28: skipped the combined ask entirely, went straight to
+   the two-ask minimal set — both answered instantly, clean first-try DRAFT_COUNT=1.
+   Note her reply may strip underscores ("SENTFOLDERCOUNT=0") — same answer.)
 
 12. **SENT=y / DRAFT_COUNT FALSE ALARM in the combined ask** (hit 2026-07-23): the
    note-11 combined verify returned `SENT=y | DRAFT_COUNT=7` on a clean first-try
@@ -288,7 +291,8 @@ as a **DRAFT ONLY to Kevin (kstapp@sctoyota.com), greeting "Kevin,"** in Joe's G
 Joe reviews + sends in the morning. Reset at month rollover is automatic (the MTD scan
 computes 1st-of-month → today, so nothing to reset). Scan is paced — early-month it runs
 ~15-25 min, but LATE-MONTH the MTD window balloons (2026-07-25: 3,941 closed ROs, 1,252
-candidates → ~47 min, draft ~7:50pm; 2026-07-27: 1,330 candidates → ~58 min). A 30-60 min
+candidates → ~47 min, draft ~7:50pm; 2026-07-27: 1,330 candidates → ~58 min; 2026-07-28:
+4,488 closed, 1,409 candidates → ~61 min). A 30-65 min
 silent scan late in the month is NORMAL —
 check checkpoint mtime (advances every ~20 ROs) before assuming it's stuck. Established
 2026-07-01 on Joe's instruction.
