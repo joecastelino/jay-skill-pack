@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-29T18:30:07",
+ "generated": "2026-07-29T18:45:30",
  "skill_count": 159,
  "skills": [
   {
@@ -111,8 +111,8 @@
    "path": "automotive/sct-menu-sales-api-scorecard",
    "category": "automotive",
    "description": "Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters to the frozen 316 TEK* maintenance opcodes, resolves advisor names via the persistent browser session on :9223, renders a light-format PNG+PDF scorecard, vision-verifies, and emails. Use for the daily Menu Sales Opened Performance Report cron.",
-   "times_used": 22,
-   "last_used": "2026-07-21"
+   "times_used": 23,
+   "last_used": "2026-07-29"
   },
   {
    "name": "tekion-vi-api-migration",
