@@ -9,6 +9,9 @@ triggers:
   - close RO blocked
   - lyft stuck in pending
   - transportation pending RO
+  - cannot remove part
+  - part stuck on RO
+  - part return stuck
 ---
 
 # Tekion "Cannot Close RO" Triage
@@ -122,6 +125,39 @@ payer never invoiced** while the others are Paid. Diagnose:
 Flag to the store in the advice: any pay-type flip found in the audit log (e.g. a
 CPO deductible moved from CP → Internal) — confirm intent before they invoice it
 to the house account.
+
+## Step 3c — "I can't REMOVE a part" tickets (verified TL RO 383381, 2026-07-30)
+
+When the complaint is a stuck PART LINE (not a close block), diagnose in this order:
+
+0. **Store unknown? Search documentNumber IN across all 7 dealers.** RO numbers
+   recur across stores — 383381 hit BOTH st (CLOSED 2023, stale) and tl
+   (IN_PROGRESS, modified yesterday). Pick the hit with the recent modifiedTime.
+1. **API fan-out first** (jobs→operations→parts). The tell for this failure mode:
+   the SAME partNumber appears TWICE — `+1` on one job and `−1` on another job,
+   often at DIFFERENT prices (383381: +$76.55 on FLOORMAT vs −$113.39 on a REC
+   job = net −$36.84 credit mismatch). A negative-qty line with positive
+   `unitSaleAmount` and negative `saleAmount` = a processed RETURN.
+   `createdByUserId.id` → `/users/{id}` tells you who posted each line.
+2. **Why there's no delete option**: a part with status DELIVERED/Fulfilled that
+   is tied to a **received SOR/PO** and/or a **Prepaid customer deposit** is
+   LOCKED — Tekion renders NO trash icon on the row at all (verify: hover the
+   row, scan buttons/`[class*="icon-"]` in its y-band; you'll only see
+   drag-handle, badges, info, notes). Removal must go through a **parts-counter
+   return**, never an RO-side line delete.
+3. **Row badges are chevron-expandable, in-DOM (not popovers)**:
+   - `SOR` badge chevron (`ro_partName_sorBadgeContainer` + adjacent
+     `icon-chevron-down`) → SOR No, SOR Status, Requested By, SOR Date, PO No.
+   - `Return` badge chevron (`ro_partName_returnBadgeContainer`) → return
+     details: Quantity, Return Reference (RO#), Return Reason — and watch for an
+     **unfilled required "Select a value" dropdown** left mid-workflow.
+   - `Original Part Request` button links the return line to its source request.
+   Read them by grabbing the part text node and walking up ~12-14 parents for
+   innerText — `.ant-popover` queries return empty for these.
+4. **Advise pattern**: a return posted on the WRONG job at the WRONG price should
+   be voided/redone so it reverses the ORIGINAL billed line (prices cancel), and
+   any prepaid deposit settled at the counter. Confirm intent (part fully off the
+   RO vs cleanup) + exact error text before touching anything.
 
 ## Step 4 — Advise (don't guess — per Joe's never-guess rule)
 
