@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-30T10:45:05",
+ "generated": "2026-07-30T11:00:48",
  "skill_count": 160,
  "skills": [
   {
@@ -7,7 +7,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 77,
+   "times_used": 79,
    "last_used": "2026-07-30"
   },
   {
@@ -31,7 +31,7 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 49,
+   "times_used": 51,
    "last_used": "2026-07-30"
   },
   {
@@ -59,6 +59,14 @@
    "last_used": "2026-07-20"
   },
   {
+   "name": "tekion-sitemap",
+   "path": "automotive/tekion-sitemap",
+   "category": "automotive",
+   "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
+   "times_used": 28,
+   "last_used": "2026-07-30"
+  },
+  {
    "name": "tol-menu-sales-reports",
    "path": "automotive/tol-menu-sales-reports",
    "category": "automotive",
@@ -73,14 +81,6 @@
    "description": "Navigate to, read, and inspect Tekion Service Menu Setups (the service-menu builder where interval menus, tiers, tags, opcodes, included services and inspections are configured). Covers the non-obvious nav path, the page/tab structure, where free-text \"notes\"/tags live, and the headless storage_state harness that reaches it reliably. Use when asked to find/check/edit a service menu, a menu's tag/name, or \"the last service menu\".",
    "times_used": 27,
    "last_used": "2026-07-15"
-  },
-  {
-   "name": "tekion-sitemap",
-   "path": "automotive/tekion-sitemap",
-   "category": "automotive",
-   "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 26,
-   "last_used": "2026-07-23"
   },
   {
    "name": "bc-menu-sales-reports",
@@ -195,6 +195,14 @@
    "last_used": "2026-07-24"
   },
   {
+   "name": "tekion-ro-close-blocked-triage",
+   "path": "automotive/tekion-ro-close-blocked-triage",
+   "category": "automotive",
+   "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
+   "times_used": 10,
+   "last_used": "2026-07-30"
+  },
+  {
    "name": "tekion-standard-reports-performance",
    "path": "automotive/tekion-standard-reports-performance",
    "category": "automotive",
@@ -233,14 +241,6 @@
    "description": "Diagnose why parts at a Tekion store stocked out / didn't auto-order (forcing local sourcing from Sunnyvale/Capitol/etc.). The CANONICAL parts-replenishment skill (supersedes tekion-parts-shortage-diagnosis). Works from RO numbers OR part numbers. Pulls live Stocking Details (Source Code, Stocking Status, Manual Order, BRP/BSL, Min/Max, On Hand/Order, Open Documents, Transactions ledger) per part, runs the day-supply demand calc, exposes the BSL Round-Down trap and the negative-on-hand backfill trap, and produces a per-part verdict + fix (Min Qty vs source-code BRP/BSL vs in-and-out receiving discipline). Use whenever Joe asks \"why aren't these parts auto ordering / why do we have shortages / why did we have to get parts locally / why is my shelf at 0 when Min is set.",
    "times_used": 8,
    "last_used": "2026-07-06"
-  },
-  {
-   "name": "tekion-ro-close-blocked-triage",
-   "path": "automotive/tekion-ro-close-blocked-triage",
-   "category": "automotive",
-   "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
-   "times_used": 8,
-   "last_used": "2026-07-30"
   },
   {
    "name": "tekion-scheduling",
