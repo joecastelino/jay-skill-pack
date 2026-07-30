@@ -403,6 +403,9 @@ each digit. Wait for a NEW OTP email by envelope ID (>last seen), not by count.
   A buffered launch-failure log line can REPLAY as a watch-pattern notification ("9223",
   "unavailable") AFTER you've already restarted a healthy server — verify which PID/session is
   actually live (`/url` works) before chasing the alarm; kill the dead session to stop replays.
+- **`/screenshot` returns JSON, not a PNG** — `curl /screenshot -o x.png` writes
+  `{"screenshot":"<base64>"}`; vision_analyze rejects it ("Only real image files").
+  Decode first: `base64.b64decode(json.load(open(f))["screenshot"])` → real .png.
 - **Xvfb required** — headful Chromium won't start without a display on headless Linux
 - **React ignores synthetic events** — always use `/press` for form submission, never JS `.click()`
 - **Crash recovery** — if page crashes, server auto-creates new page from persistent context

@@ -35,6 +35,14 @@ Depends on the pay plan:
    Save (KB0025203). NOTE: adding a MANUAL entry disables auto-calculation of flag
    hours for that job (banner in the modal). Splitting among techs: labor + bill +
    flag hrs per tech must total the job's labor hours.
+   **Flag date matters**: it determines which pay period / Tech Performance week
+   the hours land in (Tech Performance defaults to week-beginning-Sunday by FLAG
+   DATE) — set it inside the current open pay period.
+   If the RO is still OPEN, this on-screen path is the whole answer — no Flag
+   Hours Report adjustment needed (that's the closed-RO path only). Verify
+   open-ness server-side first: `repair-orders:search` status + empty
+   `ro-invoices` = nothing posted yet. (Jobs list shape gotcha: response is
+   `data.jobs`, not `data.results`.)
 2. **Hourly**: nothing to do on the RO — attendance pays them already.
 3. Whether to flag actual > billed at all is a PAY-PLAN/POLICY call (who eats the
    gap) — frame that part for Joe, don't decide it.
@@ -60,6 +68,26 @@ path is the sanctioned fix.)
 - Local reference on these settings: `/home/itadmin/tekion-kb/text/SERVICE_SETTINGS_clean.txt`
   (grep "Flag Tech on").
 
+## Verifying the store's flag entry actually took (2026-07-30, line G case)
+When Joe says "I think I fixed it, look at RO X line G" — line letters A–H on the
+RO jobs page map to jobNumber 1–8 in the API. Verify TWO things:
+1. **Flag carried cost**: re-pull the op — `labor.costAmount` flipping from 0 to a
+   real value (e.g. 23070 = $230.70) proves the flagged hours now post cost to the
+   RO/GL. `labor` on the op only has saleAmount/costAmount/billDuration/
+   laborAllowanceDuration — NO per-tech hour fields in OpenAPI.\n
+   API shape gotchas: operations response key = `data.roOperations`; per-op tech
+   list = `GET .../operations/{oid}/technicians` → `data.technicians` (user links
+   only, no hours); `/users/{id}` data can be a LIST not dict.
+2. **Flagged = intended hrs**: fastest read is the live RO jobs page innerText —
+   each line renders `<letter>. <OPCODE> - ... / status / payType / <bill> <actual>
+   <flagged> hrs / $sale / $net`. e.g. G: `CP 0.40 4.15 4.15 hrs $300.00` = billed
+   0.40, actual 4.15, flagged 4.15 (flag=actual = techs made whole). Slice
+   `document.body.innerText` from \"D.\" or \"G.\" — element-level queries often
+   return [] on this page (text lives in composite nodes), and :9223 `/screenshot`
+   returns JSON `{screenshot:<base64>}` — decode to a real PNG before
+   vision_analyze (it rejects the raw JSON file).
+Also check `modifiedTime` + `modifiedByUserId` on the RO for who touched it when.
+
 ## Getting the RO facts fast (no browser)
 OpenAPI `repair-orders:search` `documentNumber IN ["<ro#>"]` + jobs/operations
 fan-out gives job payTypes, opcodes, labor sale/cost (CENTS). Actual clocked vs
@@ -83,3 +111,9 @@ showed $0.00 Labor Cost → wage-type gap; answer = flag-hours path for flat-rat
 + fix wage types (Joe-permission gate) + policy call on eating the 2.4 hr gap.
 Pattern note: SV also had REC +44 hrs over-clock in July 2026 — long-diag
 over-clocking is a recurring SV leak.
+Resolution (2026-07-30): Joe confirmed the techs ARE flat-rate and the RO was
+still open (API: status IN_PROGRESS, ro-invoices empty) → answer = flag on the
+RO screen directly (flagged hrs per tech + flag date in current pay period +
+reason + flag type → Save). Two warnings given: fix the $0 wage types before
+month-end, and if a red pre-invoice error fires at close it's the flag≠bill
+error-level rule — flip to warning.
