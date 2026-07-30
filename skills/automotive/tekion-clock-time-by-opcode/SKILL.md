@@ -145,6 +145,16 @@ missing attendance punches.
   empty vehicle fields for these ROs — don't rely on it for the RO table; RO# +
   tech + status is enough for Joe (he opens ROs himself).
 
+## Related: per-RO FLAG hours + per-RO clock detail (2026-07-30)
+For "flagged below actual" audits (unpaid flat-rate time) use the RO-level
+internal endpoints instead of TECH_CLOCK summaries — see skill
+**tekion-flag-vs-actual-hours-report**: `GET /api/service-module/u/ro/v1/{id}`
+(the /v1/ variant!) carries `techIdWithBillingTimes[].flagTimesWithPayDay[]`
+(per-tech flag entries: seconds, flaggedBy, MANUALLY_ADDED type), and
+`POST /api/service-module/u/ro/clockDetails/fetch?allUsers=true`
+`{roId, jobIds}` returns per-tech clockedTimeInSeconds with punch-level detail.
+TECH_CLOCK has NO flag documents (documentTypes = CLOCK_ACTUAL/CLOCK_DERIVED only).
+
 ## Pitfalls
 - **Leading-zero opcode mismatch**: clock data strips leading zeros off numeric
   opcodes (punches on `1040050`, billing on `01040050`). Normalize

@@ -499,5 +499,15 @@ flow is unchanged.
 **Joe** (`jcastelino@americanmotorscorp.com`), NOT Kevin — state To: Joe explicitly
 in the Stacey instruction or she defaults to Kevin Stapp per her skill.
 
+## PAGINATION TRAP — closedTime window scans (burned 2026-07-30)
+On `repair-orders:search` with closedTime GTE/LTE filters: `pageInfo.pageNumber` is
+**IGNORED** (every "page" returns the same first 20 rows; pageSize silently capped at 20),
+and `meta.nextPageToken` **drifts outside the filter window** (following it walks into
+other months — a 15-day SV window "grew" past 5,000 ROs). FIX = closedTime **bisection**:
+recursively split [lo,hi] until `meta.totalCount <= len(results)`, concat, dedupe.
+Also: top-level `id` is null on search results — the RO document id for fan-out is the
+**`documentId`** field. Working example: `/home/itadmin/tekion-reports/sv_flag_below_actual_h1jul.py`.
+Don't believe a "0 results" run without checking `meta.totalCount` vs rows returned.
+
 ## Verification
 After any new endpoint, sanity-check against known data: today's RO count at SCT should roughly match the store's appointment volume; labor amounts are integer cents.
