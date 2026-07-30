@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-30T06:45:31",
+ "generated": "2026-07-30T07:00:41",
  "skill_count": 159,
  "skills": [
   {
@@ -7,8 +7,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 76,
-   "last_used": "2026-07-29"
+   "times_used": 77,
+   "last_used": "2026-07-30"
   },
   {
    "name": "jay-brain-and-skill-index",
@@ -243,6 +243,14 @@
    "last_used": "2026-07-21"
   },
   {
+   "name": "tekion-ro-close-blocked-triage",
+   "path": "automotive/tekion-ro-close-blocked-triage",
+   "category": "automotive",
+   "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
+   "times_used": 7,
+   "last_used": "2026-07-30"
+  },
+  {
    "name": "tekion-roles-permissions",
    "path": "automotive/tekion-roles-permissions",
    "category": "automotive",
@@ -313,14 +321,6 @@
    "description": "Log into the Tekion APC partner portal (apc.tekioncloud.com) and download the full OpenAPI 3.1 specs for every REST API endpoint and every webhook event. Single continuous Playwright session (APC sessions don't persist). Use when building/maintaining the DealerDetail Fixed Ops app or any tool that needs the authoritative Tekion API/webhook schemas.",
    "times_used": 5,
    "last_used": "2026-07-10"
-  },
-  {
-   "name": "tekion-ro-close-blocked-triage",
-   "path": "automotive/tekion-ro-close-blocked-triage",
-   "category": "automotive",
-   "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
-   "times_used": 5,
-   "last_used": "2026-07-30"
   },
   {
    "name": "tekion-source-code-parts-scrub",
@@ -427,6 +427,14 @@
    "last_used": "2026-07-15"
   },
   {
+   "name": "tekion-tech-flag-hours-pay",
+   "path": "automotive/tekion-tech-flag-hours-pay",
+   "category": "automotive",
+   "description": "Answer \"how do we pay techs for unapplied time / extra clocked hours\" questions and diagnose flag-hours pay problems in Tekion. Covers how tech pay actually flows (flag hours -> Flag Hours Report -> payroll), the manual flag entry modal, adjusting flag time on CLOSED ROs without reopening, the Wage Type Config $0.00 labor-cost trap, and the unapplied-hours definition. Verified via Tekion KB (KB0018796, KB0025203, KB0014998, KB0020953) on the SV RO 372190 case, 2026-07-29.",
+   "times_used": 3,
+   "last_used": "2026-07-30"
+  },
+  {
    "name": "tekion-tek-opcode-part-replace",
    "path": "automotive/tekion-tek-opcode-part-replace",
    "category": "automotive",
@@ -473,14 +481,6 @@
    "description": "Run a Tekion Parts Physical Inventory or Bin Spot Check audit \u2014 the full Setup \u2192 Counting \u2192 Reconciliation \u2192 Summary workflow that compares system count vs physical count, surfaces variance, and writes on-hand adjustments. Use when Joe asks about counting parts, bin spot checks, inventory variance, reconciling shelf qty vs Tekion, or \"Make Adjustments\". Load alongside tekion-sitemap.",
    "times_used": 2,
    "last_used": "2026-06-29"
-  },
-  {
-   "name": "tekion-tech-flag-hours-pay",
-   "path": "automotive/tekion-tech-flag-hours-pay",
-   "category": "automotive",
-   "description": "Answer \"how do we pay techs for unapplied time / extra clocked hours\" questions and diagnose flag-hours pay problems in Tekion. Covers how tech pay actually flows (flag hours -> Flag Hours Report -> payroll), the manual flag entry modal, adjusting flag time on CLOSED ROs without reopening, the Wage Type Config $0.00 labor-cost trap, and the unapplied-hours definition. Verified via Tekion KB (KB0018796, KB0025203, KB0014998, KB0020953) on the SV RO 372190 case, 2026-07-29.",
-   "times_used": 2,
-   "last_used": "2026-07-30"
   },
   {
    "name": "tekion-vehicle-override-row-builder",
