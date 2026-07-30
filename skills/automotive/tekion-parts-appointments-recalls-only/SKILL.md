@@ -283,6 +283,27 @@ Also note: the fulfilment search hit's summary `partAcquisitions` often has empt
 opcode/partName fields — to see what a request actually is, GET
 `/api/parts/proxy/u/fulfillment/<id>` and read `appointmentRequestDetails.partAcquisitions[].sourceRequestedDetail`.
 
+## Auditing ONE appointment vs the deployment timeline (verified SCT appt 266204, 2026-07-30)
+
+When Joe asks "look at appointment N — was it created before our setting change?", you do NOT
+need the browser or a fresh header capture:
+
+1. **Reuse ANY store's captured internal headers** (e.g. `/tmp/sv_headers_fresh.json` from an
+   SV job) — just overwrite `dealerid` and `tek-siteid` (`-1_<dealer>`) for the target store.
+   The tekion-api-token is user-scoped, not dealer-scoped, so it works across all 7 stores.
+2. **Host must be `app.tekioncloud.com`** — the same path on `api.tekioncloud.com` 404s.
+3. POST `/api/parts/fulfilment/u/web/search` with bare `{"searchText":"<apptNo>", pageInfo, sort:[], filters:[]}`
+   — note searchText matches BOTH appointment numbers AND RO numbers (an appt 266204 query also
+   returned RO 511179), so filter hits by `assetType == "APPOINTMENT"`. Take the hit's `id`.
+4. GET `/api/parts/proxy/u/fulfillment/<id>` → `data.appointmentDetails` has everything:
+   `apptNo`, `appointmentStatus`, `appointmentDateTime`, **`createdTime`** (the booking moment —
+   compare vs your flag/placeholder/notify-flip timestamps), `updatedTime`, `vehicleInfo`, and
+   `jobs[].operations[].opcode` + `opcodeDescription` (the top-level `jobs[].opcode` is null —
+   the opcode lives on the nested operations). `appointmentRequestDetails.partAcquisitions`
+   empty + `NO_PARTS` on a pre-placeholder booking = the known no-retro-generation gap, working
+   as designed. Fix = advisor re-saves the appointment to regenerate (surfaces instantly if
+   notify-immediately is ON).
+
 ## KB references
 KB0012918 (configure parts prep + opcode exclusion + bulk update note),
 KB0012911 (order/hold/fulfill on appointments), KB0021854 (Part Status filter),
