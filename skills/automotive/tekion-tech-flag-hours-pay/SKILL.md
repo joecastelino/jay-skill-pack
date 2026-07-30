@@ -76,6 +76,10 @@ Key articles: KB0018796 (unapplied calc), KB0025203 (tech flag hours how-to),
 KB0014998 (closed-RO adjustment), KB0020953 (labor cost / wage types).
 
 ## Reference case (SV RO 372190, 2026-07-29)
-EV range diag: 3.03 actual clocked (2 techs) vs 0.60 billed; both techs showed
-$0.00 Labor Cost → wage-type gap; answer to Galang = flag-hours path for
-flat-rate + fix wage types + policy call on eating the 2.4 hr gap.
+Asked by Galang Mo <gmo@scvolkswagen.com> (SV service management — emails Joe
+RO-level tech-pay questions). EV range diag: 3.03 actual clocked (techs Jeffrey
+Ragamat 0.34 + Loreto Tubilla 2.69) vs 0.60 billed ($300 CP diag); both techs
+showed $0.00 Labor Cost → wage-type gap; answer = flag-hours path for flat-rate
++ fix wage types (Joe-permission gate) + policy call on eating the 2.4 hr gap.
+Pattern note: SV also had REC +44 hrs over-clock in July 2026 — long-diag
+over-clocking is a recurring SV leak.
