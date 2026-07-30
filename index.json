@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-30T06:30:10",
+ "generated": "2026-07-30T06:45:31",
  "skill_count": 159,
  "skills": [
   {
@@ -315,6 +315,14 @@
    "last_used": "2026-07-10"
   },
   {
+   "name": "tekion-ro-close-blocked-triage",
+   "path": "automotive/tekion-ro-close-blocked-triage",
+   "category": "automotive",
+   "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
+   "times_used": 5,
+   "last_used": "2026-07-30"
+  },
+  {
    "name": "tekion-source-code-parts-scrub",
    "path": "automotive/tekion-source-code-parts-scrub",
    "category": "automotive",
@@ -345,14 +353,6 @@
    "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
    "times_used": 4,
    "last_used": "2026-07-12"
-  },
-  {
-   "name": "tekion-ro-close-blocked-triage",
-   "path": "automotive/tekion-ro-close-blocked-triage",
-   "category": "automotive",
-   "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
-   "times_used": 4,
-   "last_used": "2026-07-16"
   },
   {
    "name": "tekion-warranty-admin-closings",
@@ -475,6 +475,14 @@
    "last_used": "2026-06-29"
   },
   {
+   "name": "tekion-tech-flag-hours-pay",
+   "path": "automotive/tekion-tech-flag-hours-pay",
+   "category": "automotive",
+   "description": "Answer \"how do we pay techs for unapplied time / extra clocked hours\" questions and diagnose flag-hours pay problems in Tekion. Covers how tech pay actually flows (flag hours -> Flag Hours Report -> payroll), the manual flag entry modal, adjusting flag time on CLOSED ROs without reopening, the Wage Type Config $0.00 labor-cost trap, and the unapplied-hours definition. Verified via Tekion KB (KB0018796, KB0025203, KB0014998, KB0020953) on the SV RO 372190 case, 2026-07-29.",
+   "times_used": 2,
+   "last_used": "2026-07-30"
+  },
+  {
    "name": "tekion-vehicle-override-row-builder",
    "path": "automotive/tekion-vehicle-override-row-builder",
    "category": "automotive",
@@ -545,14 +553,6 @@
    "description": "Get ACTUAL technician clocked time (punch time) per OPCODE / per RO / per tech from Tekion via the internal rosearchservice visibility-dashboard TECH_CLOCK datasource, and join it against billed hours to find over-clock / unapplied-time gaps by opcode. Use when Joe asks \"which opcode has the most unapplied time\", \"actual vs billed hours by opcode\", tech clock time analysis, or proficiency drill-downs below the per-technician grain. Verified SV (826) 2026-07-20.",
    "times_used": 1,
    "last_used": "2026-07-20"
-  },
-  {
-   "name": "tekion-tech-flag-hours-pay",
-   "path": "automotive/tekion-tech-flag-hours-pay",
-   "category": "automotive",
-   "description": "Answer \"how do we pay techs for unapplied time / extra clocked hours\" questions and diagnose flag-hours pay problems in Tekion. Covers how tech pay actually flows (flag hours -> Flag Hours Report -> payroll), the manual flag entry modal, adjusting flag time on CLOSED ROs without reopening, the Wage Type Config $0.00 labor-cost trap, and the unapplied-hours definition. Verified via Tekion KB (KB0018796, KB0025203, KB0014998, KB0020953) on the SV RO 372190 case, 2026-07-29.",
-   "times_used": 1,
-   "last_used": "2026-07-29"
   },
   {
    "name": "tekion-warehouse-bin-management",
