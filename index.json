@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-30T11:30:05",
+ "generated": "2026-07-30T11:46:36",
  "skill_count": 160,
  "skills": [
   {
@@ -187,6 +187,14 @@
    "last_used": "2026-07-13"
   },
   {
+   "name": "tekion-parts-appointments-recalls-only",
+   "path": "automotive/tekion-parts-appointments-recalls-only",
+   "category": "automotive",
+   "description": "Restrict Tekion Parts RO Sales appointment notifications to recall opcodes only (or any opcode subset) by mass-toggling the per-opcode \"Consider for Parts preparation on Appointment\" flag. Covers the Bulk Update UI, the underlying bulk-update API for scale, and full verification. Built for Glade at SCT 2026-07-20; applies to any store.",
+   "times_used": 11,
+   "last_used": "2026-07-30"
+  },
+  {
    "name": "tekion-part-sales-ledger-report",
    "path": "automotive/tekion-part-sales-ledger-report",
    "category": "automotive",
@@ -217,14 +225,6 @@
    "description": "Diagnose why an AMG agent (Walter II, Don, Ralph, Stacey, etc.) is dead/unresponsive on an LLM-billing error, and switch it from OpenRouter to the ChatGPT-Team Codex OAuth provider. Use when an agent boots but can't reply, an ask-agent ping returns an HTTP 402 (out of credits) or 400 (unsupported model), or OpenRouter credits are exhausted. Covers the read_file API-key-masking landmine and how to discover the account's valid Codex model names.",
    "times_used": 9,
    "last_used": "2026-07-14"
-  },
-  {
-   "name": "tekion-parts-appointments-recalls-only",
-   "path": "automotive/tekion-parts-appointments-recalls-only",
-   "category": "automotive",
-   "description": "Restrict Tekion Parts RO Sales appointment notifications to recall opcodes only (or any opcode subset) by mass-toggling the per-opcode \"Consider for Parts preparation on Appointment\" flag. Covers the Bulk Update UI, the underlying bulk-update API for scale, and full verification. Built for Glade at SCT 2026-07-20; applies to any store.",
-   "times_used": 9,
-   "last_used": "2026-07-22"
   },
   {
    "name": "tekion-writer-handoff-report",
