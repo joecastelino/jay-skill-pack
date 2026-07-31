@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-31T09:15:05",
+ "generated": "2026-07-31T09:30:42",
  "skill_count": 161,
  "skills": [
   {
@@ -147,6 +147,14 @@
    "last_used": "2026-07-21"
   },
   {
+   "name": "tekion-kb-search-scrape",
+   "path": "automotive/tekion-kb-search-scrape",
+   "category": "automotive",
+   "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
+   "times_used": 17,
+   "last_used": "2026-07-31"
+  },
+  {
    "name": "tekion-opcode-overrides",
    "path": "automotive/tekion-opcode-overrides",
    "category": "automotive",
@@ -163,20 +171,20 @@
    "last_used": "2026-07-20"
   },
   {
-   "name": "tekion-kb-search-scrape",
-   "path": "automotive/tekion-kb-search-scrape",
-   "category": "automotive",
-   "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 15,
-   "last_used": "2026-07-29"
-  },
-  {
    "name": "tekion-opcode-default-pricing",
    "path": "automotive/tekion-opcode-default-pricing",
    "category": "automotive",
    "description": "Set Default-tab labor pricing and add parts to a Tekion opcode in the opcodeManagementV2 UI. Covers reaching the edit page, the V2 flat-form layout, setting the dollar rate via the Customer/Manufacturer spinbuttons, adding parts via react-select (bare-number-first search), and the incremental Save Draft pattern that the browser tool requires. This is the SIMPLE common case \u2014 for vehicle/part override rows use tekion-opcode-overrides.",
    "times_used": 13,
    "last_used": "2026-07-21"
+  },
+  {
+   "name": "tekion-ro-close-blocked-triage",
+   "path": "automotive/tekion-ro-close-blocked-triage",
+   "category": "automotive",
+   "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
+   "times_used": 12,
+   "last_used": "2026-07-31"
   },
   {
    "name": "tekion-scheduling",
@@ -209,14 +217,6 @@
    "description": "Build a \"parts sold\" report (e.g. tires) for any Tekion store and period with ACTUAL invoiced dollars, split RO vs Sales Order (counter), by counterperson, from the internal part transaction ledger (activity-log API) \u2014 zero OpenAPI quota. Use when Joe asks \"how many X did we sell\" for a parts category, or when the OpenAPI quota is exhausted and RO-level pulls are blocked.",
    "times_used": 10,
    "last_used": "2026-07-24"
-  },
-  {
-   "name": "tekion-ro-close-blocked-triage",
-   "path": "automotive/tekion-ro-close-blocked-triage",
-   "category": "automotive",
-   "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
-   "times_used": 10,
-   "last_used": "2026-07-30"
   },
   {
    "name": "tekion-standard-reports-performance",
@@ -323,6 +323,14 @@
    "last_used": "2026-07-10"
   },
   {
+   "name": "tekion-parts-sales-orders",
+   "path": "automotive/tekion-parts-sales-orders",
+   "category": "automotive",
+   "description": "Tekion Parts Sales Orders (counter sales) + Parts RO Sales (parts on repair orders) + the full parts PRICING system (hierarchy, price codes, price breaks/formulas, matrices, defaults). Covers /parts/sales-order, P&A vs Fulfillment, cores, prepaid parts, core returns (CM credit memos), and the 5-tier pricing hierarchy where manual override is \"king of kings.\" Load for counter-sale, parts-on-RO, or parts-pricing questions.",
+   "times_used": 5,
+   "last_used": "2026-07-31"
+  },
+  {
    "name": "tekion-source-code-parts-scrub",
    "path": "automotive/tekion-source-code-parts-scrub",
    "category": "automotive",
@@ -409,14 +417,6 @@
    "description": "Set a vehicle-scoped CUSTOM package price and labor hours on a Tekion Service Menu by adding a new vehicle row (e.g. \"2014 Camry 90K VNM = 2.4 hrs / $469.88\"). Use when Joe wants a specific vehicle's menu package price/hours changed without touching other vehicles or tiers. Verified SCT 90K menu 2026-07-03.",
    "times_used": 3,
    "last_used": "2026-07-12"
-  },
-  {
-   "name": "tekion-parts-sales-orders",
-   "path": "automotive/tekion-parts-sales-orders",
-   "category": "automotive",
-   "description": "Tekion Parts Sales Orders (counter sales) + Parts RO Sales (parts on repair orders) + the full parts PRICING system (hierarchy, price codes, price breaks/formulas, matrices, defaults). Covers /parts/sales-order, P&A vs Fulfillment, cores, prepaid parts, core returns (CM credit memos), and the 5-tier pricing hierarchy where manual override is \"king of kings.\" Load for counter-sale, parts-on-RO, or parts-pricing questions.",
-   "times_used": 3,
-   "last_used": "2026-07-14"
   },
   {
    "name": "tekion-ro-traffic-heatmap-report",
@@ -553,6 +553,14 @@
    "description": "Build the \"parts ordered/shipped and NOT received\" report for a Tekion store (outstanding part lines on open POs, with aging + $ value). Uses the Parts Receiving \"Orders Not Received\" queue and an XHR hook on partTrade/u/purchase/search to harvest full per-part JSON (ordered/received/backorder/cancelled qty, unit cost, ref RO/SO, customer). Verified SCT 2026-07-06 (400 POs, 1127 lines, $180K). Load when Joe asks for shipped-not-received, unreceived parts, open PO parts, or PO aging reports.",
    "times_used": 1,
    "last_used": "2026-07-06"
+  },
+  {
+   "name": "tekion-ro-void-job-remove-parts",
+   "path": "automotive/tekion-ro-void-job-remove-parts",
+   "category": "automotive",
+   "description": "Remove parts from a Tekion RO and VOID the ticket. Per Joe - you must VOID THE JOB first, then the RO-level void line appears. Covers the part-row kebab Return Part flow, the Void Job modal and its remove-parts-first gate, and the parts-fulfillment side. Verified live on SCT test RO 574398 (2026-07-31). Contains one documented UNSOLVED step - do not guess past it.",
+   "times_used": 1,
+   "last_used": "2026-07-31"
   },
   {
    "name": "tekion-tech-clock-time-by-opcode",
@@ -751,14 +759,6 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tekion-ro-void-job-remove-parts",
-   "path": "automotive/tekion-ro-void-job-remove-parts",
-   "category": "automotive",
-   "description": "Remove parts from a Tekion RO and VOID the ticket. Per Joe - you must VOID THE JOB first, then the RO-level void line appears. Covers the part-row kebab Return Part flow, the Void Job modal and its remove-parts-first gate, and the parts-fulfillment side. Verified live on SCT test RO 574398 (2026-07-31). Contains one documented UNSOLVED step - do not guess past it.",
    "times_used": 0,
    "last_used": null
   },
