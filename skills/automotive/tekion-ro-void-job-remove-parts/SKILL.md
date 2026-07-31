@@ -1,6 +1,6 @@
 ---
 name: tekion-ro-void-job-remove-parts
-description: Remove parts from a Tekion RO and VOID the ticket. Per Joe - you must VOID THE JOB first, then the RO-level void line appears. Covers the part-row kebab Return Part flow, the Void Job modal and its remove-parts-first gate, and the parts-fulfillment side. Verified live on SCT test RO 574398 (2026-07-31). Contains one documented UNSOLVED step - do not guess past it.
+description: Remove parts from a Tekion RO and VOID the ticket, OR flip the job to INTERNAL pay and close at $0 (Joe's preferred cleanup). Void order - void JOB first, then RO-level void appears. Covers Return Part flow, deleting stuck Request Pending returns via the fulfillment row kebab Remove, the Void Job remove-parts gate, pay-type CP-to-I switch with Confirm PayType Change modal, and the Internal cost-center requirement. Verified live on SCT test RO 574398 (2026-07-31).
 ---
 
 # Tekion: Remove Parts + Void an RO (job first, then RO)
@@ -48,19 +48,58 @@ So full sequence: **remove/return parts → Void Job (per job) → RO void line 
   contains **no Void** while jobs are live. Per Joe it appears after the job(s)
   are voided. Document the exact location when first seen.
 
-## ⚠ UNSOLVED — processing the pending part return (DO NOT GUESS)
-The "Request Pending" −1 row does NOT get processed by:
-- Parts RO Sales → Fulfillment → open RO → **Fulfill** button → Order/Fill
-  modal → Submit. That toasts "Successfully updated the Reserve/Hold/Fill
-  details" but the OpenAPI parts ledger still shows the old lines; the pending
-  request row just disappears from the RO view and the request seems to
-  evaporate/stay unprocessed. (Tried twice, verified via
-  `/repair-orders/{rid}/jobs/{jid}/operations/{oid}/parts` — lines unchanged.)
-- The **"Requests"** toggle next to the job header on the fulfillment detail
-  page — it's a READ-ONLY popover (Part/Qty/Price, no accept button).
-The RO's existing −1 line (id 96) was created 7/17 by Joe, so a working
-process-return path exists — **ask Joe to show it** (likely a parts-counter
-Process Return flow). Update this section when learned.
+## ✅ SOLVED — removing a stuck "Request Pending" part return (2026-07-31)
+The Fulfill → Order/Fill → Submit path NEVER processes a pending RETURN request
+(toasts success but ledger unchanged — that flow is for ordering/filling, not
+returns). The working path is to **DELETE the pending return row from the
+fulfillment grid**:
+
+1. Open the RO's fulfillment detail
+   (`/parts/ro-sales/details/parts-fulfillment/<roNum>/<docId>/<fulfillId>`).
+2. If banner "**<user> is currently using this page**" shows, click **Unlock**
+   → Warning modal "previous users unsaved actions would be lost… proceed?" →
+   **Yes**. (Stale locks from your own earlier visits count too.)
+3. Hover the part grid rows. Row kebabs (⋮ at x≈1215) differ by row type:
+   - Fulfilled sale row: `Add Comment / Move Part / Update Negative Sale / Return Part`
+   - **Pending-return row: `Add Comment / Update / Remove`** ← this one
+4. Kebab on the pending-return row → **Remove** → modal "Remove Part —
+   Deleting this part here will also remove this from RO. Are you sure?" →
+   **Ok Delete** → toast "**The return part was deleted. Please save/refresh
+   to see latest updates.**"
+5. Exit via **Cancel → Ok** (release lock). Back on the RO, the pending −1
+   row AND its paired request are gone.
+
+Note: this *deletes the return request*; the previously-Fulfilled −1 return
+line stays as a real ledger line. Netting +1/−1 fulfilled lines = $0 job.
+
+## Alternative to voiding: flip the whole job to INTERNAL and close (Joe often prefers this)
+Joe 2026-07-31: "switch the whole ticket to internal and close it, it should
+balance to zero." Cheaper than void when the goal is just a $0 test/cleanup RO.
+
+1. **Gate:** clicking the pay-type radio while ANY return rows exist toasts
+   "**Caution — Remove Returned parts to proceed with Pay Type change**".
+   First delete pending returns (above). Fulfilled net-zero return PAIRS also
+   had to be cleared in our case (the paired +1/−1 rows vanished with the
+   request delete, leaving 1 clean +1 line; the switch then worked).
+2. **Pay Type radios CP / W / I** live on the JOB FORM (ant-radio-button-wrapper
+   NOT inside `[class*=footer]` — there's a duplicate group in the RO footer;
+   use the job-form one, ≈(684,385) when job scrolled to top).
+3. `/mouse` click **I** → **Confirm PayType Change** modal (shows Existing
+   $310/hr CP vs Updated $250/hr Internal pricing) → **Ok** → radio flips to I.
+4. Click job **Save** → toast "Job Updated". RO header goes **Ready for Invoice**.
+5. **Internal jobs REQUIRE a Cost Center** — job card flags "Need Attention:
+   Cost Centers Should not be Empty". Cost Center select is on the job form
+   below the op (a 'Select' placeholder, SCT options incl. Service Dept
+   Policy-7113, Parts Dept Policy-7115, Company Vehicle Service-7503, PDI-2211,
+   We Owe/Due Bill-3042…). **ASK JOE which cost center** — it's a GL decision.
+6. Then **Invoice** (header button; disabled until cost center set) → close.
+   Internal RO bills the store, customer balance $0.
+
+Other gotchas found:
+- "RO Bulk Action" drawer (RO header kebab) has left-nav items Internal Split /
+  Internal cost center / Void job / Re open etc., but they were ALL
+  `disabledHeading` (cursor not-allowed) on an un-invoiced RO — not the path.
+- Job Save button = bottom-right of job form; success toast is "Job Updated".
 
 ## Fulfillment-page mechanics (hard-won)
 - Fulfillment list search: the expandable box (`placeholder "Ctrl + Shift + L"`)

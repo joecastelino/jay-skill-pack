@@ -2,7 +2,7 @@
 
 Skill library for **Jay**, the Tekion DMS specialist agent at American Motors Group — plus general-purpose agent skills. Built for the [Hermes Agent](https://github.com/NousResearch) skill system (`SKILL.md` + YAML frontmatter, with optional `references/`, `scripts/`, `templates/`).
 
-**161 skills** · auto-synced from the live agent · last sync: 2026-07-31 10:15
+**161 skills** · auto-synced from the live agent · last sync: 2026-07-31 10:30
 
 ## Install into another agent
 
@@ -86,7 +86,7 @@ Secrets (passwords, app passwords, tokens) are redacted with `<PLACEHOLDER>` mar
 | 67 | [`tekion-mom-service-gross-fleet`](skills/automotive/tekion-mom-service-gross-fleet/SKILL.md) | automotive | 1 | 2026-06-30 | Produce a month-over-month (or any period-vs-period) SERVICE GROSS read across all 7 AMG stores from the live Tekion OpenAPI — who's winning, who's slipping, and whether it's a VOLUME story or a MARGIN story. Uses a t... |
 | 68 | [`tekion-parts-appointments-opcode-scoping`](skills/automotive/tekion-parts-appointments-opcode-scoping/SKILL.md) | automotive | 1 | 2026-07-20 | Restrict Tekion Parts-on-Appointments (Parts RO Sales > Appointments queue) to a subset of opcodes — e.g. recalls only, per Glade at SCT. Covers the per-opcode "Consider for Parts preparation on Appointment" checkbox,... |
 | 69 | [`tekion-parts-shipped-not-received-report`](skills/automotive/tekion-parts-shipped-not-received-report/SKILL.md) | automotive | 1 | 2026-07-06 | Build the "parts ordered/shipped and NOT received" report for a Tekion store (outstanding part lines on open POs, with aging + $ value). Uses the Parts Receiving "Orders Not Received" queue and an XHR hook on partTrad... |
-| 70 | [`tekion-ro-void-job-remove-parts`](skills/automotive/tekion-ro-void-job-remove-parts/SKILL.md) | automotive | 1 | 2026-07-31 | Remove parts from a Tekion RO and VOID the ticket. Per Joe - you must VOID THE JOB first, then the RO-level void line appears. Covers the part-row kebab Return Part flow, the Void Job modal and its remove-parts-first ... |
+| 70 | [`tekion-ro-void-job-remove-parts`](skills/automotive/tekion-ro-void-job-remove-parts/SKILL.md) | automotive | 1 | 2026-07-31 | Remove parts from a Tekion RO and VOID the ticket, OR flip the job to INTERNAL pay and close at $0 (Joe's preferred cleanup). Void order - void JOB first, then RO-level void appears. Covers Return Part flow, deleting ... |
 | 71 | [`tekion-tech-clock-time-by-opcode`](skills/automotive/tekion-tech-clock-time-by-opcode/SKILL.md) | automotive | 1 | 2026-07-20 | Get ACTUAL technician clocked time (punch time) per OPCODE / per RO / per tech from Tekion via the internal rosearchservice visibility-dashboard TECH_CLOCK datasource, and join it against billed hours to find over-clo... |
 | 72 | [`tekion-warehouse-bin-management`](skills/automotive/tekion-warehouse-bin-management/SKILL.md) | automotive | 1 | 2026-06-29 | Answer how Tekion handles bins — which bin a sale pulls from (Primary Bin), whether you can replenish/auto-transfer between bins, the Warehouse Management app (Bin Change, Bin Reports, locations), and the CDK-migratio... |
 | 73 | [`wsl-cross-distro-hermes-discovery`](skills/automotive/wsl-cross-distro-hermes-discovery/SKILL.md) | automotive | 1 | 2026-07-14 | Reach and inspect OTHER WSL distros on this same Windows computer from inside the main Ubuntu-Migrated distro — e.g. to hunt for a "different Hermes install" hosting an agent (number_5 case, 2026-07-14). Includes the ... |
