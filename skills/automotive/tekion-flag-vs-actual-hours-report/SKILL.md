@@ -88,8 +88,18 @@ several techs with actual>0 and flag=0.00 = never flagged at all. Frame for Joe:
 concentrated in a few techs/ROs, not store-wide; diag time is the usual leak.
 Fix path for open ROs = flag on the RO tech-time modal; for CLOSED ROs =
 Reports → Flag Hours Report → Add Adjustment (KB0014998, no reopen needed).
+On the open-RO tech-time modal: Flagged hrs + Flag date + Reason + Flag Type are
+all required per tech row; manual entry switches that row off auto-flag for the
+RO (expected). Caveats: (1) flag ≠ bill can BLOCK invoice close if the store's
+pre-invoice rule treats it as error (warning = fine) — check Service Settings if
+close goes red; (2) per-tech Labor Cost $0.00 in the modal = wage type missing
+on the employee record → flagged hours post at ZERO cost to RO/GL even though
+payroll pays off the report; employee-record fix, NEVER touch without Joe's
+explicit OK. Verified good example: SV RO 372190 line G — flagged 4.15 to match
+actual clocked, op labor cost went $0 → $230.70 once fixed.
 
-## Pitfalls
+## Single-tech deep-dive variant (Joe follow-up, verified Tualla SV 2026-07-31)
+When Joe narrows to ONE tech (\"can we focus on Loreto Tualla?\"), don't reuse the\nclosed-RO list — pull ALL ROs the tech clocked on in the window regardless of\nstatus (open/HOLD included), then join flags. Two extra insights this surfaces:\n- **closedTime-window LEAK**: the store-wide scan keys on ROs *closed* in the\n  window, so an RO worked in-window but closed AFTER it is invisible (Tualla\n  372028 + 371877 were misses the store scan never showed). For per-tech audits,\n  key on clock-punch date, not closedTime.\n- **Open/HOLD ROs with clock-but-no-flag** are catchable BEFORE close (flag on\n  the RO tech-time modal — cheap fix) vs closed ones needing Flag Hours Report\n  adjustments. Split the output by status.\nAlso report the REVERSE rows (flag > clock, e.g. a REC flag with no punch) —\nJoe wants both directions. Pattern read that landed well: a tech who flags\nusually flags to the hundredth; gaps = ROs where the tech-time modal was never\nopened at all (behavioral, not systemic).\n\n## Pitfalls
 - Flag data is **only** in `/ro/v1/{id}` — plain `/ro/{id}` and OpenAPI
   operations have `actualTimeInSeconds: null` and no flag fields at all.
 - A tech can appear in clockDetails but have NO techIdWithBillingTimes entry
