@@ -65,6 +65,24 @@ When someone reports the scheduler won't offer slots for days/weeks, do NOT star
 
 Typical verdict template: booking windows fine + scheduler ran recently + days booked to the dealership cap ⇒ not a bug, capacity-starved; fixes = raise dealership max and/or consumer allocation, then Run Scheduler.
 
+## EDITING dealership capacities (verified live SCT 2026-07-31 — consumer 40→100)
+
+Page: Capacities tab → Dealership sub-tab (`/dse-v2/scheduling-settings/capacities`). Grid = 4 rows × 7 day columns of `input.ant-input-number-input`:
+- Row y≈314: **Max. Scheduling Capacity** (dealership max — counts BDC + online + walk-ins combined)
+- Row y≈355: **Max. BDC Capacity**
+- Row y≈396: **Max. Consumer – Regular Capacity** (online booking bucket)
+- Row y≈437: **Max. Consumer – Quick Capacity** (quick scheduler bucket)
+Columns Sun→Sat at x≈635,735,835,935,1035,1135,1235 (1280×720). Each row also has a "Slot Capacity" link in the Actions column for per-slot overrides.
+
+**Edit procedure per cell (via :9223):** `/mouse` click the input center → `/press Control+A` → `/press` each digit → verify. **THREE PITFALLS hit live:**
+1. **Rightmost (Saturday) column is CLIPPED behind the vertical-tab layout container** — the grid scrolls horizontally. `elementFromPoint` at the input's rect returns `dse-v2_verticalTabLayout` div, clicks silently miss. FIX: `input.scrollIntoView({block:'center',inline:'center'})` first, then re-read the rect (it moves, e.g. x1268→x907) and confirm `document.elementFromPoint(cx,cy)===input` before clicking.
+2. **Blind coordinate loops corrupt neighbor cells** — a missed click left focus on the previous cell and typed into the WRONG input (overwrote SUN max with the consumer value). ALWAYS: tag the target with `setAttribute('data-jay','t')`, click, then verify `document.activeElement.getAttribute('data-jay')==='t'` BEFORE typing; re-read the whole grid (`inputs.map(i=>i.value)` grouped by rect.y) after each batch and fix strays.
+3. Fresh rects every pass — layout shifts after scroll.
+
+**Save & verify:** Save button bottom-right (~x1172,y674). Arm the XHR hook before clicking — the save `POST /api/scheduling/u/settings/capacity` response ECHOES the persisted state (check `regularCapacity` etc. in it = strongest confirmation, beats DOM re-read per the SAVE-VERIFY TRAP). Toast: "Dealership capacities saved successfully". Then Summary tab → **Run Scheduler** (toast "Scheduler is running...") to apply now instead of overnight.
+
+SCT baseline (pre-2026-07-31): max 134 (Wed 155) all rows BDC=134/155, consumer regular+quick 40 (Wed 50). Changed consumer regular+quick → 100 all days. Ceiling logic reminder for Joe-type questions: consumer bucket raised past dealership max ⇒ dealership max becomes the online binding ceiling, BUT it's shared with BDC/walk-ins, so heavy call-in days still block online even with a big consumer bucket.
+
 ## Gotchas
 - **Lowest ceiling wins** across all capacity/hours settings.
 - **Shop order = most-restrictive-first**; default shop = catch-all.
