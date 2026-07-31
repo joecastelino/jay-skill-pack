@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-31T07:45:06",
+ "generated": "2026-07-31T08:00:43",
  "skill_count": 160,
  "skills": [
   {
@@ -7,8 +7,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 79,
-   "last_used": "2026-07-30"
+   "times_used": 81,
+   "last_used": "2026-07-31"
   },
   {
    "name": "jay-brain-and-skill-index",
@@ -115,6 +115,14 @@
    "last_used": "2026-07-29"
   },
   {
+   "name": "tekion-autonomous-login",
+   "path": "automotive/tekion-autonomous-login",
+   "category": "automotive",
+   "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
+   "times_used": 23,
+   "last_used": "2026-07-31"
+  },
+  {
    "name": "tekion-vi-api-migration",
    "path": "automotive/tekion-vi-api-migration",
    "category": "automotive",
@@ -129,14 +137,6 @@
    "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
    "times_used": 21,
    "last_used": "2026-07-30"
-  },
-  {
-   "name": "tekion-autonomous-login",
-   "path": "automotive/tekion-autonomous-login",
-   "category": "automotive",
-   "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
-   "times_used": 21,
-   "last_used": "2026-07-29"
   },
   {
    "name": "tekion-opcode-api",
@@ -179,6 +179,14 @@
    "last_used": "2026-07-21"
   },
   {
+   "name": "tekion-scheduling",
+   "path": "automotive/tekion-scheduling",
+   "category": "automotive",
+   "description": "Tekion Service Scheduling Settings \u2014 appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the \"lowest ceiling wins\" capacity model, shop top-down matching, the daily overnight scheduler + \"Run Scheduler\" button, parts-on-appointment notifications, and the concierge mobile write-up flow. Load for any appointment/scheduling/capacity setup or troubleshooting in Tekion.",
+   "times_used": 12,
+   "last_used": "2026-07-31"
+  },
+  {
    "name": "tekion-included-service-parts-override",
    "path": "automotive/tekion-included-service-parts-override",
    "category": "automotive",
@@ -207,14 +215,6 @@
    "path": "automotive/tekion-ro-close-blocked-triage",
    "category": "automotive",
    "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
-   "times_used": 10,
-   "last_used": "2026-07-30"
-  },
-  {
-   "name": "tekion-scheduling",
-   "path": "automotive/tekion-scheduling",
-   "category": "automotive",
-   "description": "Tekion Service Scheduling Settings \u2014 appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the \"lowest ceiling wins\" capacity model, shop top-down matching, the daily overnight scheduler + \"Run Scheduler\" button, parts-on-appointment notifications, and the concierge mobile write-up flow. Load for any appointment/scheduling/capacity setup or troubleshooting in Tekion.",
    "times_used": 10,
    "last_used": "2026-07-30"
   },
