@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-31T10:30:03",
+ "generated": "2026-07-31T10:45:57",
  "skill_count": 161,
  "skills": [
   {
@@ -171,20 +171,20 @@
    "last_used": "2026-07-20"
   },
   {
+   "name": "tekion-ro-close-blocked-triage",
+   "path": "automotive/tekion-ro-close-blocked-triage",
+   "category": "automotive",
+   "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
+   "times_used": 14,
+   "last_used": "2026-07-31"
+  },
+  {
    "name": "tekion-opcode-default-pricing",
    "path": "automotive/tekion-opcode-default-pricing",
    "category": "automotive",
    "description": "Set Default-tab labor pricing and add parts to a Tekion opcode in the opcodeManagementV2 UI. Covers reaching the edit page, the V2 flat-form layout, setting the dollar rate via the Customer/Manufacturer spinbuttons, adding parts via react-select (bare-number-first search), and the incremental Save Draft pattern that the browser tool requires. This is the SIMPLE common case \u2014 for vehicle/part override rows use tekion-opcode-overrides.",
    "times_used": 13,
    "last_used": "2026-07-21"
-  },
-  {
-   "name": "tekion-ro-close-blocked-triage",
-   "path": "automotive/tekion-ro-close-blocked-triage",
-   "category": "automotive",
-   "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
-   "times_used": 12,
-   "last_used": "2026-07-31"
   },
   {
    "name": "tekion-scheduling",
@@ -259,6 +259,14 @@
    "last_used": "2026-07-30"
   },
   {
+   "name": "tekion-parts-sales-orders",
+   "path": "automotive/tekion-parts-sales-orders",
+   "category": "automotive",
+   "description": "Tekion Parts Sales Orders (counter sales) + Parts RO Sales (parts on repair orders) + the full parts PRICING system (hierarchy, price codes, price breaks/formulas, matrices, defaults). Covers /parts/sales-order, P&A vs Fulfillment, cores, prepaid parts, core returns (CM credit memos), and the 5-tier pricing hierarchy where manual override is \"king of kings.\" Load for counter-sale, parts-on-RO, or parts-pricing questions.",
+   "times_used": 7,
+   "last_used": "2026-07-31"
+  },
+  {
    "name": "tekion-roles-permissions",
    "path": "automotive/tekion-roles-permissions",
    "category": "automotive",
@@ -321,14 +329,6 @@
    "description": "Log into the Tekion APC partner portal (apc.tekioncloud.com) and download the full OpenAPI 3.1 specs for every REST API endpoint and every webhook event. Single continuous Playwright session (APC sessions don't persist). Use when building/maintaining the DealerDetail Fixed Ops app or any tool that needs the authoritative Tekion API/webhook schemas.",
    "times_used": 5,
    "last_used": "2026-07-10"
-  },
-  {
-   "name": "tekion-parts-sales-orders",
-   "path": "automotive/tekion-parts-sales-orders",
-   "category": "automotive",
-   "description": "Tekion Parts Sales Orders (counter sales) + Parts RO Sales (parts on repair orders) + the full parts PRICING system (hierarchy, price codes, price breaks/formulas, matrices, defaults). Covers /parts/sales-order, P&A vs Fulfillment, cores, prepaid parts, core returns (CM credit memos), and the 5-tier pricing hierarchy where manual override is \"king of kings.\" Load for counter-sale, parts-on-RO, or parts-pricing questions.",
-   "times_used": 5,
-   "last_used": "2026-07-31"
   },
   {
    "name": "tekion-source-code-parts-scrub",
@@ -483,6 +483,14 @@
    "last_used": "2026-06-29"
   },
   {
+   "name": "tekion-ro-void-job-remove-parts",
+   "path": "automotive/tekion-ro-void-job-remove-parts",
+   "category": "automotive",
+   "description": "Remove parts from a Tekion RO and VOID the ticket, OR flip the job to INTERNAL pay and close at $0 (Joe's preferred cleanup). Void order - void JOB first, then RO-level void appears. Covers Return Part flow, deleting stuck Request Pending returns via the fulfillment row kebab Remove, the Void Job remove-parts gate, pay-type CP-to-I switch with Confirm PayType Change modal, and the Internal cost-center requirement. Verified live on SCT test RO 574398 (2026-07-31).",
+   "times_used": 2,
+   "last_used": "2026-07-31"
+  },
+  {
    "name": "tekion-vehicle-override-row-builder",
    "path": "automotive/tekion-vehicle-override-row-builder",
    "category": "automotive",
@@ -553,14 +561,6 @@
    "description": "Build the \"parts ordered/shipped and NOT received\" report for a Tekion store (outstanding part lines on open POs, with aging + $ value). Uses the Parts Receiving \"Orders Not Received\" queue and an XHR hook on partTrade/u/purchase/search to harvest full per-part JSON (ordered/received/backorder/cancelled qty, unit cost, ref RO/SO, customer). Verified SCT 2026-07-06 (400 POs, 1127 lines, $180K). Load when Joe asks for shipped-not-received, unreceived parts, open PO parts, or PO aging reports.",
    "times_used": 1,
    "last_used": "2026-07-06"
-  },
-  {
-   "name": "tekion-ro-void-job-remove-parts",
-   "path": "automotive/tekion-ro-void-job-remove-parts",
-   "category": "automotive",
-   "description": "Remove parts from a Tekion RO and VOID the ticket, OR flip the job to INTERNAL pay and close at $0 (Joe's preferred cleanup). Void order - void JOB first, then RO-level void appears. Covers Return Part flow, deleting stuck Request Pending returns via the fulfillment row kebab Remove, the Void Job remove-parts gate, pay-type CP-to-I switch with Confirm PayType Change modal, and the Internal cost-center requirement. Verified live on SCT test RO 574398 (2026-07-31).",
-   "times_used": 1,
-   "last_used": "2026-07-31"
   },
   {
    "name": "tekion-tech-clock-time-by-opcode",
