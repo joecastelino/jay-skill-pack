@@ -235,7 +235,10 @@ default — instead of leaving a draft. To DRAFT-ONLY safely:
    2026-07-29: two-ask minimal set clean again (first-try DRAFTS_COUNT=1, SENT=0) —
    this is now the DEFAULT verify path; don't bother with the combined ask. Also:
    baking file paths + on-disk byte sizes into the initial build ask (note 13
-   prevention) again produced a clean one-shot draft.)
+   prevention) again produced a clean one-shot draft. 2026-07-30: third consecutive
+   clean first-try night with the same recipe (sizes baked into build ask + two-ask
+   verify) — the pipeline is stable; treat any deviation as anomalous and re-read
+   the trap notes.)
 
 12. **SENT=y / DRAFT_COUNT FALSE ALARM in the combined ask** (hit 2026-07-23): the
    note-11 combined verify returned `SENT=y | DRAFT_COUNT=7` on a clean first-try
@@ -296,7 +299,8 @@ Joe reviews + sends in the morning. Reset at month rollover is automatic (the MT
 computes 1st-of-month → today, so nothing to reset). Scan is paced — early-month it runs
 ~15-25 min, but LATE-MONTH the MTD window balloons (2026-07-25: 3,941 closed ROs, 1,252
 candidates → ~47 min, draft ~7:50pm; 2026-07-27: 1,330 candidates → ~58 min; 2026-07-28:
-2026-07-28: 4,488 closed, 1,409 candidates → ~61 min; 2026-07-29: 1,468 candidates → ~58 min). A 30-65 min
+2026-07-28: 4,488 closed, 1,409 candidates → ~61 min; 2026-07-29: 1,468 candidates → ~58 min;
+2026-07-30: 4,914 closed, 1,539 candidates → ~55 min, clean). A 30-65 min
 silent scan late in the month is NORMAL —
 check checkpoint mtime (advances every ~20 ROs) before assuming it's stuck. Established
 2026-07-01 on Joe's instruction.
