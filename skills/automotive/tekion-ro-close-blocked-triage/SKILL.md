@@ -158,6 +158,11 @@ When the complaint is a stuck PART LINE (not a close block), diagnose in this or
    be voided/redone so it reverses the ORIGINAL billed line (prices cancel), and
    any prepaid deposit settled at the counter. Confirm intent (part fully off the
    RO vs cleanup) + exact error text before touching anything.
+5. **If the goal is to VOID the ticket**: sequence is remove/return parts →
+   job kebab (⋮ by "Created By…", ~(1186,201)) → **Void Job** (button disabled
+   until parts are off) → RO-level void appears only after jobs voided. Full
+   click-paths + the unsolved pending-return-processing gap in skill
+   `tekion-ro-void-job-remove-parts`.
 
 ## Step 4 — Advise (don't guess — per Joe's never-guess rule)
 

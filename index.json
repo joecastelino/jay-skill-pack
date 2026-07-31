@@ -1,6 +1,6 @@
 {
- "generated": "2026-07-31T09:00:06",
- "skill_count": 160,
+ "generated": "2026-07-31T09:15:05",
+ "skill_count": 161,
  "skills": [
   {
    "name": "persistent-browser-server",
@@ -751,6 +751,14 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-ro-void-job-remove-parts",
+   "path": "automotive/tekion-ro-void-job-remove-parts",
+   "category": "automotive",
+   "description": "Remove parts from a Tekion RO and VOID the ticket. Per Joe - you must VOID THE JOB first, then the RO-level void line appears. Covers the part-row kebab Return Part flow, the Void Job modal and its remove-parts-first gate, and the parts-fulfillment side. Verified live on SCT test RO 574398 (2026-07-31). Contains one documented UNSOLVED step - do not guess past it.",
    "times_used": 0,
    "last_used": null
   },
