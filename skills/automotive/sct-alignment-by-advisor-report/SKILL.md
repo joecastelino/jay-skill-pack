@@ -232,8 +232,21 @@ default — instead of leaving a draft. To DRAFT-ONLY safely:
    Confirmed again 2026-07-28: skipped the combined ask entirely, went straight to
    the two-ask minimal set — both answered instantly, clean first-try DRAFT_COUNT=1.
    Note her reply may strip underscores ("SENTFOLDERCOUNT=0") — same answer.
+   **EXACT-SUBJECT SEARCH FALSE ZERO (2026-07-31):** the folder-search ask with the
+   EXACT full subject ('SCT Alignment Sales by Advisor - July MTD (through 7/31)')
+   returned DRAFTS_COUNT=0 even though a prior ask had just found the draft (TO +
+   RAW_SIZE answered fine). Punctuation/encoding in the subject (dashes, parens)
+   can break her exact-match search. Do NOT rebuild on a zero — re-ask with a
+   SUBSTRING: "Search subject substring 'SCT Alignment Sales by Advisor' (not
+   exact match), only messages dated today" → came back DRAFTS_COUNT=1,
+   SENT_FOLDER_COUNT=0. A zero count contradicting an earlier successful fetch is
+   a search-syntax problem, not a missing draft.
    2026-07-29: two-ask minimal set clean again (first-try DRAFTS_COUNT=1, SENT=0) —
    this is now the DEFAULT verify path; don't bother with the combined ask. Also:
+   (2026-07-31: even the terse two-ask forms timed out THREE times in a row right
+   after the build ask — Stacey was likely still busy. A `sleep 60` before the next
+   re-ask got an instant clean answer. On consecutive timeouts, pause ~60s instead
+   of hammering.)
    baking file paths + on-disk byte sizes into the initial build ask (note 13
    prevention) again produced a clean one-shot draft. 2026-07-30: third consecutive
    clean first-try night with the same recipe (sizes baked into build ask + two-ask
