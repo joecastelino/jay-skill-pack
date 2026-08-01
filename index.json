@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-01T15:30:03",
+ "generated": "2026-08-01T15:45:16",
  "skill_count": 161,
  "skills": [
   {
@@ -175,7 +175,7 @@
    "path": "automotive/tekion-scheduling",
    "category": "automotive",
    "description": "Tekion Service Scheduling Settings \u2014 appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the \"lowest ceiling wins\" capacity model, shop top-down matching, the daily overnight scheduler + \"Run Scheduler\" button, parts-on-appointment notifications, and the concierge mobile write-up flow. Load for any appointment/scheduling/capacity setup or troubleshooting in Tekion.",
-   "times_used": 15,
+   "times_used": 16,
    "last_used": "2026-08-01"
   },
   {
