@@ -65,23 +65,13 @@ When someone reports the scheduler won't offer slots for days/weeks, do NOT star
 
 Typical verdict template: booking windows fine + scheduler ran recently + days booked to the dealership cap ⇒ not a bug, capacity-starved; fixes = raise dealership max and/or consumer allocation, then Run Scheduler.
 
-## EDITING the Capacities grid (verified SCT 2026-07-31, consumer 40→100)
-Route: `/dse-v2/scheduling-settings/capacities` (click Capacities tab; loading fires `POST /api/scheduling/u/settings/capacity/request/option` — capture via XHR hook to read current values: `data.appointmentCapacity[]` per day `{maxCapacity, bdcCapacity, regularCapacity, quickCapacity}`). The grid = 4 rows × 7 day-columns of `input.ant-input-number-input`: rows top→bottom = Max Scheduling / Max BDC / Consumer–Regular / Consumer–Quick.
-
-Procedure per cell (via :9223): `/mouse` click cell center → **VERIFY focus landed on the intended input** (tag it `data-jay` first, check `document.activeElement.getAttribute('data-jay')`) → `/press` Control+A → `/press` each digit → re-read value. **PITFALLS:**
-- **Right-hand columns (Sat) are CLIPPED behind the layout container** — `elementFromPoint` returns the `verticalTabLayout` DIV, `/mouse` returns success but focus goes elsewhere and a WRONG cell gets edited (I accidentally set SUN max to 100 this way; always re-read the full grid after typing and fix strays). Fix: `input.scrollIntoView({block:'center',inline:'center'})` then re-read the rect and click.
-- Blind coordinate loops without focus-verification silently mistype — the focus check is mandatory.
-- Save button = visible `button` with text "Save" (bottom-right, ~x1172,y674). Success = toast "Dealership capacities saved successfully" + the save `POST /api/scheduling/u/settings/capacity` response echoes the new values (verify `regularCapacity` in it).
-- Then **Summary tab → Run Scheduler** ("Scheduler is running..." toast); afterwards `lastDailySchedulerRunTime` in `settings/appointment` updates within ~10 min — that's how to prove it ran.
-SCT values as of 2026-07-31: max 134 (Wed 155) all rows BDC same; Consumer Regular+Quick raised 40/50→100 all days.
-
-## Testing the CONSUMER scheduler as a customer (verified 2026-07-31)
+## Testing the CONSUMER scheduler
 Direct URL, no dealer-site iframe needed: `https://conscheduling.tekioncloud.com/consumer-scheduling/sign-in/phone?accessToken=americanmotorscorporation_47_876` (SCT; token pattern `americanmotorscorporation_<n>_<dealerId>` — find other stores' tokens by loading the store website's schedule-service page and reading iframe src, e.g. SCT embeds it at stevenscreektoyota.com/schedule-service-here.html). Flow: **Continue as a guest** → Add VIN → Confirm → maintenance packages render (Basic/Basic+/Signature with menu prices — doubles as a menu-price spot check) → Select → Continue ×2 → transport/advisor/calendar page. Disabled calendar days = no availability; a day can be bookable with AM showing "No Slots Available" and only PM slots. Use the plain browser_* tools (public site, no auth). STOP before final confirm on a real customer VIN — it books a real appointment.
 **Shop-routing symptom decoded:** older vehicle (e.g. 2021) fails TXM's `year>2023` vehicle limitation → falls through top-down to the MAIN shop → weeks-out availability, while 2024+ vehicles get near-term TXM/Express slots. If consumer capacity is already raised and older cars still can't book, the lever is shop-side: widen TXM/Express vehicle window, add menu opcodes to Express serviceable opcodes, or raise main-shop caps.
 
 ## EDITING dealership capacities (verified live SCT 2026-07-31 — consumer 40→100)
 
-Page: Capacities tab → Dealership sub-tab (`/dse-v2/scheduling-settings/capacities`). Grid = 4 rows × 7 day columns of `input.ant-input-number-input`:
+Page: Capacities tab → Dealership sub-tab (`/dse-v2/scheduling-settings/capacities`). Page load fires `POST /api/scheduling/u/settings/capacity/request/option` — capture via XHR hook to read current values: `data.appointmentCapacity[]` per day `{maxCapacity, bdcCapacity, regularCapacity, quickCapacity}`. Grid = 4 rows × 7 day columns of `input.ant-input-number-input`:
 - Row y≈314: **Max. Scheduling Capacity** (dealership max — counts BDC + online + walk-ins combined)
 - Row y≈355: **Max. BDC Capacity**
 - Row y≈396: **Max. Consumer – Regular Capacity** (online booking bucket)
@@ -93,7 +83,7 @@ Columns Sun→Sat at x≈635,735,835,935,1035,1135,1235 (1280×720). Each row al
 2. **Blind coordinate loops corrupt neighbor cells** — a missed click left focus on the previous cell and typed into the WRONG input (overwrote SUN max with the consumer value). ALWAYS: tag the target with `setAttribute('data-jay','t')`, click, then verify `document.activeElement.getAttribute('data-jay')==='t'` BEFORE typing; re-read the whole grid (`inputs.map(i=>i.value)` grouped by rect.y) after each batch and fix strays.
 3. Fresh rects every pass — layout shifts after scroll.
 
-**Save & verify:** Save button bottom-right (~x1172,y674). Arm the XHR hook before clicking — the save `POST /api/scheduling/u/settings/capacity` response ECHOES the persisted state (check `regularCapacity` etc. in it = strongest confirmation, beats DOM re-read per the SAVE-VERIFY TRAP). Toast: "Dealership capacities saved successfully". Then Summary tab → **Run Scheduler** (toast "Scheduler is running...") to apply now instead of overnight.
+**Save & verify:** Save button bottom-right (~x1172,y674). Arm the XHR hook before clicking — the save `POST /api/scheduling/u/settings/capacity` response ECHOES the persisted state (check `regularCapacity` etc. in it = strongest confirmation, beats DOM re-read per the SAVE-VERIFY TRAP). Toast: "Dealership capacities saved successfully". Then Summary tab → **Run Scheduler** (toast "Scheduler is running...") to apply now instead of overnight. Proof it ran: `lastDailySchedulerRunTime` in `GET /api/scheduling/u/settings/appointment` updates within ~10 min (epoch ms; e.g. clicked 7:24 AM → run stamped 7:32:55 AM). `lastWeeklySchedulerRunTime` is the separate weekly run.
 
 SCT baseline (pre-2026-07-31): max 134 (Wed 155) all rows BDC=134/155, consumer regular+quick 40 (Wed 50). Changed consumer regular+quick → 100 all days. Ceiling logic reminder for Joe-type questions: consumer bucket raised past dealership max ⇒ dealership max becomes the online binding ceiling, BUT it's shared with BDC/walk-ins, so heavy call-in days still block online even with a big consumer bucket.
 
