@@ -136,6 +136,11 @@ clientId, locale, program, applicationId, subApplicationId, productIds). Replay 
 Harvest at scale: in-page concurrent worker (conc=10) looping partIds, batches of ~200 per `/eval`.
 12.6k parts velocity ≈ 4 min, on-order ≈ 30s. See `tekion-source-code-parts-scrub` for full method.
 
+### Coupons (Core)
+| Workflow | URL / Nav |
+|----------|-----------|
+| **Coupon Management** (service/parts discount coupons) | ✅ **`/core/coupons`** (list) · create `/core/coupons/create` · edit `/core/coupons/edit/<base64(couponCode)>`. ⚠ `/core/coupon-management` renders BLANK. Reach via App Grid → search "coupon". Full form mechanics = skill `tekion-coupon-management`. Coupon eligibility gated at OPCODE level ("Coupon Eligible" toggle, KB0026638). SCT GL convention: Labor→4402 / Parts→4702 SLS-ASM DISCOUNT. |
+
 ### Vehicle Inventory
 | Workflow | URL / Nav |
 |----------|-----------|
