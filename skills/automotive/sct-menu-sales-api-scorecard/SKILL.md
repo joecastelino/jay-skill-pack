@@ -293,6 +293,25 @@ Rules:
   2026-06-16 it took ~8 minutes. Poll the search endpoint at 60s intervals (not
   faster — polling also consumes the limit) until it returns 200, then do ONE
   clean scrape.
+- ⚠️ **THIRD 429 TYPE — `DEALER_QUOTA` (hit 2026-08-01, 5 PM Opened run):**
+  message `"Limit exhausted for type : DEALER_QUOTA."` — a PER-DEALER quota,
+  distinct from OVERALL_RATELIMIT/OVERALL_QUOTA. Signature on 8/1: the
+  `repair-orders:search` endpoint (and `/jobs`) returned **200 fine**, but the
+  deeper per-RO endpoints (`/operations`, `/parts`) 429'd continuously for
+  1.5+ hrs (17:01→18:31 PDT, probes every 10 min). Because search+jobs work,
+  the scraper LOOKS healthy and writes a **plausible-but-false 0-menu file**
+  (`complete: true`!) — on 8/1 there were 9 TEK-candidate ROs (search tags
+  prove it) yet the scrape said 0 menus/$0. The NOON cron that day emailed a
+  $0 report that was WRONG (≥5 TEK ROs existed by noon). Rules:
+  - A 0-menu result with >0 TEK-tag candidates in the search results =
+    QUOTA-TRUNCATED, NOT a slow day. Verify with the free tags prefilter
+    (search results carry OPCODE tags at no fan-out cost) before trusting 0.
+  - Likely drain source: the DealerDetail sync-all pipeline (fetches 1000s of
+    ROs per store, incl. 2900+ at SCT) shares the dealer quota.
+  - Recovery on 8/1: flagged the JSONs `complete:false` + note, installed a
+    */30 cron (`sct-opened-0801-recovery.sh`, self-removing next day) to probe
+    and run a strict scan + render when quota returns. Did NOT email the false
+    zeros; reported outage with last known-good instead.
 - ⚠️ **TWO DISTINCT 429 TYPES — read the `message` (learned 2026-07-08):**
   `OVERALL_RATELIMIT` = rolling ~15-min window, resets in ~8-15 min → the
   poll-until-200 recovery above works. `OVERALL_QUOTA` = **org-wide daily
