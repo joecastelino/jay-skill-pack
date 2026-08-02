@@ -82,11 +82,11 @@ targets; do NOT use the old $174.95/$199.95 numbers):**
 | Tier | Scope | Target | Status |
 |---|---|---|---|
 | 4 & 6 cyl | Cylinder filter 4+6 | **$119.95** | ✅ LIVE, published + verified (ceiling $114.02 Malibu = correct under-target) |
-| V8 gas | 5.3L + other gas V8 (excl 6.2L, excl Corvette/Camaro) | **$129.95** | ✅ LIVE 2026-07-14, penny-verified $129.95 exact |
+| V8 gas | 5.3L + other gas V8 (excl 6.2L, excl Corvette/Camaro) | **$129.95** | ✅ LIVE 2026-07-14, penny-verified $129.95 exact — ⚠️ but 6.6L GAS L8T bills $175.45 (feed oil 19432357 not covered by overrides; see Tier B gap note) |
 | 6.2L plain (L86) | 2018-and-older 6.2L trucks/SUVs (year-split, Joe approved) | **$179.95** | ✅ LIVE 2026-07-14, penny-verified $179.95 exact |
 | 6.2L L87 | 2019+ 6.2L trucks | **$204.95** | ✅ LIVE (labor $155.88, verified $204.95 exact) |
 | Diesel 3.0L | Duramax LM2/LZ0 | **$214.95** | ✅ LIVE 2026-07-20, penny-verified $214.95 exact (QO#0930 Tahoe LM2) |
-| HD diesel 6.6L | L5P 2500HD/3500HD | **$249.95** | sibling exists (labor $160.88 Define Here, NO parts rows yet) — needs parts+scope+back-solve |
+| HD diesel 6.6L | L5P 2500HD/3500HD | **$249.95** | ✅ LIVE 2026-08-02, penny-verified $249.95 exact (labor 123.47 + parts 126.48; L8T negative-verified) |
 | Mobil 1 | **ALL Corvettes + ALL Camaros** (every trim/engine) | **$279.95** | sibling created, needs parts+scope |
 Notes: Tekion trim filter has no engine CODE — L86 vs L87 split is by MODEL
 YEAR (2019+ = L87), Joe confirmed. Corvette/Camaro carve-out row must sit
@@ -553,6 +553,60 @@ State as of session end (resume here):
   ENGINE_LITRE 6.2L). Watch ordering when adding Mobil 1 (must beat V8-gas
   row for Corvette/Camaro — verify at quote time, reorder via drag handle at
   x≈139 if bottom-most-wins doesn't already resolve it).
+
+## T6 HD DIESEL $249.95 COMPLETE 2026-08-02 — PENNY-VERIFIED ✅
+- Menu row on 172.50K menu: Chevrolet / All models / All years + trim filters
+  6.6L + Diesel (1,314 Duramax trims), factory oil suppressed via MSS
+  (add "Engine Oil & Filter Remove and Replace" + uncheck Apply-to-all-Tiers),
+  T6 sibling `6a557c0d0da08c418d8c10fe` attached, saved + PUBLISHED.
+- LABOR = **123.47** (NOT the 149.90 placeholder, NOT the 116.95 trade-math
+  guess). Rule: back-solve from the LIVE serviceMenu feed's actual billed
+  parts, not from trade prices — feed billed parts $126.48 (88862469×3 @
+  116.13 sale + 12731742→12816256 REPLACED @ 9.93 override), so labor =
+  249.95 − 126.48 = 123.47. Penny-verified L5P 2GC1YPEY0R1118216 at 172.50K:
+  123.47 + 126.48 = **$249.95 EXACT**.
+- Negative-verify: gas L8T 2GC1KNE74S1228298 fell to the V8-gas line, NOT T6 ✅.
+- ⚠️ NEW TIER B GAP (pre-existing, awaiting Joe): the 6.6L GAS L8T feed
+  requests oil **19432357 ×8** — a DIFFERENT part than the 19432337 Tier B's
+  override covers, so the override never fires (per-part matching) → L8T
+  bills **$175.45** not $129.95 (labor 80.88 + 19432357×8@54.64 +
+  12816256×1@9.93). Fix = add 19432357 override row on V8-gas sibling
+  `6a557b9be3559457bb280db8`; also trace why filter bills 9.93 vs 8.19
+  override there. Do NOT change without Joe's OK.
+
+### Quote rail click FIX (mouse coords fail on clipped tiles)
+The 4th rail slot renders at x≈1320 = beyond the 1280 viewport; /mouse clicks
+there no-op, and the header left-arrow (88,95) is the BACK button — clicking
+it exits the quote. Use element dispatch instead:
+- rail arrow: `[...document.querySelectorAll('.icon-left-arrow-thin')]
+  .filter(e=>e.offsetParent&&e.getBoundingClientRect().y>400)[0]` then
+  dispatch mousedown/mouseup/click MouseEvents (rail arrows ≈ (1194,576)/(1223,576)).
+- package tile: find the '172.50K mi' text node, climb
+  `.closest('[class*=serviceMenuPackage]')`, dispatch the 3 MouseEvents.
+  Plain .click() on the wrapper no-ops.
+
+### Penny-verify ground truth = serviceMenu XHR parse path
+Arm XHR hook for `/ro-read/v2/serviceMenu` (~22-37KB), then:
+`data.serviceMenuCatalog[0].menuPackages[0].serviceMenuItems[]` — each item
+has itemName, operationCode, laborPrice, parts[] (partNumber, quantity,
+price=extended sale, overrideUnitPrice, partResolveType REPLACED/RESOLVED,
+originalRequestedPartNumber). Sum laborPrice+parts across items = package
+total; cross-check `data.serviceMenuMetaDataDto.catalog.packages[0].packagePrice`.
+Note tradePricePerPart/listPricePerPart in the feed are in CENTS (3062=$30.62).
+
+### Labor reprice + save-verify recipe (worked twice this session)
+Click #labor-price via /mouse, then in-page: focus+select+
+`document.execCommand('insertText',false,'123.47')`+input event+blur; click
+the visible Save button. Save XHR hook may capture nothing even on success —
+VERIFY by true remount (navigate /home, then back to the edit-service URL,
+re-read #labor-price.value). Same-URL re-nav does NOT remount (SAVE-VERIFY TRAP).
+
+### MSS dropdown pick lands WRONG option sometimes
+A pick can silently land a neighbor (got "AC Condenser Fan" instead of the
+oil line). ALWAYS read back the committed row text after picking; re-open the
+select (click the SYSTEM_SERVICES_NAME_N input) and re-pick if wrong. Menu
+Save can 500 with validation until the row's changes are Applied via the
+row-level Apply/Save modal first.
 
 ## YEAR SPLIT EXECUTED 2026-07-14 PM (L87 row now 2019–2026) + ⚠️ MAKE-COVERAGE BLOCKER
 - Joe's ruling: 6.2L **2018-and-older = $179.95 (L86 tier)**, **2019+ = $204.95
