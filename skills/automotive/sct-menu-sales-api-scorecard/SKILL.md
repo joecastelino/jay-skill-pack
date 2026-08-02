@@ -326,6 +326,21 @@ Rules:
     / $31,428.86 parts = $105,122.66), which does NOT carry into August.
   - Handy quota probe: `/tmp/sct_quota_type.py` does ONE deep /operations call
     on a known 8/1 RO and prints the status + message (cheap, 1 call).
+  - ⚠️ **RECOVERY-WATCHER FALSE POSITIVE (hit 2026-08-02 morning):** a
+    wait-then-scrape watcher that probes only `repair-orders:search` + `/jobs`
+    WILL fire "window clear" while `/operations` is STILL 429ing DEALER_QUOTA
+    — search and jobs recover FIRST/were never blocked. The triggered rescrape
+    then writes a plausible-but-false file: 8/1 rescrape said 136 ROs scanned /
+    0 menus / $0 (Jul 28-31 averaged 5-10 menus/day — 0 with 136 ROs is never
+    real). **Any DEALER_QUOTA recovery probe MUST test the deepest endpoint the
+    scrape needs**: search → jobs → `O.call('GET', jobs['data']['jobs'][0]
+    ['operations']['link'])` and require 200 on THAT before declaring clear.
+    Also verify the rescrape output: `record_count == 0` while the search tags
+    prefilter shows TEK candidates ⇒ still truncated, re-queue. Corrected
+    watcher template: `/tmp/wait_ops_then_scrape.sh` (probes ops link, 20-min
+    poll, then scrapes + prints VERIFY line). Note: jobs payload shape is
+    `jobs['data']['jobs']` (list) and each job's `operations` field is a
+    `{link, id}` dict, NOT inline ops — `scan_ro` fetches the link.
 - ⚠️ **TWO DISTINCT 429 TYPES — read the `message` (learned 2026-07-08):**
   `OVERALL_RATELIMIT` = rolling ~15-min window, resets in ~8-15 min → the
   poll-until-200 recovery above works. `OVERALL_QUOTA` = **org-wide daily
