@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-02T06:30:05",
+ "generated": "2026-08-02T06:45:21",
  "skill_count": 161,
  "skills": [
   {
@@ -39,8 +39,8 @@
    "path": "automotive/bt-tony-menu-rebuild",
    "category": "automotive",
    "description": "The Blackstone Toyota (BT, dealer 1249) service-menu rebuild project for Tony Garcia (Service Manager). Tony wants menus restructured into Factory Recs / Factory Recs Plus with 25 ordered add-on services. Contains the FULL locked spec, Joe's approved decisions, the opcode audit results, and the build plan. Load for ANY \"BT menu\", \"Tony menu\", \"Factory Recs\", or Blackstone Toyota service menu work. STATUS 2026-07-21: full 5K\u2013200K range (5K-step) built, PUBLISHED, Tony-validated; Phase 7 generic Transmission Fluid placeholders DONE; Phase 8 Tony's BG MENU REVAMP 2026 part-match batch DONE + quote-verified (baseline tony-partmatch-baseline-20260721.json). Remaining: x2.5K half-step menus + EV rows only.",
-   "times_used": 47,
-   "last_used": "2026-07-22"
+   "times_used": 48,
+   "last_used": "2026-08-02"
   },
   {
    "name": "tekion-quotes-menu-price-diagnosis",

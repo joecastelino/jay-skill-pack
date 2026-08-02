@@ -2,7 +2,7 @@
 
 Skill library for **Jay**, the Tekion DMS specialist agent at American Motors Group — plus general-purpose agent skills. Built for the [Hermes Agent](https://github.com/NousResearch) skill system (`SKILL.md` + YAML frontmatter, with optional `references/`, `scripts/`, `templates/`).
 
-**161 skills** · auto-synced from the live agent · last sync: 2026-08-02 06:30
+**161 skills** · auto-synced from the live agent · last sync: 2026-08-02 06:45
 
 ## Install into another agent
 
@@ -21,7 +21,7 @@ Secrets (passwords, app passwords, tokens) are redacted with `<PLACEHOLDER>` mar
 | 2 | [`jay-brain-and-skill-index`](skills/automotive/jay-brain-and-skill-index/SKILL.md) | automotive | 57 | 2026-08-01 | Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is "command not found", w... |
 | 3 | [`agent-to-agent-bridge`](skills/automotive/agent-to-agent-bridge/SKILL.md) | automotive | 54 | 2026-07-29 | Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine. |
 | 4 | [`tekion-openapi-repair-orders`](skills/automotive/tekion-openapi-repair-orders/SKILL.md) | automotive | 51 | 2026-07-30 | Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI — no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape A... |
-| 5 | [`bt-tony-menu-rebuild`](skills/automotive/bt-tony-menu-rebuild/SKILL.md) | automotive | 47 | 2026-07-22 | The Blackstone Toyota (BT, dealer 1249) service-menu rebuild project for Tony Garcia (Service Manager). Tony wants menus restructured into Factory Recs / Factory Recs Plus with 25 ordered add-on services. Contains the... |
+| 5 | [`bt-tony-menu-rebuild`](skills/automotive/bt-tony-menu-rebuild/SKILL.md) | automotive | 48 | 2026-08-02 | The Blackstone Toyota (BT, dealer 1249) service-menu rebuild project for Tony Garcia (Service Manager). Tony wants menus restructured into Factory Recs / Factory Recs Plus with 25 ordered add-on services. Contains the... |
 | 6 | [`tekion-quotes-menu-price-diagnosis`](skills/automotive/tekion-quotes-menu-price-diagnosis/SKILL.md) | automotive | 32 | 2026-07-22 | Diagnose a Tekion Service Menu pricing problem (e.g. "a rotation is charging $449.45") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLO... |
 | 7 | [`bc-gm-menu-build`](skills/automotive/bc-gm-menu-build/SKILL.md) | automotive | 30 | 2026-07-20 | The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-... |
 | 8 | [`tekion-sitemap`](skills/automotive/tekion-sitemap/SKILL.md) | automotive | 30 | 2026-07-30 | Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straig... |
