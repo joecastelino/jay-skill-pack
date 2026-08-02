@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-02T13:15:29",
+ "generated": "2026-08-02T13:30:47",
  "skill_count": 162,
  "skills": [
   {
@@ -7,7 +7,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 86,
+   "times_used": 88,
    "last_used": "2026-08-02"
   },
   {
@@ -47,7 +47,7 @@
    "path": "automotive/bc-gm-menu-build",
    "category": "automotive",
    "description": "The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-override plan for vehicle-correct GM parts, and open decisions. Load for ANY \"GM menu\", \"BC menu build\", \"GMLOF\", or Blackstone Chevrolet service menu work.",
-   "times_used": 33,
+   "times_used": 34,
    "last_used": "2026-08-02"
   },
   {
