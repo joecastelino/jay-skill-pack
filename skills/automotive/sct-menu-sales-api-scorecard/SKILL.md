@@ -312,6 +312,20 @@ Rules:
     */30 cron (`sct-opened-0801-recovery.sh`, self-removing next day) to probe
     and run a strict scan + render when quota returns. Did NOT email the false
     zeros; reported outage with last known-good instead.
+  - **8/1 6 PM CLOSED run ALSO lost to the same DEALER_QUOTA outage** (429 on
+    /operations continuously 17:01→18:49+ PDT; search returned 28 closed ROs
+    with 4 TEK candidates — 577151/577112/577087/577084 — proving non-zero).
+    Did NOT run the closed scan (would append a false-$0 day to the Aug master)
+    and did NOT email. Installed `sct-closed-0801-recovery.sh` (cron :15/:45,
+    self-removing after 8/1; probes via /tmp/sct_quota_type.py, on 200 runs the
+    incremental closed scan + render, marker `.sct-closed-20260801-recovered`).
+    **If the marker never appears, the 8/2 6 PM closed cron MUST run the
+    positional append `sct_menu_sales_closed_mtd.py 2026-08-01` FIRST**, then
+    the default today-append. Note: 8/1 is month rollover — Aug master starts
+    fresh; last known-good is the JULY final (7/31: 237 menus, $73,693.80 labor
+    / $31,428.86 parts = $105,122.66), which does NOT carry into August.
+  - Handy quota probe: `/tmp/sct_quota_type.py` does ONE deep /operations call
+    on a known 8/1 RO and prints the status + message (cheap, 1 call).
 - ⚠️ **TWO DISTINCT 429 TYPES — read the `message` (learned 2026-07-08):**
   `OVERALL_RATELIMIT` = rolling ~15-min window, resets in ~8-15 min → the
   poll-until-200 recovery above works. `OVERALL_QUOTA` = **org-wide daily
