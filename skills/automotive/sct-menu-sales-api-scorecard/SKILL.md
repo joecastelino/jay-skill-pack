@@ -338,7 +338,20 @@ Rules:
     Also verify the rescrape output: `record_count == 0` while the search tags
     prefilter shows TEK candidates ⇒ still truncated, re-queue. Corrected
     watcher template: `/tmp/wait_ops_then_scrape.sh` (probes ops link, 20-min
-    poll, then scrapes + prints VERIFY line). Note: jobs payload shape is
+    poll, then scrapes + prints VERIFY line).
+  - **2026-08-02 NOON UPDATE: DEALER_QUOTA outage CONTINUED — 19+ hrs continuous**
+    (8/1 17:01 → 8/2 12:00+; /operations still 429 DEALER_QUOTA while search+jobs
+    200). The 8/2 morning false-positive rescrape wrote plausible-but-false 0-menu
+    files for BOTH 8/1 and 8/2 with `complete:true` — noon run flagged all four
+    JSONs `complete:false` + note. Tags prefilter at noon 8/2 proved 4 TEK
+    candidates existed (577227/577221/577195/577193) → 0 was false. Noon cron did
+    NOT email (per the quota-outage rule). Upgraded watcher:
+    `/tmp/wait_ops_then_scrape_v2.sh` — recovers BOTH dates sequentially, runs the
+    tags-prefilter false-zero verify per date, renders 8/2, marker
+    `.sct-opened-20260802-recovered`. If a DEALER_QUOTA outage spans 2+ days,
+    suspect the DealerDetail sync-all pipeline drain and escalate to Joe for a
+    Tekion quota review — the nightly SCT sync (23:00 cron, ~2900 ROs) plus the
+    */30 heal-backfill cron share the same dealer quota. Note: jobs payload shape is
     `jobs['data']['jobs']` (list) and each job's `operations` field is a
     `{link, id}` dict, NOT inline ops — `scan_ro` fetches the link.
 - ⚠️ **TWO DISTINCT 429 TYPES — read the `message` (learned 2026-07-08):**
