@@ -49,6 +49,19 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   dedicated ALIGN code OR any `TEK*` code (a bundled alignment can hide inside any menu).
   Full June: 5,382 closed → 1,169 candidates. This ~5x reduction keeps the run under
   the app-wide `OVERALL_RATELIMIT`.
+- **DEALER_QUOTA exhaustion — PARTIAL/deep-endpoint variant (hit 2026-08-01):** a THIRD
+  quota type. Signature: `/repair-orders:search` and `/repair-orders/{id}/jobs` return 200,
+  but `/jobs/{id}/operations` 429s with `Limit exhausted for type : DEALER_QUOTA.` — so the
+  skill's standard quota probe (search pageSize=1) returns 200 and LIES. The scan builds the
+  index fine, then hangs silently in the fan-out retry/backoff loop forever (no checkpoint
+  file ever appears — checkpoint only writes every 20 done ROs). Tells: >15 min with index
+  built but NO align-scan.json checkpoint; the `sct-closed/opened-quota-recovery` cron logs
+  show `OPS_429`. Diagnose with a probe on the OPS endpoint, not search:
+  `O.call('GET','/repair-orders/<rid>/jobs/<jid>/operations')`. Both backoff guards in
+  sct_align_mtd.py now also match "DEALER_QUOTA" (patched 2026-08-01). Playbook: kill the
+  hung scan, arm the dated self-heal pair (`selfheal_sct_align_20260801.sh` probes the OPS
+  endpoint, not search) + handoff watcher; the handoff script now bakes on-disk byte sizes
+  into the Stacey build ask. Outage observed 19:00 → past 21:15 PDT with no recovery.
 - **OVERALL_QUOTA exhaustion (hit 2026-07-07):** distinct from OVERALL_RATELIMIT — this is
   the store's DAILY API quota being fully spent (other pipelines, e.g. a TOL backfill loop +
   caliber-ops scrapers, can burn it). EVERY call 429s
