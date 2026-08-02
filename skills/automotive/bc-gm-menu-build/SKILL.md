@@ -819,7 +819,51 @@ State as of session end (resume here):
   `curl 'https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/<VIN>?format=json'`
   → DisplacementL + FuelTypePrimary + EngineModel.
 
-### T6 RESUME POINT (session end 2026-07-21 AM — pick up exactly here)
+### T6 RESUME POINT v2 (session 2026-08-02 AM — supersedes the 2026-07-21 block below)
+- **L5P FEED CAPTURED (QO#0946, VIN 2GC1YPEY0R1118216, odo 174,000 → 172.50K
+  TEK172500PSM)** — the HD diesel parts, off the live calculate feed:
+  - **85614334 - ELEMENT** ×1 @ retail $42.25 — the L5P oil filter, arrives as
+    partResolveType **SUPERSESSION from requested 12731742**. Key BOTH numbers
+    in Add Custom Parts per the T5 belt-and-suspenders pattern.
+  - **88862469 - OIL** ×3 @ retail $38.71.
+  - 12816256 - FILTER ×1 @ $10.35 also in the resolve chain (OH −20 at BC).
+  - TRADE prices still uncaptured — needed for the back-solve. Direct fetch to
+    `/api/parts/proxy/u/lookup/inventory` with `{searchText,pageInfo}` body
+    returns `unexpected.error` — body shape wrong; capture the app's own
+    lookup XHR (hook + trigger a parts search in UI) or read part detail pages.
+- **172.50K menu row scope SAVED**: Chevrolet / All models / All years / trim
+  filters **ENGINE_LITRE 6.6L + FUEL_TYPE Diesel** → 1,314 trims, spot-checked
+  all Duramax (LB7 etc.). Gas/diesel collision resolved. Row still needs:
+  factory-oil suppression via MSS + T6 sibling added via Add Services + publish.
+- **T6 sibling labor placeholder set $149.90** (Define Here, CP flat) — re-solve
+  exact once trade prices land: labor = 249.95 − trade(85614334 + 3×88862469).
+- **Sibling Add Custom Parts: oil row 88862469 ×3 committed in UI but SAVE
+  BLOCKED** — the add-row builder spawned TWO blank extra rows (red Part Name)
+  and Save fails "Please correct form errors to proceed". Their right-side
+  delete buttons (x≈1352) do NOT respond to /mouse OR element .click() — likely
+  the disabledWrapper span variant. FIX PATH: reload the edit page (unsaved rows
+  discard) and rebuild the parts rows in ONE clean pass: for each row set
+  Identifier→Job→Part# IN THAT ORDER and never tab into a fresh blank row.
+- **NEW PITFALLS (burned this session):**
+  - Quote page **Choose Parts modal renders EMPTY** repeatedly on this quote —
+    don't fight it. GROUND TRUTH path: SPA-nav to the quote, arm XHR hook for
+    `/service/calculate`, click the SERVICE LINE itself (the "TEK172500PSM -"
+    text) → detail panel opens and fires calculate (198K resp). Regex-extract
+    partNumber/quantity/unitPrice/partResolveType/originalRequestedPartNumber
+    in-page (response too big to pull whole through /eval).
+  - Quote SPA drops back to the quotes LIST after menu-tab clicks; interval
+    rail also disappears (`[]`) after left-arrow dispatch — re-pushState to the
+    quote URL and wait 8s, then work from the Services line, not the rail.
+  - Row-2 identifier react-select: option list can render ABOVE the cell
+    (y<cell) and clicks miss; focus the input (`partPosition_undefined` at the
+    right y) + `document.execCommand('insertText')` + ArrowDown+Enter works.
+- Remaining sequence: clean sibling parts save (both filter numbers + oil, trade
+  prices) → labor reprice → MSS suppression on 172.50K row → add T6 sibling →
+  publish → penny-verify $249.95 L5P / negative-verify $129.95 gas L8T
+  (2GC1KNE74S1228298) → T7 Mobil 1 (sibling 6a557c29aa85e61624e3c481, BOTTOM
+  row, must steal Corvette/Camaro) → 7-tier recon table to Joe.
+
+### T6 RESUME POINT (session end 2026-07-21 AM — superseded, kept for reference)
 - **T5 = DONE, penny-verified $214.95 exact** (QO#0930 Tahoe LM2, after
   deleting the duplicate superseded-filter row from Add Custom Parts).
   5 of 7 tiers live. Remaining: T6 ($249.95) + T7 Mobil 1 ($279.95) + final
