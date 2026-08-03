@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-03T09:45:35",
+ "generated": "2026-08-03T10:00:28",
  "skill_count": 165,
  "skills": [
   {
@@ -7,7 +7,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 91,
+   "times_used": 92,
    "last_used": "2026-08-03"
   },
   {
@@ -227,6 +227,14 @@
    "last_used": "2026-07-24"
   },
   {
+   "name": "amg-wip-monthly-column-fill",
+   "path": "automotive/amg-wip-monthly-column-fill",
+   "category": "automotive",
+   "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
+   "times_used": 9,
+   "last_used": "2026-08-03"
+  },
+  {
    "name": "hermes-agent-provider-switch",
    "path": "automotive/hermes-agent-provider-switch",
    "category": "automotive",
@@ -243,20 +251,20 @@
    "last_used": "2026-07-15"
   },
   {
-   "name": "amg-wip-monthly-column-fill",
-   "path": "automotive/amg-wip-monthly-column-fill",
-   "category": "automotive",
-   "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
-   "times_used": 8,
-   "last_used": "2026-08-03"
-  },
-  {
    "name": "tekion-parts-autoorder-diagnosis",
    "path": "automotive/tekion-parts-autoorder-diagnosis",
    "category": "automotive",
    "description": "Diagnose why parts at a Tekion store stocked out / didn't auto-order (forcing local sourcing from Sunnyvale/Capitol/etc.). The CANONICAL parts-replenishment skill (supersedes tekion-parts-shortage-diagnosis). Works from RO numbers OR part numbers. Pulls live Stocking Details (Source Code, Stocking Status, Manual Order, BRP/BSL, Min/Max, On Hand/Order, Open Documents, Transactions ledger) per part, runs the day-supply demand calc, exposes the BSL Round-Down trap and the negative-on-hand backfill trap, and produces a per-part verdict + fix (Min Qty vs source-code BRP/BSL vs in-and-out receiving discipline). Use whenever Joe asks \"why aren't these parts auto ordering / why do we have shortages / why did we have to get parts locally / why is my shelf at 0 when Min is set.",
    "times_used": 8,
    "last_used": "2026-07-06"
+  },
+  {
+   "name": "tekion-report-builder-scraper",
+   "path": "automotive/tekion-report-builder-scraper",
+   "category": "automotive",
+   "description": "Scrape any Tekion Report Builder CUSTOM report (e.g. \"SCT Menu Sales Opened\") headlessly \u2014 find the report id, open it under the right dealer, expand grouped rows, parse to JSON, render a manager-ready scorecard (PNG+PDF), and email it via Stacey. Use whenever Joe/managers want recurring Tekion report data without downloading PDFs from Tekion's emailed reports.",
+   "times_used": 8,
+   "last_used": "2026-08-03"
   },
   {
    "name": "tekion-service-settings",
@@ -281,14 +289,6 @@
    "description": "Tekion Parts Sales Orders (counter sales) + Parts RO Sales (parts on repair orders) + the full parts PRICING system (hierarchy, price codes, price breaks/formulas, matrices, defaults). Covers /parts/sales-order, P&A vs Fulfillment, cores, prepaid parts, core returns (CM credit memos), and the 5-tier pricing hierarchy where manual override is \"king of kings.\" Load for counter-sale, parts-on-RO, or parts-pricing questions.",
    "times_used": 7,
    "last_used": "2026-07-31"
-  },
-  {
-   "name": "tekion-report-builder-scraper",
-   "path": "automotive/tekion-report-builder-scraper",
-   "category": "automotive",
-   "description": "Scrape any Tekion Report Builder CUSTOM report (e.g. \"SCT Menu Sales Opened\") headlessly \u2014 find the report id, open it under the right dealer, expand grouped rows, parse to JSON, render a manager-ready scorecard (PNG+PDF), and email it via Stacey. Use whenever Joe/managers want recurring Tekion report data without downloading PDFs from Tekion's emailed reports.",
-   "times_used": 7,
-   "last_used": "2026-08-03"
   },
   {
    "name": "tekion-roles-permissions",
