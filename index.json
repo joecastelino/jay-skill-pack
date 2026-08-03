@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-03T08:30:33",
+ "generated": "2026-08-03T08:45:50",
  "skill_count": 165,
  "skills": [
   {
@@ -23,8 +23,8 @@
    "path": "automotive/agent-to-agent-bridge",
    "category": "automotive",
    "description": "Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine.",
-   "times_used": 55,
-   "last_used": "2026-08-02"
+   "times_used": 56,
+   "last_used": "2026-08-03"
   },
   {
    "name": "tekion-openapi-repair-orders",
@@ -315,6 +315,14 @@
    "last_used": "2026-07-24"
   },
   {
+   "name": "amg-wip-monthly-column-fill",
+   "path": "automotive/amg-wip-monthly-column-fill",
+   "category": "automotive",
+   "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
+   "times_used": 5,
+   "last_used": "2026-08-03"
+  },
+  {
    "name": "tekion-alignment-by-advisor-report",
    "path": "automotive/tekion-alignment-by-advisor-report",
    "category": "automotive",
@@ -377,14 +385,6 @@
    "description": "Run the Toyota of Lancaster (TL/TOL, Tekion dealer 1092) ALIGNMENT count report, month-to-date, broken down by service advisor (dedicated + bundled + unique ROs, ranked). Produces a 2-page Toyota-red scorecard (page-1 PNG + full PDF) and is drafted to Sean Preston by Stacey. Use when Joe asks for \"the Lancaster/TOL alignment report\" or to schedule it.",
    "times_used": 4,
    "last_used": "2026-07-07"
-  },
-  {
-   "name": "amg-wip-monthly-column-fill",
-   "path": "automotive/amg-wip-monthly-column-fill",
-   "category": "automotive",
-   "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
-   "times_used": 3,
-   "last_used": "2026-08-03"
   },
   {
    "name": "bt-menu-sales-reports",
