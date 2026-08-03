@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-02T17:15:02",
+ "generated": "2026-08-02T17:30:59",
  "skill_count": 162,
  "skills": [
   {
@@ -99,6 +99,14 @@
    "last_used": "2026-07-18"
   },
   {
+   "name": "sct-menu-sales-api-scorecard",
+   "path": "automotive/sct-menu-sales-api-scorecard",
+   "category": "automotive",
+   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters to the frozen 316 TEK* maintenance opcodes, resolves advisor names via the persistent browser session on :9223, renders a light-format PNG+PDF scorecard, vision-verifies, and emails. Use for the daily Menu Sales Opened Performance Report cron.",
+   "times_used": 25,
+   "last_used": "2026-08-02"
+  },
+  {
    "name": "tekion-ghost-bin-negative-onhand",
    "path": "automotive/tekion-ghost-bin-negative-onhand",
    "category": "automotive",
@@ -107,10 +115,10 @@
    "last_used": "2026-07-28"
   },
   {
-   "name": "sct-menu-sales-api-scorecard",
-   "path": "automotive/sct-menu-sales-api-scorecard",
+   "name": "sct-alignment-by-advisor-report",
+   "path": "automotive/sct-alignment-by-advisor-report",
    "category": "automotive",
-   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters to the frozen 316 TEK* maintenance opcodes, resolves advisor names via the persistent browser session on :9223, renders a light-format PNG+PDF scorecard, vision-verifies, and emails. Use for the daily Menu Sales Opened Performance Report cron.",
+   "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
    "times_used": 24,
    "last_used": "2026-08-02"
   },
@@ -121,14 +129,6 @@
    "description": "Build Joe's daily SCT Back Counter Bin Check count sheet \u2014 cross-reference a day's RO part sales (Tekion OpenAPI) against parts that stock in a back-counter bin (5000 section) and render a Tekion-bin-check-style sheet with Primary Bin and Back Counter Bin write-in Count boxes, emailed via Stacey. Use when Joe asks to \"verify counts daily\", \"which back counter parts sold today\", or re-run the back-counter check for a date. KEY DESIGN INSIGHT (Joe corrected me 2026-07-04): a bin-snapshot DIFF can NEVER catch a back-counter pull \u2014 Tekion only relieves the PRIMARY bin (2420), so the 5000s bin doesn't move when the sale posts. Detection must be sales-driven: today's RO parts INTERSECT back-counter roster.",
    "times_used": 23,
    "last_used": "2026-07-25"
-  },
-  {
-   "name": "sct-alignment-by-advisor-report",
-   "path": "automotive/sct-alignment-by-advisor-report",
-   "category": "automotive",
-   "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
-   "times_used": 22,
-   "last_used": "2026-07-31"
   },
   {
    "name": "tekion-vi-api-migration",
@@ -155,20 +155,20 @@
    "last_used": "2026-08-02"
   },
   {
+   "name": "tekion-scheduling",
+   "path": "automotive/tekion-scheduling",
+   "category": "automotive",
+   "description": "Tekion Service Scheduling Settings \u2014 appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the \"lowest ceiling wins\" capacity model, shop top-down matching, the daily overnight scheduler + \"Run Scheduler\" button, parts-on-appointment notifications, and the concierge mobile write-up flow. Load for any appointment/scheduling/capacity setup or troubleshooting in Tekion.",
+   "times_used": 18,
+   "last_used": "2026-08-02"
+  },
+  {
    "name": "tekion-opcode-overrides",
    "path": "automotive/tekion-opcode-overrides",
    "category": "automotive",
    "description": "Add vehicle/part override rows to a Tekion opcode (Overrides tab) using the verified browser-tool cascading react-select method. This is the batch workflow used for cabin-filter part overrides (RACF etc.) \u2014 Make/Model/Year/ Trim/Part per row, driven by the __buildRow() helper toolkit. Covers the real-click trim rule, the Save Changes confirmation modal, and mandatory reload+API verification. The most complex Tekion workflow we run.",
    "times_used": 17,
    "last_used": "2026-07-12"
-  },
-  {
-   "name": "tekion-scheduling",
-   "path": "automotive/tekion-scheduling",
-   "category": "automotive",
-   "description": "Tekion Service Scheduling Settings \u2014 appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the \"lowest ceiling wins\" capacity model, shop top-down matching, the daily overnight scheduler + \"Run Scheduler\" button, parts-on-appointment notifications, and the concierge mobile write-up flow. Load for any appointment/scheduling/capacity setup or troubleshooting in Tekion.",
-   "times_used": 17,
-   "last_used": "2026-08-02"
   },
   {
    "name": "tekion-declined-deferred-services-report",
