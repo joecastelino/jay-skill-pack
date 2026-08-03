@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-03T08:45:50",
+ "generated": "2026-08-03T09:00:24",
  "skill_count": 165,
  "skills": [
   {
@@ -291,6 +291,14 @@
    "last_used": "2026-07-23"
   },
   {
+   "name": "amg-wip-monthly-column-fill",
+   "path": "automotive/amg-wip-monthly-column-fill",
+   "category": "automotive",
+   "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
+   "times_used": 6,
+   "last_used": "2026-08-03"
+  },
+  {
    "name": "dealerdetail-api-pipeline-build",
    "path": "automotive/dealerdetail-api-pipeline-build",
    "category": "automotive",
@@ -313,14 +321,6 @@
    "description": "Build a \"units of X sold in a period\" report (tires, batteries, brakes, BG products, wipers...) for any Tekion store using the Source Code part list + bulk salehistory API \u2014 NO OpenAPI quota, no RO fan-out. Use when Joe asks \"how many tires/batteries/etc were sold last month/quarter\" and the category maps to a parts Source Code. Verified TOL tires Q2 2026.",
    "times_used": 6,
    "last_used": "2026-07-24"
-  },
-  {
-   "name": "amg-wip-monthly-column-fill",
-   "path": "automotive/amg-wip-monthly-column-fill",
-   "category": "automotive",
-   "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
-   "times_used": 5,
-   "last_used": "2026-08-03"
   },
   {
    "name": "tekion-alignment-by-advisor-report",
