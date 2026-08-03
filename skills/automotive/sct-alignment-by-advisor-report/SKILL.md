@@ -62,6 +62,27 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   hung scan, arm the dated self-heal pair (`selfheal_sct_align_20260801.sh` probes the OPS
   endpoint, not search) + handoff watcher; the handoff script now bakes on-disk byte sizes
   into the Stacey build ask. Outage observed 19:00 → past 21:15 PDT with no recovery.
+  **DEALER_QUOTA can persist >22h + the sync-all hog + expired-watcher re-arm (2026-08-02):**
+  the same outage was STILL 429 at 5 PM the next day. Three lessons:
+  1. **Hunt the hog FIRST:** the dealer-detail nightly `sync:all` (cron 23:00,
+     `cron-sct-sync.sh` → `npm run sync:all` → tsx) had been running **17 hours**, stuck
+     retrying SCT against the 429 wall — it grabs any refill instantly. Diagnose:
+     `pgrep -af "sync-all|cron-sct-sync|tsx --conditions"` + `ps -o lstart=` on the flock
+     pid (a start time from last night = stuck). Fix: kill the WHOLE tree (flock, .sh, npm,
+     tsx, node pids) and confirm `/tmp/dealerdetail-sct-sync.lock` is gone. Do this before
+     re-arming anything.
+  2. **The 21h self-heal DEADLINE expires mid-outage:** an outage starting ~7 PM outlives a
+     watcher armed at ~8:53 PM. Re-arm with fresh DATED copies — the sed date-swap works:
+     `sed -e 's/2026-08-01/2026-08-02/g; s/20260801/20260802/g' selfheal_sct_align_20260801.sh
+     > selfheal_sct_align_20260802.sh` (LOG/LOCK lines carry dates so both rename cleanly),
+     `bash -n` both, chmod +x in its own foreground call, kill the old watcher pair, launch
+     each new one via terminal(background=true, /usr/bin/bash explicit).
+  3. **Month rollover during an outage:** when recovery lands after the 1st, the MTD scan
+     produces a tiny new-month report. The prior month's FINAL data (through the 31st) is
+     already on disk (`sct-mtd-<mm>-31-align-by-advisor.json`) — offer Joe a July-final
+     render+draft that needs ZERO API quota while waiting.
+  If still 429 at the next nightly refill, escalate to Joe: multi-day DEALER_QUOTA
+  non-reset is a Tekion-side problem (raise quota / investigate reset).
 - **OVERALL_QUOTA exhaustion (hit 2026-07-07):** distinct from OVERALL_RATELIMIT — this is
   the store's DAILY API quota being fully spent (other pipelines, e.g. a TOL backfill loop +
   caliber-ops scrapers, can burn it). EVERY call 429s
