@@ -30,16 +30,24 @@ r4-10 Hours Sold: CUSTOMER / TXM / TOYOTA CARE / PREPAIRD MAINTENANCE / WARRANTY
 
 **Backfill PITFALL (burned 2026-08-03):** `npm run sync:store` needs `.env` loaded — bare invocation prints "Missing required environment variables: DATABASE_URL..." yet still EXITS 0 and ingests NOTHING. Always wrap like the nightly cron: `cd apps/web && set -a && . ./.env && set +a && npm run sync:store -- SCT 35`. Verify ingestion afterward by re-counting the month's ROs (fetchedAt max should be fresh), never trust exit code alone.
 
-### 3. Hours Sold bucket mapping (Joe confirmed 2026-08-03 — partially)
-The 7 hours rows come from Joe's SAVED FILTER GROUPS on SCT Advisor Performance (load group → set July dates → Apply → read Bill Hrs TOTAL). Joe confirmed which groups:
-- **CUSTOMER** = `Customer Pay Hours 10/1/2025` — ⚠️ BUT its stored Pay Type was **Internal** (stale save; Joe asked, answer pending — likely should be Customer Pay). Definition: Pay Type Status In Closed + Opcode **Not In** TAC80–TAC15,TSC1–TSC10 + Pay Type In <?> + Make In Toyota,Scion. With Internal it gave July Bill Hrs 1,455.75 (≈ the INTERNAL row's magnitude).
+### 3. Hours Sold bucket mapping (Joe confirmed 2026-08-03, CORRECTED same day)
+The 7 hours rows come from Joe's SAVED FILTER GROUPS on SCT Advisor Performance (load group → set dates → Apply → read Bill Hrs TOTAL).
+
+**⚠️ ONLY ELR IS YTD — EVERYTHING ELSE IS THE TARGET MONTH ONLY (Joe corrected 2026-08-03, same-day reversal of an earlier "needs to be YTD" instruction that turned out to be ELR-specific).** Rule:
+- **ELR** (every ELR cell/row, e.g. r35-45 LABOR RATES/ELR block, r49-55 ACCESSORY ELRs) → date range 01/01/<year> → EOM of target month (YTD-to-date average).
+- **Everything else** (Hours Sold r4-10, VEHICLE ATTENDANCE r13-14, WIP $, RO counts, parts $, TXM count/sale/cost/gross, workshop hours) → single calendar MONTH window (1st–EOM of the target month only), NOT YTD.
+Verified July-only CP (07/01–07/31/2026): **Bill Hrs 2,211.33, ROs 3,177** — this is the correct number for the Hours Sold row. The YTD run (18,486.81/23,619/$174.65) is ONLY valid for the ELR figure ($174.65); do not use the YTD hours/RO-count for the monthly Hours Sold or Attendance rows.
+
+Joe confirmed which groups:
+- **CUSTOMER** = `Customer Pay Hours 10/1/2025` — was corrupted (stored Pay Type = **Internal**, stale save); FIXED + re-saved with Joe's approval 2026-08-03 (now Pay Type In Customer Pay). Definition: Pay Type Status In Closed + Opcode **Not In** TAC80–TAC15,TSC1–TSC10 + Pay Type In Customer Pay + Make In Toyota,Scion. (The Internal-corrupted run gave July 1,455.75 ≈ INTERNAL row's magnitude.)
 - **WARRANTY** = `Warranty Hours 11/1` ✓ (Joe: correct)
 - **TOYOTA CARE** = `TAC/TOYOTACARE REVISED 3/1/25` ✓
 - **PREPAID MAINT** = `TSC/Prepaid Hours REVISED 3/1/25` ✓
 - **PDI** = `PDI` ✓
 - **TXM** = ❌ NOT the `TXM REVISED 9/1` group — Joe: use **"SCP-Toyota Care 2.0" from REPORT BUILDER** (/report-manager custom report; scrape via tekion-report-builder-scraper).
 - Attendance = `WIP Attendance - Toyota` group (see above).
-SAVED-GROUP PITFALLS: loaded groups carry STALE dates (reset to the month every time) and possibly WRONG edited-then-saved values — read every row (esp. Pay Type) after loading, before Apply. Date calendar: month-grid cells have no onClick — advance RIGHT panel arrow first, then LEFT (left arrow caps adjacent to right panel); details in tekion-standard-reports-performance skill.
+SAVED-GROUP PITFALLS: loaded groups carry STALE dates (reset every time) and possibly WRONG edited-then-saved values — read every row (esp. Pay Type) after loading, before Apply. Date calendar: month-grid cells have no onClick — advance RIGHT panel arrow first, then LEFT (left arrow caps adjacent to right panel); details in tekion-standard-reports-performance skill. For YTD: left-panel prev-month arrow (~606,441) back to Jan, click "1" in left panel, click "31" (or EOM) in right panel — range inputs update only after BOTH ends clicked.
+**APPLY-CLICK PITFALL (burned 2026-08-03):** clicking Apply via the :9223 `/mouse` endpoint at its coords SILENTLY FAILS on this popover — popover stays open (`*Edited` remains), grid never refreshes, and you'll poll stale totals forever. FIX: dispatch native MouseEvents on the LEAF element via /eval: `[...document.querySelectorAll('.ant-popover *')].filter(e=>e.offsetParent&&e.children.length===0&&e.innerText.trim()==='Apply')` → dispatch mousedown/mouseup/click with bubbles:true. Verify success = popover count drops to 0 AND Total row changes within ~10s. Also: :9223 `/screenshot` is **GET** returning JSON `{"screenshot": "<base64>"}` (POST /screenshot = 404).
 
 ### 3b. Bucket mapping via DB (cross-check only — never guess)
 RO data exposes only THREE payTypes: CUSTOMER_PAY / WARRANTY / INTERNAL. The sheet splits 7 ways. Observed: TAC15–TAC80 opcodes under CP = TOYOTA CARE row (matches sct-toyotacare-billed-hours-report skill, "not Warranty" rule); TSC* opcodes under CP ≈ prepaid maintenance candidate; TXM* opcodes appear under WARRANTY. **PDI/TXM/PPM bucket definitions must come from Joe's saved Advisor Performance filters — ASK, don't infer.** (Asked 2026-08-03, answer pending — record it here when given.)
@@ -52,6 +60,23 @@ Manual/rare — carry forward prior month unless Joe says changed.
 
 ## Sanity-check protocol (Joe asked for this explicitly)
 Before filling a whole column: present 3-5 computed cells vs the prior month's values, state coverage caveats, and have Joe verify 1-2 (CP Bill Hrs total + RO Count from his Advisor Performance report for the same window) before running the rest. Joe fills the sheet by hand from numbers posted in Slack — deliver in row order.
+
+## YTD variant — ELR ONLY (verified 2026-08-03, corrected same day)
+Joe's rule: **only the ELR figure is YTD**; every other cell (hours, RO counts, attendance, $ totals) uses the single target MONTH. Use this YTD date-range method only when computing an ELR row/cell. Same saved groups, just set Pay Type Closed Date = 01/01/YYYY → end of current month for the ELR read, then re-Apply with 1st–EOM of the target month for the actual Hours Sold number from the same group. Date entry: open funnel → click the START date input in the popover → use `.ant-calendar-prev-month-btn` nav arrow (~606,441) repeatedly until left panel header = "Jan YYYY" → click day 1 in `.ant-calendar-range-left` → click day 31 (end day) in `.ant-calendar-range-right` (right panel will already show the end month). Inputs update to 01/01/2026 / 07/31/2026 and the calendar closes.
+
+**CRITICAL APPLY PITFALL:** the popover's Apply button does NOT respond to /mouse coordinate clicks (popover stays open, grid keeps stale totals — polled 60s with no change). Must dispatch a native MouseEvent on the leaf Apply element via /eval:
+```js
+const els=[...document.querySelectorAll('.ant-popover *')].filter(e=>e.offsetParent&&e.children.length===0&&e.innerText.trim()==='Apply');
+const el=els[els.length-1];const b=el.getBoundingClientRect();
+['mousedown','mouseup','click'].forEach(t=>el.dispatchEvent(new MouseEvent(t,{bubbles:true,cancelable:true,view:window,clientX:b.x+b.width/2,clientY:b.y+b.height/2})));
+```
+Verify success = popover count drops to 0 AND grid Total changes within ~10s. Poll `document.body.innerText` slice after 'Sublet Parts Cost' until the old RO count disappears.
+
+Total-row read order after 'Sublet Parts Cost\nTotal\n': ROcount, [6 $ columns], **BillHrs**, ELR, ... (e.g. YTD CP: `23619 ... 18486.81, 174.65`).
+
+/screenshot endpoint = **GET** returning JSON `{screenshot: <base64>}` — not POST.
+
+**Verified YTD CP (SCT, 01/01–07/31/2026): Bill Hrs 18,486.81, ROs 23,619, ELR $174.65** (July-only was 2,211.33 / 3,177 / $172.63).
 
 ## Pitfalls
 - OpenAPI RO search results have NO `id` field — use `documentId`; jobs live at `data.jobs`, operations at `data.roOperations` (fan-out path only).

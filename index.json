@@ -1,14 +1,14 @@
 {
- "generated": "2026-08-03T08:15:06",
- "skill_count": 164,
+ "generated": "2026-08-03T08:30:33",
+ "skill_count": 165,
  "skills": [
   {
    "name": "persistent-browser-server",
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 88,
-   "last_used": "2026-08-02"
+   "times_used": 89,
+   "last_used": "2026-08-03"
   },
   {
    "name": "jay-brain-and-skill-index",
@@ -75,6 +75,14 @@
    "last_used": "2026-08-02"
   },
   {
+   "name": "tekion-autonomous-login",
+   "path": "automotive/tekion-autonomous-login",
+   "category": "automotive",
+   "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
+   "times_used": 27,
+   "last_used": "2026-08-03"
+  },
+  {
    "name": "tekion-service-menu-setups",
    "path": "automotive/tekion-service-menu-setups",
    "category": "automotive",
@@ -89,14 +97,6 @@
    "description": "Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters to the frozen 316 TEK* maintenance opcodes, resolves advisor names via the persistent browser session on :9223, renders a light-format PNG+PDF scorecard, vision-verifies, and emails. Use for the daily Menu Sales Opened Performance Report cron.",
    "times_used": 26,
    "last_used": "2026-08-03"
-  },
-  {
-   "name": "tekion-autonomous-login",
-   "path": "automotive/tekion-autonomous-login",
-   "category": "automotive",
-   "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
-   "times_used": 26,
-   "last_used": "2026-08-02"
   },
   {
    "name": "bc-menu-sales-reports",
@@ -211,20 +211,20 @@
    "last_used": "2026-07-30"
   },
   {
+   "name": "tekion-standard-reports-performance",
+   "path": "automotive/tekion-standard-reports-performance",
+   "category": "automotive",
+   "description": "Pull Tekion Standard Reports from the REPORTS module (/core/reports) via the :9223 authenticated browser \u2014 especially the fixed-ops performance suite (Advisor Performance, Tech Performance / proficiency = assigned-billed vs attendance hours). Covers the filter funnel (Flag Date range, Make filter), Group By, and Export. Use when Joe wants advisor/tech performance numbers, or ANY report that is NOT a custom Report Builder report.",
+   "times_used": 11,
+   "last_used": "2026-08-03"
+  },
+  {
    "name": "tekion-part-sales-ledger-report",
    "path": "automotive/tekion-part-sales-ledger-report",
    "category": "automotive",
    "description": "Build a \"parts sold\" report (e.g. tires) for any Tekion store and period with ACTUAL invoiced dollars, split RO vs Sales Order (counter), by counterperson, from the internal part transaction ledger (activity-log API) \u2014 zero OpenAPI quota. Use when Joe asks \"how many X did we sell\" for a parts category, or when the OpenAPI quota is exhausted and RO-level pulls are blocked.",
    "times_used": 10,
    "last_used": "2026-07-24"
-  },
-  {
-   "name": "tekion-standard-reports-performance",
-   "path": "automotive/tekion-standard-reports-performance",
-   "category": "automotive",
-   "description": "Pull Tekion Standard Reports from the REPORTS module (/core/reports) via the :9223 authenticated browser \u2014 especially the fixed-ops performance suite (Advisor Performance, Tech Performance / proficiency = assigned-billed vs attendance hours). Covers the filter funnel (Flag Date range, Make filter), Group By, and Export. Use when Joe wants advisor/tech performance numbers, or ANY report that is NOT a custom Report Builder report.",
-   "times_used": 10,
-   "last_used": "2026-07-20"
   },
   {
    "name": "hermes-agent-provider-switch",
@@ -275,6 +275,14 @@
    "last_used": "2026-07-31"
   },
   {
+   "name": "tekion-report-builder-scraper",
+   "path": "automotive/tekion-report-builder-scraper",
+   "category": "automotive",
+   "description": "Scrape any Tekion Report Builder CUSTOM report (e.g. \"SCT Menu Sales Opened\") headlessly \u2014 find the report id, open it under the right dealer, expand grouped rows, parse to JSON, render a manager-ready scorecard (PNG+PDF), and email it via Stacey. Use whenever Joe/managers want recurring Tekion report data without downloading PDFs from Tekion's emailed reports.",
+   "times_used": 7,
+   "last_used": "2026-08-03"
+  },
+  {
    "name": "tekion-roles-permissions",
    "path": "automotive/tekion-roles-permissions",
    "category": "automotive",
@@ -305,14 +313,6 @@
    "description": "Build a \"units of X sold in a period\" report (tires, batteries, brakes, BG products, wipers...) for any Tekion store using the Source Code part list + bulk salehistory API \u2014 NO OpenAPI quota, no RO fan-out. Use when Joe asks \"how many tires/batteries/etc were sold last month/quarter\" and the category maps to a parts Source Code. Verified TOL tires Q2 2026.",
    "times_used": 6,
    "last_used": "2026-07-24"
-  },
-  {
-   "name": "tekion-report-builder-scraper",
-   "path": "automotive/tekion-report-builder-scraper",
-   "category": "automotive",
-   "description": "Scrape any Tekion Report Builder CUSTOM report (e.g. \"SCT Menu Sales Opened\") headlessly \u2014 find the report id, open it under the right dealer, expand grouped rows, parse to JSON, render a manager-ready scorecard (PNG+PDF), and email it via Stacey. Use whenever Joe/managers want recurring Tekion report data without downloading PDFs from Tekion's emailed reports.",
-   "times_used": 6,
-   "last_used": "2026-07-01"
   },
   {
    "name": "tekion-alignment-by-advisor-report",
@@ -377,6 +377,14 @@
    "description": "Run the Toyota of Lancaster (TL/TOL, Tekion dealer 1092) ALIGNMENT count report, month-to-date, broken down by service advisor (dedicated + bundled + unique ROs, ranked). Produces a 2-page Toyota-red scorecard (page-1 PNG + full PDF) and is drafted to Sean Preston by Stacey. Use when Joe asks for \"the Lancaster/TOL alignment report\" or to schedule it.",
    "times_used": 4,
    "last_used": "2026-07-07"
+  },
+  {
+   "name": "amg-wip-monthly-column-fill",
+   "path": "automotive/amg-wip-monthly-column-fill",
+   "category": "automotive",
+   "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
+   "times_used": 3,
+   "last_used": "2026-08-03"
   },
   {
    "name": "bt-menu-sales-reports",
@@ -449,14 +457,6 @@
    "description": "Install & configure GBrain (Garry Tan's knowledge brain) \u2014 PGLite, ZeroEntropy embeddings, brain directory, recurring jobs. Use when setting up gbrain from scratch or recovering from a broken install.",
    "times_used": 3,
    "last_used": "2026-07-01"
-  },
-  {
-   "name": "amg-wip-monthly-column-fill",
-   "path": "automotive/amg-wip-monthly-column-fill",
-   "category": "automotive",
-   "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
-   "times_used": 2,
-   "last_used": "2026-08-03"
   },
   {
    "name": "amg-wip-payroll-vs-rth-analysis",
@@ -791,6 +791,14 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-technician-queue-dispatch",
+   "path": "automotive/tekion-technician-queue-dispatch",
+   "category": "automotive",
+   "description": "Explains Tekion's Technician Queue / Claim Work auto-dispatch behavior \u2014 why a tech gets pulled out of the queue when an advisor opens/reopens an RO, and what settings can change that behavior. Use when diagnosing \"why did my tech get grabbed out of queue\" or \"can we stop a tech from being pulled on RO reopen\" questions.",
    "times_used": 0,
    "last_used": null
   },
