@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-03T05:45:06",
+ "generated": "2026-08-03T06:00:25",
  "skill_count": 164,
  "skills": [
   {
@@ -451,6 +451,14 @@
    "last_used": "2026-07-01"
   },
   {
+   "name": "amg-wip-monthly-column-fill",
+   "path": "automotive/amg-wip-monthly-column-fill",
+   "category": "automotive",
+   "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
+   "times_used": 2,
+   "last_used": "2026-08-03"
+  },
+  {
    "name": "amg-wip-payroll-vs-rth-analysis",
    "path": "automotive/amg-wip-payroll-vs-rth-analysis",
    "category": "automotive",
@@ -521,14 +529,6 @@
    "description": "Prep Joe for a working meeting with a store service manager (e.g. Ruben at BC, Kevin at SCT, Sean at TOL) \u2014 actionable items backed by LIVE store baselines computed from Jay's cached Tekion pipeline data, framed as what JOE (VP Fixed Ops) can do to help, drafted to Joe's own inbox. Use for any \"prep a meeting with <manager>\", \"action items for <store>\", \"what can I do to help him\" ask.",
    "times_used": 1,
    "last_used": "2026-07-07"
-  },
-  {
-   "name": "amg-wip-monthly-column-fill",
-   "path": "automotive/amg-wip-monthly-column-fill",
-   "category": "automotive",
-   "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
-   "times_used": 1,
-   "last_used": "2026-08-03"
   },
   {
    "name": "hermes-gateway-timeout-restart-loop",
