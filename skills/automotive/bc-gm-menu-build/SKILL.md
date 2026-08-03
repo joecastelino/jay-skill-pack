@@ -387,7 +387,7 @@ Build all remaining tier rows Chevrolet-only; GMC/Cadillac/Buick backfill is a
 LATER pass once Joe sends the rest. GMC/Cadillac/Buick → factory pricing is
 EXPECTED interim behavior (don't re-flag the Yukon fall-through as a bug).
 
-## L86 TIER ✅ COMPLETE 2026-07-14 PM (4th tier live — see references/build-state-2026-07-20.md (LATEST; 07-15 and 07-14 files are stale))
+## L86 TIER ✅ COMPLETE 2026-07-14 PM (4th tier live — see references/build-state-2026-08-03.md (CURRENT: T6 done+penny-verified; T7+recon remain; L8T Tier B gap open) — older snapshot: build-state-2026-07-20.md (LATEST; 07-15 and 07-14 files are stale))
 - Parts override row `6a570d4fe8f4995ab2ec893e` on sibling `6a557bd64aa6485eea036e6e`:
   Chevrolet / ALL_MODELS / years 2018→2007 / ENGINE_LITRE 6.2L (136 trims);
   19432337 qty8 @5.11 + 12731742 @8.19 + 12816256 @8.19 (server-verified).

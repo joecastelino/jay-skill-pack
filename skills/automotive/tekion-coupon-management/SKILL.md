@@ -10,6 +10,8 @@ triggers:
   - coupon management
 ---
 
+> **STOP — is it actually a coupon?** Manufacturer tire promos (e.g. SCT's B3G1 Bridgestone Buy-3-Get-1) are often existing **OPCODES**, not coupons — "update the promo" means editing the opcode's Description verbiage at `/ro/opcode/edit/<CODE>`. Search Opcode Management for the promo code FIRST before building anything in Coupon Management. (Burned 2026-08-03: built a B3G1 coupon; Joe: "NO!! no coupon. that was an opcode" — had to deactivate it. SCT B3G1 opcode customer desc = "MOUNT AND BALANCE FOUR TIRES"; promo verbiage rotates per promo period.)
+
 # Tekion Coupon Management — create/edit coupons
 
 Verified live at SCT (dealer 876) 2026-08-02 building the Bridgestone B3G1 coupon.
