@@ -59,7 +59,7 @@ open("/home/itadmin/amg-wip/out.xlsx","wb").write(urllib.request.urlopen(req).re
 
 ## AMG WIP.xlsx structure (verified live 2026-08-02)
 - 8 tabs: Stevens Creek Toyota, Stevens Creek Volkswagen, Toyota of Fresno (=BT service), Blackstone Body Shop (=BT body), Volkswagen of Clovis, Fresno GM (=BC), Toyota of Lancaster, Alfa Romeo of San Jose. (Fresno-name trap: see AMG WIP memory entry.)
-- Row 1 = month datetime headers (one col/month, dated the 26th, Sep2022→current). Find last populated month col by scanning row 1 for datetime.
+- Row 1 = month datetime headers (one col/month, dated the 26th, Sep2022→current). Find last populated month col by scanning row 1 for datetime. Joe confirmed 2026-08-03: the 26th is cosmetic — each column covers the CALENDAR month (1st→EOM). A "new" month col that is an exact cell-for-cell copy of the prior col = NOT yet filled. Filling method = skill `amg-wip-monthly-column-fill`.
 - Col A row labels: Hours Sold (CUSTOMER/TXM/TOYOTA CARE/PREPAID/WARRANTY/PDI/INTERNAL), VEHICLE ATTENDANCE (TOYOTA/OTHERS), WORKSHOP ANALYSIS (TOTAL AVAIL/PROD HOURS/UNAPPLIED), LABOR RATES, WIP ($), ELR by pay type.
 - Load with `openpyxl.load_workbook(path, data_only=True)`; read_only=True reports dims as None — use the normal loader.
 - Local snapshots: /home/itadmin/amg-wip/ (AMG-WIP.xlsx older copy, AMG-WIP-live.xlsx fresh pull).

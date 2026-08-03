@@ -1,6 +1,6 @@
 {
- "generated": "2026-08-03T03:45:04",
- "skill_count": 163,
+ "generated": "2026-08-03T04:00:29",
+ "skill_count": 164,
  "skills": [
   {
    "name": "persistent-browser-server",
@@ -507,12 +507,28 @@
    "last_used": "2026-07-07"
   },
   {
+   "name": "amg-wip-payroll-vs-rth-analysis",
+   "path": "automotive/amg-wip-payroll-vs-rth-analysis",
+   "category": "automotive",
+   "description": "Analyze an AMG per-store semi-monthly WIP workbook (tech payroll vs RTH / labor relieved to WIP) and produce Joe's service-manager meeting prep \u2014 trend table, per-tech gap ranking, talking points, recoverable-$ target. First run 2026-07-08 on \"2026- SCWV Wip.xlsx\" (Stevens Creek VW); Joe approved the format verbatim.",
+   "times_used": 1,
+   "last_used": "2026-08-03"
+  },
+  {
    "name": "hermes-gateway-timeout-restart-loop",
    "path": "automotive/hermes-gateway-timeout-restart-loop",
    "category": "automotive",
    "description": "Diagnose and fix an AMG agent (Walter II/base or any profile) that is restarting/flaky with systemd \"Failed with result 'timeout'\" + status=9/KILL in the journal. Root cause is a hung LLM turn (e.g. gpt-5.5/Codex stall) holding an in-flight 300s API call that blocks clean shutdown past the 60s TimeoutStopSec, so systemd SIGKILLs the gateway and loops. This is NOT a crash, NOT out-of-credits, and the OpenRouter fallback can't save it. Covers how to tell this apart from a billing failure, the exact systemd-log signature, and the per-agent (and fleet-wide) drop-in fix.",
    "times_used": 1,
    "last_used": "2026-06-29"
+  },
+  {
+   "name": "jay-google-sheets-drive-access",
+   "path": "automotive/jay-google-sheets-drive-access",
+   "category": "automotive",
+   "description": "Access Joe's Google Sheets and Drive files from Jay's profile \u2014 token symlink bootstrap, reading/writing native Sheets, downloading Drive-hosted .xlsx files (like AMG WIP.xlsx) via alt=media, and the xlsx-vs-native-Sheet write limitation. Established 2026-08-02.",
+   "times_used": 1,
+   "last_used": "2026-08-03"
   },
   {
    "name": "jay-skill-pack-sync",
@@ -611,6 +627,14 @@
    "last_used": "2026-07-23"
   },
   {
+   "name": "google-workspace",
+   "path": "productivity/google-workspace",
+   "category": "productivity",
+   "description": "Gmail, Calendar, Drive, Contacts, Sheets, and Docs integration for Hermes. Uses Hermes-managed OAuth2 setup, prefers the Google Workspace CLI (`gws`) when available for broader API coverage, and falls back to the Python client libraries otherwise.",
+   "times_used": 1,
+   "last_used": "2026-08-03"
+  },
+  {
    "name": "apple-notes",
    "path": "apple/apple-notes",
    "category": "apple",
@@ -643,10 +667,10 @@
    "last_used": null
   },
   {
-   "name": "amg-wip-payroll-vs-rth-analysis",
-   "path": "automotive/amg-wip-payroll-vs-rth-analysis",
+   "name": "amg-wip-monthly-column-fill",
+   "path": "automotive/amg-wip-monthly-column-fill",
    "category": "automotive",
-   "description": "Analyze an AMG per-store semi-monthly WIP workbook (tech payroll vs RTH / labor relieved to WIP) and produce Joe's service-manager meeting prep \u2014 trend table, per-tech gap ranking, talking points, recoverable-$ target. First run 2026-07-08 on \"2026- SCWV Wip.xlsx\" (Stevens Creek VW); Joe approved the format verbatim.",
+   "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
    "times_used": 0,
    "last_used": null
   },
@@ -679,14 +703,6 @@
    "path": "automotive/install-agent-bridge-into-peer",
    "category": "automotive",
    "description": "Make ANOTHER AMG agent (e.g. Autumn, Don, Ralph) able to message Jay/peers DIRECTLY from their own sessions \u2014 not just be reachable BY Jay. Installs the ask-agent bridge helper + a MEMORY.md entry into the target agent's profile so the capability is discoverable in their real chats. Use when Joe says \"set up a pipeline between <agent> and Jay\" or \"<agent> needs to talk to you\".",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "jay-google-sheets-drive-access",
-   "path": "automotive/jay-google-sheets-drive-access",
-   "category": "automotive",
-   "description": "Access Joe's Google Sheets and Drive files from Jay's profile \u2014 token symlink bootstrap, reading/writing native Sheets, downloading Drive-hosted .xlsx files (like AMG WIP.xlsx) via alt=media, and the xlsx-vs-native-Sheet write limitation. Established 2026-08-02.",
    "times_used": 0,
    "last_used": null
   },
@@ -1135,14 +1151,6 @@
    "path": "note-taking/obsidian",
    "category": "note-taking",
    "description": "Read, search, and create notes in the Obsidian vault.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "google-workspace",
-   "path": "productivity/google-workspace",
-   "category": "productivity",
-   "description": "Gmail, Calendar, Drive, Contacts, Sheets, and Docs integration for Hermes. Uses Hermes-managed OAuth2 setup, prefers the Google Workspace CLI (`gws`) when available for broader API coverage, and falls back to the Python client libraries otherwise.",
    "times_used": 0,
    "last_used": null
   },
