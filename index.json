@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-03T09:30:06",
+ "generated": "2026-08-03T09:45:35",
  "skill_count": 165,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 59,
-   "last_used": "2026-08-02"
+   "times_used": 60,
+   "last_used": "2026-08-03"
   },
   {
    "name": "agent-to-agent-bridge",
