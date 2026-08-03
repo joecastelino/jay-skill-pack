@@ -30,7 +30,18 @@ r4-10 Hours Sold: CUSTOMER / TXM / TOYOTA CARE / PREPAIRD MAINTENANCE / WARRANTY
 
 **Backfill PITFALL (burned 2026-08-03):** `npm run sync:store` needs `.env` loaded — bare invocation prints "Missing required environment variables: DATABASE_URL..." yet still EXITS 0 and ingests NOTHING. Always wrap like the nightly cron: `cd apps/web && set -a && . ./.env && set +a && npm run sync:store -- SCT 35`. Verify ingestion afterward by re-counting the month's ROs (fetchedAt max should be fresh), never trust exit code alone.
 
-### 3. Bucket mapping (OPEN QUESTION — never guess)
+### 3. Hours Sold bucket mapping (Joe confirmed 2026-08-03 — partially)
+The 7 hours rows come from Joe's SAVED FILTER GROUPS on SCT Advisor Performance (load group → set July dates → Apply → read Bill Hrs TOTAL). Joe confirmed which groups:
+- **CUSTOMER** = `Customer Pay Hours 10/1/2025` — ⚠️ BUT its stored Pay Type was **Internal** (stale save; Joe asked, answer pending — likely should be Customer Pay). Definition: Pay Type Status In Closed + Opcode **Not In** TAC80–TAC15,TSC1–TSC10 + Pay Type In <?> + Make In Toyota,Scion. With Internal it gave July Bill Hrs 1,455.75 (≈ the INTERNAL row's magnitude).
+- **WARRANTY** = `Warranty Hours 11/1` ✓ (Joe: correct)
+- **TOYOTA CARE** = `TAC/TOYOTACARE REVISED 3/1/25` ✓
+- **PREPAID MAINT** = `TSC/Prepaid Hours REVISED 3/1/25` ✓
+- **PDI** = `PDI` ✓
+- **TXM** = ❌ NOT the `TXM REVISED 9/1` group — Joe: use **"SCP-Toyota Care 2.0" from REPORT BUILDER** (/report-manager custom report; scrape via tekion-report-builder-scraper).
+- Attendance = `WIP Attendance - Toyota` group (see above).
+SAVED-GROUP PITFALLS: loaded groups carry STALE dates (reset to the month every time) and possibly WRONG edited-then-saved values — read every row (esp. Pay Type) after loading, before Apply. Date calendar: month-grid cells have no onClick — advance RIGHT panel arrow first, then LEFT (left arrow caps adjacent to right panel); details in tekion-standard-reports-performance skill.
+
+### 3b. Bucket mapping via DB (cross-check only — never guess)
 RO data exposes only THREE payTypes: CUSTOMER_PAY / WARRANTY / INTERNAL. The sheet splits 7 ways. Observed: TAC15–TAC80 opcodes under CP = TOYOTA CARE row (matches sct-toyotacare-billed-hours-report skill, "not Warranty" rule); TSC* opcodes under CP ≈ prepaid maintenance candidate; TXM* opcodes appear under WARRANTY. **PDI/TXM/PPM bucket definitions must come from Joe's saved Advisor Performance filters — ASK, don't infer.** (Asked 2026-08-03, answer pending — record it here when given.)
 
 ### 4. Workshop hours (avail/prod/unapplied)

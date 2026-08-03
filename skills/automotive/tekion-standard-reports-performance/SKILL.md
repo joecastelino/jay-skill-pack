@@ -150,7 +150,19 @@ traps that wasted ~20 min:
    calendar cell reliably, get its coords from the **DOM** (`getBoundingClientRect`
    on the day-cell element filtered by its text), never from the vision screenshot.
 
-### RELIABLE date-set recipe (use this, skip the arrow-clicking flail)
+### WORKING UI recipe (verified SCT Advisor Perf 2026-08-03 — Jan→Jul both panels)
+The month-grid shortcut is DEAD: clicking the panel header month name ("Jan") opens the
+month grid, but those `<a.ant-calendar-month-panel-month>` cells have **NO React onClick
+handlers** (checked fiber props on every ancestor) — `/mouse`, `/click`, and synthetic
+MouseEvents all no-op. Don't waste time there. What ACTUALLY works:
+1. Click the START date input → dual-pane opens (left=start month, right=end month).
+2. Use the **inner next-month arrows** (`.ant-calendar-next-month-btn`, NOT the
+   `.ant-calendar-cell` false matches in the day grid): advance the **RIGHT panel
+   first** to target-month+1 (right arrow ≈x1082,y441), because the LEFT panel's
+   next-month arrow CAPS when it reaches the month adjacent to the right panel
+   (left stalled at Apr while right sat on May). Then advance the LEFT panel
+   (≈x807,y441) to the target month. Re-read both panel headers
+   (`.ant-calendar-range-part` → `.ant-calendar-month-select` text) after EVERY click.\n3. Click day 1 in the LEFT panel, then day 31 in the LEFT panel (both start and end can\n   be picked from the same panel): filter `td` not `.last-month`/`.next-month`, `/mouse`\n   the rect center. Inputs update to \"07/01/2026\"/\"07/31/2026\" only after the END day\n   commits (calendar closes). Verify both input `.value`s before Apply.\n\n### SAVED-GROUP TRUST PITFALL (burned 2026-08-03)\nAfter loading a saved filter group, **READ THE FULL ROW DEFINITION before trusting the\nnumber** — Joe's \"Customer Pay Hours 10/1/2025\" group had **Pay Type = Internal** stored\nin it (someone edited + saved at some point), so it silently computes INTERNAL hours,\nnot CP. Also the group's saved DATE range loads stale (e.g. 01/01–05/31) — always reset\nthe dates. Selecting a group option needs fresh coords + verify the top singleValue text\nactually changed (first click often no-ops); \"*Edited\" marker appears once you touch\nanything, and Apply does NOT save the group (only the explicit Save does).\n\n### RELIABLE date-set recipe (use this, skip the arrow-clicking flail)
 Preferred: **the safest fast path is the OpenAPI cross-check** — for a Bill-Hrs /
 billed-hours-by-opcode number over a month, sum labor hours for the closed target
 opcodes (e.g. TAC15–TAC80) via `repair-orders:search` + jobs/operations
