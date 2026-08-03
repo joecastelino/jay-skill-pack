@@ -1,6 +1,6 @@
 {
- "generated": "2026-08-03T03:30:20",
- "skill_count": 162,
+ "generated": "2026-08-03T03:45:04",
+ "skill_count": 163,
  "skills": [
   {
    "name": "persistent-browser-server",
@@ -679,6 +679,14 @@
    "path": "automotive/install-agent-bridge-into-peer",
    "category": "automotive",
    "description": "Make ANOTHER AMG agent (e.g. Autumn, Don, Ralph) able to message Jay/peers DIRECTLY from their own sessions \u2014 not just be reachable BY Jay. Installs the ask-agent bridge helper + a MEMORY.md entry into the target agent's profile so the capability is discoverable in their real chats. Use when Joe says \"set up a pipeline between <agent> and Jay\" or \"<agent> needs to talk to you\".",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "jay-google-sheets-drive-access",
+   "path": "automotive/jay-google-sheets-drive-access",
+   "category": "automotive",
+   "description": "Access Joe's Google Sheets and Drive files from Jay's profile \u2014 token symlink bootstrap, reading/writing native Sheets, downloading Drive-hosted .xlsx files (like AMG WIP.xlsx) via alt=media, and the xlsx-vs-native-Sheet write limitation. Established 2026-08-02.",
    "times_used": 0,
    "last_used": null
   },
