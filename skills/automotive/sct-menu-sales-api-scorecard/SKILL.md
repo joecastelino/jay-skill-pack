@@ -339,6 +339,24 @@ Rules:
     prefilter shows TEK candidates ⇒ still truncated, re-queue. Corrected
     watcher template: `/tmp/wait_ops_then_scrape.sh` (probes ops link, 20-min
     poll, then scrapes + prints VERIFY line).
+  - **WATCHER PROCESS-MANAGEMENT pitfalls (hit 2026-08-02 evening):**
+    (a) *Orphaned-sleep flock trap*: killing a flock-guarded watcher script can
+    leave its in-flight `sleep` CHILD alive holding the inherited lock fd —
+    the relaunch then instantly exits "already running" with NO watcher actually
+    working. Diagnose with `fuser -v /tmp/<lock>` (shows `COMMAND sleep`); kill
+    that PID, verify `fuser` returns nothing, then relaunch. After ANY watcher
+    kill/relaunch, always `pgrep -af` to confirm exactly one instance runs.
+    (b) *Chain, don't compete*: if a selfheal watcher pair for another report
+    (e.g. `selfheal_sct_align_<date>.sh`, relaunched fresh by each 5 PM cron
+    cycle with a NEW dated log) already owns the ops probe, do NOT run a second
+    prober. Chain instead: watch the align selfheal LOG(s) for
+    `scan exit=0|render exit=0|FAILED|TIMEOUT` (check BOTH yesterday's and
+    today's dated logs — the 5 PM cycle SIGTERMs the old pair and starts a new
+    one), plus a fallback `pgrep -f selfheal_sct_align` check (if none running,
+    proceed alone). On trigger: cooldown 180s → re-verify ops 200 → run the
+    rescrape → print VERIFY line. Template: `/tmp/sct_menu_rescrape_0801.sh` v2.
+    (c) Background exit codes: -15/143 = SIGTERM (daily reset or cron-cycle
+    replacement), usually benign — check what's still running before reacting.
   - **2026-08-02 NOON UPDATE: DEALER_QUOTA outage CONTINUED — 19+ hrs continuous**
     (8/1 17:01 → 8/2 12:00+; /operations still 429 DEALER_QUOTA while search+jobs
     200). The 8/2 morning false-positive rescrape wrote plausible-but-false 0-menu
@@ -348,7 +366,14 @@ Rules:
     NOT email (per the quota-outage rule). Upgraded watcher:
     `/tmp/wait_ops_then_scrape_v2.sh` — recovers BOTH dates sequentially, runs the
     tags-prefilter false-zero verify per date, renders 8/2, marker
-    `.sct-opened-20260802-recovered`. If a DEALER_QUOTA outage spans 2+ days,
+    `.sct-opened-20260802-recovered`. **8/2 5 PM UPDATE: still 429 DEALER_QUOTA at 16:44 PDT — 24h continuous**
+    (8/1 17:01 → 8/2 16:44+). 5 PM tags prefilter showed **5** TEK candidates on
+    8/2 (577269 new since noon, + 577227/577221/577195/577193) → any scrape would
+    still write a false zero. 5 PM cron did NOT scrape/render/email (per rule);
+    watcher v2 (PID via /tmp/tekion-quota-recovery.lock) still polling every
+    20 min. Crons lost to this outage so far: 8/1 5PM Opened, 8/1 6PM Closed,
+    8/2 noon Opened, 8/2 5PM Opened. Escalation to Joe requested (24h+ outage).
+    If a DEALER_QUOTA outage spans 2+ days,
     suspect the DealerDetail sync-all pipeline drain and escalate to Joe for a
     Tekion quota review — the nightly SCT sync (23:00 cron, ~2900 ROs) plus the
     */30 heal-backfill cron share the same dealer quota. Note: jobs payload shape is
