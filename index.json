@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-04T12:30:24",
+ "generated": "2026-08-04T12:45:39",
  "skill_count": 165,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 66,
-   "last_used": "2026-08-03"
+   "times_used": 67,
+   "last_used": "2026-08-04"
   },
   {
    "name": "agent-to-agent-bridge",
@@ -103,8 +103,8 @@
    "path": "automotive/bc-menu-sales-reports",
    "category": "automotive",
    "description": "Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards \u2014 Daily Closed (2x/day) and Closed Month-To-Date (1x/day) \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben Estrada (Restrada@blackstonegm.com). This is the GM-store sibling of the SCT/Kevin pipeline (sct-menu-sales-api-scorecard). Use for any \"BC menu report\", \"Blackstone Chevy/Cadillac menu sales\", or Ruben report request.",
-   "times_used": 25,
-   "last_used": "2026-07-18"
+   "times_used": 26,
+   "last_used": "2026-08-04"
   },
   {
    "name": "tekion-ghost-bin-negative-onhand",
