@@ -891,6 +891,47 @@ parts = $1,945.31 total. Outage timeline so far: 8/1 5PM Opened, 8/1 6PM Closed,
 cycles lost. This is now a multi-day outage; escalate to Joe for a Tekion
 DEALER_QUOTA review if it persists past 8/4.
 
+## 2026-08-03 6 PM update — DEALER_QUOTA outage now 3rd calendar day, Closed cron lost, ZERO August closed data exists
+
+Probe at 18:02-18:04 PDT (2 days 1+ hrs into the outage): `repair-orders:search` +
+`/jobs` still 200, `/operations` still 429 `DEALER_QUOTA` on every call (verified
+live on a real candidate RO). Tags prefilter found 4 genuine TEK-tag candidates
+closed today (577405/577302/577293/577072) — proof any scrape right now would
+write another false 0-menu report. Did NOT scan, render, or email.
+
+**Key fact for future runs: August has NO closed-MTD data at all yet** — not
+degraded, not partial, literally zero (`sct-menu-closed-mtd-MASTER-2026-08.json`
+and every `sct-menu-sales-closed-2026-08-*.json` are absent). Every August
+closed attempt (8/1 and 8/3; there's no 6PM Closed cron on days between) has
+been lost to this outage. July's final MTD ($105,122.66 / 237 menus) is
+LAST-KNOWN-GOOD CONTEXT ONLY — it does NOT carry into August MTD once real data
+starts flowing (see the month-rollover rule above). Report "no August data
+exists yet" rather than any number when this is still true.
+
+Recovery watcher launched: `/tmp/wait_ops_then_scrape_closed_0803.sh` (14h
+deadline, 10-min poll on the deep `/operations` endpoint via a real tags-filtered
+candidate RO from `sct_menu_sales_closed_mtd.search_closed()` +
+`_tek_opcodes()`). On clear it runs the positional closed-append chain in
+order — `2026-08-01`, `2026-08-02`, then default (today) — checking the
+"unscanned" truncation-warning string after EACH date before moving to the
+next, then renders. Log: `data/sct-closed-quota-recovery-2026-08-03.log`.
+
+**NEW GOTCHA — launching a freshly `write_file`'d bash script via
+`terminal(background=true, command="/tmp/script.sh")` fails `exit_code 126
+Permission denied`, even though the file looks executable in a subsequent `ls`.**
+`write_file` does not set the execute bit. The fix is two calls: (1)
+`chmod +x /tmp/script.sh` in a normal foreground `terminal()` call, (2) launch
+with `bash /tmp/script.sh ...` (explicit interpreter prefix) rather than the
+bare path, in the `background=true` call — that combination reliably works.
+Don't assume a background launch of a hand-written script will just work first
+try; expect this exact failure mode and pre-empt it with chmod + `bash` prefix.
+
+Outage cron-cycle tally as of 8/3 6PM: 8/1 5PM Opened, 8/1 6PM Closed, 8/2 noon
+Opened, 8/2 5PM Opened, 8/3 noon Opened, 8/3 5PM Opened, 8/3 6PM Closed — seven
+cycles lost, spanning 3 calendar days. This is well past the point where a
+Tekion support ticket / DEALER_QUOTA review should be escalated to Joe if not
+already done.
+
 ## Path / interpreter notes
 - `~` in terminal resolves to `/home/itadmin/.hermes/profiles/jay/home/`;
   the scripts live at REAL `/home/itadmin/tekion-reports/`.
