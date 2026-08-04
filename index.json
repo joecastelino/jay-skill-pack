@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-04T07:15:04",
+ "generated": "2026-08-04T07:30:25",
  "skill_count": 165,
  "skills": [
   {
@@ -347,6 +347,14 @@
    "last_used": "2026-07-07"
   },
   {
+   "name": "tekion-warranty-admin-closings",
+   "path": "automotive/tekion-warranty-admin-closings",
+   "category": "automotive",
+   "description": "Build a \"which warranty admin closed what tickets\" report for any AMG store from the Tekion OpenAPI \u2014 per-clerk RO counts, warranty $ and total RO $, month-to-date or any window. Verified SCT July 2026.",
+   "times_used": 5,
+   "last_used": "2026-08-04"
+  },
+  {
    "name": "hermes-slack-token-recovery",
    "path": "automotive/hermes-slack-token-recovery",
    "category": "automotive",
@@ -369,14 +377,6 @@
    "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
    "times_used": 4,
    "last_used": "2026-07-12"
-  },
-  {
-   "name": "tekion-warranty-admin-closings",
-   "path": "automotive/tekion-warranty-admin-closings",
-   "category": "automotive",
-   "description": "Build a \"which warranty admin closed what tickets\" report for any AMG store from the Tekion OpenAPI \u2014 per-clerk RO counts, warranty $ and total RO $, month-to-date or any window. Verified SCT July 2026.",
-   "times_used": 4,
-   "last_used": "2026-07-23"
   },
   {
    "name": "tol-alignment-by-advisor-report",
