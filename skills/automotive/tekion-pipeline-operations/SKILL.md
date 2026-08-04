@@ -197,6 +197,41 @@ NOTE: "Glade" in chat = **Glade Wilson** (gwilson@stevenscreektoyota.com, Steven
 
 **Fix:** Ensure `tekion-scraper.ts` calls `process.exit(1)` on fatal errors (not just `console.error`). The `--quick` mode should also exit non-zero when scraping fails for a store.
 
+### 7. SCT DEALER_QUOTA Multi-Day Outage (distinct bucket from OVERALL_QUOTA)
+**Symptom:** Deep RO-operations/per-op fan-out endpoints 429 with `Limit exhausted
+for type : DEALER_QUOTA` for a SPECIFIC store (seen: SCT/876), while search/jobs
+endpoints on the same store keep working fine. This is a PER-DEALER quota bucket,
+separate from the app-wide `OVERALL_QUOTA` documented elsewhere in this skill.
+Confirmed 2026-08-01→08-03: outage persisted 35+ hours across TWO nightly refills.
+
+**Repeat root cause:** dealer-detail's own `sync:all` nightly cron and/or ad-hoc
+`sync:store SCT <days>` backfills retry-loop against the 429 wall and grab the
+quota the INSTANT it refills, re-draining it before any other consumer (incl.
+Jay's own report scans) gets a turn. Killed this exact process twice in one
+outage before it finally cleared.
+
+**Diagnose/fix:**
+```bash
+ps aux | grep -E "sync:all|sync:store|dealer-detail" | grep -v grep
+# kill any hitting the affected store, THEN re-arm/re-run your own recovery job
+```
+Always kill competing dealer-detail sync processes BEFORE re-arming a self-heal
+watcher for a DEALER_QUOTA-blocked store — otherwise the watcher just starves
+again on the next refill.
+
+**Zero-quota fallback:** if the report period's data already landed on disk from
+a prior successful scrape (e.g. a full-month report where the last day of the
+month was already scraped and cached to JSON), render directly from that cached
+JSON instead of waiting on the API. Verified: SCT alignment "July full month"
+report rendered entirely from the 7/31 close-data JSON with zero API calls while
+the DEALER_QUOTA outage was still active.
+
+**Escalation threshold:** if a DEALER_QUOTA outage survives 2+ nightly refills
+without clearing, it's likely stuck on Tekion's side (not just heavy local
+usage) — escalate to Joe to ask Tekion support to check/raise the affected
+store's dealer quota bucket on the American Motors API app rather than
+indefinitely re-arming recovery watchers.
+
 ## Codex Computer Use (Future)
 
 Codex with computer use can replace Puppeteer for Tekion automation:
