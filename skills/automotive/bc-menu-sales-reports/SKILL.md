@@ -245,6 +245,18 @@ expunge the rest via `flag add <id> deleted` + `folder expunge`.
 Worse: **two of the rebuild drafts leaked recipient `David Fowlkes
 <dfowlkes@americancustomers.com>`** instead of Ruben (a cross-contamination in
 Stacey's rebuild path). Always, after a rebuild:
+
+**Stacey's own dedup confirmation can be WRONG (2026-08-04)**: on a single
+first-build ask (no rebuild requested), Stacey created 2 near-identical drafts
+1 minute apart (41615, 41616), same subject/date, same body/recipient. When
+asked in the SAME initial prompt to dedupe and confirm, she replied "found one
+previous duplicate... it was deleted. Only the newest correct one remains" —
+but independent himalaya verification showed BOTH drafts still present. Her
+self-report of a completed dedupe is not proof; always run
+`himalaya envelope list --folder '[Gmail]/Drafts' | grep "<subject key>"`
+yourself after every build (even a claimed-clean first build) and manually
+expunge extras yourself (flag add deleted + folder expunge) rather than trusting
+her confirmation.
 1. `himalaya envelope list --folder '[Gmail]/Drafts' | grep -i "BC m/d"` → list ALL.
 2. Verify the `To:` on EACH (wrong-recipient leak is common) — delete any not to
    `Restrada@blackstonegm.com`.
