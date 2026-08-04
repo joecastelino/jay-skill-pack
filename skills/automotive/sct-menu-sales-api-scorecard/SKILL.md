@@ -860,6 +860,37 @@ non-TEK maintenance opcodes were seen on closed ROs (`TAC30/TAC60`, `TSC10`,
 excluded. So the filter is correct; do not widen it. (The low count is a
 scan-completeness problem, not a filter problem.)
 
+## 2026-08-03 5 PM update — DEALER_QUOTA outage STILL ACTIVE (~50 hrs continuous)
+
+Probe at 17:01-17:03 PDT: `repair-orders:search` + `/jobs` returned 200, but
+`/operations` 429'd `DEALER_QUOTA` on every call. Tags prefilter found 8 genuine
+TEK-tag candidate ROs (577406/577405/577379/577302/577295/577294/577293/577292),
+proving the scraper's `0 menus / $0.00` result (written with `complete: true`,
+zero errors logged) was ANOTHER false zero — same silent-truncation signature as
+every prior instance since 8/1 5PM. Flagged both
+`sct-menu-sales-api-2026-08-03.json` and `sct-menu-sales-opened-2026-08-03.json`
+with `complete: false` + a note listing the candidate ROs. Did NOT render or
+email a false $0 report.
+
+Found a PRIOR recovery watcher (`/tmp/wait_ops_then_scrape_0803.sh`, launched
+~12:04 PM, 6h deadline) still polling but only ~1hr from expiry — it would have
+given up right around 18:05, exactly when the 5 PM cron's window mattered.
+Killed it and relaunched a fresh 10-hour watcher
+(`/tmp/wait_ops_then_scrape_0803b.sh`, log `/tmp/sct_opened_0803_recovery_b.log`)
+via `terminal(background=true, notify_on_complete=true,
+watch_patterns=["window clear","gave up"])`.
+
+**Lesson: when you find an existing recovery watcher already running, check its
+REMAINING runway against your own likely next-check time — don't just confirm
+one exists and move on.** A soon-to-expire watcher gives false confidence that
+recovery is being handled.
+
+Last known-good Opened report remains 7/31: 5 menus, $1,490.98 labor / $454.33
+parts = $1,945.31 total. Outage timeline so far: 8/1 5PM Opened, 8/1 6PM Closed,
+8/2 noon Opened, 8/2 5PM Opened, 8/3 noon Opened, 8/3 5PM Opened — six cron
+cycles lost. This is now a multi-day outage; escalate to Joe for a Tekion
+DEALER_QUOTA review if it persists past 8/4.
+
 ## Path / interpreter notes
 - `~` in terminal resolves to `/home/itadmin/.hermes/profiles/jay/home/`;
   the scripts live at REAL `/home/itadmin/tekion-reports/`.
