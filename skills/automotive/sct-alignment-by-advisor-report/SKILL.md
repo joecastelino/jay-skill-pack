@@ -83,6 +83,18 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
      render+draft that needs ZERO API quota while waiting.
   If still 429 at the next nightly refill, escalate to Joe: multi-day DEALER_QUOTA
   non-reset is a Tekion-side problem (raise quota / investigate reset).
+  **Confirmed recurrence 2026-08-03 (7pm nightly, 3rd/4th consecutive day):** OPS probe
+  still 429 DEALER_QUOTA at 19:22 PDT (search+jobs 200, /operations 429 — same signature).
+  No sync:all hog and no quota_recovery/backfill runner was active this time (checked
+  `pgrep -af "sync-all|cron-sct-sync|tsx --conditions"` and
+  `pgrep -af "quota_recovery|bt_seed_watcher|sct_closed_backfill"` — both empty), so the
+  non-reset is NOT being caused by a local competing consumer this round — points more at
+  a Tekion-side quota bucket that simply isn't refilling daily. Armed fresh dated pair
+  `selfheal_sct_align_20260803.sh` + `selfheal_sct_align_handoff_watch_20260803.sh` (probe
+  RO/job ids swapped to a fresh 2026-08-03 candidate: RO 6a710a6bcb86dd4c535a2836 / job
+  6a710afbcb86dd4c535a9e8f). This is now a MULTI-DAY unresolved outage (8/1→8/2→8/3) —
+  worth escalating to Joe directly as a Tekion support ticket rather than re-arming
+  nightly forever.
 - **OVERALL_QUOTA exhaustion (hit 2026-07-07):** distinct from OVERALL_RATELIMIT — this is
   the store's DAILY API quota being fully spent (other pipelines, e.g. a TOL backfill loop +
   caliber-ops scrapers, can burn it). EVERY call 429s
