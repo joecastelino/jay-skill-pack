@@ -95,6 +95,31 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   6a710afbcb86dd4c535a9e8f). This is now a MULTI-DAY unresolved outage (8/1→8/2→8/3) —
   worth escalating to Joe directly as a Tekion support ticket rather than re-arming
   nightly forever.
+  **Confirmed recurrence 2026-08-04 (7pm nightly, 4th consecutive day, still 429 at
+  next-day 7pm):** OPS probe (same RO/job pair `6a727c3d84f7f40f9a42f396` /
+  `6a727e1f84f7f40f9a43c9be` reused from the 8/3 probe, confirmed still returns 200 on
+  search/jobs) still 429 DEALER_QUOTA at 19:04 PDT. Re-checked for a local competing
+  consumer again (`sync-all|cron-sct-sync|tsx --conditions` and
+  `quota_recovery|bt_seed_watcher|sct_closed_backfill|sct_align_mtd|selfheal_sct_align`)
+  — both empty, confirming (2nd time in a row) this is NOT a local hog; the Tekion-side
+  DEALER_QUOTA bucket for SCT is simply not resetting daily. Armed fresh dated pair
+  `selfheal_sct_align_20260804.sh` + `selfheal_sct_align_handoff_watch_20260804.sh` via
+  the standard `sed -e 's/2026-08-03/2026-08-04/g; s/20260803/20260804/g' <old>.sh >
+  <new>.sh` date-swap (LOG/LOCK lines carry dates so both rename cleanly) — reused the
+  SAME probe RO/job ids as 8/3 since they still validate (200 on jobs, 429 only on
+  operations); no need to hunt a fresh candidate every day if the old probe pair still
+  round-trips through search/jobs. `bash -n` both before chmod, chmod in its own
+  foreground call, launched each via terminal(background=true, /usr/bin/bash explicit).
+  No prior-outage watchers were still alive to kill (8/3 pair had already hit its 21h/22h
+  TIMEOUT and exited cleanly per its own log). At month rollover (this outage started
+  right at 8/1) there is no partial-month fallback to render meanwhile — unlike the
+  7/31→8/1 case, there was no "prior month final" data to offer since the July report had
+  already shipped. This is now a 4-DAY continuous unresolved outage (8/1→8/2→8/3→8/4) —
+  each nightly run should keep re-arming the self-heal pair (it costs nothing and will
+  catch a mid-outage recovery) but should ALSO reiterate the Tekion-side escalation in
+  its report every time, rather than treating it as routine. Recommend Joe open a formal
+  Tekion support ticket if this persists past day 4-5, since local self-heal cannot fix a
+  server-side quota bucket that never refills.
 - **OVERALL_QUOTA exhaustion (hit 2026-07-07):** distinct from OVERALL_RATELIMIT — this is
   the store's DAILY API quota being fully spent (other pipelines, e.g. a TOL backfill loop +
   caliber-ops scrapers, can burn it). EVERY call 429s
