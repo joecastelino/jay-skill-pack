@@ -247,6 +247,43 @@ usage) — escalate to Joe to ask Tekion support to check/raise the affected
 store's dealer quota bucket on the American Motors API app rather than
 indefinitely re-arming recovery watchers.
 
+**Is it just this store, or fleet-wide? (verified 2026-08-05, SCT 18.5hr outage)**
+`DEALER_QUOTA` is confirmed per-dealer, but always VERIFY rather than assume when
+Joe asks "is this affecting all stores or just X" — takes ~30s, 7 API calls. Hit
+the exact endpoint that's 429ing (not just a shallow `repair-orders:search`, which
+can be healthy even when the deeper per-op fan-out endpoint for that same store is
+blocked) against all 7 dealer_ids back to back:
+```python
+import sys, time, json
+sys.path.insert(0, "/home/itadmin/tekion-reports")
+import sct_menu_sales_api as O
+
+dealers = O.cfg["dealers"]  # {'ar':..., 'bc':..., 'bt':..., 'st':..., 'sv':..., 'tl':..., 'vc':...}
+now = int(time.time()*1000); ms0 = now - 24*3600*1000
+maint = set(d["opcode"] for d in json.loads(O.OPCODE_LIST.read_text()))
+
+for code, dealer_id in dealers.items():
+    O.HEADERS["dealer_id"] = dealer_id
+    ros = O.fetch_ros(ms0, now)
+    cands = [(ro, tags & maint) for ro in ros
+             if (tags := set(t.get("value") for t in (ro.get("tags") or []) if t.get("field")=="OPCODE")) & maint]
+    if not cands:
+        print(code, "NO_CANDIDATES"); continue
+    ro, _ = cands[0]; rid = ro["documentId"]
+    stj, jobs = O.call("GET", f"/repair-orders/{rid}/jobs")
+    jlist = jobs.get("data", {}).get("jobs", [])
+    if not jlist:
+        print(code, "NO_JOBS"); continue
+    sto, ops = O.call("GET", f"/repair-orders/{rid}/jobs/{jlist[0]['id']}/operations")
+    print(code, "OPS_STATUS", sto, "OK" if sto==200 else str(ops)[:150])
+    time.sleep(2)
+```
+Run with `/home/itadmin/.hermes/hermes-agent/venv/bin/python3.11`. A clean split
+(6 stores 200 OK, 1 store 429 DEALER_QUOTA) proves it's isolated to that one
+dealer's bucket, not an app-wide OVERALL_QUOTA event — reuse this any time Joe
+asks whether an outage is fleet-wide or store-specific instead of guessing from
+which recovery watcher happens to be running.
+
 ## Codex Computer Use (Future)
 
 Codex with computer use can replace Puppeteer for Tekion automation:
