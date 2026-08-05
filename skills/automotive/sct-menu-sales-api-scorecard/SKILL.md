@@ -928,6 +928,47 @@ try; expect this exact failure mode and pre-empt it with chmod + `bash` prefix.
 
 Outage cron-cycle tally as of 8/3 6PM: 8/1 5PM Opened, 8/1 6PM Closed, 8/2 noon\nOpened, 8/2 5PM Opened, 8/3 noon Opened, 8/3 5PM Opened, 8/3 6PM Closed — seven\ncycles lost, spanning 3 calendar days. This is well past the point where a\nTekion support ticket / DEALER_QUOTA review should be escalated to Joe if not\nalready done.\n\n## 2026-08-04 noon update — outage STILL ACTIVE, 4th calendar day; NEW: proactive outage-notification email pattern\n\nProbe at 12:01-12:04 PM PDT confirmed the same signature: `repair-orders:search`\n+ `/jobs` 200, `/operations` 429 `\"Limit exhausted for type : DEALER_QUOTA\"`.\nTags prefilter found 6 genuine TEK-tag candidates today (577528, 577522,\n577507, 577504, 577489, 577453). Flagged both `sct-menu-sales-api-2026-08-04.json`\nand the opened RB-schema file `complete: false` + a `quota_outage_note` field.\nNo existing recovery watcher was running at check time (prior watchers had\nexpired) — relaunched fresh: `/tmp/sct_opened_probe_0804.py` (probes the\ndeepest endpoint on a real tags-filtered candidate RO) driven by\n`/tmp/wait_ops_then_scrape_0804.sh` (6h deadline, 10-min poll, flock-guarded,\nauto rescrape+render on clear, marker `.sct-opened-20260804-recovered`).\nLaunched via `terminal(background=true, notify_on_complete=true,\nwatch_patterns=[\"window clear\",\"gave up\"])` — NOT a foreground `&`/`disown`\n(that pattern is blocked by the terminal tool; always use background=true).\nOutage cron-cycle tally as of 8/4 noon: **8 cycles lost** spanning 4 calendar\ndays (adds 8/4 noon Opened to the 8/3 6PM tally above).\n\n**NEW proven pattern — don't just silently skip the email during an active\noutage; send a proactive outage-notification email instead of the false-zero\nreport.** Earlier outage days (8/1-8/3) just withheld the send and reported\nonly in the cron's own final summary (which nobody but the log sees). On 8/4\nI instead had Stacey draft+send a substitute email to Joe, same subject as the\nreal report would have used, with: (1) plain statement that the scrape could\nnot complete due to the DEALER_QUOTA outage, (2) the specific candidate RO\nnumbers + opcodes so Joe knows real menu sales exist but are untotaled, (3)\nconfirmation a recovery watcher is running and will auto-rescrape on clear,\n(4) the last known-good numbers with their as-of date, (5) explicitly NO\nPDF/PNG attached (there is no valid report). Sent cleanly on the first try\n(himalaya Sent msg 12779, 12:07 PM PDT, TO=jcastelino@americanmotorscorp.com,\ncorrect subject, correct RO list/numbers). This is a better default than\ngoing silent — Joe gets a timely heads-up instead of just a missing email —\nso PREFER this pattern on future outage days unless told otherwise.\n\n**New minor pitfall — greeting-name default leaks into CUSTOM/non-standard\nemails too.** Even though the ask-agent instructions to Stacey never mentioned\na greeting name, the sent outage-notification email opened \"Kevin,\" (the\nOpened-report template's hardcoded default) despite being addressed and sent\nto Joe. TO, subject, and body numbers were all correct, so per the existing\ngreeting-leak decision rule (see the CORRECT-BODY / greeting-leak entries\nabove) this was NOT worth a re-send — just note it. But for future custom\nemails through Stacey, explicitly state the greeting name (e.g. \"greet\n'Joe,'\") in the ask to head this off.
 
+## 2026-08-04 5PM update — outage STILL ACTIVE ~72hrs; outage-notification email needed 4 rebuild rounds
+
+Confirmed live at 17:01-17:03 PDT: `repair-orders:search`+`/jobs` 200, `/operations`
+still 429 DEALER_QUOTA. Tags prefilter found 7 candidates today
+(577572/577528/577522/577507/577504/577489/577453). Found the prior watcher had
+only ~1hr runway left (same "check remaining runway" lesson as 8/3) — killed it
+and relaunched a fresh 10h watcher (`/tmp/wait_ops_then_scrape_0804b.sh` +
+`/tmp/sct_opened_probe_0804b.py`). Re-ran `sct_menu_sales_api.py` once to confirm
+still-false-zero — it silently OVERWRITES any earlier `complete:false`+note flag
+with a fresh `complete:true`/0-menu file, so re-flag the JSON again after every
+confirmatory re-run.
+
+For the SUBSTITUTE outage-notification email (no PDF/PNG exists, so this is a
+custom email, not the normal template), the send loop hit FOUR of the documented
+traps back-to-back before landing correctly:
+1. First send defaulted straight to Kevin (kstapp@sctoyota.com) even though told
+   explicitly to send to Joe only — the hardcode-to-Kevin trap applies even to a
+   hand-specified custom send, not just the standard Opened template.
+2. The corrected resend to Joe had FULLY FABRICATED numbers in the "last
+   known-good" reference line (invented 24 menus/$3,214.50/etc. instead of the
+   real 7/31 figures: 5 menus/$1,490.98/$454.33/$1,945.31) — she free-generated
+   the body from the gist instead of using the literal text given.
+3. Next correction had a $1,000 digit-transposition typo ($2,490.98 instead of
+   $1,490.98) despite an explicit "copy character-by-character" instruction.
+4. The one after THAT reverted wholesale to the normal-report template
+   (greeting "Kevin,", "Attached is today's report", referencing a nonexistent
+   PDF/PNG attachment) — her default template scaffolding overrides custom
+   instructions unless every constraint is re-stated on every single retry.
+
+Only a message that re-stated ALL constraints together (no attachment, greet
+Joe not Kevin, exact verbatim body) in one shot finally landed clean (msg
+12792, 17:17 PDT — plain text/plain only, zero attachments, correct greeting,
+correct figures). LESSON for any CUSTOM/substitute email: do not trust a
+send+read-only-summary-question loop — dump the FULL raw body text after every
+attempt and diff it against the intended text; expect 2-4 rebuild rounds;
+restate EVERY constraint (recipient, greeting, no-attachment, exact figures)
+in EVERY retry, not just the first, since she regresses to defaults each fresh
+attempt rather than incrementally fixing the prior draft. Finish with the
+usual 0-leftover-drafts + no-later-Sent-copy double check (came back clean
+here: 0 drafts, one harmless stray Kevin copy in Sent from the trap above).
+
 ## Path / interpreter notes
 - `~` in terminal resolves to `/home/itadmin/.hermes/profiles/jay/home/`;
   the scripts live at REAL `/home/itadmin/tekion-reports/`.
