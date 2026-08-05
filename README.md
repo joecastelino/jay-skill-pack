@@ -2,7 +2,7 @@
 
 Skill library for **Jay**, the Tekion DMS specialist agent at American Motors Group — plus general-purpose agent skills. Built for the [Hermes Agent](https://github.com/NousResearch) skill system (`SKILL.md` + YAML frontmatter, with optional `references/`, `scripts/`, `templates/`).
 
-**165 skills** · auto-synced from the live agent · last sync: 2026-08-05 08:45
+**165 skills** · auto-synced from the live agent · last sync: 2026-08-05 09:00
 
 ## Install into another agent
 
@@ -17,7 +17,7 @@ Secrets (passwords, app passwords, tokens) are redacted with `<PLACEHOLDER>` mar
 
 | # | Skill | Category | Uses | Last used | Description |
 |---|-------|----------|-----:|-----------|-------------|
-| 1 | [`persistent-browser-server`](skills/automotive/persistent-browser-server/SKILL.md) | automotive | 93 | 2026-08-05 | Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the "browser blanks to about... |
+| 1 | [`persistent-browser-server`](skills/automotive/persistent-browser-server/SKILL.md) | automotive | 94 | 2026-08-05 | Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the "browser blanks to about... |
 | 2 | [`jay-brain-and-skill-index`](skills/automotive/jay-brain-and-skill-index/SKILL.md) | automotive | 76 | 2026-08-05 | Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is "command not found", w... |
 | 3 | [`agent-to-agent-bridge`](skills/automotive/agent-to-agent-bridge/SKILL.md) | automotive | 57 | 2026-08-04 | Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine. |
 | 4 | [`tekion-openapi-repair-orders`](skills/automotive/tekion-openapi-repair-orders/SKILL.md) | automotive | 51 | 2026-07-30 | Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI — no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape A... |
@@ -35,7 +35,7 @@ Secrets (passwords, app passwords, tokens) are redacted with `<PLACEHOLDER>` mar
 | 16 | [`sct-backcounter-ro-sales-countsheet`](skills/automotive/sct-backcounter-ro-sales-countsheet/SKILL.md) | automotive | 23 | 2026-07-25 | Build Joe's daily SCT Back Counter Bin Check count sheet — cross-reference a day's RO part sales (Tekion OpenAPI) against parts that stock in a back-counter bin (5000 section) and render a Tekion-bin-check-style sheet... |
 | 17 | [`tekion-vi-api-migration`](skills/automotive/tekion-vi-api-migration/SKILL.md) | automotive | 22 | 2026-07-12 | Migrate the Vehicle Inventory ("The Goods") browser scraper to the Tekion OpenAPI (vehicle-inventory:search) producing per-store JSON that byte-matches the legacy schema. Covers field mapping, the SOLD-pending rule, P... |
 | 18 | [`tekion-opcode-api`](skills/automotive/tekion-opcode-api/SKILL.md) | automotive | 21 | 2026-08-02 | Read, audit, and VERIFY Tekion opcode override rows directly from the backend REST API using the session's own auth token. This is the AUTHORITATIVE source of truth — the override UI grid frequently renders wrong/empt... |
-| 19 | [`tekion-scheduling`](skills/automotive/tekion-scheduling/SKILL.md) | automotive | 20 | 2026-08-04 | Tekion Service Scheduling Settings — appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the "lowest ceiling wins" capacity model,... |
+| 19 | [`tekion-scheduling`](skills/automotive/tekion-scheduling/SKILL.md) | automotive | 21 | 2026-08-05 | Tekion Service Scheduling Settings — appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the "lowest ceiling wins" capacity model,... |
 | 20 | [`tekion-kb-search-scrape`](skills/automotive/tekion-kb-search-scrape/SKILL.md) | automotive | 19 | 2026-08-02 | Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works... |
 | 21 | [`tekion-opcode-overrides`](skills/automotive/tekion-opcode-overrides/SKILL.md) | automotive | 17 | 2026-07-12 | Add vehicle/part override rows to a Tekion opcode (Overrides tab) using the verified browser-tool cascading react-select method. This is the batch workflow used for cabin-filter part overrides (RACF etc.) — Make/Model... |
 | 22 | [`tekion-declined-deferred-services-report`](skills/automotive/tekion-declined-deferred-services-report/SKILL.md) | automotive | 16 | 2026-07-20 | Pull declined/deferred services (recommendations customers said no to) for any/all AMG Tekion stores via the internal recommendation/search reporting API. Powers "most declined service", declined-services marketing li... |

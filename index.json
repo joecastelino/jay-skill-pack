@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-05T08:45:24",
+ "generated": "2026-08-05T09:00:18",
  "skill_count": 165,
  "skills": [
   {
@@ -7,7 +7,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 93,
+   "times_used": 94,
    "last_used": "2026-08-05"
   },
   {
@@ -151,8 +151,8 @@
    "path": "automotive/tekion-scheduling",
    "category": "automotive",
    "description": "Tekion Service Scheduling Settings \u2014 appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the \"lowest ceiling wins\" capacity model, shop top-down matching, the daily overnight scheduler + \"Run Scheduler\" button, parts-on-appointment notifications, and the concierge mobile write-up flow. Load for any appointment/scheduling/capacity setup or troubleshooting in Tekion.",
-   "times_used": 20,
-   "last_used": "2026-08-04"
+   "times_used": 21,
+   "last_used": "2026-08-05"
   },
   {
    "name": "tekion-kb-search-scrape",
