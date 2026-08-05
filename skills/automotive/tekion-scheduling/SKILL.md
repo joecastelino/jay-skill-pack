@@ -106,6 +106,49 @@ SCT baseline (pre-2026-07-31): max 134 (Wed 155) all rows BDC=134/155, consumer 
 Direct URL, no dealer-site iframe needed: `https://conscheduling.tekioncloud.com/consumer-scheduling/sign-in/phone?accessToken=americanmotorscorporation_47_876` (SCT; token pattern `americanmotorscorporation_<n>_<dealerId>` — find other stores' tokens by loading the store website's schedule-service page and reading iframe src, e.g. SCT embeds it at stevenscreektoyota.com/schedule-service-here.html). Flow: **Continue as a guest** → Add VIN → Confirm → maintenance packages render (Basic/Basic+/Signature with menu prices — doubles as a menu-price spot check) → Select → Continue ×2 → transport/advisor/calendar page. Disabled calendar days = no availability; a day can be bookable with AM showing "No Slots Available" and only PM slots. Use the plain browser_* tools (public site, no auth). STOP before final confirm on a real customer VIN — it books a real appointment.
 **Shop-routing symptom decoded:** older vehicle (e.g. 2021) fails TXM's `year>2023` vehicle limitation → falls through top-down to the MAIN shop → weeks-out availability, while 2024+ vehicles get near-term TXM/Express slots. If consumer capacity is already raised and older cars still can't book, the lever is shop-side: widen TXM/Express vehicle window, add menu opcodes to Express serviceable opcodes, or raise main-shop caps.
 
+## Diagnosing a SINGLE-OPCODE booking failure (verified SCT 2026-08-05, Venza/AIRFILTER) — a DIFFERENT root cause than shop routing
+
+Symptom looks identical to the shop-routing case above ("no slots for weeks, then it dumps into Main Shop"), but when the complaint is about ONE SPECIFIC standalone service (e.g. "just an air filter replacement" — no menu package), check the **opcode's own Active/Inactive status FIRST**, before re-diagnosing shop vehicle-filters/capacity again. A shop can list an opcode in its Servicable Opcodes AND have wide-open vehicle filters AND healthy capacity, and the booking will still fail if the underlying opcode is Inactive — no shop can schedule a dead opcode, so the widget silently falls through to whatever fallback (usually the busiest shop), producing the same "weeks out" symptom.
+
+**Fast check — opcode Active/Inactive status:** navigate directly to `https://app.tekioncloud.com/ro/opcode/edit/<OPCODE>` (e.g. `/ro/opcode/edit/AIRFILTER`). The page header reads `Opcode Details: <OPCODE> - <description>` immediately followed by **`Active`** or **`Inactive`** as plain text — no need to open the Opcode List and search. This is much faster than the Opcode List page's "Search here..." bar, which did NOT reliably filter 2,066 results by typed opcode/description in testing (still showed non-matching rows after Enter).
+
+**Watch for near-duplicate opcodes:** SCT had both `AIRFILTER` ("REPLACE ENGINE AIR FILTER AND CLEAN AIR BOX" — **Inactive**) and `AIR` ("CUSTOMER REQUESTS TO REPLACE AIR FILTER" — **Active**). Same trap as the earlier 4Runner rotation case (duplicate "(N)"-suffixed opcodes) — always check ALL similarly-named opcodes' status, don't stop at the first match.
+
+**Filtering a shop's OWN Servicable Opcodes table** (to confirm/deny an opcode is even in a shop's list) — the per-shop detail page has a dedicated search box scoped to that table, separate from the global header search:
+1. Scroll the `Servicable Opcodes` heading into view (`scrollIntoView({block:'center'})`) — the table's `input.ant-input[placeholder="Search..."]` only gets correct on-screen coordinates after scroll.
+2. `/mouse` click the input to focus it, then set the value via native setter + dispatch (do NOT use `/type` with a CSS selector here — it returned a 500 after a 30s timeout in testing, likely selector ambiguity with the OTHER `Search...`/`Search here...` inputs on the page):
+   ```python
+   api("/eval","POST",{"js":
+     "(()=>{const el=document.activeElement;"
+     "const s=Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set;"
+     "s.call(el,'AIR'); el.dispatchEvent(new Event('input',{bubbles:true})); return 'typed';})()"})
+   ```
+3. Read the result: `document.body.innerText` between `Servicable Opcodes` and `Results Per Page` — `No rows found` = definitively not in that shop's list.
+
+**Pagination / row-click coordinate trap (cost significant time 2026-08-05):** on this shop-detail page, clicking a cached `/eval`-derived coordinate for pagination numbers ("2", "Next") or even for a shop-name row link frequently **navigated to a totally unrelated page** (Appointments calendar, Opcode List, RO detail, /home) instead of doing the expected in-page action. Root cause is almost certainly stale coordinates from a previous `/eval` call being reused after the SPA re-rendered, combined with concurrent notification toasts stealing the click. FIX: **re-derive the element's coordinates from a fresh `/eval` immediately before every `/mouse` click** — never reuse coordinates from an earlier snapshot/response, even a few calls back. If a click lands somewhere unexpected, don't fight it — `/navigate` straight back to the known shop-detail URL (`/dse-v2/scheduling-settings/shops/<uuid>`) and re-verify with a fresh `document.body.innerText` check before continuing.
+
+**Diagnostic order for "can't book appointment X" going forward:**
+1. Reproduce live in the consumer widget with the exact VIN (per "Testing the CONSUMER scheduler" above).
+2. Check the OPCODE's own Active/Inactive status (`/ro/opcode/edit/<code>`) — a dead opcode can't book anywhere, full stop.
+3. Only then move to shop-level checks: vehicle year/make filters, serviceable-opcode list membership, capacity ceilings (per the sections above).
+4. Don't assume a prior fix for the SAME vehicle (e.g. a shop vehicle-filter widening) covers a NEW complaint about a DIFFERENT service on that vehicle — each opcode/service has its own failure surface.
+
+## Diagnosing "Main Shop keeps absorbing Express-type quick-service jobs" (SCT 2026-08-05, Ann Souza LOF+car-wash case)
+
+Symptom: quick-maintenance appointments (LOF, rotation, cabin filter, etc.) that should land in Express keep showing up in Main Shop's day-view slots, with no obvious single cause. Root-cause method = **compare each shop's Servicable Opcodes list directly, don't theorize** (evidence-first, per the never-guess rule):
+
+1. Shops tab → open each candidate shop (e.g. Main Shop, Express) → scroll to **Servicable Opcodes** table.
+2. The opcode list per row is truncated with a **`+N` button** (e.g. "1TIRE, 2TIRE, ... +39") — this is a real `<button>` element, NOT a span/link. Find and click it directly via JS, no mouse coordinates or `scrollIntoView` needed — `element.click()` works even when the element is off-screen/below the viewport:
+   ```js
+   Array.from(document.querySelectorAll('button')).filter(e=>e.innerText.trim()==='+39')[0].click()
+   ```
+   The full opcode list renders inline as `- OPCODE,` lines appended after the row; re-read `document.body.innerText` to capture it.
+3. Diff the two shops' full Maintenance Service opcode lists. If they're **near-identical** (e.g. both Main Shop and Express list LOF, ROTATE, CABIN, TPMS, WIPER, MPI, DETAIL, CODECHECK, CAS, RAF, RACF, MPVI, OKAL, MILLIGHT, FMAT, and the BG* fluid-flush codes), there's no exclusivity constraint forcing quick-service jobs to Express — the scheduling engine can legally place them in either shop.
+4. Cross-check the two settings that turn "can go either way" into "actually does go either way": **General tab → "Suggest First Available Slot"** and **Consumer Scheduling tab → "Enable 'Any Service Advisor' for Appointment Booking"**. Both ON (SCT baseline) means the engine grabs whichever shop/advisor has an open slot first rather than preferring the more-specific shop.
+5. **Fix (not yet applied as of 2026-08-05 — awaiting Joe's go-ahead):** remove the overlapping quick-maintenance opcodes from **Main Shop's** Servicable Opcodes list (keep them exclusive to Express). This removes Main Shop's eligibility for those opcodes so the engine stops offering it for LOF-type jobs. This is a Published, fleet-wide scheduling config — treat as a live-change-needs-approval item like other Published Tekion configs, don't just apply it.
+
+**Default shop indicator** (useful for any "which shop is the catch-all" question): on the Shops list page (`/dse-v2/scheduling-settings/shops`), each row has a button with class containing `defaultShopIcon`. If that button's class list ALSO includes the suffix `defaultShopIconDisabled`, that shop is NOT the default. The one row WITHOUT the `Disabled` suffix is the current default/catch-all shop. At SCT (2026-08-05) that was **Express** — TXM, Mobile Service Unit, and Main Shop all carried the `Disabled` suffix.
+
 ## Gotchas
 - **Lowest ceiling wins** across all capacity/hours settings.
 - **Shop order = most-restrictive-first**; default shop = catch-all.

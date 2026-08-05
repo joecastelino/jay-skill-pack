@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-05T09:00:18",
+ "generated": "2026-08-05T09:15:20",
  "skill_count": 165,
  "skills": [
   {
@@ -7,7 +7,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 94,
+   "times_used": 95,
    "last_used": "2026-08-05"
   },
   {
@@ -131,6 +131,14 @@
    "last_used": "2026-07-25"
   },
   {
+   "name": "tekion-scheduling",
+   "path": "automotive/tekion-scheduling",
+   "category": "automotive",
+   "description": "Tekion Service Scheduling Settings \u2014 appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the \"lowest ceiling wins\" capacity model, shop top-down matching, the daily overnight scheduler + \"Run Scheduler\" button, parts-on-appointment notifications, and the concierge mobile write-up flow. Load for any appointment/scheduling/capacity setup or troubleshooting in Tekion.",
+   "times_used": 22,
+   "last_used": "2026-08-05"
+  },
+  {
    "name": "tekion-vi-api-migration",
    "path": "automotive/tekion-vi-api-migration",
    "category": "automotive",
@@ -147,20 +155,12 @@
    "last_used": "2026-08-02"
   },
   {
-   "name": "tekion-scheduling",
-   "path": "automotive/tekion-scheduling",
-   "category": "automotive",
-   "description": "Tekion Service Scheduling Settings \u2014 appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the \"lowest ceiling wins\" capacity model, shop top-down matching, the daily overnight scheduler + \"Run Scheduler\" button, parts-on-appointment notifications, and the concierge mobile write-up flow. Load for any appointment/scheduling/capacity setup or troubleshooting in Tekion.",
-   "times_used": 21,
-   "last_used": "2026-08-05"
-  },
-  {
    "name": "tekion-kb-search-scrape",
    "path": "automotive/tekion-kb-search-scrape",
    "category": "automotive",
    "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 19,
-   "last_used": "2026-08-02"
+   "times_used": 20,
+   "last_used": "2026-08-05"
   },
   {
    "name": "tekion-opcode-overrides",
