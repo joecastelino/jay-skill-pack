@@ -143,14 +143,105 @@ open('/tmp/shot_real.png','wb').write(base64.b64decode(d['screenshot']))
 ```
 then pass the `_real.png` path to `vision_analyze`.
 
+## CONFIRMED ROOT CAUSE PATTERN: self-inflicted watcher pile-up (verified 2026-08-05)
+
+The suspect flagged in the first investigation turned out to be the actual cause.
+**A prolonged single-store DEALER_QUOTA outage that "won't clear" is very likely
+YOUR OWN recovery watchers, not a Tekion-side problem** — especially if the outage
+spans multiple context-compaction/session boundaries. What happened:
+
+- Across several sessions (spanning Aug 1 → Aug 5), THREE separate SCT quota-recovery
+  watchers got launched at different times to self-heal different reports (Opened
+  Menu Sales, Closed MTD, Alignment-by-advisor), each with its own probe-then-scan
+  loop. Each new session that hit the SCT outage launched ANOTHER watcher without
+  realizing the earlier ones were still alive — because after context compaction,
+  the assistant's summary doesn't always carry forward "there are already N
+  background watchers running against this store."
+- The Transaction Dashboard raw text showed the smoking gun: a repeating 6-call
+  burst (`Search Repair Order x4 (200) → Get Jobs (200) → Get Operations (429)`)
+  firing every ~10-15 minutes, non-stop, for the entire ~20-hour outage — plus a
+  SEPARATE lone `Get Operations → 429` every ~10 min from a third watcher. That
+  volume (700-1000+ calls over the outage window, ALL hitting the one exhausted
+  bucket) is very plausibly why the bucket never got a clean window to refill if
+  429 responses still count against the request/quota counter (common behavior).
+- **Fix**: kill ALL recovery watchers touching that dealer, confirm process list is
+  clean, THEN wait and do a single manual probe later — don't relaunch a watcher
+  immediately. If it clears once left alone, that confirms self-inflicted; if it's
+  still 429 after a genuinely quiet window, THEN it's a real Tekion-side issue worth
+  escalating to support.
+
+### MANDATORY: watcher census BEFORE root-causing any "quota won't clear" ticket
+
+Before concluding a store-specific 429 outage needs a support ticket, always run a
+full census for pre-existing self-built recovery infrastructure targeting that
+dealer — don't trust your own memory/context summary, they get lost across
+compaction:
+
+```bash
+ps aux | grep -iE "sct|<storecode>|<dealerid>" | grep -v grep   # live watcher processes
+ps aux | grep -E "wait_ops|watcher|selfheal|quota_guard" | grep -v grep
+crontab -l | grep -v '^#'                                       # cron-launched watchers
+ls -la /tmp/*quota*.lock /tmp/*recovery*.lock /tmp/*selfheal*.lock 2>/dev/null
+find /home/itadmin/tekion-reports -iname "*selfheal*" -o -iname "*watcher*"
+```
+Kill every hit before doing anything else. A stray watcher from 1-4 days ago
+(`selfheal_sct_align_20260804.sh` in the verified case) is exactly the kind of thing
+that survives silently because it has no notify_on_complete and its parent session
+is long gone.
+
+## `api-metrics/search` requires ambient app headers — cold fetch() calls 401
+
+Attempted to bypass the filter-UI entirely by calling
+`POST /api/apc-core/u/vendor/api-metrics/search` directly via in-page `fetch()`
+with a hand-built JSON body (filters/sortList/rows/searchText/includeFields) — this
+consistently returned `401 {"message":"Missing Mandatory Headers!"}` even from
+inside the authenticated page context. Captured (via XHR/fetch hook on the app's
+OWN calls) the actual headers the app's axios-equivalent attaches automatically:
+`tekion-api-token`, `tenantId`, `userId`, `workspaceId`, `originalTenantId`,
+`originalUserId` (plus Sentry trace/baggage headers, non-functional). These are NOT
+regular cookies — they're injected by an interceptor a bare in-page `fetch()` does
+NOT get for free, same "bare fetch fails auth" pattern documented for the DMS app
+proper in the `persistent-browser-server` skill. **Do not waste time hand-building
+the request body and calling fetch cold — it will 401 regardless of how correct the
+body shape is.**
+
+### What actually works: drive the app's own search, then read the DOM
+
+Instead of fighting the filter-panel multi-select dropdowns (painful, see section
+above) or hand-calling the API (401s), the fastest reliable method is:
+1. Click the **"Search on Request ID"** text box (a real, simple `<input>`, easy to
+   target reliably) and press a key + Enter — ANY keystroke triggers the app to
+   refire its own `fetch()` (with correct headers) against `api-metrics/search`,
+   which you can observe via an XHR/fetch hook if you want the raw JSON, OR:
+2. Just clear the search box (Backspace + Enter) to restore the full unfiltered
+   result set, then `document.body.innerText` — the rendered table rows already
+   contain API Endpoint, HTTP Status, Request Time, Dealer, App Name as plain text,
+   sorted Request Time DESC. This answered "which store, which endpoint, what
+   status, how often" in a single innerText read with ZERO filter-UI interaction.
+3. Confirmed request-body shape (for reference, in case a future session wants to
+   retry the direct-API route via the DMS app's own already-authenticated context
+   rather than APC's separate auth):
+   ```json
+   {"filters":[{"field":"requestTime","filterType":"BTW","values":[msStart,msEnd]}],
+    "sortList":[{"field":"requestTime","order":"DESC"}],
+    "rows":200,"searchText":"","countRequired":true,
+    "includeFields":["traceId","statusCode","requestTime","apcMethod","responseCaptured",
+     "id","vendorId","externalDealerSiteId","appKey","apiName","apcPath","responseTime",
+     "apiVersion","tekionOemId","tekionProgramId","testCall","tier","vendorUserId","vendorWorkspaceId"]}
+   ```
+   Dealer filter field is presumably `externalDealerSiteId` (matches the dealer
+   string shown elsewhere, e.g. `americanmotorscorporation_876_0`) but this was
+   never confirmed to work standalone — every direct-body attempt 401'd regardless
+   of field names tried.
+
 ## Status log
 - 2026-08-05: Confirmed via Transaction Dashboard raw text (no filters needed) that
   SCT-only was throwing 429 DEALER_QUOTA on `GET .../jobs/{id}/operations` while
   every other visible row (all 7 dealers, Search Repair Order / Get Jobs) was 200.
-  Discovered `api-metrics/search` endpoint as the likely real quota-usage source but
-  did not finish capturing its schema — next session should hook fetch, trigger one
-  dashboard action, and read `window.__captured` to get the exact request/response
-  shape, then query it directly filtered to dealer=876 across API names to identify
-  which specific job/endpoint is consuming SCT's quota disproportionately (candidate
-  suspects: SCT Menu Sales Opened/Closed MTD scorecard scans, or the 15-min
-  recovery-watcher retry loops themselves compounding the drain during the outage).
+- 2026-08-05 (same day, follow-up): Root-caused it further — the repeating 6-call
+  burst pattern in the dashboard log was traced to THREE of Jay's own forgotten SCT
+  recovery watchers (two from same-day sessions, one running unnoticed since Aug 4)
+  polling every 10-15 min. Killed all three; confirmed dashboard log volume was
+  self-inflicted, not Tekion-side. `api-metrics/search` direct-fetch approach 401'd
+  (missing ambient auth headers) — DOM-text-read-after-simple-search-box-interaction
+  is the reliable method going forward, not hand-calling the API.
