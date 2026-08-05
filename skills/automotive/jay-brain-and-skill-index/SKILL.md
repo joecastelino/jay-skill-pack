@@ -332,6 +332,16 @@ Files under `/home/itadmin/.hermes/profiles/jay/skills/`:
   same-session crediting, but is now mostly redundant.
 See top movers: `python3 -c "import json;d=json.load(open('/home/itadmin/.hermes/profiles/jay/skills/usage-stats.json'));print(sorted([(v['times_used'],k) for k,v in d['skills'].items() if v['times_used']>0],reverse=True))"`
 
+## CLEAN NO-OP SYNC RUN CONFIRMED (2026-08-05 cron): when the 15-min session-end-sync has already
+committed+embedded everything, the nightly brain-sync cron run is a true no-op: `import` reports
+"0 pages imported / N skipped (N unchanged)" where N == `find brain -name '*.md' | wc -l` (890==890
+that day), `embed --stale` reports "0 stale found", `orphans` reports 0, and `git status --porcelain`
+is empty — so there is nothing to link/commit/re-embed. `gbrain doctor`'s Overall health score can
+still read ~25/100 from `cycle_freshness` ("Source default has never completed a full cycle" — belongs
+to the 3AM dream cycle, not sync) and `content_sanity_audit_recent` (warn-only, hard=0/soft=0) — these
+are NOT sync failures, ignore them for sync verification. Trust `gbrain stats` Embedded==Chunks +
+`orphans` count + `git status` instead of the doctor headline score.
+
 ## DIAGNOSTIC: Embedded < Chunks with `embed --stale` = 0 is usually a TRANSIENT, not a failure (2026-07-23)
 Mid-sync `gbrain stats` can show Embedded (e.g. 1627) < Chunks (1637) while `gbrain embed --stale`
 reports "0 stale found" — looks like the Embedded==Chunks invariant is broken with no way to fix it.
