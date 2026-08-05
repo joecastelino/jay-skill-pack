@@ -212,6 +212,13 @@ told about the duplication (Jay drafts + Stacey auto-sends = Sean can get two ve
    then part-list THAT one. Same run also recurred the 6b trap (PNG/PDF as plain
    attachments, Content-ID None, /tmp filenames, despite full MIME spec in the
    initial ask) — delete-and-rebuild fixed it one shot.
+7f. (8/04 EOD) Clean one-shot MIME (html + png cid=scorecard + pdf) but count=2
+   again (noon 41614 + tonight 41634) despite bundling the dedupe instruction in
+   the initial ask -- same as 7b/7d/7e pattern. Fixed with the standard explicit
+   KEEP-id/DELETE-id follow-up, verified count=1 after. Sent-check that run had
+   14 token-match hits, all old dates (6/30-7/6), zero labelIds=['SENT'] and zero
+   exact-subject-today matches -- no leak. Keep treating count>1 as routine, not
+   alarming; the KEEP/DELETE follow-up resolves it reliably every time so far.
 7e. (8/02) The compact 4-line raw-MIME probe (\"html/img-src/png-cid/pdf yes-no\")
    can answer `pdf: no` FALSELY when the PDF part is application/octet-stream.
    Before ordering a rebuild over a pdf:no, follow up with: \"yes/no — does ANY
