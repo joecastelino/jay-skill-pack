@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-05T14:45:16",
+ "generated": "2026-08-05T15:00:42",
  "skill_count": 167,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 91,
+   "times_used": 92,
    "last_used": "2026-08-05"
   },
   {
@@ -55,7 +55,7 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 33,
+   "times_used": 34,
    "last_used": "2026-08-05"
   },
   {
@@ -139,20 +139,20 @@
    "last_used": "2026-07-25"
   },
   {
+   "name": "tekion-kb-search-scrape",
+   "path": "automotive/tekion-kb-search-scrape",
+   "category": "automotive",
+   "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
+   "times_used": 22,
+   "last_used": "2026-08-05"
+  },
+  {
    "name": "tekion-vi-api-migration",
    "path": "automotive/tekion-vi-api-migration",
    "category": "automotive",
    "description": "Migrate the Vehicle Inventory (\"The Goods\") browser scraper to the Tekion OpenAPI (vehicle-inventory:search) producing per-store JSON that byte-matches the legacy schema. Covers field mapping, the SOLD-pending rule, Pacific-tz dates, rate-limit discipline, and the Don coordination/cutover handoff.",
    "times_used": 22,
    "last_used": "2026-07-12"
-  },
-  {
-   "name": "tekion-kb-search-scrape",
-   "path": "automotive/tekion-kb-search-scrape",
-   "category": "automotive",
-   "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 21,
-   "last_used": "2026-08-05"
   },
   {
    "name": "tekion-opcode-api",
