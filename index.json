@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-05T13:45:03",
+ "generated": "2026-08-05T14:00:48",
  "skill_count": 166,
  "skills": [
   {
@@ -7,7 +7,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 97,
+   "times_used": 98,
    "last_used": "2026-08-05"
   },
   {
@@ -15,7 +15,7 @@
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 89,
+   "times_used": 90,
    "last_used": "2026-08-05"
   },
   {
@@ -475,6 +475,14 @@
    "last_used": "2026-07-14"
   },
   {
+   "name": "tekion-apc-quota-usage-investigation",
+   "path": "automotive/tekion-apc-quota-usage-investigation",
+   "category": "automotive",
+   "description": "Investigate REAL Tekion OpenAPI quota/429 usage per dealer using the APC portal's Transaction Dashboard (ground truth, not assumptions) \u2014 find which store/endpoint is burning quota, when Joe says \"don't assume, go check the APC portal\". Also covers what Plan Details and Usage Dashboard actually show (and don't).",
+   "times_used": 2,
+   "last_used": "2026-08-05"
+  },
+  {
    "name": "tekion-deferred-services-report",
    "path": "automotive/tekion-deferred-services-report",
    "category": "automotive",
@@ -569,14 +577,6 @@
    "description": "Pull the ToyotaCare (TAC) billed-hours number from Tekion's Advisor Performance report (Reports module) for SCT or any store, using Joe's saved TAC/ToyotaCare filter \u2014 and roll it out to the other 6 AMG stores. Use when Joe asks for ToyotaCare / TAC billed hours, or is building his monthly SCT fixed-ops sheet (\"first number, Toyota Care\").",
    "times_used": 1,
    "last_used": "2026-08-03"
-  },
-  {
-   "name": "tekion-apc-quota-usage-investigation",
-   "path": "automotive/tekion-apc-quota-usage-investigation",
-   "category": "automotive",
-   "description": "Investigate REAL Tekion OpenAPI quota/429 usage per dealer using the APC portal's Transaction Dashboard (ground truth, not assumptions) \u2014 find which store/endpoint is burning quota, when Joe says \"don't assume, go check the APC portal\". Also covers what Plan Details and Usage Dashboard actually show (and don't).",
-   "times_used": 1,
-   "last_used": "2026-08-05"
   },
   {
    "name": "tekion-coupon-management",
