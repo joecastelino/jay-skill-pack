@@ -32,6 +32,54 @@ NOT the old V1 rt-tr-group table.
 
 ---
 
+## Finding the right opcode from a Story Line / screenshot (verified BT SMMOAEPR 2026-08-05)
+
+When Joe/Tony flags a problem on a **standalone included-service checkbox item**
+(e.g. a "Story Line" row on the RO like "EPR Service - Includes Engine Oil Change,
+BG EPR Treatment and MOA Additive Internal Engine Cleaning") — NOT a per-op line
+inside an exploded menu — you can usually skip the whole quotes-explode dance
+(`tekion-included-service-parts-override` Phase 0) and just **search the Opcode
+List by a distinctive keyword from the description text**:
+
+1. Nav to `/ro/opcode` (list page, NOT `/ro/opcode/edit/...` yet).
+2. Use the **PAGE-LEVEL "Search..." box** (top-right of the table toolbar,
+   NOT the header "Search here..." global search — that bounces elsewhere).
+3. Type a distinctive keyword from the flagged text (e.g. `EPR`, `MOA`, a part
+   number, etc.) — the search matches Description too, not just Opcode code.
+4. Read the result rows' Opcode/Description/Category/Type/Status to find the
+   exact match (the Description field is often the FULL story-line text almost
+   verbatim — a strong confirmation signal).
+5. Then `/navigate` straight to `/ro/opcode/edit/<CODE>`.
+
+**Reliable interaction pattern for that search box** (verified — plain `/mouse`+`/type`
+without tagging FAILED silently/500'd this session):
+```js
+// 1) tag the live input first (offsetParent check + placeholder match)
+(() => {
+  const inp = Array.from(document.querySelectorAll('input')).find(
+    e => e.offsetParent!==null && e.placeholder === 'Search...');
+  inp.setAttribute('data-jay','opsearch');
+  const r = inp.getBoundingClientRect();
+  return JSON.stringify({cx: Math.round(r.x+r.width/2), cy: Math.round(r.y+r.height/2)});
+})()
+```
+Then `/mouse` click at that EXACT center (not a coordinate read off a raw
+`getBoundingClientRect().y` from a bulk scan — that reports the top-left y, not
+center, and clicking at the wrong y can silently miss the input or cause the
+subsequent `/type` to 500/no-op). Only AFTER the real mouse click focuses the
+field does `/type {"selector":"[data-jay='opsearch']","text":"EPR"}` actually
+land (verify via `document.querySelector("[data-jay='opsearch']").value`).
+Finish with `/press {"key":"Enter"}` to submit the filter.
+
+**Pitfalls hit:** (a) `/type` with a raw CSS attribute-selector string
+(`input[placeholder='Search...']`) returned **HTTP 500** — always tag with a
+unique `data-jay` attr first and select by that. (b) `/press` per-character
+without a genuine prior focus/click did nothing (value stayed empty) — a real
+`/mouse` click is required before `/press` or `/type` will register on this
+input.
+
+---
+
 ## Reaching the Opcode Edit Page
 
 `page.goto()` for the edit URL loads only the shell — you must use SPA navigation:

@@ -38,3 +38,36 @@ Use when Joe reports "RO billed X hours instead of Y" or "wrong labor rate" on a
 - Never assume one store's opcode/rate setup applies to another — TL has a TEW rate, SCT doesn't.
 - Don't guess whether scattered hours are guide-accepted vs manually typed — API can't distinguish; ask an advisor from the "correct" cohort what they do at add-time.
 - All OpenAPI $ fields are CENTS (÷100); rate-table dollars in the labor-pricing UI are dollars.
+
+## RESOLVED CASE — BT SMMOAEPR (2026-08-05, Joe: "fix the opcode")
+
+Joe flagged (via screenshot of an open RO's Service Menu / Story Line panel):
+"tech Time on the EPR Service menu that has an oil change epr and moa. Needs
+to pay .8" — screenshot showed opcode Op1 TEK20000PSM (20K Premium Severe menu)
+billing 0.20 hr CP, and a checked Story Line item "EPR Service - Includes Engine
+Oil Change, BG EPR Treatment and MOA Additive Internal Engine Cleaning".
+
+- **Found the opcode** by searching the BT (dealer 1249) `/ro/opcode` list for
+  keyword `EPR` (see the search technique now documented in
+  `tekion-opcode-default-pricing`) — 3 hits, exact description match was
+  **SMMOAEPR** ("INCLUDES ENGINE OIL CHANGE, BG EPR TREATMENT, AND MOA ADDITIVE
+  INTERNAL ENGINE CLEANING", Category=Service Menu, Type=Individual Service,
+  Active). No quotes-explode needed — this is a standalone Story Line checkbox
+  item, not a bundled per-op menu line.
+- **Root cause**: opcode's Default-tab Labor Customer hr AND Manufacturer hr
+  were both `0.20` — that IS the tech flag/pay time (separate from the CP
+  customer-facing Fixed Price $95.44, which is untouched by this fix).
+- **Fix**: set BOTH Customer and Manufacturer hr spinbuttons to `0.80` via
+  :9223 (`/mouse` click to focus each `input.ant-input-number-input`, then
+  `/type` + `/press Tab` to commit), clicked Update (`/mouse` on its scrolled-
+  into-view center). Verified via a TRUE remount (`/navigate` to `/home` then
+  back to `/ro/opcode/edit/SMMOAEPR`) — both fields read 0.80 fresh from server.
+- **Scope note given to Joe**: this is a GLOBAL opcode-level change — it applies
+  to every future RO/menu tier that pulls this Story Line item at BT, not just
+  the 20K interval. Flagged in case Joe wanted it scoped to only the 20K menu
+  (he did not object).
+- Session also did a fresh `login.py` (session was EXPIRED) + full storage-state
+  injection into :9223 (cookies + 21 localStorage keys, all `ok`), then a UI
+  dealer-switch from default BC (1251) to BT (1249) via the dealer pill popover
+  before any of the above — standard `tekion-autonomous-login` /
+  `persistent-browser-server` procedure, no new findings there.
