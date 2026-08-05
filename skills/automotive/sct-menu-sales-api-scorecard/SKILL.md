@@ -999,6 +999,35 @@ templated) send by reading the actual newest Sent-folder message body via
 her paraphrased "here are the numbers I sent" reply, which can and did diverge
 from the real body on the very first attempt.
 
+## 2026-08-05 noon update — outage 5th calendar day, clean single-round outage-notification send
+
+Probe at 12:01-12:04 PM PDT: same signature, `/operations` 429 DEALER_QUOTA on every
+call (search+jobs 200). Tags prefilter found 3 genuine TEK-tag candidates today
+(577713/577661/577625). Flagged both JSONs `complete:false`+note. Found the prior
+watcher (`/tmp/wait_ops_then_scrape_0805.sh`, launched 04:57, 8h deadline) had
+already logged 24+ consecutive PROBE_BLOCKED entries and only ~1hr runway left —
+same "check remaining runway" lesson as 8/3/8/4 — killed it (had to kill both the
+bash PID AND the orphaned `sleep` child holding the flock, per the known trap) and
+relaunched a fresh 10h watcher (`/tmp/wait_ops_then_scrape_0805b.sh`, new lock file
+`sct_opened_quota_lock_20260805b.lock` to avoid colliding with the dead one's stale
+lock path).
+
+For the outage-notification email itself: a single clean round worked this time —
+zero rebuild loops (contrast with 8/4's 4-round Opened + 2-round Closed struggle).
+What worked: (1) explicit "USD 1,490.98" instead of "$1,490.98" in the initial ask
+(dodges the $-corruption bug), (2) gave the exact last-known-good figures verbatim
+in the prompt instead of a summary (dodges fabrication), (3) explicitly said
+"CUSTOM... NOT the normal templated report" and "Greeting: 'Joe,' (NOT Kevin,)" and
+"Do NOT attach any files" all in the SAME first message. A verbatim body read-back
+BEFORE sending (asked her to paste literal text in her OWN reply, not "send it to
+me on Telegram" — she tried to deflect there first, a dead end for a non-Telegram
+caller; had to explicitly say "I did not receive that, paste it directly in this
+reply") caught one cosmetic issue (DEALER_QUOTA → DEALERQUOTA, underscore dropped
+twice) that was harmless and not worth blocking on. TO+timestamp verify and
+0-leftover-drafts check both came back clean on the first ask. Total: 1 draft ask +
+1 verbatim-readback ask + 1 send ask + 1 Sent-verify ask + 1 draft-count check = 5
+ask-agent calls, no wrong-recipient/wrong-template/fabricated-number retries needed.
+
 ## Path / interpreter notes
 - `~` in terminal resolves to `/home/itadmin/.hermes/profiles/jay/home/`;
   the scripts live at REAL `/home/itadmin/tekion-reports/`.
