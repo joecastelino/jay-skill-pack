@@ -212,6 +212,18 @@ told about the duplication (Jay drafts + Stacey auto-sends = Sean can get two ve
    then part-list THAT one. Same run also recurred the 6b trap (PNG/PDF as plain
    attachments, Content-ID None, /tmp filenames, despite full MIME spec in the
    initial ask) — delete-and-rebuild fixed it one shot.
+7d-confirm. (8/04 EOD) BOGUS DRAFT ID recurred a THIRD time: she replied "Draft ID
+   41635" but drafts.get(41635) returned an totally unrelated draft (a VW of
+   Clovis Used Car Recon .docx). This is now a RELIABLE, expected failure mode —
+   don't bother querying by her reported id at all. Always verify via: (1) a
+   drafts.list search on the exact subject text (e.g. "in:draft TOL Menu Sales
+   Closed MTD"), which lists id | exact-Subject pairs, (2) pick the id whose
+   Subject matches today's exactly, (3) drafts.get THAT id for the part listing.
+   Worked cleanly in one pass this run: found 6 stacked drafts (July 1-31 through
+   today, one per day, no true duplicates since each day's subject is unique),
+   the correct one's MIME came back perfect first try (multipart/mixed >
+   multipart/related > multipart/alternative(text/plain+text/html) + image/png
+   Content-ID=scorecard + application/pdf) — no rebuild needed.
 7f. (8/04 EOD) Clean one-shot MIME (html + png cid=scorecard + pdf) but count=2
    again (noon 41614 + tonight 41634) despite bundling the dedupe instruction in
    the initial ask -- same as 7b/7d/7e pattern. Fixed with the standard explicit
