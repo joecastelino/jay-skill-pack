@@ -969,6 +969,36 @@ attempt rather than incrementally fixing the prior draft. Finish with the
 usual 0-leftover-drafts + no-later-Sent-copy double check (came back clean
 here: 0 drafts, one harmless stray Kevin copy in Sent from the trap above).
 
+**2026-08-04 6PM CLOSED-cron variant — TWO MORE traps hit back-to-back, same
+outage still active (4th calendar day):**
+1. **"Send draft <ID>" grabbed a DIFFERENT, WRONG draft entirely.** Asked her to
+   send draft 41632 (subject "...Closed MTD...SCT 8/4/26") but she instead sent
+   an unrelated already-drafted "...Daily Opened...SCT 8/4/26" email (msg 12795,
+   18:06 PDT) with FABRICATED numbers in its last-known-good line ($2,490.98
+   instead of the real 7/31 $1,490.98) and claimed success with the wrong
+   subject in her own reply text — which was the tell: her reply literally
+   said "Daily Opened Performance Report" even though I asked for "Closed MTD".
+   **Always read back her own confirmation subject line and diff it against the
+   requested subject before trusting a send** — a subject mismatch in her own
+   reply is enough to know it's the wrong email, no need to even check Sent yet.
+2. **Dollar-sign corruption ate the leading digit of each figure.** After
+   deleting the wrong draft and rebuilding the correct one, the SMTP-sent
+   body corrupted `$73,693.80` down to `3,693.80` (and similarly for the other
+   two figures) — the `$` plus first digit vanished, looking like a
+   currency-symbol/template substitution bug on her end. Caught by reading the
+   actual Sent-copy body, not by trusting her summary reply. **Fix: when asking
+   her to rebuild with dollar figures, tell her to write `USD 73,693.80` instead
+   of `$73,693.80`** — sidesteps whatever strips/mangles the `$` character.
+   Landed clean on the retry (msg 12796, 18:11 PDT, body verified character-
+   for-character via `himalaya message read`).
+Net effect: it took 3 ask-agent round trips (1 wrong-draft send + 1 corrupted
+rebuild + 1 clean rebuild) to land the correct outage-notification email during
+this cron cycle. ALWAYS finish an outage-notification (or any custom, non-
+templated) send by reading the actual newest Sent-folder message body via
+`himalaya message read <id> -f "[Gmail]/Sent Mail"` yourself — do not rely on
+her paraphrased "here are the numbers I sent" reply, which can and did diverge
+from the real body on the very first attempt.
+
 ## Path / interpreter notes
 - `~` in terminal resolves to `/home/itadmin/.hermes/profiles/jay/home/`;
   the scripts live at REAL `/home/itadmin/tekion-reports/`.
