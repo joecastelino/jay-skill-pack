@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-05T14:30:19",
+ "generated": "2026-08-05T14:45:16",
  "skill_count": 167,
  "skills": [
   {
@@ -51,20 +51,20 @@
    "last_used": "2026-08-02"
   },
   {
+   "name": "tekion-sitemap",
+   "path": "automotive/tekion-sitemap",
+   "category": "automotive",
+   "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
+   "times_used": 33,
+   "last_used": "2026-08-05"
+  },
+  {
    "name": "tekion-quotes-menu-price-diagnosis",
    "path": "automotive/tekion-quotes-menu-price-diagnosis",
    "category": "automotive",
    "description": "Diagnose a Tekion Service Menu pricing problem (e.g. \"a rotation is charging $449.45\") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLODE the menu into individual opcodes using the \"Add Menu Services as separate operations\" setting to find which opcode carries the bad price and its labor-rate method (Fixed vs Service Catalog Pro Dynamic Pricing). Use when Joe flags a wrong/inflated price on a maintenance menu line for a specific RO/vehicle.",
    "times_used": 32,
    "last_used": "2026-07-22"
-  },
-  {
-   "name": "tekion-sitemap",
-   "path": "automotive/tekion-sitemap",
-   "category": "automotive",
-   "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 32,
-   "last_used": "2026-08-02"
   },
   {
    "name": "tol-menu-sales-reports",
@@ -147,20 +147,20 @@
    "last_used": "2026-07-12"
   },
   {
+   "name": "tekion-kb-search-scrape",
+   "path": "automotive/tekion-kb-search-scrape",
+   "category": "automotive",
+   "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
+   "times_used": 21,
+   "last_used": "2026-08-05"
+  },
+  {
    "name": "tekion-opcode-api",
    "path": "automotive/tekion-opcode-api",
    "category": "automotive",
    "description": "Read, audit, and VERIFY Tekion opcode override rows directly from the backend REST API using the session's own auth token. This is the AUTHORITATIVE source of truth \u2014 the override UI grid frequently renders wrong/empty even when rows exist in the backend. Use to get the true committed row count before a batch, detect incomplete (part-less) rows, and confirm persistence after saving.",
    "times_used": 21,
    "last_used": "2026-08-02"
-  },
-  {
-   "name": "tekion-kb-search-scrape",
-   "path": "automotive/tekion-kb-search-scrape",
-   "category": "automotive",
-   "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 20,
-   "last_used": "2026-08-05"
   },
   {
    "name": "tekion-opcode-overrides",
@@ -603,6 +603,14 @@
    "last_used": "2026-07-20"
   },
   {
+   "name": "tekion-labor-time-guide",
+   "path": "automotive/tekion-labor-time-guide",
+   "category": "automotive",
+   "description": "Look up or bulk-pull Tekion's Labor Time Guide (OEM warranty labor-time data) for any store/vehicle. Covers the nav path, the underlying API (VIN or Make/Year/Model search), pagination, and the critical fact that THERE IS NO DOWNLOAD/EXPORT BUTTON in the UI \u2014 it's a live per-vehicle OEM feed, not a static file. Use when Joe asks to \"download the labor time guide\", \"get OEM labor times\", or look up warranty hours/parts/failure codes for a repair.",
+   "times_used": 1,
+   "last_used": "2026-08-05"
+  },
+  {
    "name": "tekion-mom-service-gross-fleet",
    "path": "automotive/tekion-mom-service-gross-fleet",
    "category": "automotive",
@@ -767,14 +775,6 @@
    "path": "automotive/tekion-computer-use",
    "category": "automotive",
    "description": "Autonomous vision-guided browser automation for Tekion DMS. Uses the persistent Playwright browser server (port 9223) as the interaction layer and Claude Sonnet 4 (via OpenRouter) as the vision/decision-making brain. Claude sees page snapshots, decides what to click/type, and the agent executes via HTTP API calls.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tekion-labor-time-guide",
-   "path": "automotive/tekion-labor-time-guide",
-   "category": "automotive",
-   "description": "Look up or bulk-pull Tekion's Labor Time Guide (OEM warranty labor-time data) for any store/vehicle. Covers the nav path, the underlying API (VIN or Make/Year/Model search), pagination, and the critical fact that THERE IS NO DOWNLOAD/EXPORT BUTTON in the UI \u2014 it's a live per-vehicle OEM feed, not a static file. Use when Joe asks to \"download the labor time guide\", \"get OEM labor times\", or look up warranty hours/parts/failure codes for a repair.",
    "times_used": 0,
    "last_used": null
   },
