@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-04T20:45:04",
+ "generated": "2026-08-04T21:00:28",
  "skill_count": 165,
  "skills": [
   {
@@ -23,8 +23,8 @@
    "path": "automotive/agent-to-agent-bridge",
    "category": "automotive",
    "description": "Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine.",
-   "times_used": 56,
-   "last_used": "2026-08-03"
+   "times_used": 57,
+   "last_used": "2026-08-04"
   },
   {
    "name": "tekion-openapi-repair-orders",
@@ -67,20 +67,20 @@
    "last_used": "2026-08-02"
   },
   {
+   "name": "tol-menu-sales-reports",
+   "path": "automotive/tol-menu-sales-reports",
+   "category": "automotive",
+   "description": "Run the Toyota of Lancaster (TOL/TL, dealer 1092) Menu Sales scorecards \u2014 Daily Opened and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Sean Preston (spreston@tol-av.com). The Toyota-store sibling of the SCT/Kevin (sct-menu-sales-api-scorecard) and BC/Ruben (bc-menu-sales-reports) pipelines. Use for any \"TOL/TL/Toyota of Lancaster menu report\" or \"Sean Preston report\" request.",
+   "times_used": 30,
+   "last_used": "2026-08-04"
+  },
+  {
    "name": "sct-menu-sales-api-scorecard",
    "path": "automotive/sct-menu-sales-api-scorecard",
    "category": "automotive",
    "description": "Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters to the frozen 316 TEK* maintenance opcodes, resolves advisor names via the persistent browser session on :9223, renders a light-format PNG+PDF scorecard, vision-verifies, and emails. Use for the daily Menu Sales Opened Performance Report cron.",
    "times_used": 29,
    "last_used": "2026-08-04"
-  },
-  {
-   "name": "tol-menu-sales-reports",
-   "path": "automotive/tol-menu-sales-reports",
-   "category": "automotive",
-   "description": "Run the Toyota of Lancaster (TOL/TL, dealer 1092) Menu Sales scorecards \u2014 Daily Opened and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Sean Preston (spreston@tol-av.com). The Toyota-store sibling of the SCT/Kevin (sct-menu-sales-api-scorecard) and BC/Ruben (bc-menu-sales-reports) pipelines. Use for any \"TOL/TL/Toyota of Lancaster menu report\" or \"Sean Preston report\" request.",
-   "times_used": 29,
-   "last_used": "2026-08-02"
   },
   {
    "name": "bc-menu-sales-reports",
