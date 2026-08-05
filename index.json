@@ -1,6 +1,6 @@
 {
- "generated": "2026-08-05T12:45:45",
- "skill_count": 165,
+ "generated": "2026-08-05T13:00:19",
+ "skill_count": 166,
  "skills": [
   {
    "name": "persistent-browser-server",
@@ -15,7 +15,7 @@
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 86,
+   "times_used": 87,
    "last_used": "2026-08-05"
   },
   {
@@ -735,6 +735,14 @@
    "path": "automotive/local-nemotron-stt-fleet",
    "category": "automotive",
    "description": "Stand up NVIDIA Nemotron 3.5 ASR (streaming, CPU ONNX) as the shared speech-to-text backend for every Hermes agent on this machine, replacing the broken faster-whisper/libcublas path. Use when voice messages arrive untranscribed or when asked to enable local speech recognition for the agent fleet.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-apc-quota-usage-investigation",
+   "path": "automotive/tekion-apc-quota-usage-investigation",
+   "category": "automotive",
+   "description": "Investigate REAL Tekion OpenAPI quota/429 usage per dealer using the APC portal's Transaction Dashboard (ground truth, not assumptions) \u2014 find which store/endpoint is burning quota, when Joe says \"don't assume, go check the APC portal\". Also covers what Plan Details and Usage Dashboard actually show (and don't).",
    "times_used": 0,
    "last_used": null
   },
