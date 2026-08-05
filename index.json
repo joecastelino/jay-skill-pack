@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-05T09:15:20",
+ "generated": "2026-08-05T09:31:49",
  "skill_count": 165,
  "skills": [
   {
@@ -7,7 +7,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 95,
+   "times_used": 97,
    "last_used": "2026-08-05"
   },
   {
@@ -15,7 +15,7 @@
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 76,
+   "times_used": 77,
    "last_used": "2026-08-05"
   },
   {
@@ -123,20 +123,20 @@
    "last_used": "2026-07-28"
   },
   {
+   "name": "tekion-scheduling",
+   "path": "automotive/tekion-scheduling",
+   "category": "automotive",
+   "description": "Tekion Service Scheduling Settings \u2014 appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the \"lowest ceiling wins\" capacity model, shop top-down matching, the daily overnight scheduler + \"Run Scheduler\" button, parts-on-appointment notifications, and the concierge mobile write-up flow. Load for any appointment/scheduling/capacity setup or troubleshooting in Tekion.",
+   "times_used": 25,
+   "last_used": "2026-08-05"
+  },
+  {
    "name": "sct-backcounter-ro-sales-countsheet",
    "path": "automotive/sct-backcounter-ro-sales-countsheet",
    "category": "automotive",
    "description": "Build Joe's daily SCT Back Counter Bin Check count sheet \u2014 cross-reference a day's RO part sales (Tekion OpenAPI) against parts that stock in a back-counter bin (5000 section) and render a Tekion-bin-check-style sheet with Primary Bin and Back Counter Bin write-in Count boxes, emailed via Stacey. Use when Joe asks to \"verify counts daily\", \"which back counter parts sold today\", or re-run the back-counter check for a date. KEY DESIGN INSIGHT (Joe corrected me 2026-07-04): a bin-snapshot DIFF can NEVER catch a back-counter pull \u2014 Tekion only relieves the PRIMARY bin (2420), so the 5000s bin doesn't move when the sale posts. Detection must be sales-driven: today's RO parts INTERSECT back-counter roster.",
    "times_used": 23,
    "last_used": "2026-07-25"
-  },
-  {
-   "name": "tekion-scheduling",
-   "path": "automotive/tekion-scheduling",
-   "category": "automotive",
-   "description": "Tekion Service Scheduling Settings \u2014 appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the \"lowest ceiling wins\" capacity model, shop top-down matching, the daily overnight scheduler + \"Run Scheduler\" button, parts-on-appointment notifications, and the concierge mobile write-up flow. Load for any appointment/scheduling/capacity setup or troubleshooting in Tekion.",
-   "times_used": 22,
-   "last_used": "2026-08-05"
   },
   {
    "name": "tekion-vi-api-migration",
