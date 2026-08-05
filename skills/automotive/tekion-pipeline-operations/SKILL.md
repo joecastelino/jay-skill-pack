@@ -138,6 +138,21 @@ cd /home/itadmin/caliber-ops && npx tsx scripts/tekion-scraper.ts --quick --deal
 
 NOTE: the IMPORTANT gap (e.g. "no data since 6/2") is usually NOT lost data — it's the lock. Once unblocked, `--quick` mode backfills missing invoices automatically. Don't panic about the date; fix the lock and let it catch up.
 
+**Watchdog pgrep-pattern bug (found + fixed 2026-08-05):** the pre-lock watchdog in
+`cron-pipeline.sh` used `pgrep -f "caliber-ops/scripts/tekion-scraper.ts"` — but the
+ACTUAL process argv (via `npx tsx scripts/tekion-scraper.ts ...`) never contains the
+`caliber-ops/` path prefix, only the relative `scripts/tekion-scraper.ts`. So the
+watchdog's own pattern never matched and it silently never fired — a wedged SCT
+scraper held the pipeline lock for 17+ hours (Aug 4 10:44 AM → Aug 5 3:00 AM) with
+zero self-heal, and the 1 AM nightly backfill queued the whole time waiting on the
+same lock. Fixed by loosening the pattern to just `pgrep -f "tekion-scraper.ts"`
+(both `for PID in $(pgrep -f ...)` loops in the watchdog). **Lesson: always verify a
+watchdog's pgrep pattern against the ACTUAL live process argv (`ps -o cmd= -p <pid>`
+or `cat /proc/<pid>/cmdline`), not the path you assume the shell will show — path
+prefixes get stripped/resolved differently than expected.** After any watchdog
+edit, test it against a real running PID before trusting it silently protects the
+pipeline.
+
 ### 5. Frame Detachment Cascade — FIXED 2026-06-22
 **Symptom:** `Attempted to use detached Frame 'F...'` errors. NOT just "after ~100 searches" — once it happens ONCE, **every subsequent invoice in that store silently fails**, so the store reports `Found: 0` (or 0 processed). Confirmed June 2026: BC/SV/VC all showed Found:0 while BT/ST/TL got 42 each, and the run logged **9,158 detached-frame errors**. The error path does NOT write false zeros (it only stamps `tekionScrapedAt`), so the dashboard goes STALE on the affected stores, not zeroed — diagnose by per-store `Found:` counts in the COMPLETE summaries, not by dashboard zeros.
 
