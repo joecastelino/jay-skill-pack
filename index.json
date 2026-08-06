@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-05T21:00:05",
+ "generated": "2026-08-05T21:15:34",
  "skill_count": 167,
  "skills": [
   {
@@ -23,7 +23,7 @@
    "path": "automotive/agent-to-agent-bridge",
    "category": "automotive",
    "description": "Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine.",
-   "times_used": 58,
+   "times_used": 59,
    "last_used": "2026-08-05"
   },
   {
@@ -59,20 +59,20 @@
    "last_used": "2026-08-05"
   },
   {
+   "name": "tol-menu-sales-reports",
+   "path": "automotive/tol-menu-sales-reports",
+   "category": "automotive",
+   "description": "Run the Toyota of Lancaster (TOL/TL, dealer 1092) Menu Sales scorecards \u2014 Daily Opened and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Sean Preston (spreston@tol-av.com). The Toyota-store sibling of the SCT/Kevin (sct-menu-sales-api-scorecard) and BC/Ruben (bc-menu-sales-reports) pipelines. Use for any \"TOL/TL/Toyota of Lancaster menu report\" or \"Sean Preston report\" request.",
+   "times_used": 33,
+   "last_used": "2026-08-05"
+  },
+  {
    "name": "tekion-quotes-menu-price-diagnosis",
    "path": "automotive/tekion-quotes-menu-price-diagnosis",
    "category": "automotive",
    "description": "Diagnose a Tekion Service Menu pricing problem (e.g. \"a rotation is charging $449.45\") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLODE the menu into individual opcodes using the \"Add Menu Services as separate operations\" setting to find which opcode carries the bad price and its labor-rate method (Fixed vs Service Catalog Pro Dynamic Pricing). Use when Joe flags a wrong/inflated price on a maintenance menu line for a specific RO/vehicle.",
    "times_used": 32,
    "last_used": "2026-07-22"
-  },
-  {
-   "name": "tol-menu-sales-reports",
-   "path": "automotive/tol-menu-sales-reports",
-   "category": "automotive",
-   "description": "Run the Toyota of Lancaster (TOL/TL, dealer 1092) Menu Sales scorecards \u2014 Daily Opened and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Sean Preston (spreston@tol-av.com). The Toyota-store sibling of the SCT/Kevin (sct-menu-sales-api-scorecard) and BC/Ruben (bc-menu-sales-reports) pipelines. Use for any \"TOL/TL/Toyota of Lancaster menu report\" or \"Sean Preston report\" request.",
-   "times_used": 32,
-   "last_used": "2026-08-05"
   },
   {
    "name": "sct-menu-sales-api-scorecard",
