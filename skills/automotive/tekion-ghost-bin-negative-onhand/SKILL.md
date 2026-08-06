@@ -203,6 +203,15 @@ BEFORE flagging it as a missed transfer:
   move → someone posted a redistribution/adjustment, or it's drift. Flag for verification.
 - **A negative that DEEPENS on a non-primary bin (e.g. -7→-8) = smoking gun** — a bin-level
   decrement happened without stock; always flag loudly.
+- **⚠️ A SPECIAL-PURPOSE bin (TXM/SOLD/SP-ORD/RETURNSHELF) can itself BE a part's Primary
+  Bin (verified 2026-08-05)** — don't assume "special bin = always ignore, always non-primary."
+  Example: 87139-YZZ09 had Primary=TXM (qty 0) and non-primary 5007 (a watched 5000-section
+  bin) deepening -15→-17. This is STILL the smoking-gun case above (deepening negative on a
+  non-primary bin) — flag it — but it is NOT a standard "5000s→2420 front/back-counter drift"
+  (the Primary isn't a front-counter bin like 2420/24xx, it's a process bin), so report it as
+  "verify/investigate — atypical Primary" rather than "needs 5000s→2420 transfer." Always
+  confirm via rendered Bin Details which bin is actually Primary before writing the flag
+  reason — don't infer it from bin number or class alone.
 - 65/175 parts having lastTransactionTime in 24h is NORMAL on a busy day — the 24h-activity
   list is a reminder roster (sales relieve Primary only), not an alarm list. Only qty
   changes/new negatives are alarms.
