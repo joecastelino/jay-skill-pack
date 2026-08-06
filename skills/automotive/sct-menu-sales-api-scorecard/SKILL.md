@@ -1028,6 +1028,29 @@ twice) that was harmless and not worth blocking on. TO+timestamp verify and
 1 verbatim-readback ask + 1 send ask + 1 Sent-verify ask + 1 draft-count check = 5
 ask-agent calls, no wrong-recipient/wrong-template/fabricated-number retries needed.
 
+## 2026-08-05 5PM update — outage now 5th calendar day, clean single-round send again
+
+Probe at 17:01-17:04 PDT: same signature, `/operations` 429 DEALER_QUOTA on every
+call (search+jobs 200). Tags prefilter found 5 genuine TEK-tag candidates today
+(577773/577749/577713/577661/577625). Flagged both JSONs `complete:false`+note.
+The prior watcher (`wait_ops_then_scrape_0805b.sh`, launched noon) had already
+stopped running (no live process found despite an unexpired 10h deadline in its
+log) — always verify with `ps aux`/`pgrep`, not just log freshness, before trusting
+an existing watcher. Relaunched a fresh 12h one
+(`/tmp/wait_ops_then_scrape_0805c.sh`, lock `sct_opened_quota_lock_20260805c.lock`,
+log `/tmp/sct_opened_0805c_recovery.log`) via `terminal(background=true,
+notify_on_complete=true, watch_patterns=["window clear","gave up"])`.
+
+Outage-notification email: another clean single-round send (no rebuild loops),
+following the 8/5-noon playbook exactly — "USD 1,490.98" instead of "$1,490.98",
+verbatim last-known-good figures in the prompt, explicit "CUSTOM...NOT the normal
+template" + "Greeting: 'Joe,' (NOT Kevin,)" + "Do NOT attach any files" all in one
+message, verbatim body read-back before sending. Only cosmetic issue: her draft
+silently rendered "DEALER_QUOTA" as "DEALERQUOTA" (underscore dropped) twice —
+same harmless artifact as 8/5 noon, not worth blocking on. TO+timestamp verify and
+0-leftover-drafts check both clean on first ask. Outage cron-cycle tally: adds
+8/5 5PM Opened — 10 cycles lost since 8/1 5PM, spanning 5 calendar days.
+
 ## Path / interpreter notes
 - `~` in terminal resolves to `/home/itadmin/.hermes/profiles/jay/home/`;
   the scripts live at REAL `/home/itadmin/tekion-reports/`.
