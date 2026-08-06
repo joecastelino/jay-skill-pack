@@ -347,6 +347,12 @@ FALSE-POSITIVE from the 2026-07-03 note (pages linked via index→page `referenc
 in `backlinks index`, which only lists page→index `child_of`-direction edges). Do NOT chase that diff
 when `gbrain orphans` already reports 0 — orphans is the authoritative check, the comm diff is not.
 
+## CLEAN NO-OP RE-CONFIRMED (2026-08-05 evening #2 cron): 890 disk .md == 890 imported+skipped,
+`embed --stale`=0, `orphans`=0/896 linkable, git clean, stats 896 pages/1869 chunks/1869 embedded/
+1672 links — identical shape to the earlier same-day no-op note below. When ALL of disk-count==
+import-total, embed-stale==0, orphans==0, and git clean hold simultaneously, skip the rest of the
+happy-path (no latecomer link/index-edit/commit/re-embed pass needed) — there's nothing to add.
+
 ## DIAGNOSTIC: Embedded < Chunks with `embed --stale` = 0 is usually a TRANSIENT, not a failure (2026-07-23)
 Mid-sync `gbrain stats` can show Embedded (e.g. 1627) < Chunks (1637) while `gbrain embed --stale`
 reports "0 stale found" — looks like the Embedded==Chunks invariant is broken with no way to fix it.
