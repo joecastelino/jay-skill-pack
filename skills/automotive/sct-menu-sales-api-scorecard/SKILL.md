@@ -1051,6 +1051,46 @@ same harmless artifact as 8/5 noon, not worth blocking on. TO+timestamp verify a
 0-leftover-drafts check both clean on first ask. Outage cron-cycle tally: adds
 8/5 5PM Opened — 10 cycles lost since 8/1 5PM, spanning 5 calendar days.
 
+## 2026-08-05 6PM CLOSED update — outage now 5th calendar day, ZERO August closed data still, clean single-round send
+
+Confirmed live at 18:01-18:04 PDT: `repair-orders:search`+`/jobs` 200 (140 closed
+ROs today, 7 genuine TEK-tag candidates: 577773/577749/577572/577507/577406/
+577178/577011), `/operations` still 429 DEALER_QUOTA on a live probe. Ran the
+default daily incremental scan anyway to confirm the pattern: it printed
+`✓ all candidate ROs scanned (no truncation)` with **0 menu rows** — this
+"no truncation" claim is a LIE for this outage type, because `scan_ro_safe`
+only probes `/jobs` (200) to decide retry-vs-accept, never probes `/operations`
+itself, so the swallowed 429 inside `O.scan_ro`'s deeper call reads as a clean
+empty result. **Do not trust the "no truncation" printout as quota-outage proof
+of a real zero — always cross-check with the tags-prefilter candidate count
+independently (via `sct_menu_sales_closed_mtd.search_closed()` +
+`_tek_opcodes()`) before accepting a 0-menu day during a known outage.**
+Flagged all three affected dated JSONs (08-01, 08-02, 08-05; 08-04 was already
+flagged from a prior run) with `complete:false` + `quota_outage_note`. Master
+file confirmed still 0 records for all of August.
+
+Found the prior watcher (`sct-closed-recovery-0805.lock`, launched ~05:02, 8h
+deadline) had already given up (deadline reached ~13:10, before this 18:04
+check) — same "watchers expire, always re-check via `ps aux`, don't trust an
+old log's unexpired-looking deadline" lesson as prior days. Relaunched a fresh
+12h watcher (`/tmp/wait_ops_then_scrape_closed_0805_6pm.sh`, new lock
+`sct-closed-recovery-0805-6pm.lock` to avoid any stale-lock collision, log
+`data/sct-closed-quota-recovery-2026-08-05-6pm.log`) via
+`terminal(background=true, notify_on_complete=true, watch_patterns=["RECOVERY
+COMPLETE","gave up"])`. On clear it appends 08-01/08-02/08-04/08-05
+positionally then renders 08-05.
+
+Outage-notification email: another clean single-round send, no rebuild loops —
+draft→verbatim-body-readback→send→TO+timestamp verify→draft-count verify, 5
+ask-agent calls total, matching the 8/5-noon and 8/5-5PM playbook exactly (USD
+instead of $, verbatim last-known-good figures stated directly in the prompt,
+all constraints — no attachment / greet Joe not Kevin / custom not template —
+in the same first message). Verified Sent 18:06 PDT TO jcastelino@..., 0
+leftover drafts. Only cosmetic artifact: "DEALER_QUOTA"→"DEALERQUOTA" again,
+harmless, not worth a re-send. Outage cron-cycle tally: adds 8/5 6PM Closed —
+11 cycles lost since 8/1 5PM, spanning 5 calendar days, and August closed MTD
+data remains at literally zero real scanned records.
+
 ## Path / interpreter notes
 - `~` in terminal resolves to `/home/itadmin/.hermes/profiles/jay/home/`;
   the scripts live at REAL `/home/itadmin/tekion-reports/`.
