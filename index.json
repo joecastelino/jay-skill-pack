@@ -1,6 +1,6 @@
 {
- "generated": "2026-08-06T10:00:08",
- "skill_count": 167,
+ "generated": "2026-08-06T10:15:07",
+ "skill_count": 168,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -815,6 +815,14 @@
    "path": "automotive/tekion-technician-queue-dispatch",
    "category": "automotive",
    "description": "Explains Tekion's Technician Queue / Claim Work auto-dispatch behavior \u2014 why a tech gets pulled out of the queue when an advisor opens/reopens an RO, and what settings can change that behavior. Use when diagnosing \"why did my tech get grabbed out of queue\" or \"can we stop a tech from being pulled on RO reopen\" questions.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-uber-lyft-transportation-swap",
+   "path": "automotive/tekion-uber-lyft-transportation-swap",
+   "category": "automotive",
+   "description": "Reference for the AMG project to replace Tekion's native Lyft transportation/ride-fee integration with Uber. Load when asked about Uber API integration, swapping Lyft for Uber in Tekion, or prepping for Uber engineering team talks.",
    "times_used": 0,
    "last_used": null
   },
