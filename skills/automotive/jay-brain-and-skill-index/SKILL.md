@@ -340,7 +340,12 @@ is empty — so there is nothing to link/commit/re-embed. `gbrain doctor`'s Over
 still read ~25/100 from `cycle_freshness` ("Source default has never completed a full cycle" — belongs
 to the 3AM dream cycle, not sync) and `content_sanity_audit_recent` (warn-only, hard=0/soft=0) — these
 are NOT sync failures, ignore them for sync verification. Trust `gbrain stats` Embedded==Chunks +
-`orphans` count + `git status` instead of the doctor headline score.
+`orphans` count + `git status` instead of the doctor headline score. RE-CONFIRMED 2026-08-05 evening
+cron: same clean no-op (896 pages/1869 chunks/1869 embedded, 0 orphans, git clean) even though the
+disk-vs-`backlinks index` `comm -23` diff listed 300+ "unlinked" sessions — that diff is the KNOWN
+FALSE-POSITIVE from the 2026-07-03 note (pages linked via index→page `references` edges don't show
+in `backlinks index`, which only lists page→index `child_of`-direction edges). Do NOT chase that diff
+when `gbrain orphans` already reports 0 — orphans is the authoritative check, the comm diff is not.
 
 ## DIAGNOSTIC: Embedded < Chunks with `embed --stale` = 0 is usually a TRANSIENT, not a failure (2026-07-23)
 Mid-sync `gbrain stats` can show Embedded (e.g. 1627) < Chunks (1637) while `gbrain embed --stale`
