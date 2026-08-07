@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-06T20:30:04",
+ "generated": "2026-08-06T20:45:25",
  "skill_count": 168,
  "skills": [
   {
@@ -23,7 +23,7 @@
    "path": "automotive/agent-to-agent-bridge",
    "category": "automotive",
    "description": "Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine.",
-   "times_used": 60,
+   "times_used": 61,
    "last_used": "2026-08-06"
   },
   {
@@ -43,6 +43,14 @@
    "last_used": "2026-08-02"
   },
   {
+   "name": "tol-menu-sales-reports",
+   "path": "automotive/tol-menu-sales-reports",
+   "category": "automotive",
+   "description": "Run the Toyota of Lancaster (TOL/TL, dealer 1092) Menu Sales scorecards \u2014 Daily Opened and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Sean Preston (spreston@tol-av.com). The Toyota-store sibling of the SCT/Kevin (sct-menu-sales-api-scorecard) and BC/Ruben (bc-menu-sales-reports) pipelines. Use for any \"TOL/TL/Toyota of Lancaster menu report\" or \"Sean Preston report\" request.",
+   "times_used": 35,
+   "last_used": "2026-08-06"
+  },
+  {
    "name": "bc-gm-menu-build",
    "path": "automotive/bc-gm-menu-build",
    "category": "automotive",
@@ -57,14 +65,6 @@
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
    "times_used": 34,
    "last_used": "2026-08-05"
-  },
-  {
-   "name": "tol-menu-sales-reports",
-   "path": "automotive/tol-menu-sales-reports",
-   "category": "automotive",
-   "description": "Run the Toyota of Lancaster (TOL/TL, dealer 1092) Menu Sales scorecards \u2014 Daily Opened and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Sean Preston (spreston@tol-av.com). The Toyota-store sibling of the SCT/Kevin (sct-menu-sales-api-scorecard) and BC/Ruben (bc-menu-sales-reports) pipelines. Use for any \"TOL/TL/Toyota of Lancaster menu report\" or \"Sean Preston report\" request.",
-   "times_used": 34,
-   "last_used": "2026-08-06"
   },
   {
    "name": "tekion-quotes-menu-price-diagnosis",
