@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-07T07:01:17",
+ "generated": "2026-08-07T07:15:37",
  "skill_count": 168,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 103,
+   "times_used": 104,
    "last_used": "2026-08-07"
   },
   {
@@ -23,7 +23,7 @@
    "path": "automotive/agent-to-agent-bridge",
    "category": "automotive",
    "description": "Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine.",
-   "times_used": 65,
+   "times_used": 66,
    "last_used": "2026-08-07"
   },
   {
@@ -67,20 +67,20 @@
    "last_used": "2026-08-05"
   },
   {
+   "name": "tekion-ghost-bin-negative-onhand",
+   "path": "automotive/tekion-ghost-bin-negative-onhand",
+   "category": "automotive",
+   "description": "Diagnose a part showing NEGATIVE total on-hand in Tekion that stems from a CDK-migration \"ghost bin\" (a location-less legacy bin like 5005 / 5000 / 5001 / 5004 / RC1 / RC2 carried over at CDK\u2192Tekion cutover ~4 yrs ago). The negative lives ONLY on the bin record, has ZERO transactions, is invisible to physical inventory (out of count scope), and poisons the auto-replenishment math (OH+OnOrder stays under reorder point \u2192 perpetual over-ordering). Distinct from a real stock-out. Use when Joe says \"this part shows -11 on hand / negative on hand / auto replenishment isn't working\" AND the negative traces to a non-primary bin. Sibling of tekion-parts-autoorder-diagnosis (that one = velocity/BRP/BSL/Min stock-outs; THIS one = phantom bin balances). WRITE-SIDE FIX PATHS NOW LIVE (2026-07-03): Edit-Part redistribution (zero GL) vs bin-level OH adjustment \u2014 see FIX PATHS section. Case-B $ adjustments still require Joe's explicit go.",
+   "times_used": 32,
+   "last_used": "2026-08-07"
+  },
+  {
    "name": "tekion-quotes-menu-price-diagnosis",
    "path": "automotive/tekion-quotes-menu-price-diagnosis",
    "category": "automotive",
    "description": "Diagnose a Tekion Service Menu pricing problem (e.g. \"a rotation is charging $449.45\") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLODE the menu into individual opcodes using the \"Add Menu Services as separate operations\" setting to find which opcode carries the bad price and its labor-rate method (Fixed vs Service Catalog Pro Dynamic Pricing). Use when Joe flags a wrong/inflated price on a maintenance menu line for a specific RO/vehicle.",
    "times_used": 32,
    "last_used": "2026-07-22"
-  },
-  {
-   "name": "tekion-ghost-bin-negative-onhand",
-   "path": "automotive/tekion-ghost-bin-negative-onhand",
-   "category": "automotive",
-   "description": "Diagnose a part showing NEGATIVE total on-hand in Tekion that stems from a CDK-migration \"ghost bin\" (a location-less legacy bin like 5005 / 5000 / 5001 / 5004 / RC1 / RC2 carried over at CDK\u2192Tekion cutover ~4 yrs ago). The negative lives ONLY on the bin record, has ZERO transactions, is invisible to physical inventory (out of count scope), and poisons the auto-replenishment math (OH+OnOrder stays under reorder point \u2192 perpetual over-ordering). Distinct from a real stock-out. Use when Joe says \"this part shows -11 on hand / negative on hand / auto replenishment isn't working\" AND the negative traces to a non-primary bin. Sibling of tekion-parts-autoorder-diagnosis (that one = velocity/BRP/BSL/Min stock-outs; THIS one = phantom bin balances). WRITE-SIDE FIX PATHS NOW LIVE (2026-07-03): Edit-Part redistribution (zero GL) vs bin-level OH adjustment \u2014 see FIX PATHS section. Case-B $ adjustments still require Joe's explicit go.",
-   "times_used": 31,
-   "last_used": "2026-08-07"
   },
   {
    "name": "sct-menu-sales-api-scorecard",
@@ -259,20 +259,20 @@
    "last_used": "2026-07-14"
   },
   {
+   "name": "tekion-parts-autoorder-diagnosis",
+   "path": "automotive/tekion-parts-autoorder-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose why parts at a Tekion store stocked out / didn't auto-order (forcing local sourcing from Sunnyvale/Capitol/etc.). The CANONICAL parts-replenishment skill (supersedes tekion-parts-shortage-diagnosis). Works from RO numbers OR part numbers. Pulls live Stocking Details (Source Code, Stocking Status, Manual Order, BRP/BSL, Min/Max, On Hand/Order, Open Documents, Transactions ledger) per part, runs the day-supply demand calc, exposes the BSL Round-Down trap and the negative-on-hand backfill trap, and produces a per-part verdict + fix (Min Qty vs source-code BRP/BSL vs in-and-out receiving discipline). Use whenever Joe asks \"why aren't these parts auto ordering / why do we have shortages / why did we have to get parts locally / why is my shelf at 0 when Min is set.",
+   "times_used": 9,
+   "last_used": "2026-08-07"
+  },
+  {
    "name": "tekion-writer-handoff-report",
    "path": "automotive/tekion-writer-handoff-report",
    "category": "automotive",
    "description": "Build a Tekion \"repair orders that closed under a DIFFERENT service writer than they were opened/created with\" report for any AMG store from the LIVE OpenAPI. Produces RO#, dollar total, opened-by writer, closed-by writer, date opened, date closed. Use when Joe asks for a service-writer handoff / reassignment audit (\"ROs that started with one writer and ended with another\", \"who opened vs who closed\", writer-change report).",
    "times_used": 9,
    "last_used": "2026-07-15"
-  },
-  {
-   "name": "tekion-parts-autoorder-diagnosis",
-   "path": "automotive/tekion-parts-autoorder-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose why parts at a Tekion store stocked out / didn't auto-order (forcing local sourcing from Sunnyvale/Capitol/etc.). The CANONICAL parts-replenishment skill (supersedes tekion-parts-shortage-diagnosis). Works from RO numbers OR part numbers. Pulls live Stocking Details (Source Code, Stocking Status, Manual Order, BRP/BSL, Min/Max, On Hand/Order, Open Documents, Transactions ledger) per part, runs the day-supply demand calc, exposes the BSL Round-Down trap and the negative-on-hand backfill trap, and produces a per-part verdict + fix (Min Qty vs source-code BRP/BSL vs in-and-out receiving discipline). Use whenever Joe asks \"why aren't these parts auto ordering / why do we have shortages / why did we have to get parts locally / why is my shelf at 0 when Min is set.",
-   "times_used": 8,
-   "last_used": "2026-07-06"
   },
   {
    "name": "tekion-clock-time-by-opcode",
