@@ -120,6 +120,23 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   its report every time, rather than treating it as routine. Recommend Joe open a formal
   Tekion support ticket if this persists past day 4-5, since local self-heal cannot fix a
   server-side quota bucket that never refills.
+  **Confirmed continuing 8/5 and 8/6 (days 5 and 6, still 429 both nights):** same OPS
+  probe signature (search/jobs 200, `/operations` 429 DEALER_QUOTA) held straight through
+  — the 8/5 self-heal watcher logged a 429 every ~10 min for its full run with no recovery
+  (never hit "quota restored"), and the fresh 8/6 probe at 19:01 PDT was still 429. No
+  local competing consumer found either night (checked the same process list both times).
+  Reused the SAME validated probe RO/job pair unchanged since 8/3 (still round-trips 200 on
+  search/jobs) — don't bother hunting a new candidate as long as the old one still validates.
+  **This is now a 6-CONSECUTIVE-DAY unresolved outage (8/1→8/6) with zero August MTD reports
+  shipped** — at this length, stop treating "keep re-arming nightly" as sufficient; the
+  report to Joe should explicitly recommend a formal Tekion support ticket rather than
+  soft-pedaling it as routine self-heal.
+  **When the current scan is blocked, confirm what's already in Drafts before assuming
+  nothing shipped:** ask Stacey a terse read-only Gmail search for a SUBSTRING (not exact
+  subject match, per the exact-subject false-zero trap above) like "SCT Alignment" to find
+  the most recent draft already sitting in Joe's Drafts (e.g. the July MTD-final report
+  from before the outage began) — useful context to include in the blocked-night report
+  so Joe knows the last successful data point even while August is stuck.
 - **OVERALL_QUOTA exhaustion (hit 2026-07-07):** distinct from OVERALL_RATELIMIT — this is
   the store's DAILY API quota being fully spent (other pipelines, e.g. a TOL backfill loop +
   caliber-ops scrapers, can burn it). EVERY call 429s
