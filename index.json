@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-07T07:30:57",
+ "generated": "2026-08-07T07:45:54",
  "skill_count": 168,
  "skills": [
   {
@@ -43,6 +43,14 @@
    "last_used": "2026-08-02"
   },
   {
+   "name": "tekion-sitemap",
+   "path": "automotive/tekion-sitemap",
+   "category": "automotive",
+   "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
+   "times_used": 36,
+   "last_used": "2026-08-07"
+  },
+  {
    "name": "tol-menu-sales-reports",
    "path": "automotive/tol-menu-sales-reports",
    "category": "automotive",
@@ -57,14 +65,6 @@
    "description": "The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-override plan for vehicle-correct GM parts, and open decisions. Load for ANY \"GM menu\", \"BC menu build\", \"GMLOF\", or Blackstone Chevrolet service menu work.",
    "times_used": 34,
    "last_used": "2026-08-02"
-  },
-  {
-   "name": "tekion-sitemap",
-   "path": "automotive/tekion-sitemap",
-   "category": "automotive",
-   "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 34,
-   "last_used": "2026-08-05"
   },
   {
    "name": "tekion-ghost-bin-negative-onhand",
@@ -219,6 +219,14 @@
    "last_used": "2026-07-30"
   },
   {
+   "name": "tekion-parts-autoorder-diagnosis",
+   "path": "automotive/tekion-parts-autoorder-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose why parts at a Tekion store stocked out / didn't auto-order (forcing local sourcing from Sunnyvale/Capitol/etc.). The CANONICAL parts-replenishment skill (supersedes tekion-parts-shortage-diagnosis). Works from RO numbers OR part numbers. Pulls live Stocking Details (Source Code, Stocking Status, Manual Order, BRP/BSL, Min/Max, On Hand/Order, Open Documents, Transactions ledger) per part, runs the day-supply demand calc, exposes the BSL Round-Down trap and the negative-on-hand backfill trap, and produces a per-part verdict + fix (Min Qty vs source-code BRP/BSL vs in-and-out receiving discipline). Use whenever Joe asks \"why aren't these parts auto ordering / why do we have shortages / why did we have to get parts locally / why is my shelf at 0 when Min is set.",
+   "times_used": 11,
+   "last_used": "2026-08-07"
+  },
+  {
    "name": "tekion-report-builder-scraper",
    "path": "automotive/tekion-report-builder-scraper",
    "category": "automotive",
@@ -257,14 +265,6 @@
    "description": "Diagnose why an AMG agent (Walter II, Don, Ralph, Stacey, etc.) is dead/unresponsive on an LLM-billing error, and switch it from OpenRouter to the ChatGPT-Team Codex OAuth provider. Use when an agent boots but can't reply, an ask-agent ping returns an HTTP 402 (out of credits) or 400 (unsupported model), or OpenRouter credits are exhausted. Covers the read_file API-key-masking landmine and how to discover the account's valid Codex model names.",
    "times_used": 9,
    "last_used": "2026-07-14"
-  },
-  {
-   "name": "tekion-parts-autoorder-diagnosis",
-   "path": "automotive/tekion-parts-autoorder-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose why parts at a Tekion store stocked out / didn't auto-order (forcing local sourcing from Sunnyvale/Capitol/etc.). The CANONICAL parts-replenishment skill (supersedes tekion-parts-shortage-diagnosis). Works from RO numbers OR part numbers. Pulls live Stocking Details (Source Code, Stocking Status, Manual Order, BRP/BSL, Min/Max, On Hand/Order, Open Documents, Transactions ledger) per part, runs the day-supply demand calc, exposes the BSL Round-Down trap and the negative-on-hand backfill trap, and produces a per-part verdict + fix (Min Qty vs source-code BRP/BSL vs in-and-out receiving discipline). Use whenever Joe asks \"why aren't these parts auto ordering / why do we have shortages / why did we have to get parts locally / why is my shelf at 0 when Min is set.",
-   "times_used": 9,
-   "last_used": "2026-08-07"
   },
   {
    "name": "tekion-writer-handoff-report",

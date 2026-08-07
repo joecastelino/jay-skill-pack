@@ -438,13 +438,70 @@ part is absent from live and freshly-generated stock orders.
    In-Progress Qty (15) is clearly still being held somewhere in the engine's bookkeeping —
    it's a phantom reservation the UI doesn't surface as "on order."
 
-**Fix:** delete the part's line item off the stale Draft PO (or cancel the whole PO if it's
-otherwise dead/irrelevant — check its other lines first, don't blind-cancel a PO that might
+**Fix:** delete the part's line item off the stale Draft PO (or void the whole PO if it's
+otherwise dead/irrelevant — check its other lines first, don't blind-void a PO that might
 still have legitimately-pending lines for other parts). Once the phantom in-progress qty is
 cleared, the part should re-qualify on the next stock-order generation. This is a **PO hygiene**
 issue, not a stocking-parameter issue — flag any OTHER ancient (multi-year) Draft POs found
 during Step 2b as the same species of bug; a fleet-wide sweep for Draft POs >6 months old is a
 reasonable proactive follow-up (they're probably strangling other parts' auto-order the same way).
+
+### Step 2f FIX PROCEDURE — verified click-path, SCT PO 5201 (17801-0P100), 2026-08-07
+Two levels of fix, both confirmed live and both need a **true remount** verify (nav to
+`/home` then back to the PO URL — re-reading the same-tab DOM without a real nav shows stale
+unsaved state as if it "persisted").
+
+**A. Delete just the one line (keep the rest of the PO):**
+1. From the part's Open Documents drawer (Step 2b), click the blue PO-number link — Tekion
+   opens it as a **NEW BROWSER TAB**, not in-place. Check `/pages` (the :9223 endpoint) —
+   you'll typically get 2-4 duplicate new tabs firing off one click; `/pages/close` the dupes
+   and keep one, then `/navigate` that tab directly to its `oem-order/OEM_STOCK_ORDER/<id>/view`
+   URL for a clean reload (don't fight the drawer-spawned tabs).
+2. On the PO view, click **`Edit List`** (top of the Parts List section) — this does NOT open
+   an "Assign Parts" wizard by itself; that wizard only appears if you click the wrong toggle
+   (a "Select Type / Source Code / Add Parts Manually" modal — Cancel out of it if it pops up).
+   `Edit List` just switches the existing rows into edit mode with a trash icon per row.
+3. Find the row: `document.body.innerText.indexOf('<partnumber>')` to confirm it's on the page,
+   then `Array.from(document.querySelectorAll('*')).find(e=>e.children.length===0 &&
+   e.textContent.trim().startsWith('<partnumber>'))`, `.closest('[class*="row"]')` (the row is a
+   `div.parts_styles_tr__... parts_assignPartListTable_rowStyle__...`, NOT a `<tr>`), then
+   `row.querySelector('.icon-trash')` → click its center coords. The line vanishes from the DOM
+   immediately (Total Lines/Total Parts/Total Cost counters update live) — no confirm dialog.
+4. Click **`Save as Draft`** (bottom-left; there's also `Save` bottom-right which is for
+   submitting — use `Save as Draft` to just persist the edit and keep PO status Draft).
+5. **PITFALL — stray text leaks into Control Number**: if an earlier `/type` call targeted a
+   tagged selector that got reused/stale (e.g. you tagged a "Type Here" search input on a
+   PREVIOUS page and the tag survived), a later `/type` can silently land in the PO's
+   **Control Number** field instead of the part-search box (both have `placeholder="Type Here"`
+   — always re-tag fresh, don't trust an old `data-jay*` attribute across navigations). Symptom:
+   the PO header shows `Control Number: <your search text>` and the field turns red "This field
+   is mandatory" if you then clear it without re-saving. Fix: find the Control Number input by
+   walking from the `Control Number` label text (not by placeholder), clear via native setter +
+   `input`/`change`/`blur` events, then `Save as Draft` again. ALWAYS true-remount-verify the
+   Control Number is blank afterward.
+
+**B. Void the ENTIRE PO (when the whole thing is dead, e.g. multi-year-old zombie with dozens
+of other equally-stale lines):**
+1. Top-right of the PO view header, next to "Include in On Order", is a **kebab (⋯) icon**
+   — DOM class `parts_oemOrderDetailsFormHeader_kebabMenu__...` containing a `span.icon-overflow`
+   (~coords x1192,y95 at 1280-wide viewport). This is easy to miss — it's NOT in the bottom
+   action bar with Save/Cancel, and text-content search for "..." or bullet chars won't find it
+   (find by the `icon-overflow`/`kebabMenu` class instead).
+2. Click it → dropdown shows **Reissue PO / Close PO / Void**. Click **Void**.
+3. A confirm modal appears: "Void OEM Stock Order — Are you sure to Void this Purchase order?"
+   with **Cancel** / **Yes** buttons. Click **Yes**. Page immediately redirects to
+   `/parts/purchase-order/list`.
+4. Verify via true remount (nav `/home` then straight back to the PO's `oem-order/.../view`
+   URL): status badge next to the PO title flips from `Draft` to **`Voided`**. Also cross-check
+   the Draft-tab count on the PO list dropped by 1.
+5. Voiding releases the phantom in-progress qty for **every line on that PO**, not just your
+   target part — re-check Open Documents count on the target part (should drop by 1) AND flag
+   that any OTHER parts sharing the voided PO may have just been unblocked too (worth a sweep).
+
+Both fixes were user-approved live, one step at a time ("delete it" → deleted the single line
+first as the minimal fix; then "you can delete that whole po?" → confirmed Void exists → "void
+it now" → voided). Default to the MINIMAL fix (single line delete) unless the user explicitly
+asks to void the whole PO — voiding affects every other line/part on it.
 
 **Where this fits vs Step 2c:** Step 2c's Draft PO = "engine worked, human didn't submit."
 Step 2f's Draft PO = "a dead PO's ghost reservation blocks the engine from ever proposing the
