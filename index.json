@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-06T22:30:04",
+ "generated": "2026-08-06T22:45:23",
  "skill_count": 168,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 98,
-   "last_used": "2026-08-05"
+   "times_used": 99,
+   "last_used": "2026-08-06"
   },
   {
    "name": "agent-to-agent-bridge",
@@ -99,6 +99,14 @@
    "last_used": "2026-08-05"
   },
   {
+   "name": "tekion-ghost-bin-negative-onhand",
+   "path": "automotive/tekion-ghost-bin-negative-onhand",
+   "category": "automotive",
+   "description": "Diagnose a part showing NEGATIVE total on-hand in Tekion that stems from a CDK-migration \"ghost bin\" (a location-less legacy bin like 5005 / 5000 / 5001 / 5004 / RC1 / RC2 carried over at CDK\u2192Tekion cutover ~4 yrs ago). The negative lives ONLY on the bin record, has ZERO transactions, is invisible to physical inventory (out of count scope), and poisons the auto-replenishment math (OH+OnOrder stays under reorder point \u2192 perpetual over-ordering). Distinct from a real stock-out. Use when Joe says \"this part shows -11 on hand / negative on hand / auto replenishment isn't working\" AND the negative traces to a non-primary bin. Sibling of tekion-parts-autoorder-diagnosis (that one = velocity/BRP/BSL/Min stock-outs; THIS one = phantom bin balances). WRITE-SIDE FIX PATHS NOW LIVE (2026-07-03): Edit-Part redistribution (zero GL) vs bin-level OH adjustment \u2014 see FIX PATHS section. Case-B $ adjustments still require Joe's explicit go.",
+   "times_used": 27,
+   "last_used": "2026-08-06"
+  },
+  {
    "name": "tekion-service-menu-setups",
    "path": "automotive/tekion-service-menu-setups",
    "category": "automotive",
@@ -113,14 +121,6 @@
    "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
    "times_used": 26,
    "last_used": "2026-08-06"
-  },
-  {
-   "name": "tekion-ghost-bin-negative-onhand",
-   "path": "automotive/tekion-ghost-bin-negative-onhand",
-   "category": "automotive",
-   "description": "Diagnose a part showing NEGATIVE total on-hand in Tekion that stems from a CDK-migration \"ghost bin\" (a location-less legacy bin like 5005 / 5000 / 5001 / 5004 / RC1 / RC2 carried over at CDK\u2192Tekion cutover ~4 yrs ago). The negative lives ONLY on the bin record, has ZERO transactions, is invisible to physical inventory (out of count scope), and poisons the auto-replenishment math (OH+OnOrder stays under reorder point \u2192 perpetual over-ordering). Distinct from a real stock-out. Use when Joe says \"this part shows -11 on hand / negative on hand / auto replenishment isn't working\" AND the negative traces to a non-primary bin. Sibling of tekion-parts-autoorder-diagnosis (that one = velocity/BRP/BSL/Min stock-outs; THIS one = phantom bin balances). WRITE-SIDE FIX PATHS NOW LIVE (2026-07-03): Edit-Part redistribution (zero GL) vs bin-level OH adjustment \u2014 see FIX PATHS section. Case-B $ adjustments still require Joe's explicit go.",
-   "times_used": 26,
-   "last_used": "2026-08-05"
   },
   {
    "name": "tekion-scheduling",
