@@ -1092,6 +1092,49 @@ harmless, not worth a re-send. Outage cron-cycle tally: adds 8/5 6PM Closed —
 11 cycles lost since 8/1 5PM, spanning 5 calendar days, and August closed MTD
 data remains at literally zero real scanned records.
 
+## 2026-08-06 5PM update — outage 6th day, watcher had adequate runway (no relaunch needed), 4th consecutive clean single-round send, two new small pitfalls
+
+Confirmed live at 17:02 PDT: same signature (search+jobs 200, `/operations` 429
+DEALER_QUOTA on a real candidate RO's deep call). Tags prefilter found 10
+candidates today (577929/577909/577907/577900/577884/577881/577879/577862/
+577861/577829). Default scraper run (to double-check) wrote another
+plausible-but-false `complete:true`/0-menu file — re-flagged both JSONs
+`complete:false`+note as usual. **This time the existing watcher (launched
+noon, 12h deadline) still had ~7hrs of runway left** — correctly left it
+running rather than relaunching (contrast with 8/3-8/5 where the existing
+watcher was always found already-expired or about-to-expire). Confirms the
+"always check remaining runway via ps/log, don't assume" rule cuts both ways —
+sometimes the check says "still fine, don't touch it."
+
+Outage-notification email: **4th consecutive clean single-round send** (after
+8/5 noon, 8/5 5PM, 8/6 noon) — draft→verbatim-readback→send→Sent-verify, no
+rebuild loops. Same winning formula: "USD 1,490.98" not "$1,490.98", verbatim
+last-known-good figures stated in the prompt, all constraints (no attachment /
+greet Joe not Kevin / custom-not-template) in one message, verbatim body
+readback before sending. This time the Sent copy rendered "DEALER_QUOTA" WITH
+the underscore correctly (no cosmetic corruption at all) — the artifact isn't
+guaranteed every time, just possible.
+
+**Two new small pitfalls found this run:**
+1. **Stacey's bare-number "how many drafts remain?" reply can be WRONG/stale.**
+   After confirming deletion of the one leftover draft, a follow-up "reply just
+   the number" check said "1" — but a direct `himalaya envelope list -f Drafts`
+   grep for the subject returned NOTHING (0 actual drafts). Don't trust her
+   draft-count number at face value for the final all-clear; do one direct
+   `himalaya envelope list -f Drafts | grep '<subject fragment>'` yourself as
+   the authoritative zero-drafts check.
+2. **Ad-hoc diagnostic probe script gotchas when writing your own quick
+   candidate-RO probe (not using the existing `/tmp/sct_opened_probe_*.py`):**
+   `sct_menu_sales_api.OPCODE_LIST` is a `pathlib.Path`, not a list — iterating
+   it directly throws `TypeError: 'PosixPath' object is not iterable`; you must
+   `json.loads(O.OPCODE_LIST.read_text())` and pull `{r["opcode"] for r in ...}`.
+   Also the RO's internal id field for `/jobs`/`/operations` calls is
+   `ro["documentId"]`, NOT `ro.get("id")` (which is `None` and 404s) —
+   `documentNumber` is the human-readable RO number, `documentId` is the real
+   path-id `scan_ro` uses. Cheaper to just reuse the existing watcher's probe
+   script (`/tmp/sct_opened_probe_<date>.py`) as a template than to rebuild
+   these from scratch each time.
+
 ## Path / interpreter notes
 - `~` in terminal resolves to `/home/itadmin/.hermes/profiles/jay/home/`;
   the scripts live at REAL `/home/itadmin/tekion-reports/`.
