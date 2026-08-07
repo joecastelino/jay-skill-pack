@@ -2,7 +2,7 @@
 
 Skill library for **Jay**, the Tekion DMS specialist agent at American Motors Group — plus general-purpose agent skills. Built for the [Hermes Agent](https://github.com/NousResearch) skill system (`SKILL.md` + YAML frontmatter, with optional `references/`, `scripts/`, `templates/`).
 
-**168 skills** · auto-synced from the live agent · last sync: 2026-08-06 17:15
+**168 skills** · auto-synced from the live agent · last sync: 2026-08-06 17:30
 
 ## Install into another agent
 
@@ -26,7 +26,7 @@ Secrets (passwords, app passwords, tokens) are redacted with `<PLACEHOLDER>` mar
 | 7 | [`tekion-sitemap`](skills/automotive/tekion-sitemap/SKILL.md) | automotive | 34 | 2026-08-05 | Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straig... |
 | 8 | [`tol-menu-sales-reports`](skills/automotive/tol-menu-sales-reports/SKILL.md) | automotive | 34 | 2026-08-06 | Run the Toyota of Lancaster (TOL/TL, dealer 1092) Menu Sales scorecards — Daily Opened and Closed Month-To-Date — from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Sean Preston (spreston@tol-av.com). The Toy... |
 | 9 | [`tekion-quotes-menu-price-diagnosis`](skills/automotive/tekion-quotes-menu-price-diagnosis/SKILL.md) | automotive | 32 | 2026-07-22 | Diagnose a Tekion Service Menu pricing problem (e.g. "a rotation is charging $449.45") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLO... |
-| 10 | [`sct-menu-sales-api-scorecard`](skills/automotive/sct-menu-sales-api-scorecard/SKILL.md) | automotive | 29 | 2026-08-04 | Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters ... |
+| 10 | [`sct-menu-sales-api-scorecard`](skills/automotive/sct-menu-sales-api-scorecard/SKILL.md) | automotive | 30 | 2026-08-06 | Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters ... |
 | 11 | [`tekion-autonomous-login`](skills/automotive/tekion-autonomous-login/SKILL.md) | automotive | 28 | 2026-08-05 | Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session — no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the aut... |
 | 12 | [`bc-menu-sales-reports`](skills/automotive/bc-menu-sales-reports/SKILL.md) | automotive | 27 | 2026-08-04 | Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards — Daily Closed (2x/day) and Closed Month-To-Date (1x/day) — from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben... |
 | 13 | [`tekion-service-menu-setups`](skills/automotive/tekion-service-menu-setups/SKILL.md) | automotive | 27 | 2026-07-15 | Navigate to, read, and inspect Tekion Service Menu Setups (the service-menu builder where interval menus, tiers, tags, opcodes, included services and inspections are configured). Covers the non-obvious nav path, the p... |

@@ -230,6 +230,13 @@ verify the inline base64 PNG on a draft Stacey built:
   re-fire the action. Send a terse status probe — `"Reply with just: DONE
   <new-id> or NOT-DONE"` — she answered `DONE 40449` instantly, confirming the
   timed-out rebuild had completed. Then verify the draft contents yourself.
+- **Status probe may not come back in the exact requested format** (2026-08-06):
+  first probe got a free-text non-answer ("I have replied with the status of
+  the draft!") instead of the terse `DONE <id> ...` format. Don't accept that —
+  re-ask ONE more time spelling out the exact literal string to echo back
+  (`"Reply with EXACTLY this format and nothing else: DONE <id> HASPNG=yes
+  HASPDF=yes TO=... CC=none"`), which got a clean parseable reply. Always
+  independently verify via himalaya afterward regardless of what she reports.
 - **PDF attachment CAN be verified via himalaya**: `himalaya attachment
   download <id> --folder '[Gmail]/Drafts'` succeeding proves the PDF is there
   (only the inline PNG needs Stacey's raw-MIME check).
@@ -311,3 +318,18 @@ Aug 1-4), top advisor Juan Ramirez (5 menus).
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
 Drafted to Ruben (draft IDs 38930 Daily, 38931 MTD), inline PNG + PDF, SENT=NONE.
+
+## 2026-08-06 5pm Daily Closed run — full trap sequence hit again, playbook held
+5 menus, $1,744.99 labor / $820.10 parts = $2,565.09 (Juan Ramirez 4 menus, Erik
+Mercado 1). Data pull + render clean (`✓ all candidate ROs scanned`). Stacey's
+first ask-agent call timed out (exit 124) → terse probe recovered it → first
+build came back HASPNG=no (known trap) → full-spec rebuild ask → that ALSO
+timed out → probe #1 got a non-conforming free-text reply → probe #2 with an
+exact-format demand got a clean `DONE 41748 HASPNG=yes HASPDF=yes
+TO=Restrada@blackstonegm.com CC=none`. Ended up with 6 total drafts at the same
+subject (1 leftover from the noon run + 5 from this run's churn) — verified all
+6 were correctly addressed to Ruben (no wrong-recipient leak this time), kept
+41748, expunged the other 5. Final state: 1 draft, PDF verified via himalaya
+attachment download, Sent Mail = 0 matches. Every trap this run was already
+documented in this skill — no new failure modes, just confirms the churn is
+routine and the recovery steps are reliable.
