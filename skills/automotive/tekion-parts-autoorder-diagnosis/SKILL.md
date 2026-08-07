@@ -434,6 +434,48 @@ part is absent from live and freshly-generated stock orders.
    Draft, created today). Search within it for the part number (page-level "Type Here" search
    input inside the PO detail view) — confirm it's **also absent there**. Two independent
    misses (live wizard run + today's real draft) rules out a one-off glitch.
+
+### Exact click-path to run the live "Generate List" wizard (verified end-to-end, SCT 2026-08-07)
+Used BOTH to diagnose (part missing) and to VERIFY the fix (part now appears). Full sequence:
+1. `navigate /parts/purchase-order/list` (wait ~2s). Note the **Draft** tab count (e.g. 105) —
+   re-check this number after any Void/delete fix to confirm it moved by 1.
+2. Click the **`Create`** button, top-right (`<button>` with innerText exactly "Create", NOT a
+   div). A dropdown renders 8 options: OEM Special Order / **OEM Stock Order** / Vendor Stock
+   Order / Vendor Special Order / Sublet / Miscellaneous / Vendor Credit PO / Misc Credit PO.
+3. **GOTCHA — duplicate off-screen menu items**: a text/innerText query for "OEM Stock Order"
+   returns MANY matches (~20), most with `cy` values in the thousands (910, 1870, 1990 —
+   off-screen ghost copies of the virtualized/duplicated menu DOM). Only ONE match has
+   coordinates actually inside the 1280×720 viewport — **filter for `cy < 720`** (or whatever
+   your viewport height is) before clicking, don't just take the first match.
+4. Click it → navigates to `/parts/purchase-order/oem-order/OEM_STOCK_ORDER/add`, opening an
+   **"Assign Parts"** modal: left radio (Stocking Parameters/Calculate/File Upload, default
+   Stocking Parameters is correct), tabs "Source Code" / "Add Parts Manually" (stay on Source
+   Code), a table of ~20 source codes each with a checkbox, and a **"Search source codes"**
+   input at the top.
+5. Type the source code's **description** (e.g. `"filters fixed pricing"`) into that search box
+   and press nothing (it live-filters) — this collapses the table to just the one row, making
+   the checkbox trivial to find/click (row search-by-description is far more reliable than
+   hunting a row by source code number in a long list).
+6. Click that row's checkbox → **Generate List** button (bottom-right) goes from
+   grey/disabled-looking to clickable. Click it. Wait ~3s for a toast "OEM stock purchase order
+   create or update request is in progress" then "Success — OEM purchase order NNNNN created
+   successfully."
+7. The page navigates to the new PO's detail view showing the full generated parts list
+   (`Total Lines`, `Total Parts`, `Total Cost`, then one row per line with Required Qty, Order
+   Qty, Source Code, On Hand Qty, On Order Qty, Bin, Unit Cost, Total Cost, 12-months-sale grid,
+   System BRP/BSL days). Search `document.body.innerText` for the target part number — **present
+   = fix verified working; absent = still broken.**
+
+### ⚠️ PITFALL — this verification step has a REAL side effect, not a dry-run
+Running "Generate List" does not just preview candidates — it **actually creates a brand-new
+real Draft PO** in the system (e.g. PO 28811) with every part in that source code that currently
+qualifies (SCT: 3 lines, 593 parts, $2,369.67, on top of the target part). This is NOT
+consequence-free: it adds a new Draft PO into the store's PO queue, and if left untouched it
+will sit alongside all the other Drafts (contributing to Draft-count clutter, and if it's the
+SAME kind of stale-zombie problem diagnosed in Step 2f, it could someday become an ordering
+pollutant itself). **After a verification run, tell the user the new PO number exists and ask
+whether to submit it now, leave it for the normal daily stock-order cycle, or cancel/void it** —
+don't just silently leave a surprise Draft PO behind after "just testing."
 4. Note the mismatch: On Order Quantity shows **0** on Stocking Details, yet the stale Draft's
    In-Progress Qty (15) is clearly still being held somewhere in the engine's bookkeeping —
    it's a phantom reservation the UI doesn't surface as "on order."
