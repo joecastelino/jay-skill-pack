@@ -556,6 +556,92 @@ back bin is the only real stock, or with human shelf confirmation (the count she
 note: 11 SCT parts have a 5000s bin as their PRIMARY — those back bins DO relieve on sale
 (exception to "only 2420 relieves").
 
+**FIRST LIVE JAY-EXECUTED REDISTRIBUTION — VERIFIED WORKING PROCEDURE (2026-08-07, SCT
+17801-0P100, Joe confirmed each step live):** Joe wants a TWO-STEP redistribution, not a
+direct one-shot split — (1) consolidate ALL qty into Primary first (intermediate save), THEN
+(2) split out to match Joe's physical count (second save). This gives a clean checkpoint and
+matches how Joe/Ronald did it by hand. Exact click-path via :9223 execute_code:
+
+1. Navigate to `/parts/inventory/part/view/M_TMNA_<PARTNUM_no_dashes>/details`, confirm
+   right dealer (`localStorage.currentActiveDealerId`) and right part in body text.
+2. Read current Bin Details via `/eval` innerText slice from 2nd occurrence of 'Bin Details'
+   (1st occurrence is the left-nav tab label, 2nd is the actual section header).
+3. Click **Edit Part** button (`/eval` filter `innerText.trim()==='Edit Part' && tagName==='BUTTON'`
+   → get rect center → `/mouse` click). Page re-renders with editable bin rows.
+4. Find the 3 Qty `<input>` fields: filter `document.querySelectorAll('input')` to visible
+   ones, the bin-row Qty inputs are the ones whose value matches the current per-bin qty and
+   sit near y-coords of each bin row (~40px below that bin's label). Tag them with
+   `setAttribute('data-jay','qty-<binname>')` for reliable `/type` targeting (index order is
+   stable per page: e.g. idx 22=first bin's qty, 27=second, 32=third — but ALWAYS re-verify by
+   value/position after any remount, indices shift).
+5. **Step 1 (consolidate):** `/type` each tagged input — Primary bin = current TOTAL, all
+   others = 0. Verify via `/eval` reading each input's `.value` AND the "Additional qty. to be
+   adjusted" / "Total Inventory Qty" text (should read 0 and unchanged-total respectively).
+   Screenshot + vision_analyze as a visual double-check before saving.
+6. Click **Save** button (`/eval` filter `innerText.trim()==='Save' && tagName==='BUTTON'` →
+   `/mouse` click). Page returns to view mode (Edit Part button reappears).
+7. **VERIFY WITH TRUE REMOUNT** (per the SAVE-VERIFY TRAP lesson elsewhere in this skill) —
+   `/navigate` to `/home` THEN back to the part URL, wait ~7s, re-read Bin Details. Re-reading
+   the same DOM without a hard nav can show stale/unsaved values as if persisted.
+8. **Step 2 (final split):** repeat steps 3-7 — click Edit Part again (page remounted, must
+   re-find + re-tag inputs), `/type` the final target split (per Joe's physical count), verify
+   total unchanged, screenshot+vision confirm, Save, verify with true remount again.
+9. Log the move to `/home/itadmin/tekion-reports/sct-bin-redistribution-log.csv`
+   (date, store, part, before/after per-bin split, method, confirmed_by, notes) — this is the
+   ONLY audit trail since Case-A redistribution posts zero GL/ledger entry in Tekion itself.
+
+Gotchas hit this run: (a) numbers can DRIFT between when a part is first flagged and when you
+actually execute — always re-pull live Bin Details immediately before editing, don't trust an
+earlier snapshot from the same conversation; (b) `browser_navigate`/other generic browser_*
+tools open a SEPARATE unauthenticated context — do NOT use them for :9223 workflows, stick to
+execute_code + the :9223 HTTP API (`/eval`, `/mouse`, `/type`, `/screenshot`) throughout.
+
+## LIVE EDIT-PART REDISTRIBUTION MECHANICS (first live execution, verified 2026-08-07)
+
+Joe's WORKFLOW PREFERENCE, stated explicitly (17801-0P100 case): do NOT jump straight from
+the current (wrong) split to the target (physical-count) split in one Save. **ALWAYS
+consolidate everything into the Primary bin FIRST (one Save), THEN redistribute out to the
+target split (a second Save).** i.e. two edits, not one:
+- Step 1: Primary = Total Inventory Qty, all other bins = 0. Save. Verify Total unchanged.
+- Step 2: Primary / other bins = the actual physical-count split. Save. Verify Total unchanged.
+This gives a clean "everything's accounted for in one place" checkpoint before splitting it
+back out, and matches how Joe/Ronald did the manual 91180 fix. Always re-verify Total
+Inventory Qty stayed constant after EACH save, not just at the end.
+
+Click-path via :9223 (persistent-browser-server), on the part's `/details` page with the
+correct dealer already active:
+1. Confirm current state is unchanged since last read (re-slice `body.innerText` from
+   `indexOf('Bin Details')` a SECOND time — the string appears twice, once in the left-nav
+   list and once as the section header; use the second occurrence for the actual table).
+2. Vision-locate + click **"Edit Part"** (bottom-right of the page, NOT a pencil icon in the
+   header) via `/mouse` on its bounding-rect center. Screenshot afterward and vision-verify
+   the Bin Details rows became editable ("Type here" placeholders appear in Shelf/Drawer, Qty
+   cells become plain text inputs) before proceeding — don't assume the click worked.
+3. **Enumerate ALL visible `<input>` elements** via `/eval` (`querySelectorAll('input')` with
+   `offsetParent!==null`, dumping type/value/placeholder/x/y for each). The per-bin Qty inputs
+   are typically at fixed relative indices once other inputs are counted (verified case: index
+   22/27/32 for a 3-bin part, i.e. every 5th input starting from the first bin's Qty field —
+   radio(primary) + name + shelf + drawer + qty per row). **Don't hardcode the index across
+   parts** — re-enumerate per part since Stocking Details field count varies.
+4. **Tag the exact 3 (or N) qty inputs with a `data-jay="qty-<binNumber>"` attribute** via
+   `/eval` (`inputs[i].setAttribute('data-jay','qty-2418')` etc.) — this gives a stable
+   selector for `/type` that survives re-reads. Verify each tag landed
+   (`querySelector('[data-jay="qty-2418"]')` should return truthy) before typing.
+5. `/type` each tagged input with its target value (`{"selector":"[data-jay='qty-2418']",
+   "text":"9"}`), small `sleep(0.5)` between each, then re-read all three `.value`s to confirm
+   they landed as typed (React state can silently reject a bad value).
+6. **Verify Total Inventory Qty BEFORE saving** — re-slice `innerText` from
+   `indexOf('Additional qty')` (this label sits right above Total Inventory Qty) and confirm
+   the total is unchanged and "Additional qty. to be adjusted" reads 0. Also take a screenshot
+   and `vision_analyze` it as a second confirmation layer (catches a mis-tagged input that a
+   text-only check might miss) before clicking Save.
+7. **Find Save** via `/eval` filtering `innerText.trim()==='Save'` + `offsetParent!==null` +
+   tag is BUTTON or SPAN (there are usually 2 matching nodes — button + its inner span, same
+   coords); click either via `/mouse` on the bounding-rect center.
+8. STOP and get Joe's explicit go before the actual Save click on a first-ever live edit —
+   narrate the exact before/after numbers and wait for confirmation, per the standing
+   never-guess/confirm-before-live-write rule.
+
 ## PITFALL — wrong part / wrong dealer reads (cost a wrong report 2026-07-03)
 
 - Supersession pairs look near-identical (90080-9118**0** vs 9118**4**). Confirm the exact
