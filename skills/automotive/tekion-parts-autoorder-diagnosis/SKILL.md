@@ -406,6 +406,50 @@ order, go to the PO module:
   person, also \"OEM Stock Order\") was Partially Received — proving the daily order normally flows.
   ROOT CAUSE = a process gap (stock order generated but not submitted), NOT a config bug.
 
+## Step 2f — STALE ZOMBIE DRAFT PO holding a phantom "in-progress" reservation (verified SCT 17801-0P100, 2026-08-07)
+A SIXTH root cause, distinct from Step 2c's "Draft PO exists but never submitted" (that case
+means the engine correctly proposed the part and a human dropped the ball). This case is the
+OPPOSITE: the part is **silently excluded from every NEW stock-order run**, generation after
+generation, because a Draft PO **years old** still shows an **In-Progress Qty > 0** for that
+part in the Open Documents list. Tekion appears to treat any open/Draft document's
+In-Progress Qty as still "accounted for" indefinitely — it never expires a stale Draft, so the
+part never re-qualifies for a fresh stock order even though On Hand + On Order (0, since the
+phantom qty isn't real on-order) is well under Min.
+
+**Symptom:** On Hand ≤ Min Qty (e.g. 9 vs Min 15), On Order Quantity = **0**, Source Code
+correctly set, Stocking Status Active, Manual Order No — every param looks healthy — yet the
+part is absent from live and freshly-generated stock orders.
+
+**How to PROVE it (don't just theorize — live-test the generator):**
+1. Open the part's **Open Documents** drawer (Step 2b) and look for a Draft PO with a
+   **date far in the past** (SCT case: PO 5201, Draft, created May 9 2023 by Glade Wilson,
+   In-Progress Qty = 15) sitting alongside recent Partially-Received POs.
+2. **Live-test the generator**: go to `/parts/purchase-order/list` → **Create** button (top
+   right) → **OEM Stock Order** from the dropdown → the wizard shows a source-code checklist
+   (source code + description, e.g. "2 - filters fixed pricing") → check the part's source
+   code → **Generate List**. Read the resulting parts list (innerText) and confirm the part
+   number is **absent**.
+3. **Cross-check against today's freshest Draft Stock Order** (Purchase Order list, sort by
+   Date Created — there's usually a same-day auto-Draft, e.g. PO 28808 "OEM Stock Order",
+   Draft, created today). Search within it for the part number (page-level "Type Here" search
+   input inside the PO detail view) — confirm it's **also absent there**. Two independent
+   misses (live wizard run + today's real draft) rules out a one-off glitch.
+4. Note the mismatch: On Order Quantity shows **0** on Stocking Details, yet the stale Draft's
+   In-Progress Qty (15) is clearly still being held somewhere in the engine's bookkeeping —
+   it's a phantom reservation the UI doesn't surface as "on order."
+
+**Fix:** delete the part's line item off the stale Draft PO (or cancel the whole PO if it's
+otherwise dead/irrelevant — check its other lines first, don't blind-cancel a PO that might
+still have legitimately-pending lines for other parts). Once the phantom in-progress qty is
+cleared, the part should re-qualify on the next stock-order generation. This is a **PO hygiene**
+issue, not a stocking-parameter issue — flag any OTHER ancient (multi-year) Draft POs found
+during Step 2b as the same species of bug; a fleet-wide sweep for Draft POs >6 months old is a
+reasonable proactive follow-up (they're probably strangling other parts' auto-order the same way).
+
+**Where this fits vs Step 2c:** Step 2c's Draft PO = "engine worked, human didn't submit."
+Step 2f's Draft PO = "a dead PO's ghost reservation blocks the engine from ever proposing the
+part again." Tell them apart by AGE + whether the part shows up on a fresh Generate-List test.
+
 ## Step 3 — RUN THE DEMAND CALC (verified executable procedure, SCT 2026-06-23)
 When Joe asks \"do the demand calculation for this part\" (he will — he's parts-savvy and wants
 the actual numbers, not theory), here's the proven workflow that produces the BSL qty + rounding.

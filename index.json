@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-07T07:15:37",
+ "generated": "2026-08-07T07:30:57",
  "skill_count": 168,
  "skills": [
   {
@@ -7,8 +7,8 @@
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 111,
-   "last_used": "2026-08-06"
+   "times_used": 112,
+   "last_used": "2026-08-07"
   },
   {
    "name": "persistent-browser-server",
@@ -331,6 +331,14 @@
    "last_used": "2026-07-24"
   },
   {
+   "name": "tekion-warranty-admin-closings",
+   "path": "automotive/tekion-warranty-admin-closings",
+   "category": "automotive",
+   "description": "Build a \"which warranty admin closed what tickets\" report for any AMG store from the Tekion OpenAPI \u2014 per-clerk RO counts, warranty $ and total RO $, month-to-date or any window. Verified SCT July 2026.",
+   "times_used": 6,
+   "last_used": "2026-08-07"
+  },
+  {
    "name": "tekion-alignment-by-advisor-report",
    "path": "automotive/tekion-alignment-by-advisor-report",
    "category": "automotive",
@@ -353,14 +361,6 @@
    "description": "Extract and analyze the FULL part list for a Tekion Source Code (e.g. SCT Source 103 \"GENERAL STOCK 2-3\") to make stocking recommendations \u2014 which parts to activate, BRP/BSL review, negative-on-hand cleanup, mis-coded fast-movers, and capital-tied-up review. Use when Joe asks to \"scrub a source code\", \"review stocking levels per part\", \"should I activate more parts\", \"what's mis-coded\", or \"pull all the parts in source code X\".",
    "times_used": 5,
    "last_used": "2026-07-07"
-  },
-  {
-   "name": "tekion-warranty-admin-closings",
-   "path": "automotive/tekion-warranty-admin-closings",
-   "category": "automotive",
-   "description": "Build a \"which warranty admin closed what tickets\" report for any AMG store from the Tekion OpenAPI \u2014 per-clerk RO counts, warranty $ and total RO $, month-to-date or any window. Verified SCT July 2026.",
-   "times_used": 5,
-   "last_used": "2026-08-04"
   },
   {
    "name": "hermes-slack-token-recovery",
