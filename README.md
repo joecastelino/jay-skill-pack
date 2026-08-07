@@ -2,7 +2,7 @@
 
 Skill library for **Jay**, the Tekion DMS specialist agent at American Motors Group — plus general-purpose agent skills. Built for the [Hermes Agent](https://github.com/NousResearch) skill system (`SKILL.md` + YAML frontmatter, with optional `references/`, `scripts/`, `templates/`).
 
-**168 skills** · auto-synced from the live agent · last sync: 2026-08-07 13:00
+**168 skills** · auto-synced from the live agent · last sync: 2026-08-07 13:15
 
 ## Install into another agent
 
@@ -29,7 +29,7 @@ Secrets (passwords, app passwords, tokens) are redacted with `<PLACEHOLDER>` mar
 | 10 | [`tekion-quotes-menu-price-diagnosis`](skills/automotive/tekion-quotes-menu-price-diagnosis/SKILL.md) | automotive | 32 | 2026-07-22 | Diagnose a Tekion Service Menu pricing problem (e.g. "a rotation is charging $449.45") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLO... |
 | 11 | [`sct-menu-sales-api-scorecard`](skills/automotive/sct-menu-sales-api-scorecard/SKILL.md) | automotive | 31 | 2026-08-07 | Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters ... |
 | 12 | [`tekion-autonomous-login`](skills/automotive/tekion-autonomous-login/SKILL.md) | automotive | 30 | 2026-08-07 | Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session — no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the aut... |
-| 13 | [`bc-menu-sales-reports`](skills/automotive/bc-menu-sales-reports/SKILL.md) | automotive | 28 | 2026-08-06 | Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards — Daily Closed (2x/day) and Closed Month-To-Date (1x/day) — from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben... |
+| 13 | [`bc-menu-sales-reports`](skills/automotive/bc-menu-sales-reports/SKILL.md) | automotive | 29 | 2026-08-07 | Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards — Daily Closed (2x/day) and Closed Month-To-Date (1x/day) — from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben... |
 | 14 | [`tekion-service-menu-setups`](skills/automotive/tekion-service-menu-setups/SKILL.md) | automotive | 27 | 2026-07-15 | Navigate to, read, and inspect Tekion Service Menu Setups (the service-menu builder where interval menus, tiers, tags, opcodes, included services and inspections are configured). Covers the non-obvious nav path, the p... |
 | 15 | [`sct-alignment-by-advisor-report`](skills/automotive/sct-alignment-by-advisor-report/SKILL.md) | automotive | 26 | 2026-08-06 | Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI — counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. ... |
 | 16 | [`tekion-scheduling`](skills/automotive/tekion-scheduling/SKILL.md) | automotive | 26 | 2026-08-05 | Tekion Service Scheduling Settings — appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the "lowest ceiling wins" capacity model,... |
