@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-07T08:00:25",
+ "generated": "2026-08-07T08:15:45",
  "skill_count": 168,
  "skills": [
   {
@@ -47,7 +47,7 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 36,
+   "times_used": 38,
    "last_used": "2026-08-07"
   },
   {
@@ -203,6 +203,14 @@
    "last_used": "2026-08-05"
   },
   {
+   "name": "tekion-parts-autoorder-diagnosis",
+   "path": "automotive/tekion-parts-autoorder-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose why parts at a Tekion store stocked out / didn't auto-order (forcing local sourcing from Sunnyvale/Capitol/etc.). The CANONICAL parts-replenishment skill (supersedes tekion-parts-shortage-diagnosis). Works from RO numbers OR part numbers. Pulls live Stocking Details (Source Code, Stocking Status, Manual Order, BRP/BSL, Min/Max, On Hand/Order, Open Documents, Transactions ledger) per part, runs the day-supply demand calc, exposes the BSL Round-Down trap and the negative-on-hand backfill trap, and produces a per-part verdict + fix (Min Qty vs source-code BRP/BSL vs in-and-out receiving discipline). Use whenever Joe asks \"why aren't these parts auto ordering / why do we have shortages / why did we have to get parts locally / why is my shelf at 0 when Min is set.",
+   "times_used": 13,
+   "last_used": "2026-08-07"
+  },
+  {
    "name": "amg-wip-monthly-column-fill",
    "path": "automotive/amg-wip-monthly-column-fill",
    "category": "automotive",
@@ -217,14 +225,6 @@
    "description": "Restrict Tekion Parts RO Sales appointment notifications to recall opcodes only (or any opcode subset) by mass-toggling the per-opcode \"Consider for Parts preparation on Appointment\" flag. Covers the Bulk Update UI, the underlying bulk-update API for scale, and full verification. Built for Glade at SCT 2026-07-20; applies to any store.",
    "times_used": 11,
    "last_used": "2026-07-30"
-  },
-  {
-   "name": "tekion-parts-autoorder-diagnosis",
-   "path": "automotive/tekion-parts-autoorder-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose why parts at a Tekion store stocked out / didn't auto-order (forcing local sourcing from Sunnyvale/Capitol/etc.). The CANONICAL parts-replenishment skill (supersedes tekion-parts-shortage-diagnosis). Works from RO numbers OR part numbers. Pulls live Stocking Details (Source Code, Stocking Status, Manual Order, BRP/BSL, Min/Max, On Hand/Order, Open Documents, Transactions ledger) per part, runs the day-supply demand calc, exposes the BSL Round-Down trap and the negative-on-hand backfill trap, and produces a per-part verdict + fix (Min Qty vs source-code BRP/BSL vs in-and-out receiving discipline). Use whenever Joe asks \"why aren't these parts auto ordering / why do we have shortages / why did we have to get parts locally / why is my shelf at 0 when Min is set.",
-   "times_used": 11,
-   "last_used": "2026-08-07"
   },
   {
    "name": "tekion-report-builder-scraper",
