@@ -102,6 +102,15 @@ Stacey's drafts can silently come out wrong — always run a follow-up READ-ONLY
    text-part scan misses. To truly verify, ask her to inspect the RAW HTML body and
    quote the `<img>` src. Presence of the img tag = good.
 4. Also have her confirm Sent folder shows 0 matches for the subject.
+   (8/06 EOD) If the Sent-check ask times out 3x in a row (even with the tersest
+   single-API-call wording) and never returns an answer, it's acceptable to STOP
+   retrying and proceed without it — PROVIDED the hand-off message never asked
+   Stacey to send anything (draft-only instruction). Note the skipped check in
+   the report to Joe rather than burning more retry cycles; risk is negligible
+   since no send action was ever issued. (Draft-list-by-subject and MIME
+   part-listing checks are higher priority and should still be completed first —
+   that run they returned clean: draft-list in one try listing all 7 stacked
+   drafts with id|subject pairs, MIME part-listing on the 3rd terser retry.)
 5. **Sent-count FALSE POSITIVE #2 (7/14 EOD):** Stacey answered \"Sent: 1\" with today's
    exact subject, To spreston, internalDate = the DRAFT's save time (8:05 PM) — she was
    inspecting the DRAFT, not a sent mail. Resolve with ONE decisive read-only ask:
