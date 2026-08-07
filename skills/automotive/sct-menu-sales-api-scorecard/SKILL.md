@@ -1135,6 +1135,54 @@ guaranteed every time, just possible.
    script (`/tmp/sct_opened_probe_<date>.py`) as a template than to rebuild
    these from scratch each time.
 
+## 2026-08-06 6PM CLOSED update — outage now 6th calendar day, "send draft" reverted to normal template (5th time this exact trap has hit)
+
+Confirmed live at 18:02-18:04 PDT: `repair-orders:search`+`/jobs` 200 (150 closed
+ROs today), `/operations` still 429 DEALER_QUOTA on a live probe of real
+candidate RO 577900. Tags prefilter found 4 candidates today (577900/577879/
+577861/577829). Flagged `sct-menu-sales-closed-2026-08-06.json` `complete:false`
++ note (the four prior dated closed JSONs, 08-01/08-02/08-04/08-05, were already
+flagged from earlier runs; no 08-03 closed file exists at all — that whole cron
+cycle was lost). Master file confirmed still 0 records for all of August.
+
+The existing closed-outage watcher had already given up (06:13 deadline reached)
+hours before this check — relaunched a fresh 12h one
+(`/tmp/wait_ops_then_scrape_closed_0806_6pm.sh` + `/tmp/probe_0806_closed.py`,
+lock `sct-closed-recovery-0806-6pm.lock`, log
+`data/sct-closed-quota-recovery-2026-08-06-6pm.log`) via `terminal(background=true,
+notify_on_complete=true, watch_patterns=["RECOVERY COMPLETE","gave up"])`. On
+clear it appends 08-01 through 08-06 positionally then renders 08-06.
+
+**NEW/RE-CONFIRMED TRAP — the "draft looks right, then SEND reverts to the
+normal $0.00 template" failure mode (5th occurrence of this class, distinct
+from the 8/4 wrong-draft-ID pickup):** The DRAFT Stacey showed me back was
+100% correct (custom outage body, no attachment, greet Joe). But the actual
+SEND action produced a COMPLETELY DIFFERENT email — the normal templated
+report with "0 menus, $0.00 labor / $0.00 parts = $0.00 total" and a broken
+`<#part type=image/png ...>` markup pointing at a nonexistent PNG. Her own
+reply after the send ("SENT ... TO jcastelino@...") looked like a clean
+success — the timestamp/recipient/subject were all correct, ONLY the body
+content was silently swapped back to the default template. **Lesson: showing
+you the draft body before sending is NOT sufficient — the send step can
+independently reconstruct/override the body from its own template logic. You
+MUST re-read the actual Sent-copy body via `himalaya message read` after
+EVERY send, even when the pre-send draft review looked perfect and even when
+her post-send confirmation states a plausible-looking timestamp+recipient.**
+Recovery: sent a correction email (same subject/recipient) with the same
+exact body pasted again, explicit "do NOT use your normal report template,
+do NOT attach ANY files, do NOT reference any PDF/PNG or 'Attached is'" — this
+landed correctly on the first retry, verified via `himalaya message export
+--full | grep content-type` showing plain `text/plain` with no multipart/
+attachment parts, and the body diffed character-for-character against the
+intended text. Net: 2 Sent copies exist for this subject (12897 = wrong/
+template, 12898 = correct) — the wrong one is a harmless leftover, not worth
+recalling (same "don't chase a harmless duplicate" rule as other traps).
+0 leftover drafts confirmed after.
+
+Outage cron-cycle tally as of 8/6 6PM: adds 8/6 6PM Closed — 13 cycles lost
+since 8/1 5PM, spanning 6 calendar days. August closed MTD remains at literally
+0 real scanned records for the entire month.
+
 ## Path / interpreter notes
 - `~` in terminal resolves to `/home/itadmin/.hermes/profiles/jay/home/`;
   the scripts live at REAL `/home/itadmin/tekion-reports/`.
