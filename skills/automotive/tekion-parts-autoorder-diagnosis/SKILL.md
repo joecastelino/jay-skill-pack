@@ -635,6 +635,15 @@ fix levers, separating **safe part-level edits** (Min Qty — Jay can do) from
 - **Reactivate an Inactive part**: must be moved Non-stock manually or via inventory bulk update.
 
 ## Pitfalls
+- **SAME-DESCRIPTION PART-NUMBER CONFUSION (verified SCT 2026-08-07, real mistake made):** Tekion
+  frequently has multiple part numbers sharing an IDENTICAL description (e.g. "ELEMENT SUB-ASSY, AI"
+  for both 17801-0P100 and 17801-77060 — different cabin/air filter elements, same text). When
+  confirming whether a SPECIFIC part number appears on a generated stock order / list, do NOT eyeball
+  a row that "looks right" by description or prefix match. ALWAYS run an explicit string-match check
+  (`"<exact part number>" in innerText`) and treat THAT boolean as the sole source of truth for your
+  answer — never let a visually-similar row (same description, same numeric prefix) override a
+  negative match result you already have in hand. This exact trap produced a false "confirmed on the
+  order" report to Joe when the part actually on the PO was a different, similarly-named part.
 - **NEVER tell Joe "the reorder points are blank/misconfigured" without first checking the
   SOURCE CODE and the part's Edit-form radio.** Blank part-level BRP/BSL + Days-selected =
   inheriting from source = working as designed. Joe knows his parts data cold and will reject
