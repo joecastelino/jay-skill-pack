@@ -289,6 +289,18 @@ blackstonegm.com sits behind Cloudflare / a lander page — couldn't scrape a lo
 Using a clean typographic header. Drop a real logo PNG into the renderer if Joe
 supplies one (replace the `.brand` block with an `<img>` like the SCT renderer).
 
+## himalaya verification from Jay's session needs an explicit --config (hit 2026-08-07)
+Running bare `himalaya envelope list --folder '[Gmail]/Drafts'` from Jay's own
+profile/session fails with `AUTHENTICATIONFAILED ... Invalid credentials` even
+with `PATH=/home/itadmin/.local/bin` set — Jay's own
+`~/.config/himalaya/config.toml` (personal account, app-password `<GMAIL_APP_PASSWORD>`)
+doesn't authenticate in this context. Fix: point `--config` explicitly at the
+email-agent (Stacey)'s working config, which DOES authenticate:
+`himalaya --config /home/itadmin/.hermes/profiles/email-agent/home/.config/himalaya/config.toml envelope list --folder '[Gmail]/Drafts'`.
+Use this `--config` flag on every himalaya verification call (list, message
+read, attachment download, flag add, folder expunge) for BC/SCT/TOL draft
+checks — don't rely on bare `himalaya` picking up a working default.
+
 ## Headless/cron gotcha: don't pipe himalaya output to python3/interpreters
 `himalaya envelope list --output json | python3 -c "..."` gets BLOCKED by the
 terminal security scanner (`tirith:pipe_to_interpreter`, "Pipe to interpreter")
@@ -318,6 +330,25 @@ Aug 1-4), top advisor Juan Ramirez (5 menus).
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
 Drafted to Ruben (draft IDs 38930 Daily, 38931 MTD), inline PNG + PDF, SENT=NONE.
+
+## 2026-08-07 noon Daily Closed run — rebuild trap + 2x timeout, but Stacey self-caught the duplicate this time
+4 menus, $497.07 labor / $238.67 parts = $735.74 (Dimetri Reynoso 2, Juan Ramirez
+2). Data pull + render clean, `✓ all candidate ROs scanned`. First ask-agent
+build call timed out (exit 124) → terse "DONE <id> or NOT-DONE" probe recovered
+it → draft 41860 built but HASPNG=no (known trap, confirmed via a second terse
+probe asking literally for HASPNG=yes/no). Rebuild ask ALSO timed out (exit 124),
+and the FOLLOW-UP probe timed out too (2 consecutive 124s) — third attempt with
+a lighter "Reply with just: DONE <id> or NOT-DONE" finally got through. Notably
+this time **Stacey proactively flagged the duplicate herself** ("Two drafts
+exist (41861 and 41860)... Need me to clean up the duplicate?") instead of
+falsely claiming a clean dedupe (contrast with the 2026-08-04 false-negative
+precedent) — still independently verified via himalaya rather than trusting her
+word, and had her delete 41860 + confirm HASPNG=yes on 41861 in one combined
+ask. Final state: 1 draft (41861), PDF verified via himalaya attachment
+download, inline PNG confirmed via Stacey's raw-MIME check, Sent Mail
+Daily-Closed-BC count = 0. Lesson: a SINGLE terse recovery probe after a
+timeout is not always enough — be ready to send it twice before falling back
+to an even lighter one-liner.
 
 ## 2026-08-06 5pm Daily Closed run — full trap sequence hit again, playbook held
 5 menus, $1,744.99 labor / $820.10 parts = $2,565.09 (Juan Ramirez 4 menus, Erik
