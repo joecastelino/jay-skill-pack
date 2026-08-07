@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-07T08:15:45",
+ "generated": "2026-08-07T08:30:45",
  "skill_count": 168,
  "skills": [
   {
@@ -7,7 +7,7 @@
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 113,
+   "times_used": 114,
    "last_used": "2026-08-07"
   },
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 104,
+   "times_used": 105,
    "last_used": "2026-08-07"
   },
   {
@@ -187,6 +187,14 @@
    "last_used": "2026-08-05"
   },
   {
+   "name": "tekion-parts-autoorder-diagnosis",
+   "path": "automotive/tekion-parts-autoorder-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose why parts at a Tekion store stocked out / didn't auto-order (forcing local sourcing from Sunnyvale/Capitol/etc.). The CANONICAL parts-replenishment skill (supersedes tekion-parts-shortage-diagnosis). Works from RO numbers OR part numbers. Pulls live Stocking Details (Source Code, Stocking Status, Manual Order, BRP/BSL, Min/Max, On Hand/Order, Open Documents, Transactions ledger) per part, runs the day-supply demand calc, exposes the BSL Round-Down trap and the negative-on-hand backfill trap, and produces a per-part verdict + fix (Min Qty vs source-code BRP/BSL vs in-and-out receiving discipline). Use whenever Joe asks \"why aren't these parts auto ordering / why do we have shortages / why did we have to get parts locally / why is my shelf at 0 when Min is set.",
+   "times_used": 14,
+   "last_used": "2026-08-07"
+  },
+  {
    "name": "tekion-ro-close-blocked-triage",
    "path": "automotive/tekion-ro-close-blocked-triage",
    "category": "automotive",
@@ -201,14 +209,6 @@
    "description": "Build a vehicle-scoped PARTS override row on a Tekion menu-included opcode via Service Menu Setups \u2192 Included Services \u2192 Edit Service \u2192 Overrides \u2192 Parts, driven by the persistent-browser :9223 HTTP endpoints (/eval, /click, /type, /press). Covers the exact DOM (react-select Make, ant-dropdown checkbox Model/Year multi-selects, Trim Details modal), the verified click-paths, and the costly pitfalls (wrong /eval key, navigate-away row wipe, coordinate drift, disabled trim input). Use when swapping/adding parts on an opcode that lives INSIDE a service menu (e.g. BGCVTF CVT fluid \u2192 E-TAF for Corollas).",
    "times_used": 13,
    "last_used": "2026-08-05"
-  },
-  {
-   "name": "tekion-parts-autoorder-diagnosis",
-   "path": "automotive/tekion-parts-autoorder-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose why parts at a Tekion store stocked out / didn't auto-order (forcing local sourcing from Sunnyvale/Capitol/etc.). The CANONICAL parts-replenishment skill (supersedes tekion-parts-shortage-diagnosis). Works from RO numbers OR part numbers. Pulls live Stocking Details (Source Code, Stocking Status, Manual Order, BRP/BSL, Min/Max, On Hand/Order, Open Documents, Transactions ledger) per part, runs the day-supply demand calc, exposes the BSL Round-Down trap and the negative-on-hand backfill trap, and produces a per-part verdict + fix (Min Qty vs source-code BRP/BSL vs in-and-out receiving discipline). Use whenever Joe asks \"why aren't these parts auto ordering / why do we have shortages / why did we have to get parts locally / why is my shelf at 0 when Min is set.",
-   "times_used": 13,
-   "last_used": "2026-08-07"
   },
   {
    "name": "amg-wip-monthly-column-fill",
