@@ -1175,6 +1175,56 @@ Outage cron-cycle tally as of 8/6 6PM: adds 8/6 6PM Closed — 13 cycles lost
 since 8/1 5PM, spanning 6 calendar days. August closed MTD remains at literally
 0 real scanned records for the entire month.
 
+## 2026-08-07 6PM CLOSED update — outage now 7th calendar day, clean single-round outage-notification send
+
+Confirmed live at 18:02-18:03 PDT: `repair-orders:search`+`/jobs` 200 (167 closed
+ROs today), `/operations` still 429 DEALER_QUOTA on a live probe of real
+candidate RO 578126 (TEK50000BNM). Tags prefilter found 5 candidates today
+(578126/577929/577625/577522/577292). Wrote `sct-menu-sales-closed-2026-08-07.json`
+flagged `complete:false`+`quota_outage_note` (no scraper re-run needed this time —
+built the flagged file directly from the probe results instead of letting
+`sct_menu_sales_closed_mtd.py` overwrite it with a false `complete:true`/0-menu
+file). Master file (`sct-menu-closed-mtd-MASTER-2026-08.json`) confirmed still 0
+records for all of August (08-01..08-07 all lost).
+
+A prior Opened-side watcher (`wait_ops_then_scrape_0807.sh`, launched noon, 12h
+deadline) was still alive and polling — left it running (not the closed-side
+watcher, no need to touch it). No closed-side watcher was running for today —
+launched a fresh 12h one (`/tmp/wait_ops_then_scrape_closed_0807_6pm.sh` +
+`/tmp/sct_closed_probe_0807.py`, lock `sct-closed-recovery-0807-6pm.lock`, log
+`data/sct-closed-quota-recovery-2026-08-07-6pm.log`) via `terminal(background=true,
+notify_on_complete=true, watch_patterns=["RECOVERY COMPLETE","gave up"])`. On
+clear it positionally appends 08-01 through 08-06 (15s spacing) then runs the
+default (today) append, then renders today's file.
+
+Outage-notification email: clean single-round send, ZERO rebuild loops — draft
+→ verbatim-body-readback→send→himalaya-Sent-read (used ask-agent to have Stacey
+read the ACTUAL Sent copy via himalaya rather than trusting her paraphrase,
+since a direct himalaya IMAP login from this shell failed with
+`AUTHENTICATIONFAILED` — the credentials I have aren't the ones her profile
+uses) →0-leftover-drafts check. 5 ask-agent calls total. Followed the winning
+8/5+ playbook exactly: "USD 73,693.80" instead of "$73,693.80", verbatim
+last-known-good figures (7/31 final: 237 menus / $73,693.80 labor / $31,428.86
+parts / $105,122.66 total) stated directly in the prompt, explicit "CUSTOM...
+do NOT use report template" + "Greeting: Joe, NOT Kevin" + "do NOT attach any
+files" all in the first message, verbatim body read-back requested BEFORE
+send. Only cosmetic artifact: "DEALER_QUOTA"→"DEALERQUOTA" (underscore dropped)
+in the draft AND the final Sent copy — same harmless artifact seen on multiple
+prior days, not worth a re-send. Sent copy verified via her himalaya read:
+multipart/alternative (plain+HTML), 0 attachments (correct, none intended), TO
+jcastelino@americanmotorscorp.com, timestamp 18:06:22 PDT, body matched
+character-for-character except the DEALERQUOTA cosmetic. 0 leftover drafts
+confirmed. Outage cron-cycle tally: adds 8/7 6PM Closed — 14 cycles lost since
+8/1 5PM, spanning 7 calendar days. August closed MTD remains at literally 0
+real scanned records for the entire month.
+
+**New note: `himalaya` CLI run directly from Jay's own shell fails IMAP login
+with `AUTHENTICATIONFAILED`** — Jay does not have the working Gmail app
+password Stacey's profile uses. Do not waste time trying a direct himalaya
+read-only check from this environment; route ALL Sent-folder verification
+through an ask-agent call to Stacey (asking her to use himalaya on HER end and
+paste back the verbatim result) instead.
+
 ## Path / interpreter notes
 - `~` in terminal resolves to `/home/itadmin/.hermes/profiles/jay/home/`;
   the scripts live at REAL `/home/itadmin/tekion-reports/`.
