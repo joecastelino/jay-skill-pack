@@ -353,6 +353,14 @@ when `gbrain orphans` already reports 0 — orphans is the authoritative check, 
 import-total, embed-stale==0, orphans==0, and git clean hold simultaneously, skip the rest of the
 happy-path (no latecomer link/index-edit/commit/re-embed pass needed) — there's nothing to add.
 
+## CLEAN NO-OP RE-CONFIRMED (2026-08-07 evening cron): import 0 imported/949 skipped (949 unchanged),
+`embed --stale`=0, `orphans` 0 out of 955 linkable, git clean. NOTE: `find brain -name '*.md' | wc -l`
+(949) can be a few pages LOWER than `gbrain stats` Pages (955, e.g. index/skills-index/kb-index hub
+pages or other DB-only rows) — this gap is NOT a problem signal on its own; the authoritative
+no-op-vs-needs-work check is still just the 4-way AND: disk-count==import-scan-total,
+embed-stale==0, orphans==0, git clean. If all 4 hold, stop — don't chase the disk-vs-stats page-count
+gap, it's not one of the documented failure modes and isn't accompanied by any orphan/stale/dirty signal.
+
 ## DIAGNOSTIC: Embedded < Chunks with `embed --stale` = 0 is usually a TRANSIENT, not a failure (2026-07-23)
 Mid-sync `gbrain stats` can show Embedded (e.g. 1627) < Chunks (1637) while `gbrain embed --stale`
 reports "0 stale found" — looks like the Embedded==Chunks invariant is broken with no way to fix it.
