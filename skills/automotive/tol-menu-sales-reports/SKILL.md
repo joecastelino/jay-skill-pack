@@ -386,6 +386,25 @@ re-run it. New-month note: on the 1st (or first run of a month) the script
 auto-creates a fresh `MASTER-<YYYY-MM>.json` with empty records — a tiny (~97 byte)
 master early in the month is normal, NOT the "unseeded master" pitfall.
 
+## Em-dash breaks Stacey's ASCII IMAP/himalaya search (learned 2026-08-07 8:05PM run)
+When Gmail API token is expired and Stacey falls back to raw imaplib/himalaya, a
+literal em-dash (—) in the subject ("TOL Menu Sales — Closed MTD ...") can break her
+first search attempt ("Em dash tripped up ASCII IMAP" / "broke the IMAP search") —
+she self-corrects by retrying with an ASCII substring and succeeds on the 2nd try.
+This is a normal, self-healing hiccup, not a failure to flag. It also explains why a
+single hand-off ask can end up doing several internal save/search attempts.
+
+## Large "duplicates deleted" claim — verify, don't panic (2026-08-07 8:05PM run)
+Stacey reported "Old duplicates deleted: 8" on a single hand-off (vs the usual 0-1).
+This is likely inflated by retry attempts from the em-dash search bug above (each
+failed/retried search+save cycle can re-trigger a delete pass), not 8 genuine other
+drafts being wiped. ALWAYS follow up with the standard subject-search verification
+(`in:draft TOL Menu Sales Closed MTD`) — that run it correctly showed exactly 2
+drafts remained: the current day's (Aug 1-7) and one legitimate prior-day draft
+(Aug 1-2) with a different subject, confirming nothing improperly deleted. Never
+skip the verification just because the deleted-count sounds alarming or reassuring
+— check the actual remaining subjects either way.
+
 ## Google OAuth token expiry mid-verification (learned 2026-08-07 EOD)
 A Sent-folder verification ask can hit an EXPIRED Google OAuth token — Stacey will try
 Gmail API, fail, try a profile-specific token, fail again, then surface a manual OAuth
