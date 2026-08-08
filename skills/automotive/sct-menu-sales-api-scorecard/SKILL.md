@@ -294,115 +294,86 @@ Rules:
   faster — polling also consumes the limit) until it returns 200, then do ONE
   clean scrape.
 - ⚠️ **THIRD 429 TYPE — `DEALER_QUOTA` (hit 2026-08-01, 5 PM Opened run):**
+- ⚠️ **THIRD 429 TYPE — `DEALER_QUOTA` (first hit 2026-08-01, 5 PM Opened run;
+  STILL LIVE as of 2026-08-07 5 PM PDT — a full week, no self-resolution):**
   message `"Limit exhausted for type : DEALER_QUOTA."` — a PER-DEALER quota,
-  distinct from OVERALL_RATELIMIT/OVERALL_QUOTA. Signature on 8/1: the
-  `repair-orders:search` endpoint (and `/jobs`) returned **200 fine**, but the
-  deeper per-RO endpoints (`/operations`, `/parts`) 429'd continuously for
-  1.5+ hrs (17:01→18:31 PDT, probes every 10 min). Because search+jobs work,
-  the scraper LOOKS healthy and writes a **plausible-but-false 0-menu file**
-  (`complete: true`!) — on 8/1 there were 9 TEK-candidate ROs (search tags
-  prove it) yet the scrape said 0 menus/$0. The NOON cron that day emailed a
-  $0 report that was WRONG (≥5 TEK ROs existed by noon). Rules:
+  distinct from OVERALL_RATELIMIT/OVERALL_QUOTA. Signature every time: the
+  `repair-orders:search` and `/jobs` endpoints return **200 fine**, but the
+  deeper per-RO endpoints (`/operations`, `/parts`) 429 continuously. Because
+  search+jobs work, the scraper LOOKS healthy and writes a
+  **plausible-but-false 0-menu file (`complete: true`!)** even when real
+  TEK-candidate ROs exist. Rules:
   - A 0-menu result with >0 TEK-tag candidates in the search results =
     QUOTA-TRUNCATED, NOT a slow day. Verify with the free tags prefilter
-    (search results carry OPCODE tags at no fan-out cost) before trusting 0.
+    (search results carry OPCODE tags at no fan-out cost, `ro["tags"]` where
+    `field=="OPCODE"`) before trusting 0. Then confirm with ONE deep probe:
+    search → `/jobs` → `O.call('GET', jobs['data']['jobs'][0]['operations']['link'])`
+    — 429 DEALER_QUOTA on that call = confirmed outage, not a bug.
   - Likely drain source: the DealerDetail sync-all pipeline (fetches 1000s of
-    ROs per store, incl. 2900+ at SCT) shares the dealer quota.
-  - Recovery on 8/1: flagged the JSONs `complete:false` + note, installed a
-    */30 cron (`sct-opened-0801-recovery.sh`, self-removing next day) to probe
-    and run a strict scan + render when quota returns. Did NOT email the false
-    zeros; reported outage with last known-good instead.
-  - **8/1 6 PM CLOSED run ALSO lost to the same DEALER_QUOTA outage** (429 on
-    /operations continuously 17:01→18:49+ PDT; search returned 28 closed ROs
-    with 4 TEK candidates — 577151/577112/577087/577084 — proving non-zero).
-    Did NOT run the closed scan (would append a false-$0 day to the Aug master)
-    and did NOT email. Installed `sct-closed-0801-recovery.sh` (cron :15/:45,
-    self-removing after 8/1; probes via /tmp/sct_quota_type.py, on 200 runs the
-    incremental closed scan + render, marker `.sct-closed-20260801-recovered`).
-    **If the marker never appears, the 8/2 6 PM closed cron MUST run the
-    positional append `sct_menu_sales_closed_mtd.py 2026-08-01` FIRST**, then
-    the default today-append. Note: 8/1 is month rollover — Aug master starts
-    fresh; last known-good is the JULY final (7/31: 237 menus, $73,693.80 labor
-    / $31,428.86 parts = $105,122.66), which does NOT carry into August.
-  - Handy quota probe: `/tmp/sct_quota_type.py` does ONE deep /operations call
-    on a known 8/1 RO and prints the status + message (cheap, 1 call).
-  - ⚠️ **RECOVERY-WATCHER FALSE POSITIVE (hit 2026-08-02 morning):** a
-    wait-then-scrape watcher that probes only `repair-orders:search` + `/jobs`
-    WILL fire "window clear" while `/operations` is STILL 429ing DEALER_QUOTA
-    — search and jobs recover FIRST/were never blocked. The triggered rescrape
-    then writes a plausible-but-false file: 8/1 rescrape said 136 ROs scanned /
-    0 menus / $0 (Jul 28-31 averaged 5-10 menus/day — 0 with 136 ROs is never
-    real). **Any DEALER_QUOTA recovery probe MUST test the deepest endpoint the
-    scrape needs**: search → jobs → `O.call('GET', jobs['data']['jobs'][0]
-    ['operations']['link'])` and require 200 on THAT before declaring clear.
-    Also verify the rescrape output: `record_count == 0` while the search tags
-    prefilter shows TEK candidates ⇒ still truncated, re-queue. Corrected
-    watcher template: `/tmp/wait_ops_then_scrape.sh` (probes ops link, 20-min
-    poll, then scrapes + prints VERIFY line).
-  - **WATCHER PROCESS-MANAGEMENT pitfalls (hit 2026-08-02 evening):**
-    (a) *Orphaned-sleep flock trap*: killing a flock-guarded watcher script can
-    leave its in-flight `sleep` CHILD alive holding the inherited lock fd —
-    the relaunch then instantly exits "already running" with NO watcher actually
-    working. Diagnose with `fuser -v /tmp/<lock>` (shows `COMMAND sleep`); kill
-    that PID, verify `fuser` returns nothing, then relaunch. After ANY watcher
-    kill/relaunch, always `pgrep -af` to confirm exactly one instance runs.
-    (b) *Chain, don't compete*: if a selfheal watcher pair for another report
-    (e.g. `selfheal_sct_align_<date>.sh`, relaunched fresh by each 5 PM cron
-    cycle with a NEW dated log) already owns the ops probe, do NOT run a second
-    prober. Chain instead: watch the align selfheal LOG(s) for
-    `scan exit=0|render exit=0|FAILED|TIMEOUT` (check BOTH yesterday's and
-    today's dated logs — the 5 PM cycle SIGTERMs the old pair and starts a new
-    one), plus a fallback `pgrep -f selfheal_sct_align` check (if none running,
-    proceed alone). On trigger: cooldown 180s → re-verify ops 200 → run the
-    rescrape → print VERIFY line. Template: `/tmp/sct_menu_rescrape_0801.sh` v2.
-    (c) Background exit codes: -15/143 = SIGTERM (daily reset or cron-cycle
-    replacement), usually benign — check what's still running before reacting.
-  - **2026-08-02 NOON UPDATE: DEALER_QUOTA outage CONTINUED — 19+ hrs continuous**
-    (8/1 17:01 → 8/2 12:00+; /operations still 429 DEALER_QUOTA while search+jobs
-    200). The 8/2 morning false-positive rescrape wrote plausible-but-false 0-menu
-    files for BOTH 8/1 and 8/2 with `complete:true` — noon run flagged all four
-    JSONs `complete:false` + note. Tags prefilter at noon 8/2 proved 4 TEK
-    candidates existed (577227/577221/577195/577193) → 0 was false. Noon cron did
-    NOT email (per the quota-outage rule). Upgraded watcher:
-    `/tmp/wait_ops_then_scrape_v2.sh` — recovers BOTH dates sequentially, runs the
-    tags-prefilter false-zero verify per date, renders 8/2, marker
-    `.sct-opened-20260802-recovered`. **8/2 5 PM UPDATE: still 429 DEALER_QUOTA at 16:44 PDT — 24h continuous**
-    (8/1 17:01 → 8/2 16:44+). 5 PM tags prefilter showed **5** TEK candidates on
-    8/2 (577269 new since noon, + 577227/577221/577195/577193) → any scrape would
-    still write a false zero. 5 PM cron did NOT scrape/render/email (per rule);
-    watcher v2 (PID via /tmp/tekion-quota-recovery.lock) still polling every
-    20 min. Crons lost to this outage so far: 8/1 5PM Opened, 8/1 6PM Closed,
-    8/2 noon Opened, 8/2 5PM Opened. Escalation to Joe requested (24h+ outage).
-  - **STILL LIVE 2026-08-07 NOON — NOW A 7TH CALENDAR DAY, NO SELF-RESOLUTION.**
-    Fresh probe at 8/7 ~12:05 PM (noon Opened cron) hit the identical signature:
-    search+jobs 200 (111 ROs scanned), scraper wrote a false `complete:true`
-    0-menu/$0 file with zero logged errors, but a manual deep `/operations`
-    probe on the 2 TEK-tag candidate ROs (578097, 578075) got 429 DEALER_QUOTA
-    on every call. The align self-heal log showed CONTINUOUS `ops-probe: 429`
-    every ~10 min from 8/6 19:01 PDT through 8/7 12:04 PDT (100+ consecutive
-    probes). DealerDetail nightly sync-all was actively mid-run against
-    SCT/BC/BST at probe time (confirmed via `sct-sync-nightly.log` live
-    fetch activity) — reinforcing the shared-quota-drain theory; the "kill
-    nightly sync" containment plan noted on 8/3 evidently hasn't stuck or
-    isn't sufficient alone. Flagged both 8/7 JSONs complete:false, did NOT
-    render/email, relaunched a fresh dated recovery watcher
-    (`/tmp/wait_ops_then_scrape_0807.sh` + `/tmp/sct_opened_probe_0807.py`,
-    same template, 12h deadline, marker `.sct-opened-20260807-recovered`).
-    Last known-good Opened data STILL 7/31 (5 menus, $1,490.98 labor /
-    $454.33 parts = $1,945.31 total) — 8/1 through 8/7 all lost. Outage now
-    spans 8/1 5:01 PM → 8/7 12:05 PM+ (~7 days, no sign of resolving on its
-    own) — re-escalate to Joe; a passive containment note is not enough,
-    someone needs to actually verify the nightly sync change was deployed
-    and effective.
-    If a DEALER_QUOTA outage spans 2+ days,\n    suspect the DealerDetail sync-all pipeline drain and escalate to Joe for a\n    Tekion quota review — the nightly SCT sync (23:00 cron, ~2900 ROs) plus the\n    */30 heal-backfill cron share the same dealer quota.\n  - **OUTAGE CONTINUED PAST THE ROOT-CAUSE FIX — DID NOT SELF-RESOLVE OVERNIGHT\n    (2026-08-03 noon confirmed).** Despite the root-cause note below being written\n    at 8/3 12 AM (with a containment PLAN of \"kill nightly sync before its SCT\n    leg fires\"), a fresh probe at 8/3 ~12:03 PM STILL got 429 DEALER_QUOTA on\n    every `/operations` call (search+jobs 200, 5 genuine TEK-tag candidate ROs\n    found via the free tags prefilter, scraper itself wrote a false `complete:\n    true` / 0-menu / $0 file with zero errors logged). So: **do not assume a\n    documented containment plan was actually executed** — check\n    `dealer-detail/logs/sct-sync-nightly.log` for whether the most recent\n    nightly run's SCT leg actually got killed/skipped before trusting that the\n    quota should have recovered. If the outage is still live at your run time,\n    the fix wasn't applied (or didn't help) and you're in the same boat as\n    8/1-8/2: verify via the tags-prefilter + deep-endpoint probe (see below),\n    do NOT render/email the false zero, and install/relaunch a recovery watcher.\n    Cumulative outage span as of 8/3 noon: 8/1 5:01 PM → 8/3 12:03 PM+ (>43 hrs,\n    now a 3rd calendar day lost — 8/1 5PM Opened, 8/1 6PM Closed, 8/2 noon\n    Opened, 8/2 5PM Opened, and now 8/3 noon Opened). If it's still down at your\n    run time, treat killing the CURRENT night's `sync-all` before it reaches the\n    SCT leg as an ACTIVE step to take yourself (`pgrep -af sync-all` then kill\n    those PIDs plus `pkill -f cron-sct-sync.sh`), not just a note to leave for\n    later — the passive plan already failed to self-execute once.\n  - **Reusable one-shot recovery-watcher template (proven 2026-08-03):** a\n    simpler standalone version of the v2 watcher — no dependency on another\n    pipeline's selfheal log, self-contained bash loop, 10-min poll, 6h deadline,\n    probes the DEEPEST endpoint on a REAL tags-prefiltered candidate RO (not\n    just search/jobs) via a heredoc Python probe: fetch_ros → filter by OPCODE\n    tags → jobs on the first candidate → operations on its first job. Exits\n    0/PROBE_CLEAR only on a genuine 200 (or no candidates/no jobs, i.e. truly\n    nothing to scan); on clear, runs `sct_menu_sales_api.py` once then\n    `render_scorecard.py` once and stops. Launch as `terminal(background=true,\n    notify_on_complete=true, watch_patterns=[\"window clear\",\"gave up\"])` — do\n    NOT use shell-level `nohup ... & disown` (Hermes terminal blocks that\n    pattern; use the tool's own background flag instead). This avoids\n    depending on a sibling pipeline's log file existing/being fresh, at the\n    cost of not chaining with any other watcher that might already be running\n    (check `pgrep -af wait_ops_then_scrape\\|selfheal_sct\\|quota-recovery` first\n    to avoid duplicate pollers).\n  - **ROOT CAUSE CONFIRMED (2026-08-03 12 AM): the dealer-detail nightly\n    sync-all IS the SCT DEALER_QUOTA drain.** Its collector deep-fans EVERY\n    fetched RO (jobs → operations → parts = 3-4 calls/RO;\n    `dealer-detail/apps/web/lib/sources/tekion/collector.ts` line ~354ff) over\n    ~850-1000 SCT ROs nightly, INCLUDING unchanged ROs (e.g. 253 unchanged of\n    987 on 7/30 still got full fan-out). Log timeline\n    (`dealer-detail/logs/sct-sync-nightly.log`): 7/31 23:00 SCT leg = 859 ROs\n    OK; **8/1 ~7 PM quota exhausted** (month-end: align MTD + menu MTD + sync\n    combined); **8/1 23:00 sync DIED mid-SCT-leg** (log jumps from\n    `=== sync SCT ===` straight to next night's START — no collect line);\n    8/2 23:00 sync marched toward SCT again. **Containment: when SCT quota is\n    drained, KILL the nightly sync before its SCT leg fires** so it can't\n    re-drain the bucket the moment it refills: `pkill -f cron-sct-sync.sh;\n    pkill -f sync-all.ts` — then ALSO kill the surviving node/tsx children\n    (`pgrep -af 'sync-all'` and kill those PIDs; pkill by script name misses\n    them). Store legs are alphabetical (ARSJ→BC→BST→SCT→SCVW→TOL→VWC) with\n    240s cooldowns, so you have ~20+ min from START to the SCT leg. The\n    every-30-min heal-backfill cron is a NO-OP if its done-marker\n    (`logs/heal-backfill-20260708.done`) exists — check, don't assume. Other\n    stores' buckets are SEPARATE and stay healthy (TL/BT/BC crons all ran fine\n    during the SCT outage — cross-check their data files as proof the outage\n    is dealer-scoped, not org-wide). Long-term fix to propose: make the\n    collector skip fan-out for unchanged ROs (hash check before deep fetch). Note: jobs payload shape is
-    `jobs['data']['jobs']` (list) and each job's `operations` field is a
-    `{link, id}` dict, NOT inline ops — `scan_ro` fetches the link.
+    ROs per store, incl. 2900+ at SCT nightly at 23:00, plus a */30 heal-backfill
+    cron) shares the dealer quota. A documented "kill nightly sync" containment
+    plan (written 8/3) did NOT reliably self-execute/hold — outages recurred
+    8/3, 8/7 and beyond despite it, so don't assume a past containment note
+    means the issue is fixed; re-verify live every time.
+  - **RECOVERY-WATCHER FALSE POSITIVE (hit repeatedly):** a watcher that probes
+    only `repair-orders:search` + `/jobs` WILL fire "window clear" while
+    `/operations` is STILL 429ing — search/jobs recover first. Any recovery
+    probe MUST test the DEEPEST endpoint the scrape needs (the `/operations`
+    link), and the post-recovery scrape output must be sanity-checked:
+    `record_count == 0` while the tags prefilter shows TEK candidates ⇒ still
+    truncated, re-queue, do not trust `complete:true`.
+  - **Watcher process-management:** killing a flock-guarded watcher can leave
+    its in-flight `sleep` child holding the lock fd — relaunch then falsely
+    exits "already running". Diagnose with `fuser -v /tmp/<lock>`, kill that
+    PID, confirm `fuser` empty, relaunch. Before launching a NEW dated watcher,
+    always `pgrep -af wait_ops_then_scrape` (or the dated variant) + check its
+    elapsed time — if one is already alive and within its deadline, do NOT
+    relaunch a duplicate; just read its log tail for the latest probe result.
+  - **Do not render/email a false zero.** Every outage day: flag the JSON
+    `complete:false` + note, do NOT run render_scorecard.py, do NOT email —
+    report the outage with last-known-good data (labeled by its as-of date)
+    instead. Reusable one-shot watcher pattern: flock-guarded bash loop, poll
+    the deep `/operations` link every 10 min, on first 200 run the real
+    scraper + renderer once and touch a dated marker file.
+  - **Outage timeline (for context on how long this can run):** started 8/1
+    5:01 PM PDT, confirmed still active through at least 8/7 5:00 PM PDT
+    (7 calendar days, ~10+ separate cron runs lost). Last known-good SCT
+    Opened data throughout: 7/31/26, 5 menus, $1,490.98 labor / $454.33 parts
+    = $1,945.31 total. If a DEALER_QUOTA outage spans 2+ days, escalate to
+    Joe for a Tekion quota review/support ticket — polling alone will not
+    fix it, and passive containment notes have not held in practice.
+  - **Ad-hoc verification probe script gotchas (avoid burning calls re-learning
+    these):** `sct_menu_sales_api.OPCODE_LIST` is a JSON list of DICTS
+    (`{"opcode": "TEK...", ...}`), not bare strings — build the maint set with
+    `{d['opcode'] for d in json.loads(O.OPCODE_LIST.read_text())}`, not
+    `set(json.loads(...))` (TypeError: unhashable dict). RO records from
+    `fetch_ros` have no `id` key — the real id is `ro['documentId']`.
+    `ro['jobs']['link']` and each job's `operations['link']` are already FULL
+    paths (`/repair-orders/...`) — pass them to `O.call('GET', link)` as-is;
+    prefixing `/openapi/v4.0.0` again produces a doubled-path 404.
 - ⚠️ **TWO DISTINCT 429 TYPES — read the `message` (learned 2026-07-08):**
   `OVERALL_RATELIMIT` = rolling ~15-min window, resets in ~8-15 min → the
   poll-until-200 recovery above works. `OVERALL_QUOTA` = **org-wide daily
   quota**, shared across ALL pipelines (Caliber invoice scrape, TOL backfill,
-  BC/SCT menu jobs). On 2026-07-08 it stayed exhausted **12+ hours** (429 from 5:35 AM through at least 5:10 PM — BOTH the noon AND 5 PM Opened crons lost that day) — polling
-  is futile and burns nothing back. If you see OVERALL_QUOTA: try 2-3 paced\n  attempts ~10 min apart max, cross-check sibling logs (`data/tol-closed-backfill-*.log`,\n  `~/caliber-ops/logs/tekion-nightly.log`) to confirm it's org-wide, then GIVE\n  UP and report the failure with last known-good numbers (labeled as-of date).\n  QUOTA-outage additions (hit again 2026-07-08 noon run):\n  - `sct_menu_sales_api.py`'s `fetch_ros` retry loop (line ~67: 429 → sleep 185\n    → continue) does NOT distinguish QUOTA from RATELIMIT — on a quota day it\n    loops FOREVER with ZERO stdout/stderr flushed (output is buffered). A\n    foreground run just times out; a background run sits \"running\" silently.\n    → Probe the quota type YOURSELF with one `O.call(\"POST\",\"/repair-orders:search\",...)`\n    (read the `message`), and if OVERALL_QUOTA, KILL the stuck scraper — do not\n    wait on it.\n  - Fastest org-wide confirmation: `data/sct-align-selfheal-<date>am.log` — the\n    alignment self-heal watcher probes every ~10 min and logs `probe: 429`\n    lines with timestamps, giving you the outage START time (on 7/8 it showed\n    40 consecutive 429s since 5:35 AM → quota drained overnight, before any of\n    my runs). `data/bc-mtd-backfill-<date>.log` ending in `GAVE_UP` on\n    OVERALL_QUOTA is corroborating evidence.\n  - The task spec's \"0 records is VALID — still send\" applies ONLY to a clean\n    scrape that found 0 menus. A quota outage produces NO data file at all —\n    that is a FAILURE, not a slow day: do NOT render, do NOT email; report the\n    outage with last known-good labeled by its as-of date, and note the next\n    cron cycle will retry after the quota resets.
+  BC/SCT menu jobs). On 2026-07-08 it stayed exhausted **12+ hours** and did
+  NOT reset overnight — the outage ran ~37 hrs across two full business days
+  (7/8 5:35 AM → 7/9 6:17 PM+), costing noon/5PM/6PM crons on both days.
+  Polling is futile once it's clearly org-wide daily quota, not a rolling
+  window — confirm via 2-3 paced probes ~10 min apart, cross-check sibling
+  logs (`data/tol-closed-backfill-*.log`, `~/caliber-ops/logs/tekion-nightly.log`,
+  `data/sct-align-selfheal-<date>.log`) for corroborating 429s, then GIVE UP
+  and report with last known-good — do not burn hours polling a daily quota.
+  `fetch_ros`'s retry loop (429 → sleep 185 → continue) does NOT distinguish
+  QUOTA from RATELIMIT and will loop forever with buffered/invisible output on
+  a quota day — probe the type yourself with one search call and kill the
+  scraper if it's OVERALL_QUOTA rather than waiting on it.
+  The "0 records is VALID — still send" rule applies ONLY to a clean scrape
+  that genuinely found 0 menus. A quota outage produces no usable data file —
+  that's a failure, not a slow day: do not render, do not email; report the
+  outage with last known-good labeled by its as-of date. After an outage,
+  the closed-MTD daily append scans TODAY only — append each missed date
+  first via the positional date arg before running today's default append,
+  or missed days silently drop from the MTD total.
   Do NOT render/email stale master data as today's report. After the outage,
   the daily append scans TODAY only — **append each missed date first** via the
   positional date arg (`sct_menu_sales_closed_mtd.py 2026-07-07`) before
