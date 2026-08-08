@@ -90,10 +90,27 @@ pass on an opcode click if per-opcode detail (hours/parts) needs to be bulk-harv
 The list endpoint above only returns opCode/description/category, NOT hours — hours are
 on the detail view per opcode.
 
+## CRITICAL — pagination wall (confirmed 2026-08-08, control-tested)
+`labor-time/all` reliably returns data for the first ~75-100 rows (small page sizes,
+e.g. rows=25-50, work fine for early offsets) but **past roughly offset 75-100 the
+endpoint starts throwing a bare 500 and never recovers**, regardless of:
+- page size (tried 100, 50, 25 — same wall, just at different offset/page-count)
+- dealer (reproduced identically on SCT/876 AND BC/1251 — NOT store-specific)
+- vehicle (reproduced on multiple different VINs/models — NOT vehicle-specific)
+This means it's a genuine bug/hard limit in Tekion's own API, not something to retry
+or back off around from our side. **A full bulk export of a vehicle's ~1,400+ opcode
+list is NOT currently achievable via this endpoint** — only the first ~75-100 rows are
+retrievable. Do not sink more time into pagination workarounds (retry/backoff loops,
+token refresh between batches, slower pacing) — all were tried 2026-08-08 and none
+cleared the wall. If Joe needs the full list, this is a "report to Tekion/APC support
+as an API bug" situation, not a scripting problem.
+
 ## If Joe wants an actual bulk export
 1. Get explicit scope: which make(s), which model(s)/year(s) — do NOT default to "all Toyota ever".
 2. For the requested scope, loop `labor-time/all` with pagination (rows=100) per model/year
    to harvest the opcode/category list — driven through the UI (not raw fetch, per auth trap above).
+   **Expect to only get the first ~75-100 rows per vehicle** per the pagination wall above —
+   set that expectation with Joe BEFORE running the full loop, not after.
 3. If Joe wants HOURS per opcode (not just the code/description list), a second harvest pass
    is needed hitting the opcode-detail endpoint — capture it first via one manual opcode click
    with the XHR hook installed, same pattern as this skill's discovery method.
