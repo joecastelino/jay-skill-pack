@@ -1225,6 +1225,50 @@ read-only check from this environment; route ALL Sent-folder verification
 through an ask-agent call to Stacey (asking her to use himalaya on HER end and
 paste back the verbatim result) instead.
 
+## 2026-08-08 noon update — outage recurred after a brief overnight false-clear; hardcode-to-Kevin trap hit on FIRST send attempt even with explicit "TO ONLY Joe" stated in the draft request itself
+
+The prior night's watcher (`sct_opened_0807_recovery.log`) logged a clean run at
+00:02 AM (0 candidates, `complete:true`) — but that was NOT a real quota
+recovery, just an artifact of checking at midnight before any ROs existed yet
+for the new day. By noon (12:02 PM PDT) the SAME DEALER_QUOTA outage was back:
+search+jobs 200, `/operations` 429 on a live probe of real candidate RO 578223.
+**Lesson: a clean 0-candidate watcher result right at midnight rollover does
+NOT prove the outage cleared — always re-probe with a real candidate once the
+day has meaningful RO volume (e.g. midday) before trusting a "window clear."**
+
+Confirmed 6 genuine TEK-tag candidates existed (578223/578221/578214/578209/
+578173/578160) that could not be scanned. Flagged both dated JSONs
+`complete:false`+note, did not render/email a false $0.00 report, launched a
+fresh 12h watcher (`/tmp/wait_ops_then_scrape_0808.sh`, lock
+`sct_opened_quota_lock_20260808.lock`).
+
+**Hardcode-to-Kevin trap reconfirmed in a NEW variant: it hit on the very
+FIRST send attempt of a CUSTOM outage-notification email, even though (a) the
+initial draft-request explicitly said "TO: jcastelino@... ONLY" and (b) the
+draft Stacey showed back for review was correctly addressed to Joe.** The send
+step itself silently redirected to kstapp@sctoyota.com — her own reply even
+said "SENT ... to Kevin Stapp" (a truthful confirmation of the wrong outcome,
+not a lie). This proves the trap isn't limited to the standard Opened template
+default; it's a send-time behavior that can override an already-correct draft
+regardless of email type. **Always verify the actual TO on the Sent copy after
+EVERY send — reviewing the draft body/recipient beforehand is not sufficient,
+even for custom emails with explicit recipient constraints stated up front.**
+Recovery: identical to prior incidents — restate ALL constraints (TO ONLY Joe,
+no Kevin, greeting, no attachment, no template) in a fresh rebuild+resend ask;
+landed correctly on retry, verified via her verbatim himalaya Sent-copy read
+(TO=jcastelino@americanmotorscorp.com, exact body match, signature present).
+0 leftover drafts confirmed after.
+
+Practical timing note: when an ask-agent call times out (exit 124) or a
+verbose verify returns empty, sleeping ~60-90s before a terse one-line
+follow-up ("Reply only: SENT <ts> TO <recipient>, or NOTSENT.") reliably gets
+a clean answer — matches the existing "verbose asks silently timeout, terse
+ones don't" pattern in this skill.
+
+Outage cron-cycle tally: adds 8/8 noon Opened — the outage now spans into a
+second week (8/1 through at least 8/8, with only a false midnight blip, not a
+real recovery, in between).
+
 ## Path / interpreter notes
 - `~` in terminal resolves to `/home/itadmin/.hermes/profiles/jay/home/`;
   the scripts live at REAL `/home/itadmin/tekion-reports/`.
