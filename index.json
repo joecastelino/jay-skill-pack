@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-07T19:15:04",
+ "generated": "2026-08-07T19:30:26",
  "skill_count": 168,
  "skills": [
   {
@@ -107,20 +107,20 @@
    "last_used": "2026-08-07"
   },
   {
+   "name": "sct-alignment-by-advisor-report",
+   "path": "automotive/sct-alignment-by-advisor-report",
+   "category": "automotive",
+   "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
+   "times_used": 27,
+   "last_used": "2026-08-07"
+  },
+  {
    "name": "tekion-service-menu-setups",
    "path": "automotive/tekion-service-menu-setups",
    "category": "automotive",
    "description": "Navigate to, read, and inspect Tekion Service Menu Setups (the service-menu builder where interval menus, tiers, tags, opcodes, included services and inspections are configured). Covers the non-obvious nav path, the page/tab structure, where free-text \"notes\"/tags live, and the headless storage_state harness that reaches it reliably. Use when asked to find/check/edit a service menu, a menu's tag/name, or \"the last service menu\".",
    "times_used": 27,
    "last_used": "2026-07-15"
-  },
-  {
-   "name": "sct-alignment-by-advisor-report",
-   "path": "automotive/sct-alignment-by-advisor-report",
-   "category": "automotive",
-   "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
-   "times_used": 26,
-   "last_used": "2026-08-06"
   },
   {
    "name": "tekion-scheduling",
