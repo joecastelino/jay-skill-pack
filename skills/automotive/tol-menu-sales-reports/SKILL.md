@@ -386,6 +386,19 @@ re-run it. New-month note: on the 1st (or first run of a month) the script
 auto-creates a fresh `MASTER-<YYYY-MM>.json` with empty records — a tiny (~97 byte)
 master early in the month is normal, NOT the "unseeded master" pitfall.
 
+## Google OAuth token expiry mid-verification (learned 2026-08-07 EOD)
+A Sent-folder verification ask can hit an EXPIRED Google OAuth token — Stacey will try
+Gmail API, fail, try a profile-specific token, fail again, then surface a manual OAuth
+consent URL asking Jay/Joe to click through a browser flow. Don't do that in a headless
+cron run. Instead just re-ask her the same verification question but explicitly say
+"use himalaya instead" (her IMAP/SMTP fallback) — she completes the Sent-folder check
+fine via himalaya without any OAuth interaction. himalaya can't do the drafts.get
+part-listing (that needs the Gmail API for MIME internals), but it works for basic
+Sent-folder subject searches. (8/07 EOD: draft 41881 was a fully clean one-shot —
+correct subject, greeting "Sean,", MIME clean (html + png cid=scorecard inline 58KB +
+pdf attachment 48KB), count=1 no dedupe needed, and the himalaya-fallback Sent check
+confirmed zero TOL sends that day — only sibling BC/SCT reports had gone out.)
+
 ## Cross-store note
 This same pattern (clone the sibling pipeline, derive the store's OWN SERVICE_MENU opcode
 set, set dealer ID + recipient) applies to the remaining AMG stores (SV/AR/VC) when Joe

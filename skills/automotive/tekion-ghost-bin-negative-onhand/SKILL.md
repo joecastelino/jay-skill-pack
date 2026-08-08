@@ -212,6 +212,22 @@ BEFORE flagging it as a missed transfer:
   "verify/investigate — atypical Primary" rather than "needs 5000s→2420 transfer." Always
   confirm via rendered Bin Details which bin is actually Primary before writing the flag
   reason — don't infer it from bin number or class alone.
+- **MULTI-DAY ESCALATION — track a smoking-gun negative across runs, don't re-flag it as
+  fresh each day.** 87139-YZZ09 (bin 5007, Primary=TXM) has been deepening for 3+ consecutive
+  daily runs and counting: -15→-17 (2026-08-05), -17→-18 (2026-08-06), -18→-19 (2026-08-07),
+  with zero corrective adjustment posted in between. Before writing the day's flag, check the
+  PREVIOUS 1-2 snapshot files for the same (bin, partNumber) trend, not just yesterday vs today.
+  If it's been open 2+ days with no fix, escalate the report language ("day N of continuing
+  drift — recommend Joe/Ronald look directly" instead of a fresh-sounding "-18→-19 ⚠️") so it
+  doesn't get lost as noise in a daily list.
+- **SAME-DAY LIVE EDIT ATTRIBUTION** — if Jay executed a live Edit-Part redistribution on a
+  part earlier the same day (see FIX PATHS / LIVE EDIT-PART REDISTRIBUTION MECHANICS above),
+  a diff on that exact part in the SAME day's watchdog run is very likely a residual/expected
+  effect of that edit, not new organic drift. Cross-check the day's redistribution log
+  (`sct-bin-redistribution-log.csv`) for the part number before reporting the diff as an
+  unexplained change — note it as "expected residual of today's redistribution," not a fresh
+  flag needing action. Example: 17801-0P100 5005 8→7 the same day as its live Edit-Part
+  consolidate/split (2026-08-07).
 - 65/175 parts having lastTransactionTime in 24h is NORMAL on a busy day — the 24h-activity
   list is a reminder roster (sales relieve Primary only), not an alarm list. Only qty
   changes/new negatives are alarms.
