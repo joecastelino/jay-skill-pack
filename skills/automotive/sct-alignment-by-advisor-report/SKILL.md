@@ -131,6 +131,23 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   shipped** — at this length, stop treating "keep re-arming nightly" as sufficient; the
   report to Joe should explicitly recommend a formal Tekion support ticket rather than
   soft-pedaling it as routine self-heal.
+  **Confirmed continuing 8/7 (day 7, still 429):** same signature (search/jobs 200,
+  `/operations` 429 DEALER_QUOTA) at 19:01 PDT, cross-checked against the independent
+  `sct-closed-quota-recovery` job's own probes logged 18:03-18:54 the same evening — also
+  all 429. No local competing consumer found (checked
+  `sync-all|cron-sct-sync|tsx --conditions` and
+  `quota_recovery|bt_seed_watcher|sct_closed_backfill|sct_align_mtd|selfheal_sct_align` —
+  both empty). Reused the standard sed date-swap
+  (`sed -e 's/2026-08-06/2026-08-07/g; s/20260806/20260807/g' <old>.sh > <new>.sh`) for
+  BOTH the probe script and its handoff-watch pair, `bash -n` both, chmod in its own
+  foreground call, launched each via terminal(background=true, /usr/bin/bash explicit) —
+  confirmed alive via the log's "watcher started" line within 5s. Before arming, asked
+  Stacey a terse read-only Gmail search ("subject substring 'SCT Alignment' in Drafts
+  and Sent, last 10 days") to confirm the last thing that actually shipped: July
+  full-month report, Sent 2026-08-02 — zero August MTD reports have gone out. **7
+  CONSECUTIVE DAYS (8/1-8/7) is well past routine self-heal territory** — every nightly
+  report in this window should explicitly recommend Joe open a formal Tekion support
+  ticket, not just re-arm and move on.
   **When the current scan is blocked, confirm what's already in Drafts before assuming
   nothing shipped:** ask Stacey a terse read-only Gmail search for a SUBSTRING (not exact
   subject match, per the exact-subject false-zero trap above) like "SCT Alignment" to find
