@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-08T07:15:06",
+ "generated": "2026-08-08T07:30:27",
  "skill_count": 168,
  "skills": [
   {
@@ -299,6 +299,14 @@
    "last_used": "2026-07-23"
   },
   {
+   "name": "tekion-warranty-admin-closings",
+   "path": "automotive/tekion-warranty-admin-closings",
+   "category": "automotive",
+   "description": "Build a \"which warranty admin closed what tickets\" report for any AMG store from the Tekion OpenAPI \u2014 per-clerk RO counts, warranty $ and total RO $, month-to-date or any window. Verified SCT July 2026.",
+   "times_used": 7,
+   "last_used": "2026-08-08"
+  },
+  {
    "name": "dealerdetail-api-pipeline-build",
    "path": "automotive/dealerdetail-api-pipeline-build",
    "category": "automotive",
@@ -329,14 +337,6 @@
    "description": "Build a \"units of X sold in a period\" report (tires, batteries, brakes, BG products, wipers...) for any Tekion store using the Source Code part list + bulk salehistory API \u2014 NO OpenAPI quota, no RO fan-out. Use when Joe asks \"how many tires/batteries/etc were sold last month/quarter\" and the category maps to a parts Source Code. Verified TOL tires Q2 2026.",
    "times_used": 6,
    "last_used": "2026-07-24"
-  },
-  {
-   "name": "tekion-warranty-admin-closings",
-   "path": "automotive/tekion-warranty-admin-closings",
-   "category": "automotive",
-   "description": "Build a \"which warranty admin closed what tickets\" report for any AMG store from the Tekion OpenAPI \u2014 per-clerk RO counts, warranty $ and total RO $, month-to-date or any window. Verified SCT July 2026.",
-   "times_used": 6,
-   "last_used": "2026-08-07"
   },
   {
    "name": "tekion-alignment-by-advisor-report",
