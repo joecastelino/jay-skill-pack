@@ -1269,6 +1269,23 @@ Outage cron-cycle tally: adds 8/8 noon Opened — the outage now spans into a
 second week (8/1 through at least 8/8, with only a false midnight blip, not a
 real recovery, in between).
 
+## 2026-08-09 noon — 9th outage day; NEW TRAP: "edit draft" can corrupt it into an unrelated stale email
+
+DEALER_QUOTA confirmed live 12:02 PDT (search+jobs 200, ops 429). 5 TEK-tag
+candidates. Flagged both JSONs; launched fresh 12h watcher, lock
+`sct_opened_quota_lock_20260809.lock`.
+
+**NEW TRAP:** asking Stacey to edit an existing draft ($→USD, drop a line) can
+silently corrupt it — draft #41900 → "DONE" → but became #41901, an entirely
+**unrelated stale 2025 VW recall email** that kept the right subject line.
+Fix: don't trust "DONE"; always demand verbatim body; if content is flat-out
+WRONG (not just un-edited), delete + rebuild from scratch with the full
+literal TO/SUBJECT/BODY spelled out — worked first try as #41902. Also: an
+earlier "0 leftover drafts" check can go stale after more churn — always do
+one final fresh scan as the literal last step (caught leftover #41901 that
+way). Otherwise standard playbook held; more calls than usual (~14) due to
+the detour + a stretch of exit-124 timeouts ~12:15-12:40 PM.
+
 ## 2026-08-08 5PM update — outage 8th calendar day, watcher had adequate runway (left running), 1-round send (after an exit-124/NOTSENT check) — clean
 
 Confirmed live at 17:02 PDT via `/tmp/sct_opened_probe_0808.py` (the day's own
