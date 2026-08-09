@@ -429,9 +429,49 @@ but it works for basic
 Sent-folder subject searches. (8/07 EOD: draft 41881 was a fully clean one-shot —
 correct subject, greeting "Sean,", MIME clean (html + png cid=scorecard inline 58KB +
 pdf attachment 48KB), count=1 no dedupe needed, and the himalaya-fallback Sent check
-confirmed zero TOL sends that day — only sibling BC/SCT reports had gone out.)
+verifying by exact subject text rather than trusting any reported id (per the existing\n"bogus draft ID" pitfalls).
 
 CORRECTION (8/08 EOD): the "himalaya can't do part-listing" claim above is WRONG — when
+the Gmail API token was expired again, Stacey successfully fetched the FULL MIME part
+listing (multipart/mixed > multipart/related > multipart/alternative(text/plain +
+text/html) + image/png Content-ID=scorecard,filename + application/pdf,filename) via
+raw IMAP against `[Gmail]/Drafts` (UID-based) and explicitly noted "fetched via IMAP
+... Gmail API token is expired ... Same MIME structure regardless." So during an OAuth
+outage, still ask her the part-listing question — she falls back to raw IMAP UID fetch
+and gets equivalent MIME detail; don't skip it as "can't check." Only real limitation:
+her own himalaya-numbered IDs are NOT the same as IMAP UIDs, so a self-reported numeric
+draft id during a token outage may not match what Gmail-side tools show — keep
+verifying by exact subject text rather than trusting any reported id (per the existing
+"bogus draft ID" pitfalls).
+
+(8/09 noon) OUTAGE CONFIRMED MULTI-DAY + REFRESH TOKEN FULLY REVOKED: the token that
+expired 8/07 was STILL dead 8/09 noon — but this time Stacey explicitly said the
+REFRESH token is also invalid/revoked, requiring a full browser OAuth consent flow
+(not just an expired-access-token auto-refresh). Don't offer to "kick off OAuth" in a
+headless cron run — that needs Joe in a browser; just fall back to himalaya and move on.
+Also note: API access can be INCONSISTENT WITHIN ONE RUN — the same run's drafts.list
+and drafts.get (part-listing) calls succeeded fine via Gmail API (returned instantly,
+correct MIME), but a LATER in:sent search on the same draft failed with "token expired,
+refresh invalid." Don't assume one successful Gmail-API call means the token is healthy
+for the rest of the run — if a later verification call stalls/fails, just retry that
+specific ask with "use himalaya instead" rather than concluding the whole session is
+broken. The himalaya Sent-folder search still works fine and is sufficient to prove no
+leak (0 matches for today's exact subject + comparison against the actual last-sent TOL
+email's date confirms the search executed for real, not a silent no-op).
+
+(8/09 noon) CLEAN ONE-SHOT, NO REBUILD NEEDED: draft 41903 (subject exactly right,
+greeting "Sean,", multipart/related with image/png Content-ID=scorecard inline + a
+real application/pdf attachment) came out correct on the FIRST hand-off with no
+MIME-rebuild or dedupe-fix cycle — the full-spec prevention wording continues to work
+most of the time; the part-listing + dedupe-count verification asks are still mandatory
+but this run needed zero corrective follow-ups. First ask-agent call still hit the
+~200s exit-124 timeout as usual (expected, not a failure) — verification follow-ups
+after a sleep 15-45 all returned on the first or second try.
+
+(8/09 noon) Drafts stack observation: 11 unsent "TOL Menu Sales — Opened" drafts now
+span 07/31 through 08/09, including the still-unresolved 08/02 true duplicate pair
+(41542/41547) noted in 7g — it has NOT been cleaned up across multiple runs. Continue
+to only flag it to Joe, don't auto-delete another day's draft.
 the Gmail API token was expired again, Stacey successfully fetched the FULL MIME part
 listing (multipart/mixed > multipart/related > multipart/alternative(text/plain +
 text/html) + image/png Content-ID=scorecard,filename + application/pdf,filename) via
