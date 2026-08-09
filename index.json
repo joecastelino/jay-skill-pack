@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-08T18:30:04",
+ "generated": "2026-08-08T18:45:25",
  "skill_count": 169,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 105,
-   "last_used": "2026-08-07"
+   "times_used": 106,
+   "last_used": "2026-08-08"
   },
   {
    "name": "agent-to-agent-bridge",
@@ -71,7 +71,7 @@
    "path": "automotive/sct-menu-sales-api-scorecard",
    "category": "automotive",
    "description": "Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters to the frozen 316 TEK* maintenance opcodes, resolves advisor names via the persistent browser session on :9223, renders a light-format PNG+PDF scorecard, vision-verifies, and emails. Use for the daily Menu Sales Opened Performance Report cron.",
-   "times_used": 33,
+   "times_used": 34,
    "last_used": "2026-08-08"
   },
   {
@@ -571,6 +571,14 @@
    "last_used": "2026-07-23"
   },
   {
+   "name": "sct-menu-sales-closed-mtd-scorecard",
+   "path": "automotive/sct-menu-sales-closed-mtd-scorecard",
+   "category": "automotive",
+   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales CLOSED Month-To-Date scorecard pipeline from the LIVE Tekion OpenAPI (incremental design) and email the PDF to Joe via Stacey. This is the daily 6 PM companion to the noon/5pm \"Opened\" report (see sct-menu-sales-api-scorecard). Covers the incremental master-file design, the ongoing DEALER_QUOTA outage caveat, and the ask-agent send-confirmation timeout workaround.",
+   "times_used": 1,
+   "last_used": "2026-08-08"
+  },
+  {
    "name": "sct-toyotacare-billed-hours-report",
    "path": "automotive/sct-toyotacare-billed-hours-report",
    "category": "automotive",
@@ -759,14 +767,6 @@
    "path": "automotive/local-nemotron-stt-fleet",
    "category": "automotive",
    "description": "Stand up NVIDIA Nemotron 3.5 ASR (streaming, CPU ONNX) as the shared speech-to-text backend for every Hermes agent on this machine, replacing the broken faster-whisper/libcublas path. Use when voice messages arrive untranscribed or when asked to enable local speech recognition for the agent fleet.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "sct-menu-sales-closed-mtd-scorecard",
-   "path": "automotive/sct-menu-sales-closed-mtd-scorecard",
-   "category": "automotive",
-   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales CLOSED Month-To-Date scorecard pipeline from the LIVE Tekion OpenAPI (incremental design) and email the PDF to Joe via Stacey. This is the daily 6 PM companion to the noon/5pm \"Opened\" report (see sct-menu-sales-api-scorecard). Covers the incremental master-file design, the ongoing DEALER_QUOTA outage caveat, and the ask-agent send-confirmation timeout workaround.",
    "times_used": 0,
    "last_used": null
   },
