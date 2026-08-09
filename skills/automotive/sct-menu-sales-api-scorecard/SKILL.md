@@ -1269,6 +1269,35 @@ Outage cron-cycle tally: adds 8/8 noon Opened — the outage now spans into a
 second week (8/1 through at least 8/8, with only a false midnight blip, not a
 real recovery, in between).
 
+## 2026-08-08 5PM update — outage 8th calendar day, watcher had adequate runway (left running), 1-round send (after an exit-124/NOTSENT check) — clean
+
+Confirmed live at 17:02 PDT via `/tmp/sct_opened_probe_0808.py` (the day's own
+proven probe script — reuse it directly rather than hand-rolling a new probe;
+it already has the right zoneinfo import, avoiding the `pytz`-not-installed
+trap): search+jobs 200 (155 ROs), `/operations` 429 DEALER_QUOTA on real
+candidate RO 578283 (TEK70000BNM), 8 candidates total. The existing noon
+watcher (`wait_ops_then_scrape_0808.sh`, 12h deadline, launched 12:03 PM) was
+still alive with ~7h runway — left it running, no relaunch needed. Manually
+re-flagged `sct-menu-sales-opened-2026-08-08.json` with a fresh 17:02 PDT
+`quota_outage_note` (the noon flag was stale-timestamped; the API JSON
+`sct-menu-sales-api-2026-08-08.json` was already flagged from the noon run and
+didn't need a rewrite). Did NOT re-run the full scraper (would just overwrite
+with another false complete:true/0-menu file) — built the flagged JSON by hand
+from the probe output instead, per the established pattern.
+
+Outage-notification email: first send attempt timed out (exit 124); a
+follow-up terse "SENT/NOTSENT" check correctly returned NOTSENT (not a false
+positive this time) before any duplicate-send risk — then one full re-ask with
+the complete spec (USD not $, verbatim last-known-good 7/31 figures, "CUSTOM...
+do NOT use template", "Greeting Joe NOT Kevin", "do NOT attach files", ask for
+verbatim Sent-copy read-back) landed clean on that single real attempt: TO
+jcastelino@americanmotorscorp.com, correct subject, DEALER_QUOTA rendered
+correctly WITH the underscore (no cosmetic corruption this run), 0 leftover
+drafts. 4 ask-agent calls total (draft-attempt/timeout, NOTSENT verify, real
+send+readback, draft-count check). Confirms the "exit 124 → wait ~60-90s →
+terse NOTSENT check → single full re-send" sequence continues to be the
+reliable pattern when the very first send call times out.
+
 ## Path / interpreter notes
 - `~` in terminal resolves to `/home/itadmin/.hermes/profiles/jay/home/`;
   the scripts live at REAL `/home/itadmin/tekion-reports/`.
