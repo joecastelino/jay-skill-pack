@@ -289,6 +289,34 @@ blackstonegm.com sits behind Cloudflare / a lander page — couldn't scrape a lo
 Using a clean typographic header. Drop a real logo PNG into the renderer if Joe
 supplies one (replace the `.brand` block with an `<img>` like the SCT renderer).
 
+## SELF-VERIFY the inline PNG yourself via `himalaya message export --full` — don't just trust grep or Stacey's word (discovered 2026-08-08)
+Stacey's own raw-MIME self-check (and a naive `search_files`/grep on the exported
+.eml) can give a FALSE NEGATIVE for the inline PNG even when it's genuinely
+there. Root cause: her draft builder wraps the whole `multipart/alternative`
+part with `Content-Transfer-Encoding: base64` — so the HTML body (which itself
+contains `<img src="data:image/png;base64,...">`) is base64-encoded ONE MORE
+LAYER on top. A literal grep for `data:image/png;base64` on the raw .eml never
+matches because that string only exists after decoding the outer
+Content-Transfer-Encoding layer. This produced 4 consecutive false "HASPNG=no /
+GREPCOUNT=0" results (drafts 41888-41892) that triggered unnecessary rebuild
+churn on 2026-08-08 before catching it.
+**Correct independent verification procedure (self-serve, don't depend on
+Stacey re-checking):**
+1. `himalaya --config <stacey-config> message export <id> --folder '[Gmail]/Drafts' --full --destination /tmp/x.eml`
+2. Locate the `Content-Type: text/html` MIME part, find its
+   `Content-Transfer-Encoding` header (usually `base64`), extract the body up
+   to the next `--===boundary` line, base64-decode it to get the real HTML.
+3. NOW grep/search the decoded HTML for `data:image/png;base64,` — this is the
+   correct layer to check.
+4. Optionally: extract the base64 payload after that prefix, base64-decode it,
+   and compare byte-for-byte against the source PNG file (`open(...).read() ==
+   decoded_bytes`) for a bulletproof exact-match verification — this is
+   stronger than any grep and doesn't depend on Stacey at all.
+Do this in `execute_code` (Python stdlib `base64`/`re`), not raw terminal grep
+piped to an interpreter (blocked by the security scanner). This makes Jay
+fully self-sufficient for inline-PNG verification instead of bouncing timeout-prone
+asks back to Stacey.
+
 ## himalaya verification from Jay's session needs an explicit --config (hit 2026-08-07)
 Running bare `himalaya envelope list --folder '[Gmail]/Drafts'` from Jay's own
 profile/session fails with `AUTHENTICATIONFAILED ... Invalid credentials` even
