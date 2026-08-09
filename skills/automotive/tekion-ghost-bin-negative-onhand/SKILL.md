@@ -239,6 +239,19 @@ Do NOT preemptively run login.py; also never run login.py inside an execute_code
 it can block on OTP polling and blow the 300s sandbox timeout. If needed, run it via
 terminal() with its own timeout or background=true.
 
+**Daily watchdog cron run, verified clean end-to-end 2026-08-08:** when :9223 was fully
+dropped to `/login` (no salvageable session), `terminal(command="python3 login.py --force",
+timeout=280)` (NOT execute_code — login.py blocks on OTP polling) got a fresh OTP + LOGGED_IN
+in ~35s, then the standard cookie+21-key injection via execute_code + urllib landed
+authenticated on BC/1251 ("Welcome back, Joe!"), then dealer-pill switch (x1130,y32 → popover
+→ filter `dealerInfoItem_itemName` → 'Stevens Creek Toyota' leaf, that day at x1074,y346) →
+verified `currentActiveDealerId==='876'`. Total time from dead session to authenticated SCT
+context: ~2 minutes. The 7-bin multi-select-then-Apply-then-paginate flow (scrollIntoView each
+leaf → walk-up to checkbox → /mouse click → verify `.checked` → after all 7, confirm
+`querySelectorAll('input[type=checkbox]:checked').length===7` → click Apply → poll
+`window.__xhr` for new `binReport/generate` entries by index, not substring match) worked
+exactly as documented with zero retries needed.
+
 ## :9223 CONTENTION FALLBACK — headless standalone pull (verified 2026-07-12)
 
 If :9223 is being actively driven by ANOTHER session (symptom: your /navigate lands on
