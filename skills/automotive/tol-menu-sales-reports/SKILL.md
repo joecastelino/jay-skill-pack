@@ -424,12 +424,25 @@ Gmail API, fail, try a profile-specific token, fail again, then surface a manual
 consent URL asking Jay/Joe to click through a browser flow. Don't do that in a headless
 cron run. Instead just re-ask her the same verification question but explicitly say
 "use himalaya instead" (her IMAP/SMTP fallback) — she completes the Sent-folder check
-fine via himalaya without any OAuth interaction. himalaya can't do the drafts.get
-part-listing (that needs the Gmail API for MIME internals), but it works for basic
+himalaya can't do the drafts.get part-listing (that needs the Gmail API for MIME internals),
+but it works for basic
 Sent-folder subject searches. (8/07 EOD: draft 41881 was a fully clean one-shot —
 correct subject, greeting "Sean,", MIME clean (html + png cid=scorecard inline 58KB +
 pdf attachment 48KB), count=1 no dedupe needed, and the himalaya-fallback Sent check
 confirmed zero TOL sends that day — only sibling BC/SCT reports had gone out.)
+
+CORRECTION (8/08 EOD): the "himalaya can't do part-listing" claim above is WRONG — when
+the Gmail API token was expired again, Stacey successfully fetched the FULL MIME part
+listing (multipart/mixed > multipart/related > multipart/alternative(text/plain +
+text/html) + image/png Content-ID=scorecard,filename + application/pdf,filename) via
+raw IMAP against `[Gmail]/Drafts` (UID-based) and explicitly noted "fetched via IMAP
+... Gmail API token is expired ... Same MIME structure regardless." So during an OAuth
+outage, still ask her the part-listing question — she falls back to raw IMAP UID fetch
+and gets equivalent MIME detail; don't skip it as "can't check." Only real limitation:
+her own himalaya-numbered IDs are NOT the same as IMAP UIDs, so a self-reported numeric
+draft id during a token outage may not match what Gmail-side tools show — keep
+verifying by exact subject text rather than trusting any reported id (per the existing
+"bogus draft ID" pitfalls).
 
 ## Cross-store note
 This same pattern (clone the sibling pipeline, derive the store's OWN SERVICE_MENU opcode
