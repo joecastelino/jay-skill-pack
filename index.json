@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-09T19:15:21",
+ "generated": "2026-08-09T19:30:24",
  "skill_count": 169,
  "skills": [
   {
@@ -111,8 +111,8 @@
    "path": "automotive/sct-alignment-by-advisor-report",
    "category": "automotive",
    "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
-   "times_used": 27,
-   "last_used": "2026-08-07"
+   "times_used": 28,
+   "last_used": "2026-08-09"
   },
   {
    "name": "tekion-service-menu-setups",
