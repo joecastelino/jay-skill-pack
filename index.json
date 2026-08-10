@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-09T17:30:03",
+ "generated": "2026-08-09T17:45:28",
  "skill_count": 169,
  "skills": [
   {
@@ -23,7 +23,7 @@
    "path": "automotive/agent-to-agent-bridge",
    "category": "automotive",
    "description": "Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine.",
-   "times_used": 73,
+   "times_used": 74,
    "last_used": "2026-08-09"
   },
   {
