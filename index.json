@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-09T18:30:04",
+ "generated": "2026-08-09T18:45:35",
  "skill_count": 169,
  "skills": [
   {
@@ -91,19 +91,19 @@
    "last_used": "2026-07-22"
   },
   {
+   "name": "bc-menu-sales-reports",
+   "path": "automotive/bc-menu-sales-reports",
+   "category": "automotive",
+   "description": "Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards \u2014 Daily Closed (2x/day) and Closed Month-To-Date (1x/day) \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben Estrada (Restrada@blackstonegm.com). This is the GM-store sibling of the SCT/Kevin pipeline (sct-menu-sales-api-scorecard). Use for any \"BC menu report\", \"Blackstone Chevy/Cadillac menu sales\", or Ruben report request.",
+   "times_used": 30,
+   "last_used": "2026-08-09"
+  },
+  {
    "name": "tekion-autonomous-login",
    "path": "automotive/tekion-autonomous-login",
    "category": "automotive",
    "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
    "times_used": 30,
-   "last_used": "2026-08-07"
-  },
-  {
-   "name": "bc-menu-sales-reports",
-   "path": "automotive/bc-menu-sales-reports",
-   "category": "automotive",
-   "description": "Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards \u2014 Daily Closed (2x/day) and Closed Month-To-Date (1x/day) \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben Estrada (Restrada@blackstonegm.com). This is the GM-store sibling of the SCT/Kevin pipeline (sct-menu-sales-api-scorecard). Use for any \"BC menu report\", \"Blackstone Chevy/Cadillac menu sales\", or Ruben report request.",
-   "times_used": 29,
    "last_used": "2026-08-07"
   },
   {
