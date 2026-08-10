@@ -379,6 +379,16 @@ each digit. Wait for a NEW OTP email by envelope ID (>last seen), not by count.
 
 ## Pitfalls
 
+- **`execute_code` is STATELESS across calls — variables do NOT persist between separate
+  execute_code invocations** (verified 2026-08-09, SCT bin-check run). Each call spins up a
+  fresh Python process; a variable like a paginated XHR accumulator (`all_hits`, a `pull_full()`
+  helper, etc.) defined in one execute_code call is GONE in the next — you'll hit `NameError`.
+  Cost one wasted call mid-pagination-loop. Fix: any multi-step workflow that loops against the
+  :9223 API (arm hook → select bins → Apply → capture → paginate Next → merge pages) must be
+  written as ONE self-contained script in a SINGLE execute_code call, not split across turns
+  assuming continuity. If you must split (e.g. because you need to inspect intermediate output
+  before deciding next steps), persist state to a file (`json.dump`/`open("/tmp/...","w")`) and
+  reload it explicitly at the top of the next call — don't rely on the Python process surviving.
 - **tekioncloud.com navs can fail with `net::ERR_FAILED` / `chrome-error://chromewebdata` while other sites load fine (2026-07-16; RECURRED 2026-07-28)** — seen after the session dropped to /login: even post `login.py --force` + full cookie/21-key injection (all keys verified), every `/navigate` to app.tekioncloud.com errored, but example.com worked. 2026-07-28 confirmed: a FRESH `login.py` (new OTP, LOGGED_IN) + clean injection (cookies added:5, all 21 keys length-verified) still hit chrome-error on the very first `/navigate /home` — the failure is instance-level, not auth-level, so re-logging-in does NOT help. Do NOT loop retrying — go STRAIGHT to a standalone headless Playwright run with `storage_state` (the fresh login.py output injects perfectly there; e.g. `/home/itadmin/tekion-reports/bin5000s_daily_pull.py` ran clean end-to-end the same minute). Restart :9223 later when time permits. COUNTERPOINT 2026-07-29: the failure is INTERMITTENT — on a different day the exact same flow (login.py --force → cookies added:5 → 21 keys length-verified one-per-/eval → /navigate /home) worked first try (welcome:true, then KB SSO bootstrap succeeded). So: attempt the injection ONCE; only if the first /navigate returns chrome-error, skip straight to standalone headless Playwright — don't preemptively assume :9223 is broken.
 - **Pendo tour overlay swallows `/mouse` clicks (Tekion, verified 2026-07-11)** — a
   `_pendo-guide-backdrop_` / `pendo-backdrop-region-*` div can cover the UI; `/mouse`
