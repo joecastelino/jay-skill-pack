@@ -154,6 +154,20 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   the most recent draft already sitting in Joe's Drafts (e.g. the July MTD-final report
   from before the outage began) — useful context to include in the blocked-night report
   so Joe knows the last successful data point even while August is stuck.
+  **Confirmed continuing 8/8 and 8/9 (days 8 and 9, still 429):** the 8/8 self-heal watcher
+  ran its full 21h deadline probing every ~10 min (124 log lines, all 429) and hit
+  "TIMEOUT — quota never restored" at 8/9 16:05 PDT with zero recovery. Fresh 8/9 probe at
+  19:01 PDT (same validated RO/job pair, unchanged since 8/3) also 429. No local competing
+  consumer either night (checked the standard process list). Re-armed the standard dated
+  pair via the sed date-swap, `bash -n` + chmod + terminal(background=true) launch,
+  confirmed alive via pgrep + log "watcher started" line — same recipe as prior days, no
+  changes needed. Stacey Gmail check (read-only, "SCT Alignment" substring, Drafts+Sent,
+  last 10 days) confirmed the last actually-SENT report is July Full Month (sent Aug 2,
+  to Joe) and the July MTD-through-7/31 draft is still sitting unsent in Drafts — zero
+  August reports (draft or sent) exist as of day 9. **9 CONSECUTIVE DAYS (8/1-8/9)** —
+  this is well past the point where "keep re-arming nightly" should be reported as
+  routine; explicitly recommend a formal Tekion support ticket in every blocked-night
+  report at this point, not just on first crossing day 4-5.
 - **OVERALL_QUOTA exhaustion (hit 2026-07-07):** distinct from OVERALL_RATELIMIT — this is
   the store's DAILY API quota being fully spent (other pipelines, e.g. a TOL backfill loop +
   caliber-ops scrapers, can burn it). EVERY call 429s
