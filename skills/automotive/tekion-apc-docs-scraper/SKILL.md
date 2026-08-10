@@ -130,6 +130,41 @@ needs startDate+endDate (epoch ms); `/differential` ALSO needs `clientCurrentTim
   Notable entitled-but-blocked: RO recommendations/internal-notes/warranty-claims/
   clock-entries, Update Repair Order Status, Create a GL Posting, Credit Application APIs.
 
+## Converting specs to readable markdown for external sharing (verified 2026-08-10)
+When Joe wants the full docs handed to an outside party (e.g. a partner developer
+like Omar Al Sadoon) — "email him the documentation" — don't just forward the raw
+JSON specs. Convert to markdown first: much more readable and email-friendly.
+
+- **REST API specs are OpenAPI 3.1** (`apis/*.json`, keyed by `paths`→method→
+  `parameters`/`requestBody`/`responses`, plus `components.schemas`).
+- **Webhook specs are PLAIN JSON SCHEMA** (`webhooks/*.json`, top-level
+  `type`/`title`/`description`/`properties` — NOT wrapped in OpenAPI). These need
+  a SEPARATE converter — running the OpenAPI converter against them produces
+  empty/garbage output since there's no `paths` key.
+- **User-guide `.txt` scrapes** have a 2-line scraper header (`URL:` / `CLICK:`)
+  that must be stripped before wrapping in a markdown title.
+- Reusable converters (persisted, don't rebuild from scratch):
+  `~/dealerdetail/specs/scripts/spec_to_md.py` (OpenAPI endpoints → per-endpoint
+  `.md` + `API-INDEX.md`, walks `api_catalog.json` so section/endpoint names stay
+  authoritative) and `~/dealerdetail/specs/scripts/webhook_to_md.py` (JSON Schema
+  webhooks → per-event `.md` + `WEBHOOK-INDEX.md`, grouped by
+  Deals/Repair Order/Vehicle Inventory). Output lands in
+  `~/dealerdetail/specs/markdown/{apis,webhooks,user-guide}/` plus a top-level
+  `README.md` you should write summarizing auth, servers, quotas, cents-vs-dollars,
+  and current AMG-granted scope (don't just dump files with no cover note — the
+  recipient needs the operational context, not just schemas).
+- Package with Python `zipfile` (NOT shell `zip` — not installed on this box) into
+  a single zip (`~/tekion-apc-full-documentation.zip` pattern) for Stacey to attach
+  and send. 270 endpoints + 26 webhooks + 10 user-guide sections compress to
+  <1MB — small enough for a normal email attachment, no need to split or host.
+- **PITFALL — write scripts to a PERSISTENT path, not `/tmp` or profile `~`**: a
+  one-off converter script is exactly the kind of reusable asset that gets lost on
+  the next environment reset if left in `/tmp` or under Jay's ephemeral profile
+  home. Save it under `~/dealerdetail/specs/scripts/` (a real, persistent dir)
+  immediately, not as an afterthought.
+- After packaging, still need a recipient email before involving Stacey — don't
+  guess an external partner's address; ask Joe.
+
 ## Related
 - After scraping webhook schemas, the natural next step is subscribing to them —
   see the `webhook-subscriptions` skill for the Hermes webhook receiver side.
