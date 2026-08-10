@@ -378,6 +378,30 @@ Daily-Closed-BC count = 0. Lesson: a SINGLE terse recovery probe after a
 timeout is not always enough — be ready to send it twice before falling back
 to an even lighter one-liner.
 
+## 2026-08-09 6:18pm Closed MTD run — clean, byte-for-byte verify confirms the method
+34 menus, $6,770.64 labor / $4,051.86 parts = $10,822.50 (Aug 1-9), top advisor
+Juan Ramirez (14 menus, $4,268.69). Master asof was already 2026-08-08 (prior
+run) so no missed-day catch-up needed; default append found 0 new closed ROs
+today but ran clean (`✓ all candidate ROs scanned`). Render matched computed
+totals exactly on vision-check. Stacey's first ask-agent build call hit the
+documented genuine timeout (175s, not the false-positive `&`-backgrounding
+block) — waited ~20s, sent the standard terse "DONE <id> or NOT-DONE" probe,
+got `DONE 41913` back in one shot (no repeat probes needed this time). Used
+the skill's self-serve byte-for-byte verification (export --full, locate the
+base64-encoded text/html MIME part, decode it, regex out the
+`data:image/png;base64,...` payload, decode THAT, compare bytes against the
+source PNG file directly) — confirmed **exact byte match**, strongest possible
+proof, no dependence on Stacey's self-report at all. PDF confirmed via
+himalaya attachment download. Sent Mail = 0 for this subject+date. Exactly one
+draft existed for TODAY's date/subject (41913); a grep for the bare subject
+string without the date also matched yesterday's 8/8 draft (41894) — that is
+NOT a duplicate, just the prior day's report still sitting in Drafts (expected;
+each day's MTD draft has its own date in the subject). Lesson: when checking
+for duplicate drafts, always grep with the FULL date-qualified subject (as the
+skill's dedup section already says — `grep "BC m/d"` — not a bare/partial
+subject string), or you'll mistake yesterday's still-present draft for a
+same-day duplicate.
+
 ## 2026-08-06 5pm Daily Closed run — full trap sequence hit again, playbook held
 5 menus, $1,744.99 labor / $820.10 parts = $2,565.09 (Juan Ramirez 4 menus, Erik
 Mercado 1). Data pull + render clean (`✓ all candidate ROs scanned`). Stacey's
