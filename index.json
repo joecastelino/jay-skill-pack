@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-10T08:00:05",
+ "generated": "2026-08-10T08:15:38",
  "skill_count": 169,
  "skills": [
   {
@@ -23,8 +23,8 @@
    "path": "automotive/agent-to-agent-bridge",
    "category": "automotive",
    "description": "Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine.",
-   "times_used": 75,
-   "last_used": "2026-08-09"
+   "times_used": 77,
+   "last_used": "2026-08-10"
   },
   {
    "name": "tekion-openapi-repair-orders",
@@ -275,6 +275,14 @@
    "last_used": "2026-07-15"
   },
   {
+   "name": "tekion-apc-docs-scraper",
+   "path": "automotive/tekion-apc-docs-scraper",
+   "category": "automotive",
+   "description": "Log into the Tekion APC partner portal (apc.tekioncloud.com) and download the full OpenAPI 3.1 specs for every REST API endpoint and every webhook event. Single continuous Playwright session (APC sessions don't persist). Use when building/maintaining the DealerDetail Fixed Ops app or any tool that needs the authoritative Tekion API/webhook schemas.",
+   "times_used": 7,
+   "last_used": "2026-08-10"
+  },
+  {
    "name": "tekion-clock-time-by-opcode",
    "path": "automotive/tekion-clock-time-by-opcode",
    "category": "automotive",
@@ -345,14 +353,6 @@
    "description": "Build a Tekion \"alignments sold this period, broken down by service advisor\" report for ANY of the 7 AMG stores from the LIVE OpenAPI \u2014 counting BOTH dedicated alignment opcodes AND alignments bundled inside a service menu/combo op. Produces a 2-page scorecard (page 1 advisor ranking, page 2 RO-level chip detail) and optionally has Stacey draft it. The opcode set is PER-STORE \u2014 never reuse one store's alignment codes on another. Verified live at TL Toyota of Lancaster dealer 1092 on 2026-06-29 (105 alignments, 102 dedicated plus 3 bundled, across 104 ROs, June MTD). Use when Joe asks for an \"alignment report\" or \"alignment count by advisor\" for a store, or any single-opcode \"how many of X did we sell, by advisor\" report.",
    "times_used": 5,
    "last_used": "2026-07-01"
-  },
-  {
-   "name": "tekion-apc-docs-scraper",
-   "path": "automotive/tekion-apc-docs-scraper",
-   "category": "automotive",
-   "description": "Log into the Tekion APC partner portal (apc.tekioncloud.com) and download the full OpenAPI 3.1 specs for every REST API endpoint and every webhook event. Single continuous Playwright session (APC sessions don't persist). Use when building/maintaining the DealerDetail Fixed Ops app or any tool that needs the authoritative Tekion API/webhook schemas.",
-   "times_used": 5,
-   "last_used": "2026-07-10"
   },
   {
    "name": "tekion-source-code-parts-scrub",
