@@ -472,6 +472,22 @@ after a sleep 15-45 all returned on the first or second try.
 span 07/31 through 08/09, including the still-unresolved 08/02 true duplicate pair
 (41542/41547) noted in 7g — it has NOT been cleaned up across multiple runs. Continue
 to only flag it to Joe, don't auto-delete another day's draft.
+
+(8/09 EOD, Closed MTD) Another fully clean one-shot, and NOTABLY zero exit-124 timeouts
+across all 3 ask-agent calls this run (initial draft build ~132s, subject-dedupe check
+~55s, MIME part-listing ~94s, Sent-check ~146s) — contradicts the usual expectation that
+the first hand-off call times out. Don't assume a timeout is required before treating a
+run as normal; just retry if one happens, and don't be surprised when none do. Also: the
+August master (tol-menu-closed-mtd-MASTER-2026-08.json) was already present/seeded going
+into this run, so no --seed was needed — confirms new-month auto-seeding is reliable.
+Sent-check cross-store false positive recurred again exactly per 7c-count-crossstore:
+closest Sent-folder hits were "BT Menu Sales - Closed MTD" (different store, auto-sent
+sibling pipeline) and old June "TOL Menu Sales — Closed MTD" emails — zero exact-subject-
+today matches, no leak. Draft-list-by-subject search cleanly enumerated all 4 stacked
+Closed-MTD drafts (Aug 1-2, 1-7, 1-8, 1-9) with correct id|subject pairs on the first try
+— her self-reported "Draft ID: 41923" happened to be correct this time too, but keep
+verifying independently via subject search + drafts.get per the standing bogus-ID pitfall
+rather than trusting the reported id.
 the Gmail API token was expired again, Stacey successfully fetched the FULL MIME part
 listing (multipart/mixed > multipart/related > multipart/alternative(text/plain +
 text/html) + image/png Content-ID=scorecard,filename + application/pdf,filename) via
