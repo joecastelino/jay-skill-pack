@@ -404,13 +404,11 @@ Rules:
   business days. Closed-append backlog when quota returns: **2026-07-07,
   2026-07-08, 2026-07-09** (positional-date runs, oldest first, THEN the
   current-day default append).
-  **2026-07-10 ~12:16 PM: QUOTA RESTORED** — probe returned 200 and the noon
-  Opened run completed cleanly (8 menus, no 429). Total outage ≈ 2026-07-08
-  5:35 AM → sometime before 2026-07-10 noon. The 7/10 6 PM Closed cron still
-  owes the positional appends for 07-07/07-08/07-09 before today's default. Last known-good closed MTD = 7/6 6:01 PM:
-  34 menus, $11,873.73 labor / $4,305.20 parts = $16,178.93 total. Token from `tekion_client.get_token(cfg)`; endpoint
-  `cfg["base_url"]/openapi/v4.0.0/repair-orders:search` with body
-  `{"filters":[{"field":"creationTime","operator":"BTW","values":[str(ms0),str(ms1)]}],"pageSize":50}`.
+  **2026-08-01→08-09 SECOND multi-day DEALER_QUOTA outage** (9 days, ~18 cron
+  runs lost, same signature as above). Check for `sct-opened-quota-recovery-<date>.log`
+  first. 8/9: flagged both json files `complete:false`+note, reported outage to
+  Joe directly, no render/email. Last known-good Opened: 7/31, 5 menus,
+  $1,490.98 labor / $454.33 parts = $1,945.31 total.
 
 **Clean opened-report 429 recovery (proven 2026-06-29 — textbook):** a `wait-then-scrape`
 bash wrapper is the cleanest one-shot. Run it BACKGROUND (notify_on_complete + watch
