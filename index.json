@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-11T13:15:03",
+ "generated": "2026-08-11T13:30:24",
  "skill_count": 169,
  "skills": [
   {
@@ -275,6 +275,14 @@
    "last_used": "2026-07-15"
   },
   {
+   "name": "dealerdetail-api-pipeline-build",
+   "path": "automotive/dealerdetail-api-pipeline-build",
+   "category": "automotive",
+   "description": "Build the DealerDetail Tekion API-driven data pipeline (replacing the email/Excel prototype) by acting as PM and delegating tickets to Claude Code, then verifying independently. Covers the ticket workflow, the live infra (Supabase project, branch, creds), and the hard-won gotchas (Supabase shadow-DB, server-only smoke tests, git credential path, Tekion app-scope 403 on user lookups).",
+   "times_used": 7,
+   "last_used": "2026-08-11"
+  },
+  {
    "name": "tekion-apc-docs-scraper",
    "path": "automotive/tekion-apc-docs-scraper",
    "category": "automotive",
@@ -313,14 +321,6 @@
    "description": "Build a \"which warranty admin closed what tickets\" report for any AMG store from the Tekion OpenAPI \u2014 per-clerk RO counts, warranty $ and total RO $, month-to-date or any window. Verified SCT July 2026.",
    "times_used": 7,
    "last_used": "2026-08-08"
-  },
-  {
-   "name": "dealerdetail-api-pipeline-build",
-   "path": "automotive/dealerdetail-api-pipeline-build",
-   "category": "automotive",
-   "description": "Build the DealerDetail Tekion API-driven data pipeline (replacing the email/Excel prototype) by acting as PM and delegating tickets to Claude Code, then verifying independently. Covers the ticket workflow, the live infra (Supabase project, branch, creds), and the hard-won gotchas (Supabase shadow-DB, server-only smoke tests, git credential path, Tekion app-scope 403 on user lookups).",
-   "times_used": 6,
-   "last_used": "2026-07-08"
   },
   {
    "name": "tekion-api-upgrade-audit",

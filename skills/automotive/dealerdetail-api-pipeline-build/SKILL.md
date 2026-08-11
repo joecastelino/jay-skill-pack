@@ -587,6 +587,58 @@ frequency Counter) — that diff is what proved the API strips DECLINED/AUTHORIZ
 against the parser code (`lib/parsing/parsers/*.ts`) for the exact dedupe/Set semantics. This three-way
 check (Excel ⇄ API data ⇄ parser code) is the reliable way to nail a definition.
 
+### MERGE FINALLY COMMITTED 2026-08-11 (pre-demo audit) — feature/multi-store-api → main is LIVE
+Joe asked for a pre-demo audit ("numbers are definitely off ... ready for a live demo tomorrow").
+The `feature/multi-store-api` branch (TEK_MENU_PATTERN classifier fix, "RO Count" label fix, cron
+timeout guard) had been sitting UNMERGED for weeks — confirmed via `git log main..feature/...` and
+`git diff main feature/... -- opcodeClassifier.ts` (the regex only existed on the feature branch).
+This time the merge was actually **committed and pushed**, not just staged:
+1. `git merge --no-commit --no-ff feature/multi-store-api` first (test-merge, don't commit) →
+   confirm zero conflicts + `npx tsc --noEmit` clean + `npx vitest run` all pass.
+2. If clean: `git merge --abort`, go fix any newly-found bugs on the feature branch FIRST (see
+   EMPLOYEE persona fix below), commit them there, THEN re-merge for real: `git checkout main &&
+   git merge --no-ff feature/multi-store-api -m "..."` (this time letting it commit) → re-verify
+   tsc+tests on the merged `main` → `git push origin main`.
+3. **Verify the Vercel deploy actually succeeded WITHOUT `vercel` CLI access** (the CLI's logged-in
+   account — `joecastelino` via `vercel whoami` — is often NOT the same account/org as the repo's
+   Vercel project owner, e.g. `oalsadoon-7712s-projects`, so `vercel ls`/`vercel project ls` won't
+   show it). Reliable method: hit the **GitHub commit-status API** using the PAT from
+   `/home/itadmin/.git-credentials` (`grep -oP 'https://[^:]+:\K[^@]+' ~/.git-credentials`):
+   `curl -H "Authorization: token $TOK" https://api.github.com/repos/<owner>/<repo>/commits/main/status`
+   → look for a `"context": "Vercel"` entry with `"state": "success"` and `"description":
+   "Deployment has completed"`. This works regardless of which Vercel account is logged into the CLI
+   because it reads the GitHub Deployment status check GitHub's own integration posted.
+
+### NEW BUG FOUND 2026-08-11 — EMPLOYEE persona silently dropped BC advisors into "Others"
+The T8 `isOther` predicate (`p != null && p !== "SERVICE_ADVISOR"`) assumed every non-advisor persona
+was legitimately excludable. But **GM stores (BC = Blackstone Chevrolet Cadillac) tag real, working
+service advisors with the generic Tekion "EMPLOYEE" persona instead of "SERVICE_ADVISOR"** — this
+silently demoted 5 real BC advisors (Shylow Murphy, Jacob Debussey, Juan Ramirez, Humberto Dominguez,
+Valentine Nolasco) into the "Others (non-advisor roles)" bucket, which doesn't render on the main
+dashboard. Diagnosed by querying `prisma.advisor.groupBy({by:["persona"]})` fleet-wide, finding all 5
+EMPLOYEE-persona rows were at BC, then confirming each had 24-40 days of real `AdvisorDailyMetrics`
+(i.e. they're genuinely active advisors, not admin/back-office noise resolved incorrectly). FIX
+(`lib/server/services/dashboard.ts`): `isOther = (p) => p != null && p !== "SERVICE_ADVISOR" && p !==
+"EMPLOYEE"` — EMPLOYEE now stays in the main advisor list. Verified post-fix: BC went from 7→12
+advisors in the main list. **Brand-agnostic persona lesson (same shape as the TEK_MENU_PATTERN
+finding)**: don't assume Toyota-store persona semantics apply at GM/VW/Alfa stores — always spot-check
+persona values fleet-wide (`groupBy persona`) rather than trusting the Toyota-derived SERVICE_ADVISOR-
+only assumption. If a 6th non-Toyota persona value shows up with real metrics attached, it's probably
+the same pattern, not a new one-off.
+
+### Reusable quick per-store advisor-count check (paste into a throwaway `_check.ts`)
+```ts
+const stores = await prisma.store.findMany();
+for (const s of stores) {
+  const n = await prisma.advisor.count({
+    where: { storeId: s.id, OR: [{persona:null},{persona:"SERVICE_ADVISOR"},{persona:"EMPLOYEE"}] },
+  });
+  console.log(`${s.name}: ${n} advisors in main list`);
+}
+```
+Run with the usual `set -a && . ./.env && set +a && npx tsx --conditions=react-server ./_check.ts`
+from `apps/web`, then `rm` it. Good post-merge/post-fix sanity check across all 7 stores at once.
+
 ## Verification standard
 Post each ticket: re-run smoke/query live DB yourself; confirm prototype tables untouched (additive);
 typecheck clean. RO counts should roughly match store appointment volume; amounts integer-cents-derived.
