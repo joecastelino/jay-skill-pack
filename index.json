@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-10T18:15:04",
+ "generated": "2026-08-10T18:30:25",
  "skill_count": 169,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 107,
-   "last_used": "2026-08-09"
+   "times_used": 108,
+   "last_used": "2026-08-10"
   },
   {
    "name": "agent-to-agent-bridge",
@@ -475,6 +475,14 @@
    "last_used": "2026-07-14"
   },
   {
+   "name": "sct-menu-sales-closed-mtd-scorecard",
+   "path": "automotive/sct-menu-sales-closed-mtd-scorecard",
+   "category": "automotive",
+   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales CLOSED Month-To-Date scorecard pipeline from the LIVE Tekion OpenAPI (incremental design) and email the PDF to Joe via Stacey. This is the daily 6 PM companion to the noon/5pm \"Opened\" report (see sct-menu-sales-api-scorecard). Covers the incremental master-file design, the ongoing DEALER_QUOTA outage caveat, and the ask-agent send-confirmation timeout workaround.",
+   "times_used": 2,
+   "last_used": "2026-08-10"
+  },
+  {
    "name": "tekion-apc-quota-usage-investigation",
    "path": "automotive/tekion-apc-quota-usage-investigation",
    "category": "automotive",
@@ -569,14 +577,6 @@
    "description": "Maintain the PUBLIC skill-pack repo github.com/joecastelino/jay-skill-pack \u2014 the auto-synced, secret-redacted mirror of Jay's entire skill library, README sorted by usage count. Use when Joe asks about the skill pack repo, when a sync fails, when a new secret needs redaction, or when installing Jay's skills into another agent.",
    "times_used": 1,
    "last_used": "2026-07-23"
-  },
-  {
-   "name": "sct-menu-sales-closed-mtd-scorecard",
-   "path": "automotive/sct-menu-sales-closed-mtd-scorecard",
-   "category": "automotive",
-   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales CLOSED Month-To-Date scorecard pipeline from the LIVE Tekion OpenAPI (incremental design) and email the PDF to Joe via Stacey. This is the daily 6 PM companion to the noon/5pm \"Opened\" report (see sct-menu-sales-api-scorecard). Covers the incremental master-file design, the ongoing DEALER_QUOTA outage caveat, and the ask-agent send-confirmation timeout workaround.",
-   "times_used": 1,
-   "last_used": "2026-08-08"
   },
   {
    "name": "sct-toyotacare-billed-hours-report",
