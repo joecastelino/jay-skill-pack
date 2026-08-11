@@ -279,6 +279,47 @@ her confirmation.
    `grep "BC m/d"` in Sent will match the separate Daily OPENED report; filter
    with `grep "Daily Closed"` before declaring a sent-leak.
 
+## 2026-08-10 5pm Daily Closed run — Stacey RE-PULLED HER OWN DATA and got it wrong TWICE (new failure mode)
+10 menus, $1,364.67 labor / $899.17 parts = $2,263.84 (Houa Moua 4, Dimetri Reynoso 2,
+Michael Reyes 2, Juan Ramirez 1, Humberto Dominguez 1). Data pull + render clean
+(`✓ all candidate ROs scanned`), vision-verified against JSON.
+
+**New pitfall — the first ask-agent message only pointed Stacey at the rendered
+PNG/JSON file paths and asked her to write a summary sentence with "the total in
+bold"; it did NOT hand her the exact numbers as literal text.** She responded by
+proactively re-pulling live Tekion data HERSELF inside her own session ("Let me
+pull the live data to get the actual numbers") instead of reading the numbers
+out of the file I'd already rendered. Her own pull returned a DIFFERENT closed-RO
+window (likely a different point-in-time snapshot or a slightly different
+filter) and produced **7 menus/$1,657.39** — silently wrong, no error, looked
+plausible. This is a NEW instance of the "parallel Stacey pipeline pollution"
+risk (see the ☠️ section above) but the mechanism this time wasn't her separate
+cron job — it was HER OWN AD HOC RE-PULL inside the very draft-build request I
+sent her, triggered by under-specifying the numbers.
+
+Worse: a stale duplicate from an EARLIER stray build (draft 42078, 6 menus/
+$822.49 — yet a THIRD different wrong number) was also sitting in Drafts,
+compounding the confusion. Independent himalaya verification (`message read`
+on both existing draft IDs before touching anything) caught both wrong drafts
+before they could reach Ruben.
+
+**Fix that worked**: the correction request to Stacey (a) stated the exact
+verified numbers as literal text in the message ("10 menus closed, $1,364.67
+labor / $899.17 parts = $2,263.84 total, Houa Moua 4 menus...") for her to drop
+into the summary sentence verbatim, and (b) explicitly said "do not regenerate
+or repull data yourself, just embed this exact file" for the PNG path. That
+rebuild came back with the correct numbers on the first try.
+
+**Rule going forward**: EVERY ask-agent message to Stacey for a BC (or SCT/TOL)
+scorecard draft MUST embed the exact verified totals as literal text in the
+message body, AND explicitly instruct her not to re-pull/regenerate the
+underlying data — she is only assembling the email around numbers/files Jay
+already produced. Never rely on her reading totals out of a JSON/PNG file
+herself. After ANY build (first ask or rebuild), independently `himalaya
+message read` the draft and diff the numbers against Jay's own JSON totals
+before declaring it correct — do not just check HASPNG/HASPDF/To and assume the
+body text is right.
+
 ## "3 reports" clarification (Joe 2026-06-26)
 Joe's "same 3 reports as Kevin" = the SCT cadence (Daily Opened run TWICE: noon +
 5pm) + MTD once = 3 runs. For BC he asked specifically for **Daily Closed 2x/day +
