@@ -73,6 +73,48 @@ Work dir: `/home/itadmin/tekion-reports`
    command, but the status-check confirmed the email was sent and starred in
    Sent Mail at the expected timestamp).
 
+## Pitfall: the scanner does NOT always auto-write `quota_outage_note` — verify manually
+
+**Verified 2026-08-10 (day 10 of the outage):** `sct_menu_sales_closed_mtd.py` printed a
+clean `exit 0` with `"✓ all candidate ROs scanned (no truncation)"` and the emitted RB JSON
+had NO `quota_outage_note` field at all — even though the outage was still very much active
+and 7 genuine TEK-tag candidates existed that day. The "no truncation" message only reflects
+`_LAST_FAILED` being empty, which happens because `scan_ro_safe`'s retry loop treats sustained
+429s as exhausted-but-still-technically-completed for that RO in some code paths — it does NOT
+reliably surface the outage into the JSON on every run. **Don't trust the JSON's absence of
+`quota_outage_note` as proof the outage has cleared.** Before treating a 0-menu day as real
+(especially during a known multi-day outage window), independently probe 2-3 of today's
+TEK-tag candidate ROs directly:
+
+```python
+import sys; sys.path.insert(0, "/home/itadmin/tekion-reports")
+import sct_menu_sales_api as O, sct_menu_sales_closed_mtd as C
+import json
+from datetime import date, datetime, timedelta
+asof = date.today()
+ms0 = int(datetime.combine(asof, datetime.min.time()).timestamp()*1000)
+ms1 = int((datetime.combine(asof, datetime.min.time())+timedelta(days=1)).timestamp()*1000)
+maint = {r["opcode"] for r in json.loads(O.OPCODE_LIST.read_text())}
+ros = C.search_closed(ms0, ms1)
+candidates = [ro for ro in ros if C._tek_opcodes(ro, maint)]
+for ro in candidates[:3]:
+    rid = ro["documentId"]
+    stj, jobs = O.call("GET", f"/repair-orders/{rid}/jobs")
+    if stj == 200:
+        j0 = jobs["data"]["jobs"][0]["id"]
+        sto, ops = O.call("GET", f"/repair-orders/{rid}/jobs/{j0}/operations")
+        print(ro["documentNumber"], "operations status:", sto, str(ops)[:150])
+```
+If `/jobs` returns 200 but `/operations` returns 429 with `"Limit exhausted ... DEALER_QUOTA"`,
+the 0-menu figure is outage-caused, not real. **Manually patch the emitted RB JSON** (the file
+`data/sct-menu-sales-closed-<today>.json`) to add a `quota_outage_note` field describing the
+probe result (candidate RO numbers, confirmed 429s, outage start date/day count) — the renderer
+ignores unknown fields so this is safe, and it gives Stacey's email draft the caveat text to
+include. Do this BEFORE drafting the email, not after — the caveat belongs in the body every
+day the outage persists, and the render itself will still legitimately show "No menu sales
+recorded yet for this period" (that's a cosmetically valid render — the outage caveat has to
+come from the email body / JSON note, not the chart).
+
 ## Pitfall: DEALER_QUOTA outage can silently zero out real data
 
 **Verified ongoing 2026-08-01 through at least 2026-08-08:** the Tekion
