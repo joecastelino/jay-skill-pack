@@ -168,6 +168,23 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   this is well past the point where "keep re-arming nightly" should be reported as
   routine; explicitly recommend a formal Tekion support ticket in every blocked-night
   report at this point, not just on first crossing day 4-5.
+  **Confirmed continuing 8/10 (day 10, still 429):** 19:01 PDT probe on the same validated
+  RO/job pair (unchanged since 8/3) — search/jobs 200, `/operations` 429 DEALER_QUOTA,
+  identical signature to every prior day. No local competing consumer
+  (`sync-all|cron-sct-sync|tsx --conditions` and
+  `quota_recovery|bt_seed_watcher|sct_closed_backfill|sct_align_mtd|selfheal_sct_align` both
+  empty — the 8/9 watcher pair had already exited cleanly at its own TIMEOUT, nothing to
+  kill). Re-armed the standard dated pair via the sed date-swap
+  (`sed -e 's/2026-08-09/2026-08-10/g; s/20260809/20260810/g' <old>.sh > <new>.sh`),
+  `bash -n` both, chmod in its own foreground call, launched each via
+  terminal(background=true, /usr/bin/bash explicit), confirmed alive via pgrep + the log's
+  "watcher started" line within 5s. Stacey Gmail check (read-only, "SCT Alignment"
+  substring, Drafts+Sent, last 10 days) reconfirmed: last SENT = July Full Month (Aug 2),
+  last DRAFT = July MTD-through-7/31 (still unsent) — zero August reports (draft or sent)
+  as of day 10. **10 CONSECUTIVE DAYS (8/1-8/10) with zero August MTD reports shipped** —
+  every nightly report in this window must explicitly and prominently recommend Joe open
+  a formal Tekion support ticket for the SCT DEALER_QUOTA bucket; this is no longer
+  routine self-heal territory by any measure.
 - **OVERALL_QUOTA exhaustion (hit 2026-07-07):** distinct from OVERALL_RATELIMIT — this is
   the store's DAILY API quota being fully spent (other pipelines, e.g. a TOL backfill loop +
   caliber-ops scrapers, can burn it). EVERY call 429s
