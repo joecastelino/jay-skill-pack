@@ -500,7 +500,7 @@ draft id during a token outage may not match what Gmail-side tools show — keep
 verifying by exact subject text rather than trusting any reported id (per the existing
 "bogus draft ID" pitfalls).
 
-## Cross-store note
+(8/10 EOD) Clean one-shot on a genuine $0 opened day (111 ROs scanned, 0 menus — real\nzero, not starvation). Draft 42091/UID64 came out correct first try (html + png\ncid=scorecard + pdf octet-stream), dedupe worked (exactly 1 draft w/ today's exact\nsubject after auto-delete of an old same-date draft). Sent-check false positive\nRECURRED exactly per item 5 (\"Sent: 1\" with today's exact subject, timestamp matching\nthe draft save time to the minute) — resolved with the labelIds/IMAP-folder-location\nfollow-up (message only in [Gmail]/Drafts and All Mail with empty X-GM-LABELS, zero\nhits in [Gmail]/Sent Mail = DRAFT-ONLY, confirmed not sent). This labelIds/folder-\nlocation check is now the reliable go-to whenever the plain Sent-count query returns\na same-day exact-subject hit — don't stop at "Sent: N", always follow up asking\nwhether the message is actually inside Sent Mail vs Drafts/All Mail only.\n\n## Cross-store note
 This same pattern (clone the sibling pipeline, derive the store's OWN SERVICE_MENU opcode
 set, set dealer ID + recipient) applies to the remaining AMG stores (SV/AR/VC) when Joe
 asks for their menu reports. Per-store menu set ≠ SCT's 316 — always derive it.
