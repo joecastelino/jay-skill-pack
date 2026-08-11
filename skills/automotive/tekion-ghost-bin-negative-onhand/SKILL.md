@@ -232,6 +232,22 @@ BEFORE flagging it as a missed transfer:
   list is a reminder roster (sales relieve Primary only), not an alarm list. Only qty
   changes/new negatives are alarms.
 
+**SNAPSHOT FORMAT DRIFT — bin5000s-snapshots has TWO different JSON shapes across dates
+(hit 2026-08-10, cost a diff-script crash):** older snapshot files store each bin as a
+**LIST** of row objects (`{"5005": [{...}, {...}]}`); newer ones store each bin as a
+**DICT keyed by partNumber** (`{"5005": {"04500-1": {...}, ...}}`). A diff script that
+assumes one shape will throw `AttributeError: 'list' object has no attribute 'get'` (or the
+reverse) depending on which day it hits. FIX: when loading ANY prior-day snapshot for
+diffing, normalize first —
+```python
+raw = json.load(open(path))
+normalized = {}
+for b, v in raw.items():
+    normalized[b] = {r["partNumber"]: r for r in v} if isinstance(v, list) else v
+```
+Always write NEW snapshots in the dict-keyed-by-partNumber shape (easier to diff), but
+always normalize on READ since old files won't be back-converted.
+
 Session-recovery note (2026-07-23): finding :9223 parked on an unexpected page (e.g.
 `/core/user-setup/edit/...`) on dealer 1251 does NOT mean the session is dead — just
 `/navigate /home`, confirm "Welcome back" + no Username, then dealer-pill switch to 876.

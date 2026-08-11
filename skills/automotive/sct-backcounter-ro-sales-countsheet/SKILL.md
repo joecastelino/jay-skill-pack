@@ -32,6 +32,14 @@ Edit Part redistribution 5000s→2420 (zero GL; see tekion-ghost-bin-negative-on
 ## Pipeline (3 scripts, all in /home/itadmin/tekion-reports/)
 
 ### 1. Scan — PRIMARY METHOD (since 2026-07-23): `sct_backcounter_ledger_scan.py <YYYY-MM-DD>`
+⚠️ **BUG FIXED 2026-08-10:** the roster loader only accepted the LIST-shaped snapshot
+format (`if binno not in BACK_BINS or not isinstance(rows, list): continue`) — against
+the newer DICT-keyed-by-partNumber snapshot shape (see the "SNAPSHOT FORMAT DRIFT" note
+under tekion-ghost-bin-negative-onhand) this silently produced `roster: 0` → NO_HITS on
+a day that actually had 49 back-counter parts sold. Patched to normalize both shapes
+(`row_iter = rows if isinstance(rows, list) else list(rows.values())`). If a run ever
+reports `roster: 0` again, check the roster loader handles BOTH snapshot shapes before
+trusting NO_HITS.
 Built 2026-07-23 (the method-migration note existed but no script did). Rebuilds
 `backcounter-ro-sales/<date>.json` from the internal parts activity-log API — keys on
 actual `transactionTime`, so the modifiedTime status-flip double-count bug cannot occur;
