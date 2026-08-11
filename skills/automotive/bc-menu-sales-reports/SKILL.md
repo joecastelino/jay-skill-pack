@@ -370,6 +370,31 @@ Use this `--config` flag on every himalaya verification call (list, message
 read, attachment download, flag add, folder expunge) for BC/SCT/TOL draft
 checks — don't rely on bare `himalaya` picking up a working default.
 
+## Transient IMAP stream error on export/list — just retry once, not a real failure (2026-08-11)
+`himalaya --config <cfg> message export <id> --folder '[Gmail]/Drafts' --full --destination ...`
+(and other himalaya IMAP calls) can occasionally fail with
+`Error: cannot fetch IMAP messages / stream error / peer closed connection
+without sending TLS close_notify`. This is a transient connection blip, not a
+real auth/data problem — the identical command succeeded immediately on a
+straight retry. Don't treat a single such failure as a verification blocker;
+retry once before escalating.
+
+## 2026-08-11 noon Daily Closed run — clean, zero deviations, confirms the literal-numbers rule
+7 menus, $749.70 labor / $583.22 parts = $1,332.92 total (Houa Moua 3, Jeremia
+Navarro 1, Dimetri Reynoso 1, Juan Ramirez 1, Jacob Debussey 1). Data pull +
+render succeeded first try (`✓ all candidate ROs scanned`). Stacey's build
+succeeded on the FIRST ask (no timeout, no HASPNG=no rebuild, no duplicate) —
+because the request embedded the exact verified totals/advisor breakdown as
+literal text and explicitly said not to re-pull/regenerate data, per the
+2026-08-10 rule. Verification: exactly 1 draft at the date-qualified subject,
+To=Restrada only/no Cc/From=Joe, PDF confirmed via himalaya attachment
+presence in the raw export, Sent count 0, and the inline PNG was verified
+**byte-for-byte identical** to the source render via the self-serve
+export→decode outer CTE→regex data-URI→decode→compare method (no dependence
+on Stacey's self-report at all). This confirms: when the ask-agent message
+front-loads literal numbers + "don't regenerate," Stacey's pipeline is
+reliably one-shot clean.
+
 ## Headless/cron gotcha: don't pipe himalaya output to python3/interpreters
 `himalaya envelope list --output json | python3 -c "..."` gets BLOCKED by the
 terminal security scanner (`tirith:pipe_to_interpreter`, "Pipe to interpreter")
