@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-11T17:15:04",
+ "generated": "2026-08-11T17:30:23",
  "skill_count": 169,
  "skills": [
   {
@@ -59,20 +59,20 @@
    "last_used": "2026-08-07"
   },
   {
+   "name": "sct-menu-sales-api-scorecard",
+   "path": "automotive/sct-menu-sales-api-scorecard",
+   "category": "automotive",
+   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters to the frozen 316 TEK* maintenance opcodes, resolves advisor names via the persistent browser session on :9223, renders a light-format PNG+PDF scorecard, vision-verifies, and emails. Use for the daily Menu Sales Opened Performance Report cron.",
+   "times_used": 35,
+   "last_used": "2026-08-11"
+  },
+  {
    "name": "bc-gm-menu-build",
    "path": "automotive/bc-gm-menu-build",
    "category": "automotive",
    "description": "The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-override plan for vehicle-correct GM parts, and open decisions. Load for ANY \"GM menu\", \"BC menu build\", \"GMLOF\", or Blackstone Chevrolet service menu work.",
    "times_used": 34,
    "last_used": "2026-08-02"
-  },
-  {
-   "name": "sct-menu-sales-api-scorecard",
-   "path": "automotive/sct-menu-sales-api-scorecard",
-   "category": "automotive",
-   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters to the frozen 316 TEK* maintenance opcodes, resolves advisor names via the persistent browser session on :9223, renders a light-format PNG+PDF scorecard, vision-verifies, and emails. Use for the daily Menu Sales Opened Performance Report cron.",
-   "times_used": 34,
-   "last_used": "2026-08-08"
   },
   {
    "name": "tekion-ghost-bin-negative-onhand",
