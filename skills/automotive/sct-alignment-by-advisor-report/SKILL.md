@@ -185,6 +185,15 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   every nightly report in this window must explicitly and prominently recommend Joe open
   a formal Tekion support ticket for the SCT DEALER_QUOTA bucket; this is no longer
   routine self-heal territory by any measure.
+  **OUTAGE RESOLVED 2026-08-11 (day 11, first clean run after 10 straight 429 nights):**
+  the standard OPS probe (`/repair-orders/{rid}/jobs/{jid}/operations` on the same
+  validated RO/job pair reused since 8/3) returned a clean 200 at 19:01 PDT. Ran the MTD
+  scan immediately — 1,403 closed ROs, 405 candidates, 0 failed, completed in a few
+  minutes (no rate-limit backoff triggered at all). First successful August MTD report
+  shipped: 132 alignments (118 dedicated + 14 bundled), 132 ROs, 16 advisors. Lesson: the
+  quota DOES eventually self-heal on the Tekion side without any local fix — always probe
+  fresh each night before assuming the outage continues; don't skip straight to
+  "re-arm and escalate" without a live check. No self-heal watcher was needed this run.
 - **OVERALL_QUOTA exhaustion (hit 2026-07-07):** distinct from OVERALL_RATELIMIT — this is
   the store's DAILY API quota being fully spent (other pipelines, e.g. a TOL backfill loop +
   caliber-ops scrapers, can burn it). EVERY call 429s
@@ -423,6 +432,25 @@ default — instead of leaving a draft. To DRAFT-ONLY safely:
    the HTML-part lower-bound test can pass with only ~1KB headroom
    (135,136 vs PNG*4/3=134,349) when her build omits the heavy HTML signature — a
    tight pass is still a PASS.
+
+15. **UN-ANCHORED short verify ask can return GARBLED/CROSS-CONTAMINATED data from
+   OTHER stores' pending drafts** (hit 2026-08-11): a generic first-shot verify
+   ("Reply ONE line: TO=? | INLINE_PNG=? | PDF=? | IN_DRAFTS=? | SENT=?" with no
+   subject anchor) came back nonsense mixing unrelated stores:
+   `TO=TOL | INLINEPNG=? | INDRAFTS=0 | SENT=SCT+BC (TOL missing)` — Stacey appears to
+   pull from whatever draft/task context is freshest in her working memory when the ask
+   doesn't pin down WHICH draft, especially if she has other stores' report drafts
+   pending around the same time. Do not treat this as evidence of a failed/missing
+   draft. Fix: ALWAYS anchor the verify ask with the specific subject SUBSTRING (per
+   the exact-subject false-zero trap, note 11's 07-31 entry) — e.g. "Search Gmail
+   Drafts for subject substring 'SCT Alignment Sales by Advisor - August MTD', dated
+   today. Reply: DRAFTS_COUNT=<n> | TO=<address of newest match> |
+   SENT_FOLDER_COUNT=<n>". This came back clean (DRAFTS_COUNT=1, TO=kstapp@sctoyota.com,
+   SENT_FOLDER_COUNT=0) immediately after the garbled generic ask — same draft, same
+   minute, opposite answer. A follow-up subject-anchored PARTS/RAW_SIZE ask then
+   confirmed the inline PNG and PDF cleanly (HTML 125,348B >= PNG*4/3; PDF part exactly
+   221,808B matching the file). Lesson: skip the bare 5-field generic ask entirely on
+   the first verify attempt — go straight to a subject-substring-anchored ask.
 
 14. **PDF part as application/octet-stream with AMBIGUOUS size + DECODE tiebreaker**
    (2026-07-24): the combined verify listed the PDF part as
