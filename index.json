@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-11T18:15:04",
+ "generated": "2026-08-11T18:30:47",
  "skill_count": 169,
  "skills": [
   {
@@ -7,7 +7,7 @@
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 152,
+   "times_used": 153,
    "last_used": "2026-08-11"
   },
   {
@@ -15,8 +15,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 108,
-   "last_used": "2026-08-10"
+   "times_used": 109,
+   "last_used": "2026-08-11"
   },
   {
    "name": "agent-to-agent-bridge",
@@ -395,6 +395,14 @@
    "last_used": "2026-07-28"
   },
   {
+   "name": "sct-menu-sales-closed-mtd-scorecard",
+   "path": "automotive/sct-menu-sales-closed-mtd-scorecard",
+   "category": "automotive",
+   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales CLOSED Month-To-Date scorecard pipeline from the LIVE Tekion OpenAPI (incremental design) and email the PDF to Joe via Stacey. This is the daily 6 PM companion to the noon/5pm \"Opened\" report (see sct-menu-sales-api-scorecard). Covers the incremental master-file design, the ongoing DEALER_QUOTA outage caveat, and the ask-agent send-confirmation timeout workaround.",
+   "times_used": 3,
+   "last_used": "2026-08-11"
+  },
+  {
    "name": "tekion-browser-navigation",
    "path": "automotive/tekion-browser-navigation",
    "category": "automotive",
@@ -473,14 +481,6 @@
    "description": "Diagnose and fix Hermes slash commands on Slack \u2014 especially the \"/sethome failed because the app did not respond\" error. The Hermes gateway registers exactly ONE Slack slash command (/hermes); every other command (sethome, reset, model, new, status, \u2026) must be invoked as a SUBCOMMAND: `/hermes <sub>`. A bare `/sethome` is not registered with Slack, so Slack times out. Use when a Slack user reports a slash command \"doesn't respond\", goes to the wrong thread, or asks to set the Slack home channel. Also covers the \"Sending messages to this app has been turned off\" DM lockout (App Home Messages Tab disabled) and diagnosing any \"can't talk to <agent> on Slack\" report across fleet profiles.",
    "times_used": 2,
    "last_used": "2026-07-14"
-  },
-  {
-   "name": "sct-menu-sales-closed-mtd-scorecard",
-   "path": "automotive/sct-menu-sales-closed-mtd-scorecard",
-   "category": "automotive",
-   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales CLOSED Month-To-Date scorecard pipeline from the LIVE Tekion OpenAPI (incremental design) and email the PDF to Joe via Stacey. This is the daily 6 PM companion to the noon/5pm \"Opened\" report (see sct-menu-sales-api-scorecard). Covers the incremental master-file design, the ongoing DEALER_QUOTA outage caveat, and the ask-agent send-confirmation timeout workaround.",
-   "times_used": 2,
-   "last_used": "2026-08-10"
   },
   {
    "name": "tekion-apc-quota-usage-investigation",
