@@ -509,7 +509,23 @@ part-listing, Sent-check) returned on the FIRST try with zero exit-124s. Sent-ch
 confirmed via the labelIds/IMAP-folder-location follow-up baked into the ask itself
 (no false-positive this time — clean "Sent: 0" plus \\Draft flag proof).
 
-(8/10 EOD) Clean one-shot on a genuine $0 opened day (111 ROs scanned, 0 menus — real\nzero, not starvation). Draft 42091/UID64 came out correct first try (html + png\ncid=scorecard + pdf octet-stream), dedupe worked (exactly 1 draft w/ today's exact\nsubject after auto-delete of an old same-date draft). Sent-check false positive\nRECURRED exactly per item 5 (\"Sent: 1\" with today's exact subject, timestamp matching\nthe draft save time to the minute) — resolved with the labelIds/IMAP-folder-location\nfollow-up (message only in [Gmail]/Drafts and All Mail with empty X-GM-LABELS, zero\nhits in [Gmail]/Sent Mail = DRAFT-ONLY, confirmed not sent). This labelIds/folder-\nlocation check is now the reliable go-to whenever the plain Sent-count query returns\na same-day exact-subject hit — don't stop at "Sent: N", always follow up asking\nwhether the message is actually inside Sent Mail vs Drafts/All Mail only.\n\n## Cross-store note
+(8/10 EOD) Clean one-shot on a genuine $0 opened day (111 ROs scanned, 0 menus — real\nzero, not starvation). Draft 42091/UID64 came out correct first try (html + png\ncid=scorecard + pdf octet-stream), dedupe worked (exactly 1 draft w/ today's exact\nsubject after auto-delete of an old same-date draft). Sent-check false positive\nRECURRED exactly per item 5 (\"Sent: 1\" with today's exact subject, timestamp matching\nthe draft save time to the minute) — resolved with the labelIds/IMAP-folder-location\nfollow-up (message only in [Gmail]/Drafts and All Mail with empty X-GM-LABELS, zero\nhits in [Gmail]/Sent Mail = DRAFT-ONLY, confirmed not sent). This labelIds/folder-\nlocation check is now the reliable go-to whenever the plain Sent-count query returns\na same-day exact-subject hit — don't stop at "Sent: N", always follow up asking\nwhether the message is actually inside Sent Mail vs Drafts/All Mail only.\n\n(8/11 8:05PM, Closed MTD) NEW Sent-check failure mode: totally UNRELATED message returned
+as the "hit". A Sent-folder search for the exact subject came back "0 in Sent Mail, 1 in
+All Mail" with a UID/date/from that looked plausible at a glance, but a follow-up identity
+check revealed the "hit" was a completely different, unrelated email (a Nov-2025 "Fwd:
+Factory Warranty schedule" forward from a different sender) that shared none of the search
+terms — not a same-subject-different-date match (5b) or cross-store match (7c-count-
+crossstore), just a bogus/garbled search result. Don't trust ANY Sent-check hit at face
+value, even one with a seemingly relevant subject line in the summary table — always
+follow up asking her to quote the hit's actual identifying fields (From/Subject/Message-ID)
+before concluding anything was sent. THE DEFINITIVE reassurance in this situation is a
+DIRECT check of the Drafts folder: search `[Gmail]/Drafts` for the exact subject, confirm
+the message UID still exists there WITH the `\Draft` flag intact. If the draft is still
+sitting in Drafts with `\Draft` set, it was never sent, regardless of what a noisy Sent-
+folder query returns. Prefer this direct Drafts-recheck over chasing an ambiguous Sent-
+folder anomaly through more rounds of Q&A.
+
+## Cross-store note
 This same pattern (clone the sibling pipeline, derive the store's OWN SERVICE_MENU opcode
 set, set dealer ID + recipient) applies to the remaining AMG stores (SV/AR/VC) when Joe
 asks for their menu reports. Per-store menu set ≠ SCT's 316 — always derive it.
