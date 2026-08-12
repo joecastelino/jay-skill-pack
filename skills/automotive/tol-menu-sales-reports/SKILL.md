@@ -500,6 +500,15 @@ draft id during a token outage may not match what Gmail-side tools show — keep
 verifying by exact subject text rather than trusting any reported id (per the existing
 "bogus draft ID" pitfalls).
 
+(8/11 EOD) Another fully clean one-shot on a genuine $0 opened day (170 ROs scanned, 0
+menus — real zero). Draft 42177 correct first try (multipart/related > alternative
+(text/plain+html) + image/png Content-ID=scorecard + application/pdf), noon-draft
+dedupe worked automatically without a separate follow-up (Stacey self-detected and
+deleted noon draft 42163 before building), and all 3 verification asks (subject-search,
+part-listing, Sent-check) returned on the FIRST try with zero exit-124s. Sent-check
+confirmed via the labelIds/IMAP-folder-location follow-up baked into the ask itself
+(no false-positive this time — clean "Sent: 0" plus \\Draft flag proof).
+
 (8/10 EOD) Clean one-shot on a genuine $0 opened day (111 ROs scanned, 0 menus — real\nzero, not starvation). Draft 42091/UID64 came out correct first try (html + png\ncid=scorecard + pdf octet-stream), dedupe worked (exactly 1 draft w/ today's exact\nsubject after auto-delete of an old same-date draft). Sent-check false positive\nRECURRED exactly per item 5 (\"Sent: 1\" with today's exact subject, timestamp matching\nthe draft save time to the minute) — resolved with the labelIds/IMAP-folder-location\nfollow-up (message only in [Gmail]/Drafts and All Mail with empty X-GM-LABELS, zero\nhits in [Gmail]/Sent Mail = DRAFT-ONLY, confirmed not sent). This labelIds/folder-\nlocation check is now the reliable go-to whenever the plain Sent-count query returns\na same-day exact-subject hit — don't stop at "Sent: N", always follow up asking\nwhether the message is actually inside Sent Mail vs Drafts/All Mail only.\n\n## Cross-store note
 This same pattern (clone the sibling pipeline, derive the store's OWN SERVICE_MENU opcode
 set, set dealer ID + recipient) applies to the remaining AMG stores (SV/AR/VC) when Joe
