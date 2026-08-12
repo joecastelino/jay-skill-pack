@@ -212,6 +212,20 @@ BEFORE flagging it as a missed transfer:
   "verify/investigate — atypical Primary" rather than "needs 5000s→2420 transfer." Always
   confirm via rendered Bin Details which bin is actually Primary before writing the flag
   reason — don't infer it from bin number or class alone.
+- **⚠️ A 5000s BIN CAN BE PRIMARY WHILE ITS COMPANION (non-tracked) BIN GOES NEGATIVE
+  SIMULTANEOUSLY (verified 2026-08-11, SCT 17801-F4010)** — when the snapshot diff shows a
+  5000s bin qty DROP and that bin's own Bin Details confirms it IS Primary (looks like a clean
+  normal sale, matching the "multipleBinNumbers empty/is-primary → normal sale" rule), don't
+  stop there if a companion bin exists in `multipleBinNumbers`. Case: bin 5006 (Primary) dropped
+  4→2 — looked like an ordinary 2-unit sale — but live Bin Details showed the OTHER bin (2418,
+  not itself in the tracked 5000-section roster so the diff never surfaces it on its own) had
+  gone from a positive/zero balance to **-2** in the same window, and Total Inventory Qty net
+  landed at 0 (not the 2 you'd expect from a simple primary decrement). The companion bin's
+  negative is invisible to the snapshot diff (only 5000-section bins are snapshotted) — it only
+  surfaces when you pull live Bin Details on a flagged part. **Rule: any time a 5000s bin's OWN
+  qty change is being explained away as "it's Primary, normal sale," still open the part's live
+  Bin Details and check whether a companion/non-tracked bin flipped negative in step — if so,
+  flag it as a genuine anomaly (possible mis-attributed transfer or drift), not a clean sale.**
 - **MULTI-DAY ESCALATION — track a smoking-gun negative across runs, don't re-flag it as
   fresh each day.** 87139-YZZ09 (bin 5007, Primary=TXM) has been deepening for 3+ consecutive
   daily runs and counting: -15→-17 (2026-08-05), -17→-18 (2026-08-06), -18→-19 (2026-08-07),
@@ -302,6 +316,16 @@ Procedure (page = /parts/warehouse-management/bin-reports, must be on right deal
 DRIFTS between turns, verify `currentActiveDealerId` first):
 1. Arm XHR hook AFTER navigation (nav wipes hooks): override `XMLHttpRequest.prototype.open/send`,
    push `{u,r:responseText}` for URLs containing `/api/` into `window.__xhr`.
+1b. **USE THE "Search Bin Names" FILTER BOX FIRST (verified 2026-08-11) — huge shortcut, skip
+   raw checkbox enumeration.** The bin selector panel has a text input
+   `input[placeholder='Search Bin Names']` above the 400+-row checkbox list. `/type` a substring
+   (e.g. `"500"`) into it and the list instantly narrows to just the matching bin numbers (e.g.
+   typing "500" at SCT returned only `3500, 4500, 5000, 5001, 5002, 5004, 5005, 5006, 5007` — 9
+   rows instead of 403). Read the filtered list via `document.body.innerText` (cheap) instead of
+   dumping every checkbox's bounding rect (`querySelectorAll('input[type=checkbox]')` over the
+   full unfiltered list returns 300+ entries and floods the response — avoid unless you've
+   already filtered). After filtering, find each target bin's leaf + walk-up checkbox exactly as
+   below — same mechanics, just against a tiny already-narrowed DOM.
 2. Select the bin: find the visible leaf element with innerText exactly '5005'
    (`parts_customBinSelectionField_binNodeLabel...`), **walk UP its parents to find the row's
    `input[type=checkbox]`** and /mouse-click THAT (clicking the label text alone selected a
