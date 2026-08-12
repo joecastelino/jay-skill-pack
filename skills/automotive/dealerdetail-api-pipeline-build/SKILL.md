@@ -23,6 +23,10 @@ Joe wants Jay to act as **project manager**: write small, tightly-scoped tickets
 ## Repo / infra facts
 - Repo: `~/dealer-detail` → github.com/oalsadoon-vw/dealer-detail (owner Omar; Joe=joecastelino has
   write access). App is `apps/web` (Next.js 14 App Router, Prisma 6, Supabase, Vitest).
+- **PATH GOTCHA**: Jay's own `$HOME` is `/home/itadmin/.hermes/profiles/jay/home` (different from
+  `/home/itadmin`), so `~/dealer-detail` for Jay does NOT resolve to the real repo. The repo's REAL
+  absolute path is **`/home/itadmin/dealer-detail`** — always `cd` there explicitly / use the
+  absolute path rather than trusting `~` in scripts or crontab greps.
 - **Live on Vercel from `main`** → NEVER push experimental work to main. Use branch
   `feature/tekion-api-pipeline`. Open PR to main only after the pilot is proven.
 - **Supabase project EXISTS**: ref `ijvfvhqnzjiknhqmmtdh` (aws-1-us-west-1). All creds + the
