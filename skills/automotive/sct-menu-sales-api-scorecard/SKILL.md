@@ -715,6 +715,25 @@ PITFALLS (all hit on 2026-06-15):
   body check is more reliable than the bare `NUMS=` template when probing — on
   6/26 her first total-check returned `MISMATCH=204 menus, labor / parts = total`
   which immediately exposed the blanks.
+- **TERSE SENT/NOTSENT VERIFY CAN GRAB A COMPLETELY UNRELATED EMAIL — always
+  scope the terse ask with subject fragment + recipient (hit 2026-08-12 opened
+  run).** After a timed-out send, a bare "Reply only: SENT <ts> TO <recipient>
+  TOTAL <$>, or NOTSENT" (no subject given) returned a confident
+  `SENT 17:09:02 PDT TO Restrada@blackstonegm.com TOTAL $1,292.69` — a totally
+  unrelated Blackstone GM email from a different pipeline, not the SCT send at
+  all. She wasn't lying about that email being sent — the terse prompt just
+  gave her no subject/recipient to disambiguate against, and "most recent Sent
+  item" isn't necessarily the one you're asking about across concurrent
+  pipelines. Also on that same run, her FIRST "Sent" claim (right after the
+  send ask) pointed at a stale 13:41 (earlier noon-run) copy with DIFFERENT
+  totals, while the real 17:07 draft was still sitting unsent — another
+  instance of the "stale earlier-send collision" trap below, just triggered by
+  an ambiguous verify rather than a timeout. → Every terse SENT/NOTSENT ask
+  MUST include the exact subject fragment (e.g. "SCT 8/12/26") AND expected
+  recipient in the same sentence, and must ask for anything SENT AFTER a given
+  cutoff time if a same-day stale copy is possible. On re-ask with the subject
+  fragment included, she correctly found the real send (17:18 PDT) and
+  correctly flagged the earlier 13:41 copy as stale.
 - **VERIFY queries must be ONE terse line, not a multi-field template (re-hit
   2026-06-20 closed run).** A read-only Sent-folder verify asking her to fill a
   structured template (`TO=<..> | TS=<..> | TOTAL=<..> | DRAFTSLEFT=<..>`)
@@ -850,468 +869,44 @@ non-TEK maintenance opcodes were seen on closed ROs (`TAC30/TAC60`, `TSC10`,
 excluded. So the filter is correct; do not widen it. (The low count is a
 scan-completeness problem, not a filter problem.)
 
-## 2026-08-03 5 PM update — DEALER_QUOTA outage STILL ACTIVE (~50 hrs continuous)
+## DEALER_QUOTA outage of 2026-08-01 through 2026-08-09 (RESOLVED — condensed)
 
-Probe at 17:01-17:03 PDT: `repair-orders:search` + `/jobs` returned 200, but
-`/operations` 429'd `DEALER_QUOTA` on every call. Tags prefilter found 8 genuine
-TEK-tag candidate ROs (577406/577405/577379/577302/577295/577294/577293/577292),
-proving the scraper's `0 menus / $0.00` result (written with `complete: true`,
-zero errors logged) was ANOTHER false zero — same silent-truncation signature as
-every prior instance since 8/1 5PM. Flagged both
-`sct-menu-sales-api-2026-08-03.json` and `sct-menu-sales-opened-2026-08-03.json`
-with `complete: false` + a note listing the candidate ROs. Did NOT render or
-email a false $0 report.
+A ~9-day continuous `DEALER_QUOTA` 429 outage ran 8/1 5PM through at least 8/9,
+costing ~18+ cron cycles (Opened noon/5PM + Closed 6PM) across both reports.
+August closed-MTD data was 0 real records the entire outage. **By 8/12 the
+outage had fully cleared** — a normal run that day scraped 13 clean menus with
+zero 429s, so do not assume this outage is still active; always re-probe live
+rather than trusting this history. Key durable lessons extracted from that
+episode (see git history / session_search for full blow-by-blow if a similar
+outage recurs):
+- Signature: `repair-orders:search` + `/jobs` return 200 (looks healthy) while
+  `/operations` 429s `"Limit exhausted for type : DEALER_QUOTA"` — the scraper
+  then writes a plausible-but-false `complete:true`/0-menu file. Verify with
+  the free OPCODE-tags prefilter (candidates exist but can't be scanned) before
+  trusting any 0-menu day during a suspected outage.
+- Do NOT render/email a false zero — flag JSON `complete:false`+note, send an
+  outage-notification email instead (see the CUSTOM/substitute email section
+  below for the send pitfalls specific to that).
+- Recovery watchers (flock-guarded bash loops polling the deep `/operations`
+  endpoint) reliably self-launch/self-heal on clear, but ALWAYS check remaining
+  runway via `ps aux`/`pgrep` before trusting an existing watcher's logged
+  deadline — several were found already expired or about to expire.
+- A clean 0-candidate result right at midnight rollover does NOT prove the
+  outage cleared — re-probe once real RO volume exists (midday) before trusting
+  "window clear".
+- After an outage, append EVERY missed date positionally (oldest first) before
+  the default today-append, or missed days silently drop from MTD totals.
+- All the "hardcode-to-Kevin", "wrong-draft-ID", "$ corruption→USD workaround",
+  "fabricated last-known-good numbers", "send reverts to normal template",
+  "edit-draft corrupts to unrelated email" traps documented in the Emailing
+  section below were all re-confirmed multiple times during this outage — they
+  are evergreen Stacey-pipeline gotchas, not outage-specific.
 
-Found a PRIOR recovery watcher (`/tmp/wait_ops_then_scrape_0803.sh`, launched
-~12:04 PM, 6h deadline) still polling but only ~1hr from expiry — it would have
-given up right around 18:05, exactly when the 5 PM cron's window mattered.
-Killed it and relaunched a fresh 10-hour watcher
-(`/tmp/wait_ops_then_scrape_0803b.sh`, log `/tmp/sct_opened_0803_recovery_b.log`)
-via `terminal(background=true, notify_on_complete=true,
-watch_patterns=["window clear","gave up"])`.
-
-**Lesson: when you find an existing recovery watcher already running, check its
-REMAINING runway against your own likely next-check time — don't just confirm
-one exists and move on.** A soon-to-expire watcher gives false confidence that
-recovery is being handled.
-
-Last known-good Opened report remains 7/31: 5 menus, $1,490.98 labor / $454.33
-parts = $1,945.31 total. Outage timeline so far: 8/1 5PM Opened, 8/1 6PM Closed,
-8/2 noon Opened, 8/2 5PM Opened, 8/3 noon Opened, 8/3 5PM Opened — six cron
-cycles lost. This is now a multi-day outage; escalate to Joe for a Tekion
-DEALER_QUOTA review if it persists past 8/4.
-
-## 2026-08-03 6 PM update — DEALER_QUOTA outage now 3rd calendar day, Closed cron lost, ZERO August closed data exists
-
-Probe at 18:02-18:04 PDT (2 days 1+ hrs into the outage): `repair-orders:search` +
-`/jobs` still 200, `/operations` still 429 `DEALER_QUOTA` on every call (verified
-live on a real candidate RO). Tags prefilter found 4 genuine TEK-tag candidates
-closed today (577405/577302/577293/577072) — proof any scrape right now would
-write another false 0-menu report. Did NOT scan, render, or email.
-
-**Key fact for future runs: August has NO closed-MTD data at all yet** — not
-degraded, not partial, literally zero (`sct-menu-closed-mtd-MASTER-2026-08.json`
-and every `sct-menu-sales-closed-2026-08-*.json` are absent). Every August
-closed attempt (8/1 and 8/3; there's no 6PM Closed cron on days between) has
-been lost to this outage. July's final MTD ($105,122.66 / 237 menus) is
-LAST-KNOWN-GOOD CONTEXT ONLY — it does NOT carry into August MTD once real data
-starts flowing (see the month-rollover rule above). Report "no August data
-exists yet" rather than any number when this is still true.
-
-Recovery watcher launched: `/tmp/wait_ops_then_scrape_closed_0803.sh` (14h
-deadline, 10-min poll on the deep `/operations` endpoint via a real tags-filtered
-candidate RO from `sct_menu_sales_closed_mtd.search_closed()` +
-`_tek_opcodes()`). On clear it runs the positional closed-append chain in
-order — `2026-08-01`, `2026-08-02`, then default (today) — checking the
-"unscanned" truncation-warning string after EACH date before moving to the
-next, then renders. Log: `data/sct-closed-quota-recovery-2026-08-03.log`.
-
-**NEW GOTCHA — launching a freshly `write_file`'d bash script via
-`terminal(background=true, command="/tmp/script.sh")` fails `exit_code 126
-Permission denied`, even though the file looks executable in a subsequent `ls`.**
-`write_file` does not set the execute bit. The fix is two calls: (1)
-`chmod +x /tmp/script.sh` in a normal foreground `terminal()` call, (2) launch
-with `bash /tmp/script.sh ...` (explicit interpreter prefix) rather than the
-bare path, in the `background=true` call — that combination reliably works.
-Don't assume a background launch of a hand-written script will just work first
-try; expect this exact failure mode and pre-empt it with chmod + `bash` prefix.
-
-Outage cron-cycle tally as of 8/3 6PM: 8/1 5PM Opened, 8/1 6PM Closed, 8/2 noon\nOpened, 8/2 5PM Opened, 8/3 noon Opened, 8/3 5PM Opened, 8/3 6PM Closed — seven\ncycles lost, spanning 3 calendar days. This is well past the point where a\nTekion support ticket / DEALER_QUOTA review should be escalated to Joe if not\nalready done.\n\n## 2026-08-04 noon update — outage STILL ACTIVE, 4th calendar day; NEW: proactive outage-notification email pattern\n\nProbe at 12:01-12:04 PM PDT confirmed the same signature: `repair-orders:search`\n+ `/jobs` 200, `/operations` 429 `\"Limit exhausted for type : DEALER_QUOTA\"`.\nTags prefilter found 6 genuine TEK-tag candidates today (577528, 577522,\n577507, 577504, 577489, 577453). Flagged both `sct-menu-sales-api-2026-08-04.json`\nand the opened RB-schema file `complete: false` + a `quota_outage_note` field.\nNo existing recovery watcher was running at check time (prior watchers had\nexpired) — relaunched fresh: `/tmp/sct_opened_probe_0804.py` (probes the\ndeepest endpoint on a real tags-filtered candidate RO) driven by\n`/tmp/wait_ops_then_scrape_0804.sh` (6h deadline, 10-min poll, flock-guarded,\nauto rescrape+render on clear, marker `.sct-opened-20260804-recovered`).\nLaunched via `terminal(background=true, notify_on_complete=true,\nwatch_patterns=[\"window clear\",\"gave up\"])` — NOT a foreground `&`/`disown`\n(that pattern is blocked by the terminal tool; always use background=true).\nOutage cron-cycle tally as of 8/4 noon: **8 cycles lost** spanning 4 calendar\ndays (adds 8/4 noon Opened to the 8/3 6PM tally above).\n\n**NEW proven pattern — don't just silently skip the email during an active\noutage; send a proactive outage-notification email instead of the false-zero\nreport.** Earlier outage days (8/1-8/3) just withheld the send and reported\nonly in the cron's own final summary (which nobody but the log sees). On 8/4\nI instead had Stacey draft+send a substitute email to Joe, same subject as the\nreal report would have used, with: (1) plain statement that the scrape could\nnot complete due to the DEALER_QUOTA outage, (2) the specific candidate RO\nnumbers + opcodes so Joe knows real menu sales exist but are untotaled, (3)\nconfirmation a recovery watcher is running and will auto-rescrape on clear,\n(4) the last known-good numbers with their as-of date, (5) explicitly NO\nPDF/PNG attached (there is no valid report). Sent cleanly on the first try\n(himalaya Sent msg 12779, 12:07 PM PDT, TO=jcastelino@americanmotorscorp.com,\ncorrect subject, correct RO list/numbers). This is a better default than\ngoing silent — Joe gets a timely heads-up instead of just a missing email —\nso PREFER this pattern on future outage days unless told otherwise.\n\n**New minor pitfall — greeting-name default leaks into CUSTOM/non-standard\nemails too.** Even though the ask-agent instructions to Stacey never mentioned\na greeting name, the sent outage-notification email opened \"Kevin,\" (the\nOpened-report template's hardcoded default) despite being addressed and sent\nto Joe. TO, subject, and body numbers were all correct, so per the existing\ngreeting-leak decision rule (see the CORRECT-BODY / greeting-leak entries\nabove) this was NOT worth a re-send — just note it. But for future custom\nemails through Stacey, explicitly state the greeting name (e.g. \"greet\n'Joe,'\") in the ask to head this off.
-
-## 2026-08-04 5PM update — outage STILL ACTIVE ~72hrs; outage-notification email needed 4 rebuild rounds
-
-Confirmed live at 17:01-17:03 PDT: `repair-orders:search`+`/jobs` 200, `/operations`
-still 429 DEALER_QUOTA. Tags prefilter found 7 candidates today
-(577572/577528/577522/577507/577504/577489/577453). Found the prior watcher had
-only ~1hr runway left (same "check remaining runway" lesson as 8/3) — killed it
-and relaunched a fresh 10h watcher (`/tmp/wait_ops_then_scrape_0804b.sh` +
-`/tmp/sct_opened_probe_0804b.py`). Re-ran `sct_menu_sales_api.py` once to confirm
-still-false-zero — it silently OVERWRITES any earlier `complete:false`+note flag
-with a fresh `complete:true`/0-menu file, so re-flag the JSON again after every
-confirmatory re-run.
-
-For the SUBSTITUTE outage-notification email (no PDF/PNG exists, so this is a
-custom email, not the normal template), the send loop hit FOUR of the documented
-traps back-to-back before landing correctly:
-1. First send defaulted straight to Kevin (kstapp@sctoyota.com) even though told
-   explicitly to send to Joe only — the hardcode-to-Kevin trap applies even to a
-   hand-specified custom send, not just the standard Opened template.
-2. The corrected resend to Joe had FULLY FABRICATED numbers in the "last
-   known-good" reference line (invented 24 menus/$3,214.50/etc. instead of the
-   real 7/31 figures: 5 menus/$1,490.98/$454.33/$1,945.31) — she free-generated
-   the body from the gist instead of using the literal text given.
-3. Next correction had a $1,000 digit-transposition typo ($2,490.98 instead of
-   $1,490.98) despite an explicit "copy character-by-character" instruction.
-4. The one after THAT reverted wholesale to the normal-report template
-   (greeting "Kevin,", "Attached is today's report", referencing a nonexistent
-   PDF/PNG attachment) — her default template scaffolding overrides custom
-   instructions unless every constraint is re-stated on every single retry.
-
-Only a message that re-stated ALL constraints together (no attachment, greet
-Joe not Kevin, exact verbatim body) in one shot finally landed clean (msg
-12792, 17:17 PDT — plain text/plain only, zero attachments, correct greeting,
-correct figures). LESSON for any CUSTOM/substitute email: do not trust a
-send+read-only-summary-question loop — dump the FULL raw body text after every
-attempt and diff it against the intended text; expect 2-4 rebuild rounds;
-restate EVERY constraint (recipient, greeting, no-attachment, exact figures)
-in EVERY retry, not just the first, since she regresses to defaults each fresh
-attempt rather than incrementally fixing the prior draft. Finish with the
-usual 0-leftover-drafts + no-later-Sent-copy double check (came back clean
-here: 0 drafts, one harmless stray Kevin copy in Sent from the trap above).
-
-**2026-08-04 6PM CLOSED-cron variant — TWO MORE traps hit back-to-back, same
-outage still active (4th calendar day):**
-1. **"Send draft <ID>" grabbed a DIFFERENT, WRONG draft entirely.** Asked her to
-   send draft 41632 (subject "...Closed MTD...SCT 8/4/26") but she instead sent
-   an unrelated already-drafted "...Daily Opened...SCT 8/4/26" email (msg 12795,
-   18:06 PDT) with FABRICATED numbers in its last-known-good line ($2,490.98
-   instead of the real 7/31 $1,490.98) and claimed success with the wrong
-   subject in her own reply text — which was the tell: her reply literally
-   said "Daily Opened Performance Report" even though I asked for "Closed MTD".
-   **Always read back her own confirmation subject line and diff it against the
-   requested subject before trusting a send** — a subject mismatch in her own
-   reply is enough to know it's the wrong email, no need to even check Sent yet.
-2. **Dollar-sign corruption ate the leading digit of each figure.** After
-   deleting the wrong draft and rebuilding the correct one, the SMTP-sent
-   body corrupted `$73,693.80` down to `3,693.80` (and similarly for the other
-   two figures) — the `$` plus first digit vanished, looking like a
-   currency-symbol/template substitution bug on her end. Caught by reading the
-   actual Sent-copy body, not by trusting her summary reply. **Fix: when asking
-   her to rebuild with dollar figures, tell her to write `USD 73,693.80` instead
-   of `$73,693.80`** — sidesteps whatever strips/mangles the `$` character.
-   Landed clean on the retry (msg 12796, 18:11 PDT, body verified character-
-   for-character via `himalaya message read`).
-Net effect: it took 3 ask-agent round trips (1 wrong-draft send + 1 corrupted
-rebuild + 1 clean rebuild) to land the correct outage-notification email during
-this cron cycle. ALWAYS finish an outage-notification (or any custom, non-
-templated) send by reading the actual newest Sent-folder message body via
-`himalaya message read <id> -f "[Gmail]/Sent Mail"` yourself — do not rely on
-her paraphrased "here are the numbers I sent" reply, which can and did diverge
-from the real body on the very first attempt.
-
-## 2026-08-05 noon update — outage 5th calendar day, clean single-round outage-notification send
-
-Probe at 12:01-12:04 PM PDT: same signature, `/operations` 429 DEALER_QUOTA on every
-call (search+jobs 200). Tags prefilter found 3 genuine TEK-tag candidates today
-(577713/577661/577625). Flagged both JSONs `complete:false`+note. Found the prior
-watcher (`/tmp/wait_ops_then_scrape_0805.sh`, launched 04:57, 8h deadline) had
-already logged 24+ consecutive PROBE_BLOCKED entries and only ~1hr runway left —
-same "check remaining runway" lesson as 8/3/8/4 — killed it (had to kill both the
-bash PID AND the orphaned `sleep` child holding the flock, per the known trap) and
-relaunched a fresh 10h watcher (`/tmp/wait_ops_then_scrape_0805b.sh`, new lock file
-`sct_opened_quota_lock_20260805b.lock` to avoid colliding with the dead one's stale
-lock path).
-
-For the outage-notification email itself: a single clean round worked this time —
-zero rebuild loops (contrast with 8/4's 4-round Opened + 2-round Closed struggle).
-What worked: (1) explicit "USD 1,490.98" instead of "$1,490.98" in the initial ask
-(dodges the $-corruption bug), (2) gave the exact last-known-good figures verbatim
-in the prompt instead of a summary (dodges fabrication), (3) explicitly said
-"CUSTOM... NOT the normal templated report" and "Greeting: 'Joe,' (NOT Kevin,)" and
-"Do NOT attach any files" all in the SAME first message. A verbatim body read-back
-BEFORE sending (asked her to paste literal text in her OWN reply, not "send it to
-me on Telegram" — she tried to deflect there first, a dead end for a non-Telegram
-caller; had to explicitly say "I did not receive that, paste it directly in this
-reply") caught one cosmetic issue (DEALER_QUOTA → DEALERQUOTA, underscore dropped
-twice) that was harmless and not worth blocking on. TO+timestamp verify and
-0-leftover-drafts check both came back clean on the first ask. Total: 1 draft ask +
-1 verbatim-readback ask + 1 send ask + 1 Sent-verify ask + 1 draft-count check = 5
-ask-agent calls, no wrong-recipient/wrong-template/fabricated-number retries needed.
-
-## 2026-08-05 5PM update — outage now 5th calendar day, clean single-round send again
-
-Probe at 17:01-17:04 PDT: same signature, `/operations` 429 DEALER_QUOTA on every
-call (search+jobs 200). Tags prefilter found 5 genuine TEK-tag candidates today
-(577773/577749/577713/577661/577625). Flagged both JSONs `complete:false`+note.
-The prior watcher (`wait_ops_then_scrape_0805b.sh`, launched noon) had already
-stopped running (no live process found despite an unexpired 10h deadline in its
-log) — always verify with `ps aux`/`pgrep`, not just log freshness, before trusting
-an existing watcher. Relaunched a fresh 12h one
-(`/tmp/wait_ops_then_scrape_0805c.sh`, lock `sct_opened_quota_lock_20260805c.lock`,
-log `/tmp/sct_opened_0805c_recovery.log`) via `terminal(background=true,
-notify_on_complete=true, watch_patterns=["window clear","gave up"])`.
-
-Outage-notification email: another clean single-round send (no rebuild loops),
-following the 8/5-noon playbook exactly — "USD 1,490.98" instead of "$1,490.98",
-verbatim last-known-good figures in the prompt, explicit "CUSTOM...NOT the normal
-template" + "Greeting: 'Joe,' (NOT Kevin,)" + "Do NOT attach any files" all in one
-message, verbatim body read-back before sending. Only cosmetic issue: her draft
-silently rendered "DEALER_QUOTA" as "DEALERQUOTA" (underscore dropped) twice —
-same harmless artifact as 8/5 noon, not worth blocking on. TO+timestamp verify and
-0-leftover-drafts check both clean on first ask. Outage cron-cycle tally: adds\n8/5 5PM Opened — 10 cycles lost since 8/1 5PM, spanning 5 calendar days.
-
-## 2026-08-06 noon update — outage now 6th calendar day, clean single-round send again\n\nProbe at 12:0X PDT: same signature confirmed independently (search+jobs 200, 9\ngenuine TEK-tag candidates today: 577909/577907/577900/577884/577881/577879/\n577862/577861/577829; `/operations` 429 DEALER_QUOTA on the deep call). Ran the\ndefault scraper once to double-check — it wrote a plausible-but-false 0-menu\n`complete:true` file with zero errors (same silent-truncation signature as\nevery day since 8/1); flagged both JSONs `complete:false` + `quota_outage_note`\nafterward. Both previous watchers (opened `0805c`, closed `0805-6pm`) had\nalready given up (05:11 and 06:13 respectively) hours before this noon check —\nconsistent with the \"always verify via ps/log, a watcher's unexpired-looking\ndeadline in an old log can't be trusted\" lesson. Relaunched a fresh 12h watcher\n(`/tmp/wait_ops_then_scrape_0806.sh` + `/tmp/sct_opened_probe_0806.py`, lock\n`sct_opened_quota_lock_20260806.lock`, log `/tmp/sct_opened_0806_recovery.log`)\nvia `terminal(background=true, notify_on_complete=true,\nwatch_patterns=[\"window clear\",\"gave up\"])`.\n\nOutage-notification email: another clean single-round send, zero rebuild\nloops — draft→verbatim-body-readback→send→TO+timestamp+NUMS verify→himalaya\nSent-folder read (belt-and-suspenders), 4 total ask-agent calls + 2 read-only\nhimalaya checks. Followed the 8/5 playbook exactly: \"USD 1,490.98\" instead of\n\"$1,490.98\", verbatim last-known-good figures (7/31: 5 menus / $1,490.98 labor\n/ $454.33 parts / $1,945.31 total) stated directly in the prompt, explicit\n\"CUSTOM...NOT the normal template\" + \"Greeting: 'Joe,' (NOT Kevin)\" + \"Do NOT\nattach any files\" all in the first message, verbatim body read-back requested\nBEFORE sending. Zero cosmetic artifacts this time (no DEALER_QUOTA→DEALERQUOTA\ndrop). himalaya direct read of Sent msg 12877 confirmed TO=jcastelino@...,\nexact subject, exact body, no attachments — full match, no discrepancy. Outage\ncron-cycle tally: adds 8/6 noon Opened — 12 cycles lost since 8/1 5PM, spanning\n6 calendar days. Lesson reinforced: the "USD not $" + "state full playbook in\none message" + "verbatim readback before send" combo now has 3 consecutive\nclean single-round sends (8/5 noon, 8/5 5PM, 8/6 noon) vs. the 4-6 round\nstruggles before that pattern was discovered — this is the reliable default\nfor ANY future outage-notification email, not just a lucky run.
-
-## 2026-08-05 6PM CLOSED update — outage now 5th calendar day, ZERO August closed data still, clean single-round send
-
-Confirmed live at 18:01-18:04 PDT: `repair-orders:search`+`/jobs` 200 (140 closed
-ROs today, 7 genuine TEK-tag candidates: 577773/577749/577572/577507/577406/
-577178/577011), `/operations` still 429 DEALER_QUOTA on a live probe. Ran the
-default daily incremental scan anyway to confirm the pattern: it printed
-`✓ all candidate ROs scanned (no truncation)` with **0 menu rows** — this
-"no truncation" claim is a LIE for this outage type, because `scan_ro_safe`
-only probes `/jobs` (200) to decide retry-vs-accept, never probes `/operations`
-itself, so the swallowed 429 inside `O.scan_ro`'s deeper call reads as a clean
-empty result. **Do not trust the "no truncation" printout as quota-outage proof
-of a real zero — always cross-check with the tags-prefilter candidate count
-independently (via `sct_menu_sales_closed_mtd.search_closed()` +
-`_tek_opcodes()`) before accepting a 0-menu day during a known outage.**
-Flagged all three affected dated JSONs (08-01, 08-02, 08-05; 08-04 was already
-flagged from a prior run) with `complete:false` + `quota_outage_note`. Master
-file confirmed still 0 records for all of August.
-
-Found the prior watcher (`sct-closed-recovery-0805.lock`, launched ~05:02, 8h
-deadline) had already given up (deadline reached ~13:10, before this 18:04
-check) — same "watchers expire, always re-check via `ps aux`, don't trust an
-old log's unexpired-looking deadline" lesson as prior days. Relaunched a fresh
-12h watcher (`/tmp/wait_ops_then_scrape_closed_0805_6pm.sh`, new lock
-`sct-closed-recovery-0805-6pm.lock` to avoid any stale-lock collision, log
-`data/sct-closed-quota-recovery-2026-08-05-6pm.log`) via
-`terminal(background=true, notify_on_complete=true, watch_patterns=["RECOVERY
-COMPLETE","gave up"])`. On clear it appends 08-01/08-02/08-04/08-05
-positionally then renders 08-05.
-
-Outage-notification email: another clean single-round send, no rebuild loops —
-draft→verbatim-body-readback→send→TO+timestamp verify→draft-count verify, 5
-ask-agent calls total, matching the 8/5-noon and 8/5-5PM playbook exactly (USD
-instead of $, verbatim last-known-good figures stated directly in the prompt,
-all constraints — no attachment / greet Joe not Kevin / custom not template —
-in the same first message). Verified Sent 18:06 PDT TO jcastelino@..., 0
-leftover drafts. Only cosmetic artifact: "DEALER_QUOTA"→"DEALERQUOTA" again,
-harmless, not worth a re-send. Outage cron-cycle tally: adds 8/5 6PM Closed —
-11 cycles lost since 8/1 5PM, spanning 5 calendar days, and August closed MTD
-data remains at literally zero real scanned records.
-
-## 2026-08-06 5PM update — outage 6th day, watcher had adequate runway (no relaunch needed), 4th consecutive clean single-round send, two new small pitfalls
-
-Confirmed live at 17:02 PDT: same signature (search+jobs 200, `/operations` 429
-DEALER_QUOTA on a real candidate RO's deep call). Tags prefilter found 10
-candidates today (577929/577909/577907/577900/577884/577881/577879/577862/
-577861/577829). Default scraper run (to double-check) wrote another
-plausible-but-false `complete:true`/0-menu file — re-flagged both JSONs
-`complete:false`+note as usual. **This time the existing watcher (launched
-noon, 12h deadline) still had ~7hrs of runway left** — correctly left it
-running rather than relaunching (contrast with 8/3-8/5 where the existing
-watcher was always found already-expired or about-to-expire). Confirms the
-"always check remaining runway via ps/log, don't assume" rule cuts both ways —
-sometimes the check says "still fine, don't touch it."
-
-Outage-notification email: **4th consecutive clean single-round send** (after
-8/5 noon, 8/5 5PM, 8/6 noon) — draft→verbatim-readback→send→Sent-verify, no
-rebuild loops. Same winning formula: "USD 1,490.98" not "$1,490.98", verbatim
-last-known-good figures stated in the prompt, all constraints (no attachment /
-greet Joe not Kevin / custom-not-template) in one message, verbatim body
-readback before sending. This time the Sent copy rendered "DEALER_QUOTA" WITH
-the underscore correctly (no cosmetic corruption at all) — the artifact isn't
-guaranteed every time, just possible.
-
-**Two new small pitfalls found this run:**
-1. **Stacey's bare-number "how many drafts remain?" reply can be WRONG/stale.**
-   After confirming deletion of the one leftover draft, a follow-up "reply just
-   the number" check said "1" — but a direct `himalaya envelope list -f Drafts`
-   grep for the subject returned NOTHING (0 actual drafts). Don't trust her
-   draft-count number at face value for the final all-clear; do one direct
-   `himalaya envelope list -f Drafts | grep '<subject fragment>'` yourself as
-   the authoritative zero-drafts check.
-2. **Ad-hoc diagnostic probe script gotchas when writing your own quick
-   candidate-RO probe (not using the existing `/tmp/sct_opened_probe_*.py`):**
-   `sct_menu_sales_api.OPCODE_LIST` is a `pathlib.Path`, not a list — iterating
-   it directly throws `TypeError: 'PosixPath' object is not iterable`; you must
-   `json.loads(O.OPCODE_LIST.read_text())` and pull `{r["opcode"] for r in ...}`.
-   Also the RO's internal id field for `/jobs`/`/operations` calls is
-   `ro["documentId"]`, NOT `ro.get("id")` (which is `None` and 404s) —
-   `documentNumber` is the human-readable RO number, `documentId` is the real
-   path-id `scan_ro` uses. Cheaper to just reuse the existing watcher's probe
-   script (`/tmp/sct_opened_probe_<date>.py`) as a template than to rebuild
-   these from scratch each time.
-
-## 2026-08-06 6PM CLOSED update — outage now 6th calendar day, "send draft" reverted to normal template (5th time this exact trap has hit)
-
-Confirmed live at 18:02-18:04 PDT: `repair-orders:search`+`/jobs` 200 (150 closed
-ROs today), `/operations` still 429 DEALER_QUOTA on a live probe of real
-candidate RO 577900. Tags prefilter found 4 candidates today (577900/577879/
-577861/577829). Flagged `sct-menu-sales-closed-2026-08-06.json` `complete:false`
-+ note (the four prior dated closed JSONs, 08-01/08-02/08-04/08-05, were already
-flagged from earlier runs; no 08-03 closed file exists at all — that whole cron
-cycle was lost). Master file confirmed still 0 records for all of August.
-
-The existing closed-outage watcher had already given up (06:13 deadline reached)
-hours before this check — relaunched a fresh 12h one
-(`/tmp/wait_ops_then_scrape_closed_0806_6pm.sh` + `/tmp/probe_0806_closed.py`,
-lock `sct-closed-recovery-0806-6pm.lock`, log
-`data/sct-closed-quota-recovery-2026-08-06-6pm.log`) via `terminal(background=true,
-notify_on_complete=true, watch_patterns=["RECOVERY COMPLETE","gave up"])`. On
-clear it appends 08-01 through 08-06 positionally then renders 08-06.
-
-**NEW/RE-CONFIRMED TRAP — the "draft looks right, then SEND reverts to the
-normal $0.00 template" failure mode (5th occurrence of this class, distinct
-from the 8/4 wrong-draft-ID pickup):** The DRAFT Stacey showed me back was
-100% correct (custom outage body, no attachment, greet Joe). But the actual
-SEND action produced a COMPLETELY DIFFERENT email — the normal templated
-report with "0 menus, $0.00 labor / $0.00 parts = $0.00 total" and a broken
-`<#part type=image/png ...>` markup pointing at a nonexistent PNG. Her own
-reply after the send ("SENT ... TO jcastelino@...") looked like a clean
-success — the timestamp/recipient/subject were all correct, ONLY the body
-content was silently swapped back to the default template. **Lesson: showing
-you the draft body before sending is NOT sufficient — the send step can
-independently reconstruct/override the body from its own template logic. You
-MUST re-read the actual Sent-copy body via `himalaya message read` after
-EVERY send, even when the pre-send draft review looked perfect and even when
-her post-send confirmation states a plausible-looking timestamp+recipient.**
-Recovery: sent a correction email (same subject/recipient) with the same
-exact body pasted again, explicit "do NOT use your normal report template,
-do NOT attach ANY files, do NOT reference any PDF/PNG or 'Attached is'" — this
-landed correctly on the first retry, verified via `himalaya message export
---full | grep content-type` showing plain `text/plain` with no multipart/
-attachment parts, and the body diffed character-for-character against the
-intended text. Net: 2 Sent copies exist for this subject (12897 = wrong/
-template, 12898 = correct) — the wrong one is a harmless leftover, not worth
-recalling (same "don't chase a harmless duplicate" rule as other traps).
-0 leftover drafts confirmed after.
-
-Outage cron-cycle tally as of 8/6 6PM: adds 8/6 6PM Closed — 13 cycles lost
-since 8/1 5PM, spanning 6 calendar days. August closed MTD remains at literally
-0 real scanned records for the entire month.
-
-## 2026-08-07 6PM CLOSED update — outage now 7th calendar day, clean single-round outage-notification send
-
-Confirmed live at 18:02-18:03 PDT: `repair-orders:search`+`/jobs` 200 (167 closed
-ROs today), `/operations` still 429 DEALER_QUOTA on a live probe of real
-candidate RO 578126 (TEK50000BNM). Tags prefilter found 5 candidates today
-(578126/577929/577625/577522/577292). Wrote `sct-menu-sales-closed-2026-08-07.json`
-flagged `complete:false`+`quota_outage_note` (no scraper re-run needed this time —
-built the flagged file directly from the probe results instead of letting
-`sct_menu_sales_closed_mtd.py` overwrite it with a false `complete:true`/0-menu
-file). Master file (`sct-menu-closed-mtd-MASTER-2026-08.json`) confirmed still 0
-records for all of August (08-01..08-07 all lost).
-
-A prior Opened-side watcher (`wait_ops_then_scrape_0807.sh`, launched noon, 12h
-deadline) was still alive and polling — left it running (not the closed-side
-watcher, no need to touch it). No closed-side watcher was running for today —
-launched a fresh 12h one (`/tmp/wait_ops_then_scrape_closed_0807_6pm.sh` +
-`/tmp/sct_closed_probe_0807.py`, lock `sct-closed-recovery-0807-6pm.lock`, log
-`data/sct-closed-quota-recovery-2026-08-07-6pm.log`) via `terminal(background=true,
-notify_on_complete=true, watch_patterns=["RECOVERY COMPLETE","gave up"])`. On
-clear it positionally appends 08-01 through 08-06 (15s spacing) then runs the
-default (today) append, then renders today's file.
-
-Outage-notification email: clean single-round send, ZERO rebuild loops — draft
-→ verbatim-body-readback→send→himalaya-Sent-read (used ask-agent to have Stacey
-read the ACTUAL Sent copy via himalaya rather than trusting her paraphrase,
-since a direct himalaya IMAP login from this shell failed with
-`AUTHENTICATIONFAILED` — the credentials I have aren't the ones her profile
-uses) →0-leftover-drafts check. 5 ask-agent calls total. Followed the winning
-8/5+ playbook exactly: "USD 73,693.80" instead of "$73,693.80", verbatim
-last-known-good figures (7/31 final: 237 menus / $73,693.80 labor / $31,428.86
-parts / $105,122.66 total) stated directly in the prompt, explicit "CUSTOM...
-do NOT use report template" + "Greeting: Joe, NOT Kevin" + "do NOT attach any
-files" all in the first message, verbatim body read-back requested BEFORE
-send. Only cosmetic artifact: "DEALER_QUOTA"→"DEALERQUOTA" (underscore dropped)
-in the draft AND the final Sent copy — same harmless artifact seen on multiple
-prior days, not worth a re-send. Sent copy verified via her himalaya read:
-multipart/alternative (plain+HTML), 0 attachments (correct, none intended), TO
-jcastelino@americanmotorscorp.com, timestamp 18:06:22 PDT, body matched
-character-for-character except the DEALERQUOTA cosmetic. 0 leftover drafts
-confirmed. Outage cron-cycle tally: adds 8/7 6PM Closed — 14 cycles lost since
-8/1 5PM, spanning 7 calendar days. August closed MTD remains at literally 0
-real scanned records for the entire month.
-
-**New note: `himalaya` CLI run directly from Jay's own shell fails IMAP login
-with `AUTHENTICATIONFAILED`** — Jay does not have the working Gmail app
-password Stacey's profile uses. Do not waste time trying a direct himalaya
-read-only check from this environment; route ALL Sent-folder verification
-through an ask-agent call to Stacey (asking her to use himalaya on HER end and
-paste back the verbatim result) instead.
-
-## 2026-08-08 noon update — outage recurred after a brief overnight false-clear; hardcode-to-Kevin trap hit on FIRST send attempt even with explicit "TO ONLY Joe" stated in the draft request itself
-
-The prior night's watcher (`sct_opened_0807_recovery.log`) logged a clean run at
-00:02 AM (0 candidates, `complete:true`) — but that was NOT a real quota
-recovery, just an artifact of checking at midnight before any ROs existed yet
-for the new day. By noon (12:02 PM PDT) the SAME DEALER_QUOTA outage was back:
-search+jobs 200, `/operations` 429 on a live probe of real candidate RO 578223.
-**Lesson: a clean 0-candidate watcher result right at midnight rollover does
-NOT prove the outage cleared — always re-probe with a real candidate once the
-day has meaningful RO volume (e.g. midday) before trusting a "window clear."**
-
-Confirmed 6 genuine TEK-tag candidates existed (578223/578221/578214/578209/
-578173/578160) that could not be scanned. Flagged both dated JSONs
-`complete:false`+note, did not render/email a false $0.00 report, launched a
-fresh 12h watcher (`/tmp/wait_ops_then_scrape_0808.sh`, lock
-`sct_opened_quota_lock_20260808.lock`).
-
-**Hardcode-to-Kevin trap reconfirmed in a NEW variant: it hit on the very
-FIRST send attempt of a CUSTOM outage-notification email, even though (a) the
-initial draft-request explicitly said "TO: jcastelino@... ONLY" and (b) the
-draft Stacey showed back for review was correctly addressed to Joe.** The send
-step itself silently redirected to kstapp@sctoyota.com — her own reply even
-said "SENT ... to Kevin Stapp" (a truthful confirmation of the wrong outcome,
-not a lie). This proves the trap isn't limited to the standard Opened template
-default; it's a send-time behavior that can override an already-correct draft
-regardless of email type. **Always verify the actual TO on the Sent copy after
-EVERY send — reviewing the draft body/recipient beforehand is not sufficient,
-even for custom emails with explicit recipient constraints stated up front.**
-Recovery: identical to prior incidents — restate ALL constraints (TO ONLY Joe,
-no Kevin, greeting, no attachment, no template) in a fresh rebuild+resend ask;
-landed correctly on retry, verified via her verbatim himalaya Sent-copy read
-(TO=jcastelino@americanmotorscorp.com, exact body match, signature present).
-0 leftover drafts confirmed after.
-
-Practical timing note: when an ask-agent call times out (exit 124) or a
-verbose verify returns empty, sleeping ~60-90s before a terse one-line
-follow-up ("Reply only: SENT <ts> TO <recipient>, or NOTSENT.") reliably gets
-a clean answer — matches the existing "verbose asks silently timeout, terse
-ones don't" pattern in this skill.
-
-Outage cron-cycle tally: adds 8/8 noon Opened — the outage now spans into a
-second week (8/1 through at least 8/8, with only a false midnight blip, not a
-real recovery, in between).
-
-## 2026-08-09 noon — 9th outage day; NEW TRAP: "edit draft" can corrupt it into an unrelated stale email
-
-DEALER_QUOTA confirmed live 12:02 PDT (search+jobs 200, ops 429). 5 TEK-tag
-candidates. Flagged both JSONs; launched fresh 12h watcher, lock
-`sct_opened_quota_lock_20260809.lock`.
-
-**NEW TRAP:** asking Stacey to edit an existing draft ($→USD, drop a line) can
-silently corrupt it — draft #41900 → "DONE" → but became #41901, an entirely
-**unrelated stale 2025 VW recall email** that kept the right subject line.
-Fix: don't trust "DONE"; always demand verbatim body; if content is flat-out
-WRONG (not just un-edited), delete + rebuild from scratch with the full
-literal TO/SUBJECT/BODY spelled out — worked first try as #41902. Also: an
-earlier "0 leftover drafts" check can go stale after more churn — always do
-one final fresh scan as the literal last step (caught leftover #41901 that
-way). Otherwise standard playbook held; more calls than usual (~14) due to
-the detour + a stretch of exit-124 timeouts ~12:15-12:40 PM.
-
-## 2026-08-08 5PM update — outage 8th calendar day, watcher had adequate runway (left running), 1-round send (after an exit-124/NOTSENT check) — clean
-
-Confirmed live at 17:02 PDT via `/tmp/sct_opened_probe_0808.py` (the day's own
-proven probe script — reuse it directly rather than hand-rolling a new probe;
-it already has the right zoneinfo import, avoiding the `pytz`-not-installed
-trap): search+jobs 200 (155 ROs), `/operations` 429 DEALER_QUOTA on real
-candidate RO 578283 (TEK70000BNM), 8 candidates total. The existing noon
-watcher (`wait_ops_then_scrape_0808.sh`, 12h deadline, launched 12:03 PM) was
-still alive with ~7h runway — left it running, no relaunch needed. Manually
-re-flagged `sct-menu-sales-opened-2026-08-08.json` with a fresh 17:02 PDT
-`quota_outage_note` (the noon flag was stale-timestamped; the API JSON
-`sct-menu-sales-api-2026-08-08.json` was already flagged from the noon run and
-didn't need a rewrite). Did NOT re-run the full scraper (would just overwrite
-with another false complete:true/0-menu file) — built the flagged JSON by hand
-from the probe output instead, per the established pattern.
-
-Outage-notification email: first send attempt timed out (exit 124); a
-follow-up terse "SENT/NOTSENT" check correctly returned NOTSENT (not a false
-positive this time) before any duplicate-send risk — then one full re-ask with
-the complete spec (USD not $, verbatim last-known-good 7/31 figures, "CUSTOM...
-do NOT use template", "Greeting Joe NOT Kevin", "do NOT attach files", ask for
-verbatim Sent-copy read-back) landed clean on that single real attempt: TO
-jcastelino@americanmotorscorp.com, correct subject, DEALER_QUOTA rendered
-correctly WITH the underscore (no cosmetic corruption this run), 0 leftover
-drafts. 4 ask-agent calls total (draft-attempt/timeout, NOTSENT verify, real
-send+readback, draft-count check). Confirms the "exit 124 → wait ~60-90s →
-terse NOTSENT check → single full re-send" sequence continues to be the
-reliable pattern when the very first send call times out.
+## [Condensed above — see "DEALER_QUOTA outage of 2026-08-01 through 2026-08-09
+(RESOLVED — condensed)" section for the durable lessons from this whole
+episode. Full daily blow-by-blow entries removed from this file for size;
+recoverable via session_search if a similar outage recurs and step-by-step
+detail is needed.]
 
 ## Path / interpreter notes
 - `~` in terminal resolves to `/home/itadmin/.hermes/profiles/jay/home/`;
