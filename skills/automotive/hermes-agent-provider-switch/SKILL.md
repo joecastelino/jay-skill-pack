@@ -20,6 +20,21 @@ autumn, etc.) **boots fine but can't reply**, it's almost always an LLM billing/
 error, NOT a crash. The fleet historically shares ONE OpenRouter key, so when that
 balance dries up, multiple agents die at once.
 
+## Step 0.5 — Identify WHICH profile is actually behind the user-facing bot (shared-token trap)
+Don't assume the bot name shown in the chat UI (e.g. "Walter II") maps to the profile you
+think. Multiple agent profiles can end up configured with the same platform bot
+credential — only one process can hold a live connection at a time, so whichever
+profile's gateway started first/last is the one actually serving that chat, regardless of
+the bot's display name. To identify the real owner: compare each profile's configured
+platform bot identifier for duplicates, list the running gateway processes per profile to
+see which one is actually alive, and check that profile's state file for a "connected"
+platform status. If you try to start the profile you *think* owns the bot and get an
+error that the token is already in use by another PID, that PID belongs to the REAL
+owner — go fix that profile, not the one you assumed. (Real case 2026-08-13: Joe's
+"Walter II" Telegram chat was actually being served by the unrelated `number5` profile,
+which had a duplicate/squatted bot token; the base Walter service was disabled and not
+running at all.)
+
 ## Step 0 — Diagnose with a ping (don't guess)
 ```sh
 timeout 100 ~/bin/ask-agent walter "Jay here, quick ping — are you up?"
@@ -77,7 +92,7 @@ Pick the top model from the returned list (observed 2026-06-20: `gpt-5.5`, `gpt-
 `gpt-5.4-mini` — note: plain version names, NOT `-codex` suffixed).
 
 ## Step 4 — Edit config.yaml (BACK UP FIRST; watch the key-masking trap)
-**Make a timestamped copy of `~/.hermes/config.yaml` before any edit.**
+**Save a dated backup copy of the config file before making any edit.**
 Then set the `model:` block to:
 ```yaml
 model:
@@ -111,6 +126,45 @@ timeout 150 ~/bin/ask-agent walter "Jay here, post-switch check — reply one sh
 ```
 A clean one-line reply = done. Billing on Codex is `subscription_included` (flat ChatGPT
 Team seat), so no per-token OpenRouter cost.
+
+## Step 0.5 — Identify WHICH profile is actually behind the user-facing bot (shared-token trap)
+Don't assume the bot name shown in the chat UI (e.g. "Walter II") maps to the profile you
+think. Multiple agent profiles can end up configured with the same platform bot
+credential — only one process can hold a live connection at a time, so whichever
+profile's gateway started first/last is the one actually serving that chat, regardless of
+the bot's display name. To identify the real owner: compare each profile's configured
+platform bot identifier for duplicates, list the running gateway processes per profile to
+see which one is actually alive, and check that profile's state file for a "connected"
+platform status. If you try to start the profile you *think* owns the bot and get an
+error that the token is already in use by another PID, that PID belongs to the REAL
+owner — go fix that profile, not the one you assumed. (Real case 2026-08-13: Joe's
+"Walter II" Telegram chat was actually being served by the unrelated `number5` profile,
+which had a duplicate/squatted bot token; the base Walter service was disabled and not
+running at all.)
+
+## Alternative fix: switch a broken-Codex profile straight to Anthropic (no OAuth needed)
+If Codex OAuth is missing entirely for a profile (no `openai-codex` entry in its auth
+store at all — not just expired) and you don't want to run the interactive OAuth login
+flow, pointing that profile's `model:`/`providers:` block at Anthropic API-key auth
+instead is faster and needs no browser/OTP step, provided the profile already has a
+working `ANTHROPIC_API_KEY` in its environment. Sanity-check that the key is valid with
+one small test call to the provider's API before touching config — a successful response
+confirms the key works and saves a wasted round-trip if it's dead. Edit only the
+`model:`/`providers:` block; leave every other provider block (especially the fallback
+`openrouter` block with its API key) completely untouched, then diff the pre-edit backup
+against the new file to confirm nothing else moved. This path is lower-risk than the
+OpenRouter-key-masking landmine below since the Anthropic block has no secret to mask,
+but stay disciplined about not letting your edit boundary drift into the masked
+`openrouter.api_key` line sitting right below it.
+
+## Verifying the fix actually took (don't trust startup logs alone)
+Right after restarting the gateway, the agent log often shows a startup-time "fallback
+activated" line pointing at the emergency fallback model. This is usually a
+transient/turn-scoped auxiliary call (e.g. auto-detect for background summarization)
+timing out on a cold connection — NOT the main chat path failing. Fallback activation is
+per-turn and self-heals on the next request, so don't panic-diagnose off that one line.
+The real proof is a live ping through the agent-to-agent bridge that comes back naming
+the new model by name — that's confirmed-fixed; a generic/empty reply is not enough.
 
 ## Pitfalls recap
 - Agent "down" is usually billing/model, not a crash — always ping to read the actual HTTP code.
