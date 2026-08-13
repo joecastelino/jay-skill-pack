@@ -369,6 +369,12 @@ reports an available self-upgrade (0.42.21.0 -> 0.45.9.0) on every command; this
 not an error — do not `gbrain self-upgrade` as part of routine sync (out of scope, could change CLI
 behavior document above; only do it as a deliberate separate task).
 
+## CLEAN NO-OP RE-CONFIRMED (2026-08-13 early-morning cron): disk 1037 .md == import scan total (0
+imported/1037 skipped/0 errors), `embed --stale`=0, `orphans` 0 out of 1043 linkable, git tree clean,
+stats 1043 pages/2065 chunks/2065 embedded/1859 links. Same shape as the evening 2026-08-13 no-op
+above — confirms the 4-way AND check (disk==import-total, embed-stale==0, orphans==0, git clean) is
+stable across same-day runs once session-end-sync has caught everything up.
+
 ## DIAGNOSTIC: Embedded < Chunks with `embed --stale` = 0 is usually a TRANSIENT, not a failure (2026-07-23)
 Mid-sync `gbrain stats` can show Embedded (e.g. 1627) < Chunks (1637) while `gbrain embed --stale`
 reports "0 stale found" — looks like the Embedded==Chunks invariant is broken with no way to fix it.
