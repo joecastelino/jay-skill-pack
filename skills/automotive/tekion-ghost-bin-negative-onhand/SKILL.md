@@ -664,6 +664,13 @@ actually execute — always re-pull live Bin Details immediately before editing,
 earlier snapshot from the same conversation; (b) `browser_navigate`/other generic browser_*
 tools open a SEPARATE unauthenticated context — do NOT use them for :9223 workflows, stick to
 execute_code + the :9223 HTTP API (`/eval`, `/mouse`, `/type`, `/screenshot`) throughout.
+**Confirmed 2026-08-12: `browser_vision` is ALSO one of these "other generic browser_* tools"**
+— calling it to sanity-check the :9223 page (e.g. "is the bin selector visible?") returned a
+convincing but FALSE "completely blank white page, no content" analysis, because it screenshots
+its own separate stale/unauthenticated context, not :9223. This can wrongly suggest the :9223
+session died. Never use `browser_vision`/`browser_snapshot`/`browser_click`/etc. to inspect
+:9223 state — always `GET /screenshot` from the :9223 API, base64-decode to a real PNG file,
+then `vision_analyze` THAT file if you want AI-vision confirmation of what :9223 is rendering.
 
 ## LIVE EDIT-PART REDISTRIBUTION MECHANICS (first live execution, verified 2026-08-07)
 

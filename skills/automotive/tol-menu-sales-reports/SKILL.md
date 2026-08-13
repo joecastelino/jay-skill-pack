@@ -525,6 +525,21 @@ sitting in Drafts with `\Draft` set, it was never sent, regardless of what a noi
 folder query returns. Prefer this direct Drafts-recheck over chasing an ambiguous Sent-
 folder anomaly through more rounds of Q&A.
 
+(8/12 8:05PM) IDs in the draft-list search output are IMAP UIDs, not bogus — distinct
+from the "bogus draft ID" pitfall (7d/7d-confirm) which is about a SELF-REPORTED save-
+confirmation id pointing to an unrelated draft. Here, a subject-search list came back
+as `id | exact Subject` (e.g. `64 | TOL Menu Sales — Opened (08/12/2026)`, `67 | ...`
+same subject) — two real dupes (noon 1:47PM save + EOD 8:05PM save). Feeding those exact
+numbers back into a follow-up "KEEP id 67, DELETE id 64" ask worked correctly — Stacey
+confirmed they're IMAP UIDs (her own himalaya numbering differs) and deleted the right
+one via raw IMAP (himalaya `move` only touches INBOX, so she used raw IMAP delete/expunge
+instead). Note the UID can shift after an expunge (67 became 66) — that's normal Gmail
+IMAP renumbering, not a sign anything went wrong; re-verify by exact subject text after
+any delete, not by the old numeric id. This run was otherwise a clean one-shot: correct
+subject/greeting, MIME verified (html + png cid=scorecard + pdf) on BOTH the noon and EOD
+drafts before dedupe, Sent-check came back a clean 0 with direct \Draft-flag confirmation
+on the surviving message — no rebuild cycle needed, only the standard KEEP/DELETE dedupe.
+
 ## Cross-store note
 This same pattern (clone the sibling pipeline, derive the store's OWN SERVICE_MENU opcode
 set, set dealer ID + recipient) applies to the remaining AMG stores (SV/AR/VC) when Joe
