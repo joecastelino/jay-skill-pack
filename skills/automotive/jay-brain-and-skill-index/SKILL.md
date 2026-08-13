@@ -415,6 +415,11 @@ embedded/1862 links all confirm nothing is actually missing. Per the established
 orphans==0 is NOT a signal to chase (same as the 2026-08-07 note re page-count gaps) — trust orphans+stats
 over the raw disk-file-count diff.
 
+## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #10, afternoon): disk 1040 .md == import scan total (0
+imported/1040 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1046 linkable, git tree clean,
+stats 1046 pages/2071 chunks/2071 embedded/1863 links. Identical shape to runs #5-#9 same day — the
+4-way AND check remains the reliable no-op signal across a 10th same-day pass.
+
 ## DIAGNOSTIC: Embedded < Chunks with `embed --stale` = 0 is usually a TRANSIENT, not a failure (2026-07-23)
 Mid-sync `gbrain stats` can show Embedded (e.g. 1627) < Chunks (1637) while `gbrain embed --stale`
 reports "0 stale found" — looks like the Embedded==Chunks invariant is broken with no way to fix it.
