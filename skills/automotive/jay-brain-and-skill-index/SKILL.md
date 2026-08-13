@@ -361,6 +361,14 @@ no-op-vs-needs-work check is still just the 4-way AND: disk-count==import-scan-t
 embed-stale==0, orphans==0, git clean. If all 4 hold, stop — don't chase the disk-vs-stats page-count
 gap, it's not one of the documented failure modes and isn't accompanied by any orphan/stale/dirty signal.
 
+## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron): disk 1037 .md == import scan total (0 imported/1037
+skipped/0 errors), `embed --stale`=0, `orphans` 0 out of 1043 linkable, git clean, stats 1043 pages/
+2064 chunks/2064 embedded/1859 links. Same shape as prior no-op confirmations — the 15-min
+session-end-sync had already committed+embedded+linked everything before this run. gbrain also now
+reports an available self-upgrade (0.42.21.0 -> 0.45.9.0) on every command; this is informational only,
+not an error — do not `gbrain self-upgrade` as part of routine sync (out of scope, could change CLI
+behavior document above; only do it as a deliberate separate task).
+
 ## DIAGNOSTIC: Embedded < Chunks with `embed --stale` = 0 is usually a TRANSIENT, not a failure (2026-07-23)
 Mid-sync `gbrain stats` can show Embedded (e.g. 1627) < Chunks (1637) while `gbrain embed --stale`
 reports "0 stale found" — looks like the Embedded==Chunks invariant is broken with no way to fix it.
