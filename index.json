@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-12T20:30:23",
+ "generated": "2026-08-12T20:45:25",
  "skill_count": 169,
  "skills": [
   {
@@ -47,8 +47,8 @@
    "path": "automotive/tol-menu-sales-reports",
    "category": "automotive",
    "description": "Run the Toyota of Lancaster (TOL/TL, dealer 1092) Menu Sales scorecards \u2014 Daily Opened and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Sean Preston (spreston@tol-av.com). The Toyota-store sibling of the SCT/Kevin (sct-menu-sales-api-scorecard) and BC/Ruben (bc-menu-sales-reports) pipelines. Use for any \"TOL/TL/Toyota of Lancaster menu report\" or \"Sean Preston report\" request.",
-   "times_used": 47,
-   "last_used": "2026-08-11"
+   "times_used": 48,
+   "last_used": "2026-08-12"
   },
   {
    "name": "tekion-sitemap",

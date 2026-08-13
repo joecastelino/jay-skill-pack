@@ -540,6 +540,25 @@ subject/greeting, MIME verified (html + png cid=scorecard + pdf) on BOTH the noo
 drafts before dedupe, Sent-check came back a clean 0 with direct \Draft-flag confirmation
 on the surviving message — no rebuild cycle needed, only the standard KEEP/DELETE dedupe.
 
+(8/12 8:05PM, Closed MTD) FULLY CLEAN ONE-SHOT, NEW PREVENTIVE TACTIC: sent the hand-off
+subject to Stacey using a plain hyphen ("TOL Menu Sales - Closed MTD (August 1-12, 2026)")
+instead of an em-dash, specifically to preempt the known "em-dash breaks IMAP/himalaya
+search" bug (8/07 note above). Draft came out correct first try (multipart/related >
+alternative(text/plain+html) + image/png Content-ID=scorecard inline + application/pdf),
+subject-search/part-listing/Sent-check all returned FIRST try with zero exit-124s (part-
+listing took ~150s but didn't time out). No dedupe needed — no prior draft existed with
+that exact subject (7 stacked Closed-MTD drafts total, Aug 1-2 through 1-12, each a
+different date range/subject, none duplicated). Sent-check used the definitive "\Draft
+flag still intact in [Gmail]/Drafts" method (per 8/11 8:05PM note) rather than trusting a
+plain Sent-count number — 0 hits in Sent, UID present in Drafts with \Draft flag. Gmail
+API token was revoked (invalid_grant) again this run; Stacey silently fell back to IMAP
+for the verification part-listing (not just Sent-check) with full MIME fidelity.
+TRADEOFF: using a hyphen instead of em-dash means today's draft subject doesn't visually
+match the em-dash style of adjacent days' drafts in the stack — cosmetic only, doesn't
+affect matching/verification since all checks are exact-string based anyway. Recommend
+defaulting to hyphen-instead-of-em-dash in ALL future hand-off subjects for this pipeline
+(and its BC/SCT/BT siblings) as a standing preventive measure, not just a fallback.
+
 ## Cross-store note
 This same pattern (clone the sibling pipeline, derive the store's OWN SERVICE_MENU opcode
 set, set dealer ID + recipient) applies to the remaining AMG stores (SV/AR/VC) when Joe
