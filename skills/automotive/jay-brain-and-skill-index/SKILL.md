@@ -407,6 +407,14 @@ imported/1039 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1045 linkab
 stats 1045 pages/2067 chunks/2067 embedded/1862 links. Identical shape to run #7 — the 4-way AND check
 remains stable across an 8th same-day cron pass; no latecomer/link/commit work needed.
 
+## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #9, late morning): disk 1040 .md vs import scan total
+1039 (0 imported/1039 skipped/0 errors) — a 1-page gap that looked like a possible latecomer-miss, but
+`embed --stale`=0, orphans 0 out of 1045 linkable, git tree clean, stats 1045 pages/2068 chunks/2068
+embedded/1862 links all confirm nothing is actually missing. Per the established 4-way AND rule
+(disk≈import-total, embed-stale==0, orphans==0, git clean), a small 1-page disk-vs-import-scan gap with
+orphans==0 is NOT a signal to chase (same as the 2026-08-07 note re page-count gaps) — trust orphans+stats
+over the raw disk-file-count diff.
+
 ## DIAGNOSTIC: Embedded < Chunks with `embed --stale` = 0 is usually a TRANSIENT, not a failure (2026-07-23)
 Mid-sync `gbrain stats` can show Embedded (e.g. 1627) < Chunks (1637) while `gbrain embed --stale`
 reports "0 stale found" — looks like the Embedded==Chunks invariant is broken with no way to fix it.
