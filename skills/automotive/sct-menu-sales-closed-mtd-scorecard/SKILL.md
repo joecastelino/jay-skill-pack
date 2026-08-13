@@ -66,12 +66,19 @@ Work dir: `/home/itadmin/tekion-reports`
    recognize them back).
 6. Verify send with a short status-check message ("is '<subject>' to that
    addr in Sent now?"). **The send-instruction call to `ask-agent stacey` can
-   return exit_code 124 (timeout) even though the send actually succeeded in
-   the background** — don't treat a timeout as failure. Always follow up with
-   a separate lightweight status-check call; it will report the real Sent
-   state (verified 2026-08-08: two consecutive 150s timeouts on the send
-   command, but the status-check confirmed the email was sent and starred in
-   Sent Mail at the expected timestamp).
+   return exit_code 124 (timeout) with EITHER outcome underneath** — sometimes
+   the send actually succeeded in the background (verified 2026-08-08: two
+   consecutive 150s timeouts, but status-check confirmed sent/starred), and
+   sometimes it did NOT (verified 2026-08-12: single 124 timeout on the send
+   instruction, but the follow-up status-check found the draft still sitting
+   in Drafts, unsent). **Never infer success OR failure from the exit code —
+   the timeout is uninformative either way.** Always follow up with a
+   lightweight status-check call to get the real Sent-folder state. If the
+   status-check reports it's still in Drafts, Stacey's status reply will
+   often surface the internal draft ID (e.g. "Drafts | 42208") — send ONE
+   more explicit instruction referencing that draft ID directly ("send draft
+   42208 now — that's the '<subject>' email") rather than repeating the
+   generic subject-only send instruction, then verify Sent again.
 
 ## Pitfall: the scanner does NOT always auto-write `quota_outage_note` — verify manually
 
