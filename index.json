@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-13T08:15:04",
+ "generated": "2026-08-13T08:30:40",
  "skill_count": 169,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 110,
-   "last_used": "2026-08-12"
+   "times_used": 111,
+   "last_used": "2026-08-13"
   },
   {
    "name": "agent-to-agent-bridge",
@@ -31,8 +31,8 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 51,
-   "last_used": "2026-07-30"
+   "times_used": 52,
+   "last_used": "2026-08-13"
   },
   {
    "name": "tol-menu-sales-reports",
@@ -55,8 +55,8 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 38,
-   "last_used": "2026-08-07"
+   "times_used": 39,
+   "last_used": "2026-08-13"
   },
   {
    "name": "sct-menu-sales-api-scorecard",
@@ -115,20 +115,20 @@
    "last_used": "2026-08-07"
   },
   {
+   "name": "tekion-scheduling",
+   "path": "automotive/tekion-scheduling",
+   "category": "automotive",
+   "description": "Tekion Service Scheduling Settings \u2014 appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the \"lowest ceiling wins\" capacity model, shop top-down matching, the daily overnight scheduler + \"Run Scheduler\" button, parts-on-appointment notifications, and the concierge mobile write-up flow. Load for any appointment/scheduling/capacity setup or troubleshooting in Tekion.",
+   "times_used": 27,
+   "last_used": "2026-08-13"
+  },
+  {
    "name": "tekion-service-menu-setups",
    "path": "automotive/tekion-service-menu-setups",
    "category": "automotive",
    "description": "Navigate to, read, and inspect Tekion Service Menu Setups (the service-menu builder where interval menus, tiers, tags, opcodes, included services and inspections are configured). Covers the non-obvious nav path, the page/tab structure, where free-text \"notes\"/tags live, and the headless storage_state harness that reaches it reliably. Use when asked to find/check/edit a service menu, a menu's tag/name, or \"the last service menu\".",
    "times_used": 27,
    "last_used": "2026-07-15"
-  },
-  {
-   "name": "tekion-scheduling",
-   "path": "automotive/tekion-scheduling",
-   "category": "automotive",
-   "description": "Tekion Service Scheduling Settings \u2014 appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the \"lowest ceiling wins\" capacity model, shop top-down matching, the daily overnight scheduler + \"Run Scheduler\" button, parts-on-appointment notifications, and the concierge mobile write-up flow. Load for any appointment/scheduling/capacity setup or troubleshooting in Tekion.",
-   "times_used": 26,
-   "last_used": "2026-08-05"
   },
   {
    "name": "sct-backcounter-ro-sales-countsheet",
@@ -387,6 +387,14 @@
    "last_used": "2026-07-12"
   },
   {
+   "name": "tekion-ro-traffic-heatmap-report",
+   "path": "automotive/tekion-ro-traffic-heatmap-report",
+   "category": "automotive",
+   "description": "Build a \"when do we get the most traffic\" staffing report from Tekion \u2014 RO open times bucketed by day-of-week x hour, per store, rendered as a Toyota-red heatmap. Zero fan-out (opcode tags are free on repair-orders:search). Built 2026-07-15 for Joe's TXM (Toyota Express Maintenance) department staffing question. Also covers the Slack-download-fails fallback (copy files to Joe's Windows Downloads via /mnt/c).",
+   "times_used": 4,
+   "last_used": "2026-08-13"
+  },
+  {
    "name": "tol-alignment-by-advisor-report",
    "path": "automotive/tol-alignment-by-advisor-report",
    "category": "automotive",
@@ -433,14 +441,6 @@
    "description": "Set a vehicle-scoped CUSTOM package price and labor hours on a Tekion Service Menu by adding a new vehicle row (e.g. \"2014 Camry 90K VNM = 2.4 hrs / $469.88\"). Use when Joe wants a specific vehicle's menu package price/hours changed without touching other vehicles or tiers. Verified SCT 90K menu 2026-07-03.",
    "times_used": 3,
    "last_used": "2026-07-12"
-  },
-  {
-   "name": "tekion-ro-traffic-heatmap-report",
-   "path": "automotive/tekion-ro-traffic-heatmap-report",
-   "category": "automotive",
-   "description": "Build a \"when do we get the most traffic\" staffing report from Tekion \u2014 RO open times bucketed by day-of-week x hour, per store, rendered as a Toyota-red heatmap. Zero fan-out (opcode tags are free on repair-orders:search). Built 2026-07-15 for Joe's TXM (Toyota Express Maintenance) department staffing question. Also covers the Slack-download-fails fallback (copy files to Joe's Windows Downloads via /mnt/c).",
-   "times_used": 3,
-   "last_used": "2026-07-15"
   },
   {
    "name": "tekion-tech-flag-hours-pay",
@@ -497,6 +497,14 @@
    "description": "Pull declined/deferred service data (recommendations customers didn't buy) for any Tekion store via the internal Deferred Services report API \u2014 service name, counts, dollar estimates, customer/vehicle/advisor detail. Zero OpenAPI quota; works when OVERALL_QUOTA is exhausted. Use for marketing campaign lists (Autumn) or lost-sales analysis.",
    "times_used": 2,
    "last_used": "2026-07-14"
+  },
+  {
+   "name": "tekion-mom-service-gross-fleet",
+   "path": "automotive/tekion-mom-service-gross-fleet",
+   "category": "automotive",
+   "description": "Produce a month-over-month (or any period-vs-period) SERVICE GROSS read across all 7 AMG stores from the live Tekion OpenAPI \u2014 who's winning, who's slipping, and whether it's a VOLUME story or a MARGIN story. Uses a throttle-safe sequential RO sample (labor GP + parts GP per RO) scaled by exact closed-RO counts, because the GL department-gross endpoint is still locked and a full penny-accurate fan-out trips the rate limit for hours. Use when Joe asks \"service gross month over month\", \"who's doing well / breaking numbers across the stores\", \"fleet service gross May vs June\", or any cross-store gross trend.",
+   "times_used": 2,
+   "last_used": "2026-08-13"
   },
   {
    "name": "tekion-opcode-labor-billing-audit",
@@ -617,14 +625,6 @@
    "description": "Look up or bulk-pull Tekion's Labor Time Guide (OEM warranty labor-time data) for any store/vehicle. Covers the nav path, the underlying API (VIN or Make/Year/Model search), pagination, and the critical fact that THERE IS NO DOWNLOAD/EXPORT BUTTON in the UI \u2014 it's a live per-vehicle OEM feed, not a static file. Use when Joe asks to \"download the labor time guide\", \"get OEM labor times\", or look up warranty hours/parts/failure codes for a repair.",
    "times_used": 1,
    "last_used": "2026-08-05"
-  },
-  {
-   "name": "tekion-mom-service-gross-fleet",
-   "path": "automotive/tekion-mom-service-gross-fleet",
-   "category": "automotive",
-   "description": "Produce a month-over-month (or any period-vs-period) SERVICE GROSS read across all 7 AMG stores from the live Tekion OpenAPI \u2014 who's winning, who's slipping, and whether it's a VOLUME story or a MARGIN story. Uses a throttle-safe sequential RO sample (labor GP + parts GP per RO) scaled by exact closed-RO counts, because the GL department-gross endpoint is still locked and a full penny-accurate fan-out trips the rate limit for hours. Use when Joe asks \"service gross month over month\", \"who's doing well / breaking numbers across the stores\", \"fleet service gross May vs June\", or any cross-store gross trend.",
-   "times_used": 1,
-   "last_used": "2026-06-30"
   },
   {
    "name": "tekion-parts-appointments-opcode-scoping",
