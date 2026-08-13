@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-13T11:00:05",
+ "generated": "2026-08-13T11:15:24",
  "skill_count": 169,
  "skills": [
   {
@@ -55,7 +55,7 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 39,
+   "times_used": 40,
    "last_used": "2026-08-13"
   },
   {
@@ -143,8 +143,8 @@
    "path": "automotive/tekion-kb-search-scrape",
    "category": "automotive",
    "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 22,
-   "last_used": "2026-08-05"
+   "times_used": 23,
+   "last_used": "2026-08-13"
   },
   {
    "name": "tekion-vi-api-migration",
