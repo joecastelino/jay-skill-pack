@@ -194,6 +194,15 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   quota DOES eventually self-heal on the Tekion side without any local fix — always probe
   fresh each night before assuming the outage continues; don't skip straight to
   "re-arm and escalate" without a live check. No self-heal watcher was needed this run.
+  **Confirmed stable 2026-08-12 (2nd consecutive clean night post-outage):** OPS probe
+  200 immediately, no self-heal needed. Full run clean: 1,658 closed ROs, 513 candidates,
+  0 failed, ~19 min. 154 alignments (137 dedicated + 17 bundled), 154 ROs, 16 advisors,
+  top Cristian Gonzalez (25). Stacey's build ask timed out (exit 124) on the first try as
+  usual — the standard fix (sleep 60s, then a single subject-anchored verify ask) resolved
+  it cleanly: DRAFTS_COUNT=1, SENT=no, PDF part non-zero (303,528B for a 233,121B file,
+  within normal encoding variance), HTML part 171,532B comfortably above the PNG*4/3
+  floor. First-try clean draft, no rebuild needed. The DEALER_QUOTA outage looks resolved
+  for good at this point — no further escalation language needed unless it recurs.
 - **OVERALL_QUOTA exhaustion (hit 2026-07-07):** distinct from OVERALL_RATELIMIT — this is
   the store's DAILY API quota being fully spent (other pipelines, e.g. a TOL backfill loop +
   caliber-ops scrapers, can burn it). EVERY call 429s
