@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-13T12:15:03",
+ "generated": "2026-08-13T12:30:40",
  "skill_count": 169,
  "skills": [
   {
@@ -219,6 +219,14 @@
    "last_used": "2026-08-03"
   },
   {
+   "name": "hermes-agent-provider-switch",
+   "path": "automotive/hermes-agent-provider-switch",
+   "category": "automotive",
+   "description": "Diagnose why an AMG agent (Walter II, Don, Ralph, Stacey, etc.) is dead/unresponsive on an LLM-billing error, and switch it from OpenRouter to the ChatGPT-Team Codex OAuth provider. Use when an agent boots but can't reply, an ask-agent ping returns an HTTP 402 (out of credits) or 400 (unsupported model), or OpenRouter credits are exhausted. Covers the read_file API-key-masking landmine and how to discover the account's valid Codex model names.",
+   "times_used": 11,
+   "last_used": "2026-08-13"
+  },
+  {
    "name": "tekion-parts-appointments-recalls-only",
    "path": "automotive/tekion-parts-appointments-recalls-only",
    "category": "automotive",
@@ -265,14 +273,6 @@
    "description": "Build the DealerDetail Tekion API-driven data pipeline (replacing the email/Excel prototype) by acting as PM and delegating tickets to Claude Code, then verifying independently. Covers the ticket workflow, the live infra (Supabase project, branch, creds), and the hard-won gotchas (Supabase shadow-DB, server-only smoke tests, git credential path, Tekion app-scope 403 on user lookups).",
    "times_used": 9,
    "last_used": "2026-08-11"
-  },
-  {
-   "name": "hermes-agent-provider-switch",
-   "path": "automotive/hermes-agent-provider-switch",
-   "category": "automotive",
-   "description": "Diagnose why an AMG agent (Walter II, Don, Ralph, Stacey, etc.) is dead/unresponsive on an LLM-billing error, and switch it from OpenRouter to the ChatGPT-Team Codex OAuth provider. Use when an agent boots but can't reply, an ask-agent ping returns an HTTP 402 (out of credits) or 400 (unsupported model), or OpenRouter credits are exhausted. Covers the read_file API-key-masking landmine and how to discover the account's valid Codex model names.",
-   "times_used": 9,
-   "last_used": "2026-07-14"
   },
   {
    "name": "tekion-writer-handoff-report",
