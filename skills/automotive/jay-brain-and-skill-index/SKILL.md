@@ -425,6 +425,14 @@ imported/1042 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1048 linkab
 stats 1048 pages/2073 chunks/2073 embedded/1865 links. Same shape as prior same-day no-ops — the
 4-way AND check remains reliable across an 11th same-day pass.
 
+## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #12): disk 1042 .md == import scan total (1 imported/
+1041 skipped/0 errors — the 1 import created 21 chunks but `embed --stale` immediately found 0 stale,
+meaning session-end-sync had already embedded it before this cron ran), orphans 0 out of 1048 linkable,
+git tree clean, stats 2073 chunks/2073 embedded/1865 links. Confirms: a nonzero "pages imported" count
+with 0 stale-to-embed right after is a benign race with the 15-min sync, not a problem — still check the
+4-way AND (disk≈import-total, embed-stale resolves to 0 either way, orphans==0, git clean) before doing
+any link/commit work.
+
 ## DIAGNOSTIC: Embedded < Chunks with `embed --stale` = 0 is usually a TRANSIENT, not a failure (2026-07-23)
 Mid-sync `gbrain stats` can show Embedded (e.g. 1627) < Chunks (1637) while `gbrain embed --stale`
 reports "0 stale found" — looks like the Embedded==Chunks invariant is broken with no way to fix it.
