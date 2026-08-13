@@ -375,6 +375,12 @@ stats 1043 pages/2065 chunks/2065 embedded/1859 links. Same shape as the evening
 above — confirms the 4-way AND check (disk==import-total, embed-stale==0, orphans==0, git clean) is
 stable across same-day runs once session-end-sync has caught everything up.
 
+## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #3 that day): disk 1038 .md == import scan total (0
+imported/1038 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1044 linkable, git tree clean,
+stats 1044 pages/2066 chunks/2066 embedded/1860 links. Same shape as the two earlier 2026-08-13 no-ops
+(1037 pages each) — confirms multiple same-day cron runs stay no-ops once session-end-sync has caught
+everything up; no drift or regression between runs.
+
 ## DIAGNOSTIC: Embedded < Chunks with `embed --stale` = 0 is usually a TRANSIENT, not a failure (2026-07-23)
 Mid-sync `gbrain stats` can show Embedded (e.g. 1627) < Chunks (1637) while `gbrain embed --stale`
 reports "0 stale found" — looks like the Embedded==Chunks invariant is broken with no way to fix it.
