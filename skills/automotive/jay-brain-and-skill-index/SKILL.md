@@ -392,6 +392,11 @@ imported/1039 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1045 linkab
 stats 1045 pages/2067 chunks/2067 embedded/1862 links. Same shape as runs #3/#4 same day — confirms
 the 4-way AND check stays stable across repeated same-day cron runs with session-end-sync keeping pace.
 
+## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #6, morning of next cycle): disk 1039 .md == import
+scan total (0 imported/1039 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1045 linkable, git
+tree clean, stats 1045 pages/2067 chunks/2067 embedded/1862 links. Identical shape to run #5 — the
+4-way AND check remains the reliable no-op signal; no latecomer/link/commit work needed this pass.
+
 ## DIAGNOSTIC: Embedded < Chunks with `embed --stale` = 0 is usually a TRANSIENT, not a failure (2026-07-23)
 Mid-sync `gbrain stats` can show Embedded (e.g. 1627) < Chunks (1637) while `gbrain embed --stale`
 reports "0 stale found" — looks like the Embedded==Chunks invariant is broken with no way to fix it.
