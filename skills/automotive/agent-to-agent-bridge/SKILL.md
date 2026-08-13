@@ -90,6 +90,17 @@ schedule (e.g. ~/the-goods/data/*.json) and have the agent read the file.
   `terminal()` helper (or Python `subprocess.run` with an **argument list**, not a shell string)
   instead of the top-level `terminal` tool — this sidesteps the false-positive entirely and also
   avoids shell-quoting headaches for multi-line messages with `$`, backticks, em-dashes, etc.
+- **Literal parentheses in the message also break the top-level `terminal()` tool** (verified
+  2026-08-13, BC daily warranty report): a message like `"...(real send, Joe pre-approved...)..."`
+  passed as `~/bin/ask-agent stacey "<msg with (parens)>"` via the top-level `terminal()` tool
+  produces a genuine bash syntax error (`syntax error near unexpected token ')'`) — not a
+  security-scanner false positive, the shell actually chokes because the wrapping quote-repr
+  isn't a real shell-safe quote in that code path. Same fix as above: build the command as an
+  **argument list** and run it via `execute_code`'s `subprocess.run(["timeout","170",
+  os.path.expanduser("~/bin/ask-agent"),"stacey", msg], capture_output=True, text=True)` — this
+  passes `msg` as one argv element with zero shell interpretation, so parens/quotes/backticks/`$`
+  all pass through safely. Resolve `~/bin/ask-agent` to an absolute path first via
+  `os.path.expanduser` (per the `~` pitfall above) rather than letting a shell expand it.
 - **`~` in ask-agent's path resolves to the CALLING agent's profile home, not `/home/itadmin`**
   (2026-08-09): from Jay's session, `~/bin/ask-agent` correctly expands (via bash `~`) to
   `/home/itadmin/.hermes/profiles/jay/home/bin/ask-agent` — but guessing the literal path
