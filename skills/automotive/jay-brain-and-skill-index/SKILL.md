@@ -459,6 +459,11 @@ stats 1050 pages/2077 chunks/2077 embedded/1868 links. Same shape as the day's e
 4-way AND check remains stable across a 16th same-day pass. gbrain also flagged 0.42.21.0 -> 0.45.12.0
 self-upgrade available (informational only, not acted on per standing guidance above).
 
+## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #17/night): disk 1048 .md == import scan total (0
+imported/1048 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1054 linkable, git tree clean,
+stats 1054 pages/2087 chunks/2087 embedded/1875 links. Same shape as the day's earlier no-ops —
+4-way AND check remains stable across a 17th same-day pass.
+
 ## DIAGNOSTIC: Embedded < Chunks with `embed --stale` = 0 is usually a TRANSIENT, not a failure (2026-07-23)
 Mid-sync `gbrain stats` can show Embedded (e.g. 1627) < Chunks (1637) while `gbrain embed --stale`
 reports "0 stale found" — looks like the Embedded==Chunks invariant is broken with no way to fix it.
