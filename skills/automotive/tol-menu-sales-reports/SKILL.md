@@ -559,6 +559,24 @@ affect matching/verification since all checks are exact-string based anyway. Rec
 defaulting to hyphen-instead-of-em-dash in ALL future hand-off subjects for this pipeline
 (and its BC/SCT/BT siblings) as a standing preventive measure, not just a fallback.
 
+(8/13 8:05PM, Opened) Confirmed the hyphen-instead-of-em-dash tactic (previously only tested on
+Closed MTD, 8/12) also works cleanly for the OPENED report subject: sent hand-off subject as
+"TOL Menu Sales - Opened (08/13/2026)" (plain hyphen). Fully clean one-shot — draft 42213 (himalaya
+id; underlying IMAP UID 68) came out correct first try: multipart/mixed > related > alternative
+(text/plain+html) + image/png Content-ID=scorecard inline + image/jpeg Content-ID=amglogos (Joe's
+sig logo, normal) + application/pdf attachment. No dedupe needed (today's exact subject had no
+prior draft, even though the stack has 15 prior Opened drafts back to 07/31, plus the still-
+unresolved 08/02 true-duplicate pair 41542/41547 — left untouched per standing policy). Sent-check
+clean: 0 hits in Sent Mail, \Draft flag confirmed intact via IMAP on the surviving message. Timing
+pattern matched prior runs: initial hand-off call hit the expected ~170s exit-124 (action still
+completed); first two terse verification re-asks also hit exit-124 (himalaya timeout inside her own
+tool call, self-reported "himalaya timed out, going straight to raw IMAP by subject"); third,
+tersest retry (single search call, explicit "reply only" format) returned clean each time. Budget
+2-3 retries per verification question as standard, not just for MIME/dedupe checks — draft-listing
+itself can also need it. Recommend defaulting to hyphen (not em-dash) in ALL future hand-off
+subjects for both Opened and Closed MTD going forward — two consecutive clean runs now (Closed MTD
+8/12, Opened 8/13).
+
 ## Cross-store note
 This same pattern (clone the sibling pipeline, derive the store's OWN SERVICE_MENU opcode
 set, set dealer ID + recipient) applies to the remaining AMG stores (SV/AR/VC) when Joe

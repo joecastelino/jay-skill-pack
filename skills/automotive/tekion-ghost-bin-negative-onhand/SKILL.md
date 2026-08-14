@@ -234,6 +234,20 @@ BEFORE flagging it as a missed transfer:
   If it's been open 2+ days with no fix, escalate the report language ("day N of continuing
   drift — recommend Joe/Ronald look directly" instead of a fresh-sounding "-18→-19 ⚠️") so it
   doesn't get lost as noise in a daily list.
+- **STANDALONE SINGLE-BIN NEGATIVE = a DIFFERENT case from the back-counter transfer scenario
+  — don't apply transfer logic, but DO keep escalating it (verified 2026-08-13, SCT
+  04500-1/PLUG&GASKET, bin 5005).** When `multipleBinNumbers: []` AND the bin has no companion
+  at all (the part lives in exactly ONE bin, period — not "empty list but IS primary with
+  other listed bins", genuinely single-bin), a qty DROP into deeper negative is NOT a normal
+  sale relieving primary stock (there's no positive stock to relieve — it's already negative)
+  and it's NOT a 5000s→2420 back-counter/front-counter split issue (nothing to transfer, no
+  second bin exists). This is a THIRD, separate finding: a receiving/consumption tracking gap
+  on that one part. Still check its full history across all available snapshots (not just
+  yesterday) — 04500-1 was found to have deepened steadily for 6+ weeks (-69 on 2026-07-04 →
+  -111 on 2026-08-13, worsening almost every run) with zero correction. Report it explicitly
+  as "outside the 5000s-transfer scope, standalone negative, N weeks open, recommend direct
+  investigation" — don't fold it into the transfer-needed bucket and don't drop it just
+  because no transfer applies.
 - **SAME-DAY LIVE EDIT ATTRIBUTION** — if Jay executed a live Edit-Part redistribution on a
   part earlier the same day (see FIX PATHS / LIVE EDIT-PART REDISTRIBUTION MECHANICS above),
   a diff on that exact part in the SAME day's watchdog run is very likely a residual/expected
