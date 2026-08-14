@@ -448,6 +448,11 @@ imported/1043 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1049 linkab
 stats 1049 pages/2076 chunks/2076 embedded/1866 links. Same shape as the day's earlier no-ops —
 4-way AND check remains stable.
 
+## CLEAN NO-OP RE-CONFIRMED (2026-08-13 evening cron): disk 1043 .md == import scan total (0
+imported/1043 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1049 linkable, git tree clean,
+stats 1049 pages/2076 chunks/2076 embedded/1866 links. Same shape as the day's earlier no-ops —
+4-way AND check remains stable across a full day of repeated cron passes.
+
 ## DIAGNOSTIC: Embedded < Chunks with `embed --stale` = 0 is usually a TRANSIENT, not a failure (2026-07-23)
 Mid-sync `gbrain stats` can show Embedded (e.g. 1627) < Chunks (1637) while `gbrain embed --stale`
 reports "0 stale found" — looks like the Embedded==Chunks invariant is broken with no way to fix it.
