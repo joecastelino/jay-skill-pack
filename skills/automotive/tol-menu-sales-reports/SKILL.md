@@ -577,6 +577,18 @@ itself can also need it. Recommend defaulting to hyphen (not em-dash) in ALL fut
 subjects for both Opened and Closed MTD going forward — two consecutive clean runs now (Closed MTD
 8/12, Opened 8/13).
 
+(8/13 8:05PM, Closed MTD) FULLY CLEAN ONE-SHOT AFTER ONE RE-FIRE: the initial hand-off call hit
+the ~170s exit-124 timeout with the draft NOT actually saved yet (verified: a subject-search
+right after found zero drafts with today's exact subject) — this differs from most prior runs
+where the timed-out call had actually completed. Re-fired the SAME hand-off message once (adding
+"there is NO existing draft yet, no dedupe needed") and it completed cleanly in ~98s: draft UID
+42219, subject exact match, greeting "Sean,", MIME clean (multipart/mixed > related >
+alternative(text/plain+html) + image/png Content-ID=scorecard,filename + application/pdf,filename),
+Sent-check 0, \Draft flag confirmed intact. Lesson: after an exit-124 on the INITIAL action ask,
+don't assume completion — always verify via subject-search before deciding whether to re-fire or
+just move to verification. If the draft isn't there, it's safe to just re-send the same hand-off
+message once (Stacey's dedupe/no-duplicate-found logic handles it fine either way).
+
 ## Cross-store note
 This same pattern (clone the sibling pipeline, derive the store's OWN SERVICE_MENU opcode
 set, set dealer ID + recipient) applies to the remaining AMG stores (SV/AR/VC) when Joe
