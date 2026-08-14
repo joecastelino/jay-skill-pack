@@ -142,6 +142,20 @@ owner — go fix that profile, not the one you assumed. (Real case 2026-08-13: J
 which had a duplicate/squatted bot token; the base Walter service was disabled and not
 running at all.)
 
+## Resolution note (2026-08-13 real case, current live state)
+After finding `number5` squatting Walter's Telegram token, Joe's final call was NOT to
+fix number5 in place — it was **disable number5 entirely** (`systemctl --user disable
+--now hermes-gateway-number5.service`) and bring up the **real base Walter** service
+instead (it already had valid Codex OAuth credentials — no provider switch was actually
+needed once the real profile could hold the token). Only after stopping number5 could
+Walter's gateway successfully bind the shared Telegram token (previously got "token
+already in use" conflict). Lesson: when two profiles share one platform bot token, the
+fix may be "stop the impostor and start the real one" rather than "repair the impostor's
+provider" — confirm with the user which profile *should* own the bot before spending
+time fixing the wrong one's credentials. Standing state: number5 stays disabled until
+Joe says otherwise; it needs its own dedicated bot token before it can safely run
+alongside Walter again.
+
 ## Alternative fix: switch a broken-Codex profile straight to Anthropic (no OAuth needed)
 If Codex OAuth is missing entirely for a profile (no `openai-codex` entry in its auth
 store at all — not just expired) and you don't want to run the interactive OAuth login
@@ -155,7 +169,11 @@ confirms the key works and saves a wasted round-trip if it's dead. Edit only the
 against the new file to confirm nothing else moved. This path is lower-risk than the
 OpenRouter-key-masking landmine below since the Anthropic block has no secret to mask,
 but stay disciplined about not letting your edit boundary drift into the masked
-`openrouter.api_key` line sitting right below it.
+`openrouter.api_key` line sitting right below it. NOTE: this is only the right fix when
+the profile in question is the one that's SUPPOSED to own the user-facing bot — if it
+turns out to be an impostor squatting another profile's token (see Step 0.5), the right
+fix is usually to disable the impostor and start the real owner, not reconfigure the
+impostor's provider (real case below).
 
 ## Verifying the fix actually took (don't trust startup logs alone)
 Right after restarting the gateway, the agent log often shows a startup-time "fallback
