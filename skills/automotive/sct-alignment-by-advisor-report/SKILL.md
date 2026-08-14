@@ -203,6 +203,17 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   within normal encoding variance), HTML part 171,532B comfortably above the PNG*4/3
   floor. First-try clean draft, no rebuild needed. The DEALER_QUOTA outage looks resolved
   for good at this point — no further escalation language needed unless it recurs.
+  **Confirmed stable 2026-08-13 (3rd consecutive clean night):** no quota issues at all —
+  index built 1,903 closed ROs, 596 candidates, 0 failed, ~23 min scan (steady ~80
+  ROs/3min pace, checkpoint mtime advancing throughout — no backoff triggered). 165
+  alignments (148 dedicated + 17 bundled), 165 ROs, 16 advisors, top Cristian Gonzalez
+  (25). Stacey's build ask did NOT time out this time — completed in 114s on the first
+  try with sizes baked into the build ask (per the 07-22 prevention note), full
+  verification in her own reply (HTML 127,110B >= PNG*4/3=126,483; PDF part exactly
+  238,779B matching the file). A short `sleep 15` (not the usual 60s) before the
+  subject-anchored verify ask was enough — it answered in 44s with DRAFTS_COUNT=1,
+  correct TO, SENT_FOLDER_COUNT=0. Confirms the pipeline is now reliably stable
+  post-outage; a Stacey build timeout is no longer "usual", just occasional.
 - **OVERALL_QUOTA exhaustion (hit 2026-07-07):** distinct from OVERALL_RATELIMIT — this is
   the store's DAILY API quota being fully spent (other pipelines, e.g. a TOL backfill loop +
   caliber-ops scrapers, can burn it). EVERY call 429s
