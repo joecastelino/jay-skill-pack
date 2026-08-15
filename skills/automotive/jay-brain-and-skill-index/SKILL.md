@@ -605,6 +605,11 @@ stats 1066 pages/2106 chunks/2106 embedded/1891 links. Same shape as the streak 
 no-ops — 4-way AND check remains the reliable signal. gbrain self-upgrade still available
 (0.42.21.0->0.45.14.0), still informational-only, not acted on.
 
+## CLEAN NO-OP RE-CONFIRMED (2026-08-15 00:30 cron): disk 1060 .md == import scan total (0
+imported/1060 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1066 linkable, git tree clean,
+stats 1066 pages/2106 chunks/2106 embedded/1891 links. Identical to the earlier 2026-08-15 no-op —
+4-way AND check remains the reliable signal.
+
 ## ORPHAN REPAIR RUN (2026-08-14 21:00 cron): 2 orphans back-to-back (session-20260814_201855_b38215,
 then latecomer session-20260814_203028_bdaf79 appeared after the first re-import/embed pass). Both
 fixed with the standard hub→page pattern (`gbrain link index projects/session-<ts> --link-type
