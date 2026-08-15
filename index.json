@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-14T19:45:03",
+ "generated": "2026-08-14T20:00:25",
  "skill_count": 169,
  "skills": [
   {
@@ -91,20 +91,20 @@
    "last_used": "2026-08-11"
   },
   {
+   "name": "sct-alignment-by-advisor-report",
+   "path": "automotive/sct-alignment-by-advisor-report",
+   "category": "automotive",
+   "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
+   "times_used": 32,
+   "last_used": "2026-08-14"
+  },
+  {
    "name": "tekion-quotes-menu-price-diagnosis",
    "path": "automotive/tekion-quotes-menu-price-diagnosis",
    "category": "automotive",
    "description": "Diagnose a Tekion Service Menu pricing problem (e.g. \"a rotation is charging $449.45\") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLODE the menu into individual opcodes using the \"Add Menu Services as separate operations\" setting to find which opcode carries the bad price and its labor-rate method (Fixed vs Service Catalog Pro Dynamic Pricing). Use when Joe flags a wrong/inflated price on a maintenance menu line for a specific RO/vehicle.",
    "times_used": 32,
    "last_used": "2026-07-22"
-  },
-  {
-   "name": "sct-alignment-by-advisor-report",
-   "path": "automotive/sct-alignment-by-advisor-report",
-   "category": "automotive",
-   "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
-   "times_used": 31,
-   "last_used": "2026-08-13"
   },
   {
    "name": "tekion-autonomous-login",

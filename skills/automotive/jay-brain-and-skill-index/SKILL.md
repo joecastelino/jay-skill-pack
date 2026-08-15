@@ -576,6 +576,16 @@ imported/1054 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1060 linkab
 stats 1060 pages/2097 chunks/2097 embedded/1882 links. Same shape as the day's streak of no-ops —
 4-way AND check remains the reliable signal.
 
+## ORPHAN REPAIR RUN (2026-08-14 evening cron): first non-no-op in the recent streak — import was a
+clean no-op (0 imported/1056 skipped, disk 1056), but `gbrain orphans` found 1: a same-day session page
+(projects/session-20260814_190158_b179af, ironically titled "Nightly GBrain sync repaired orphan session
+index link") that had a body wikilink to index but no DB edge. Fixed with the standard hub→page pattern:
+`gbrain link index projects/session-<ts> --link-type references`, added it to index.md's Sessions list,
+committed, then final re-import+embed (re-imported index.md as 1 page/20 chunks since its content grew).
+Final state: 1062 pages/2099 chunks/2099 embedded/1884 links, orphans 0, git clean. Confirms the
+happy-path handles single-orphan repairs identically whether the import itself is a no-op or not —
+orphans/links/git-clean are the gating checks, not the import "pages imported" count.
+
 ## DIAGNOSTIC: Embedded < Chunks with `embed --stale` = 0 is usually a TRANSIENT, not a failure (2026-07-23)
 Mid-sync `gbrain stats` can show Embedded (e.g. 1627) < Chunks (1637) while `gbrain embed --stale`
 reports "0 stale found" — looks like the Embedded==Chunks invariant is broken with no way to fix it.
