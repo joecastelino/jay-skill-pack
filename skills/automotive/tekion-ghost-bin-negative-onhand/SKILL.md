@@ -234,6 +234,14 @@ BEFORE flagging it as a missed transfer:
   If it's been open 2+ days with no fix, escalate the report language ("day N of continuing
   drift — recommend Joe/Ronald look directly" instead of a fresh-sounding "-18→-19 ⚠️") so it
   doesn't get lost as noise in a daily list.
+- **17801-F4010 (bin 5006/companion 2418) is a RECURRING companion-bin-negative case, not a
+  one-off** — first documented 2026-08-11 (5006 Primary dropped 4→2, companion 2418 flipped to
+  -2), and the SAME exact pattern recurred 2026-08-14 (5006 Primary 6→4, companion 2418 still
+  at -2, Total Inventory Qty=2 not 4). Since 2418 isn't a tracked 5000-section bin, its negative
+  never shows in the snapshot diff on its own — you only catch it by pulling live Bin Details on
+  this specific part whenever 5006 changes. Treat this part like the MULTI-DAY ESCALATION rule
+  above: check its live Bin Details EVERY run regardless of whether 5006's diff alone looks like
+  a clean sale, and note recurrence count in the report rather than describing it as new each time.
 - **STANDALONE SINGLE-BIN NEGATIVE = a DIFFERENT case from the back-counter transfer scenario
   — don't apply transfer logic, but DO keep escalating it (verified 2026-08-13, SCT
   04500-1/PLUG&GASKET, bin 5005).** When `multipleBinNumbers: []` AND the bin has no companion
@@ -282,6 +290,25 @@ Session-recovery note (2026-07-23): finding :9223 parked on an unexpected page (
 Do NOT preemptively run login.py; also never run login.py inside an execute_code script —
 it can block on OTP polling and blow the 300s sandbox timeout. If needed, run it via
 terminal() with its own timeout or background=true.
+
+**`login.py --check` is a FILE-EXISTENCE check, NOT a server-side liveness probe (verified
+2026-08-14)** — it returns `{"file_ok": true, "detail": "137986B all-keys"}` just from reading
+the saved storage-state file's size/key-completeness. This is DIFFERENT from plain `login.py`
+(no flags), which does an actual server probe and prints `ALIVE`/`REUSED`/`LOGGED_IN`. A
+`--check` pass does NOT mean the saved session will authenticate — in this run the file was
+`file_ok:true` yet a full cookie+21-key inject into :9223 still bounced to the login form
+(stale token from the prior day). Don't waste a cycle trusting `--check`; either attempt one
+real injection and verify (`/navigate /home` → check for "Welcome back"/no "Username"), or if
+you already know the file is >1 day old, skip straight to `login.py --force`.
+
+**`login.py --force` can fail/crash 1-2 times before succeeding — loop it, don't treat one
+failure as a blocker (verified 2026-08-14):** attempt 1 printed `FAIL: no fresh token after
+verify` (OTP/verify race); attempt 2 crashed outright with
+`subprocess.TimeoutExpired: himalaya message read ... timed out after 20 seconds` (OTP email
+fetch via himalaya stalled); attempt 3 succeeded cleanly (`fresh OTP received` →
+`t_token exp in 129 min` → `LOGGED_IN`) in ~35s. Always run via `terminal(timeout=280)`, NEVER
+inside execute_code (blocks on OTP polling, blows the 300s sandbox cap). Retry up to 3x on
+FAIL/crash before escalating as a real blocker.
 
 **Daily watchdog cron run, verified clean end-to-end 2026-08-08:** when :9223 was fully
 dropped to `/login` (no salvageable session), `terminal(command="python3 login.py --force",
