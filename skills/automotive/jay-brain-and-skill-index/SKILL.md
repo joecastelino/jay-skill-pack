@@ -674,6 +674,16 @@ references`), each added to index.md's Sessions list, committed separately, fina
 Final state: 1066 pages/2105 chunks/2105 embedded/1891 links, orphans 0, git clean. Confirms
 looping the link+index+commit+reimport cycle until orphans==0 handles multi-orphan streaks reliably.
 
+## ORPHAN REPAIR RUN (2026-08-15 12:45→13:00 cron): first import was a clean no-op (0 imported/1063
+skipped, disk 1063), but `gbrain orphans` found 1 same-day session (projects/session-20260815_122802_52e46c,
+"BC daily closed menu scorecard drafted and verified") with no inbound edge. Fixed with the standard
+hub→page pattern (`gbrain link index projects/session-<ts> --link-type references`), added to index.md's
+Sessions list, committed, then final re-import+embed (index.md re-imported as 1 page/20 chunks, 14 of
+which were newly stale and got embedded — the other 6 already existed unchanged). Final state: 1069
+pages/2110 chunks/2110 embedded/1896 links, orphans 0, git clean. Confirms partial-chunk re-embed counts
+(embedded < chunks-created in the import step) are normal when only some chunks of a re-imported page
+actually changed content.
+
 ## ORPHAN REPAIR RUN (2026-08-14 evening cron): first non-no-op in the recent streak — import was a
 clean no-op (0 imported/1056 skipped, disk 1056), but `gbrain orphans` found 1: a same-day session page
 (projects/session-20260814_190158_b179af, ironically titled "Nightly GBrain sync repaired orphan session
