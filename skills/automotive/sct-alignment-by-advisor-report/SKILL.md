@@ -203,7 +203,7 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   within normal encoding variance), HTML part 171,532B comfortably above the PNG*4/3
   floor. First-try clean draft, no rebuild needed. The DEALER_QUOTA outage looks resolved
   for good at this point — no further escalation language needed unless it recurs.
-  **Confirmed stable 2026-08-13 (3rd consecutive clean night):** no quota issues at all —
+   Confirmed again 2026-08-13 (3rd consecutive clean night): no quota issues at all —
   index built 1,903 closed ROs, 596 candidates, 0 failed, ~23 min scan (steady ~80
   ROs/3min pace, checkpoint mtime advancing throughout — no backoff triggered). 165
   alignments (148 dedicated + 17 bundled), 165 ROs, 16 advisors, top Cristian Gonzalez
@@ -214,6 +214,27 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   subject-anchored verify ask was enough — it answered in 44s with DRAFTS_COUNT=1,
   correct TO, SENT_FOLDER_COUNT=0. Confirms the pipeline is now reliably stable
   post-outage; a Stacey build timeout is no longer "usual", just occasional.
+  **Confirmed again 2026-08-14 (4th consecutive clean night, quota fully healthy):**
+  index built 2,145 closed ROs, 682 candidates, 0 failed, ~25 min scan (19:02→19:27,
+  no backoff triggered). 190 alignments (168 dedicated + 22 bundled), 190 ROs, 16
+  advisors, top Cristian Gonzalez (26). Stacey's build completed clean on the first
+  ask (38s) with sizes baked in per 07-22 prevention. BUT the note-6 dedupe trap fired
+  anyway — a PARTS-list verify ask surfaced **3 draft UIDs** with that subject (59/67/72,
+  PDF parts 303,528B → 326,752B → 344,454B, growing each revision) even though only ONE
+  build ask was ever sent — Stacey's internal retry/revision process silently creates
+  extra draft copies without a distinct build request each time. Size math confirmed
+  the newest (UID 72, largest PDF) was the good one: HTML part 175,878B >=
+  PNG*4/3=127,743B; PDF part 344,454B is +2.6% over PDF*4/3=335,617B (normal encoding
+  variance). **Effective dedupe technique:** don't just say "delete duplicates" —
+  give her the EXACT UIDs to keep vs delete ("Keep ONLY UID 72, delete UID 59 and UID
+  67") from a PARTS-list ask that already enumerated them; this resolved cleanly in one
+  ask (59.9s) with a one-line confirm (DRAFTS_COUNT=1). Final verify showed
+  PDF_PART_BYTES=251,713 exactly matching the on-disk PDF file size — a clean, exact
+  byte-count match is the strongest possible confirmation, stronger than the ~4/3
+  encoded-size heuristic. Lesson: even on a fast, non-timing-out build night, ALWAYS
+  run the PARTS-list verify (not just a generic DRAFTS_COUNT ask) — it's the only ask
+  that reveals multiple UIDs so you can dedupe by exact UID instead of a vague
+  "delete the old ones" request.
 - **OVERALL_QUOTA exhaustion (hit 2026-07-07):** distinct from OVERALL_RATELIMIT — this is
   the store's DAILY API quota being fully spent (other pipelines, e.g. a TOL backfill loop +
   caliber-ops scrapers, can burn it). EVERY call 429s
