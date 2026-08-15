@@ -589,6 +589,40 @@ don't assume completion — always verify via subject-search before deciding whe
 just move to verification. If the draft isn't there, it's safe to just re-send the same hand-off
 message once (Stacey's dedupe/no-duplicate-found logic handles it fine either way).
 
+## Backgrounding the CLOSED daily-append run — don't over-engineer (learned 2026-08-14 8:05PM)
+The default (non-`--seed`) `tol_menu_sales_closed_mtd.py` run is a light daily-append —
+it typically finishes in well under a minute (8/14: ~10-15s for 158 closed ROs, 1 new
+menu row). Launching it with `terminal(background=true)` AND also appending a literal
+`&`/`echo "started with PID $!"` inside the command string is redundant and confusing —
+you get two PIDs (the bash wrapper's `$!` and the actual tracked session), and the
+top-level `process(action='wait', timeout=300)` call gets silently clamped to the
+configured 180s limit and returns immediately with just the launch line, not the result.
+Worse pitfall: don't write a custom polling loop in `execute_code` that shells out
+`pgrep -af '<script-name>'` repeatedly — each `pgrep -af` invocation matches its OWN
+command line (which contains the script name as a search string) and can look like the
+job is still "running" indefinitely, and a `time.sleep(15)`-loop burns through the whole
+300s `execute_code` timeout doing nothing useful once the real work is already done (log
+already shows the final `✓ all candidate ROs scanned (no truncation)` line on the very
+first check). **Simpler, faster pattern for this specific script:** just run it in the
+foreground with a generous timeout (`terminal(command=..., timeout=180)`, no
+background=true needed) — a daily append comfortably finishes inside that window unless
+a concurrent scraper/quota fight is happening (see the OVERALL_RATELIMIT/QUOTA sections
+above for when background+watch IS warranted, e.g. --seed or a 600s-cap trap). If you do
+background it, just poll `process(action='poll')` once or twice a short time apart, or
+`process(action='wait', timeout=60)` — don't loop pgrep checks.
+
+## Fully clean one-shot, zero exit-124s across ALL calls (2026-08-14 8:05PM)
+Another fully clean run end to end: hand-off (~98s), dedupe subject-search (~45s), MIME
+part-listing (~37s), and Sent-check (~36s) ALL returned on the first try with zero
+exit-124 timeouts — contradicts the usual expectation that at least the initial
+hand-off times out. Draft (id 71 that run) came out correct first try: subject exact
+with plain hyphen, greeting "Sean,", multipart/related > alternative(text/plain+html) +
+image/png Content-ID=scorecard + application/pdf, no rebuild needed. Dedupe count showed
+9 total stacked Closed-MTD drafts (Aug 1-2 through 1-14, one per day) with zero true
+duplicates — consistent with the known accumulation pattern (7c-count); don't touch the
+older ones. Sent-check used the definitive \Draft-flag-in-Drafts method: 0 exact-subject
+hits in Sent, target draft confirmed still in `[Gmail]/Drafts` with `\Draft \Seen` flags.
+
 ## Cross-store note
 This same pattern (clone the sibling pipeline, derive the store's OWN SERVICE_MENU opcode
 set, set dealer ID + recipient) applies to the remaining AMG stores (SV/AR/VC) when Joe
