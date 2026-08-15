@@ -576,6 +576,13 @@ imported/1054 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1060 linkab
 stats 1060 pages/2097 chunks/2097 embedded/1882 links. Same shape as the day's streak of no-ops —
 4-way AND check remains the reliable signal.
 
+## ORPHAN REPAIR RUN (2026-08-14 21:00 cron): 2 orphans back-to-back (session-20260814_201855_b38215,
+then latecomer session-20260814_203028_bdaf79 appeared after the first re-import/embed pass). Both
+fixed with the standard hub→page pattern (`gbrain link index projects/session-<ts> --link-type
+references`), each added to index.md's Sessions list, committed separately, final re-import+embed.
+Final state: 1066 pages/2105 chunks/2105 embedded/1891 links, orphans 0, git clean. Confirms
+looping the link+index+commit+reimport cycle until orphans==0 handles multi-orphan streaks reliably.
+
 ## ORPHAN REPAIR RUN (2026-08-14 evening cron): first non-no-op in the recent streak — import was a
 clean no-op (0 imported/1056 skipped, disk 1056), but `gbrain orphans` found 1: a same-day session page
 (projects/session-20260814_190158_b179af, ironically titled "Nightly GBrain sync repaired orphan session
