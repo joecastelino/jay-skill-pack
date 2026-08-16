@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-16T07:15:05",
+ "generated": "2026-08-16T07:30:24",
  "skill_count": 169,
  "skills": [
   {
@@ -275,20 +275,20 @@
    "last_used": "2026-08-11"
   },
   {
+   "name": "tekion-warranty-admin-closings",
+   "path": "automotive/tekion-warranty-admin-closings",
+   "category": "automotive",
+   "description": "Build a \"which warranty admin closed what tickets\" report for any AMG store from the Tekion OpenAPI \u2014 per-clerk RO counts, warranty $ and total RO $, month-to-date or any window. Verified SCT July 2026.",
+   "times_used": 9,
+   "last_used": "2026-08-16"
+  },
+  {
    "name": "tekion-writer-handoff-report",
    "path": "automotive/tekion-writer-handoff-report",
    "category": "automotive",
    "description": "Build a Tekion \"repair orders that closed under a DIFFERENT service writer than they were opened/created with\" report for any AMG store from the LIVE OpenAPI. Produces RO#, dollar total, opened-by writer, closed-by writer, date opened, date closed. Use when Joe asks for a service-writer handoff / reassignment audit (\"ROs that started with one writer and ended with another\", \"who opened vs who closed\", writer-change report).",
    "times_used": 9,
    "last_used": "2026-07-15"
-  },
-  {
-   "name": "tekion-warranty-admin-closings",
-   "path": "automotive/tekion-warranty-admin-closings",
-   "category": "automotive",
-   "description": "Build a \"which warranty admin closed what tickets\" report for any AMG store from the Tekion OpenAPI \u2014 per-clerk RO counts, warranty $ and total RO $, month-to-date or any window. Verified SCT July 2026.",
-   "times_used": 8,
-   "last_used": "2026-08-15"
   },
   {
    "name": "tekion-apc-docs-scraper",
