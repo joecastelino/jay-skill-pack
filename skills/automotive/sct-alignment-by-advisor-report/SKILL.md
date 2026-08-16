@@ -235,6 +235,21 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   run the PARTS-list verify (not just a generic DRAFTS_COUNT ask) — it's the only ask
   that reveals multiple UIDs so you can dedupe by exact UID instead of a vague
   "delete the old ones" request.
+  **Confirmed again 2026-08-15 (5th consecutive clean night, quota fully healthy,
+  no dedupe needed):** pre-flight OPS probe (same validated RO/job pair) returned 200
+  before launching — good habit to keep even on a healthy streak. Index built 2,272
+  closed ROs, 749 candidates, 0 failed, ~28 min scan (19:01→19:29, no backoff
+  triggered). 206 alignments (184 dedicated + 22 bundled), 206 ROs, 16 advisors, top
+  Cristian Gonzalez (26). Stacey's build completed clean on the FIRST ask (~122s) with
+  file paths + on-disk byte sizes baked in per 07-22 prevention — no rebuild needed.
+  Skipped the generic 5-field verify per note 15 and went straight to a
+  subject-substring-anchored ask ("DRAFTS_COUNT=1 | TO=kstapp@sctoyota.com |
+  SENT_FOLDER_COUNT=0") — clean, single draft, no duplicate-UID trap this time (unlike
+  8/14). Final PARTS check: HTML part 129,442B >= PNG*4/3=128,704B (inline PNG
+  confirmed); PDF part 259,684B is an EXACT byte-for-byte match to the on-disk PDF file
+  size (strongest possible confirmation per note 14). Two-ask verify (subject-anchored
+  count/recipient, then PARTS/RAW_SIZE) is now reliably sufficient — no need to run the
+  older combined 5-field ask at all on a healthy night.
 - **OVERALL_QUOTA exhaustion (hit 2026-07-07):** distinct from OVERALL_RATELIMIT — this is
   the store's DAILY API quota being fully spent (other pipelines, e.g. a TOL backfill loop +
   caliber-ops scrapers, can burn it). EVERY call 429s
