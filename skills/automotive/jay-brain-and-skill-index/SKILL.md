@@ -734,6 +734,15 @@ references`), each added to index.md's Sessions list, committed separately, fina
 Final state: 1066 pages/2105 chunks/2105 embedded/1891 links, orphans 0, git clean. Confirms
 looping the link+index+commit+reimport cycle until orphans==0 handles multi-orphan streaks reliably.
 
+## ORPHAN REPAIR RUN (2026-08-15 18:xx cron): first import was a clean no-op (0 imported/1063
+skipped, disk 1064), but `gbrain orphans` found 1 same-day session (projects/session-20260815_180557_8519c1,
+"SCT closed MTD scorecard emailed and verification skill patched") with no inbound edge. Fixed with the
+standard hub→page pattern (`gbrain link index projects/session-<ts> --link-type references`), added to
+index.md's Sessions list, committed, then final re-import+embed (index.md re-imported as 1 page/20 chunks,
+all newly embedded). Final state: 1070 pages/2113 chunks/2113 embedded/1898 links, orphans 0, git clean.
+Same shape as prior single-orphan repairs — confirms the pattern is stable. gbrain self-upgrade now shows
+0.42.21.0->0.46.2.0 (still informational-only, not acted on).
+
 ## ORPHAN REPAIR RUN (2026-08-15 12:45→13:00 cron): first import was a clean no-op (0 imported/1063
 skipped, disk 1063), but `gbrain orphans` found 1 same-day session (projects/session-20260815_122802_52e46c,
 "BC daily closed menu scorecard drafted and verified") with no inbound edge. Fixed with the standard
