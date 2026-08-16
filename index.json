@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-15T20:30:04",
+ "generated": "2026-08-15T20:45:59",
  "skill_count": 169,
  "skills": [
   {
@@ -23,8 +23,16 @@
    "path": "automotive/agent-to-agent-bridge",
    "category": "automotive",
    "description": "Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine.",
-   "times_used": 86,
-   "last_used": "2026-08-14"
+   "times_used": 87,
+   "last_used": "2026-08-15"
+  },
+  {
+   "name": "tol-menu-sales-reports",
+   "path": "automotive/tol-menu-sales-reports",
+   "category": "automotive",
+   "description": "Run the Toyota of Lancaster (TOL/TL, dealer 1092) Menu Sales scorecards \u2014 Daily Opened and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Sean Preston (spreston@tol-av.com). The Toyota-store sibling of the SCT/Kevin (sct-menu-sales-api-scorecard) and BC/Ruben (bc-menu-sales-reports) pipelines. Use for any \"TOL/TL/Toyota of Lancaster menu report\" or \"Sean Preston report\" request.",
+   "times_used": 53,
+   "last_used": "2026-08-15"
   },
   {
    "name": "tekion-openapi-repair-orders",
@@ -33,14 +41,6 @@
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
    "times_used": 52,
    "last_used": "2026-08-13"
-  },
-  {
-   "name": "tol-menu-sales-reports",
-   "path": "automotive/tol-menu-sales-reports",
-   "category": "automotive",
-   "description": "Run the Toyota of Lancaster (TOL/TL, dealer 1092) Menu Sales scorecards \u2014 Daily Opened and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Sean Preston (spreston@tol-av.com). The Toyota-store sibling of the SCT/Kevin (sct-menu-sales-api-scorecard) and BC/Ruben (bc-menu-sales-reports) pipelines. Use for any \"TOL/TL/Toyota of Lancaster menu report\" or \"Sean Preston report\" request.",
-   "times_used": 52,
-   "last_used": "2026-08-14"
   },
   {
    "name": "bt-tony-menu-rebuild",
@@ -71,8 +71,8 @@
    "path": "automotive/tekion-ghost-bin-negative-onhand",
    "category": "automotive",
    "description": "Diagnose a part showing NEGATIVE total on-hand in Tekion that stems from a CDK-migration \"ghost bin\" (a location-less legacy bin like 5005 / 5000 / 5001 / 5004 / RC1 / RC2 carried over at CDK\u2192Tekion cutover ~4 yrs ago). The negative lives ONLY on the bin record, has ZERO transactions, is invisible to physical inventory (out of count scope), and poisons the auto-replenishment math (OH+OnOrder stays under reorder point \u2192 perpetual over-ordering). Distinct from a real stock-out. Use when Joe says \"this part shows -11 on hand / negative on hand / auto replenishment isn't working\" AND the negative traces to a non-primary bin. Sibling of tekion-parts-autoorder-diagnosis (that one = velocity/BRP/BSL/Min stock-outs; THIS one = phantom bin balances). WRITE-SIDE FIX PATHS NOW LIVE (2026-07-03): Edit-Part redistribution (zero GL) vs bin-level OH adjustment \u2014 see FIX PATHS section. Case-B $ adjustments still require Joe's explicit go.",
-   "times_used": 37,
-   "last_used": "2026-08-14"
+   "times_used": 38,
+   "last_used": "2026-08-15"
   },
   {
    "name": "bc-gm-menu-build",
