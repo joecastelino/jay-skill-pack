@@ -1009,3 +1009,19 @@ imported/1068 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1074 linkab
 stats 1074 pages/2121 chunks/2121 embedded/1903 links. Identical to the 02:00 no-op — 4-way AND check
 remains the reliable signal. gbrain self-upgrade still available (0.42.21.0->0.46.2.0), still
 informational-only, not acted on.
+
+## FULL DREAM CYCLE (not just sync) CLEAN NO-OP CONFIRMED (2026-08-16 03:00 cron): ran the actual
+`gbrain dream --dir /home/itadmin/brain` (all ~20 phases: lint/backlinks/sync/synthesize/extract/
+extract_facts/resolve_symbol_edges/patterns/consolidate/propose_takes/grade_takes/embed/orphans/
+schema_suggest/purge), not just the sync-only happy-path. Result: sync `+0 added, ~1 modified` (the
+oversized skills/jay-brain-and-skill-index.md content-sanity WARN page got re-imported after this very
+skill file was edited earlier that session — harmless, already git-committed by session-end-sync's
+"skill backfill" commit before the dream ran), embed 0 newly embedded (0 stale), orphans 0 out of 1074
+total, git tree clean. `gbrain doctor --json --fast` returned health_score 90/status "warnings" — the
+2 warns are BENIGN and unrelated to sync health: `skill_conformance` "manifest.json not found" (doctor
+looking for a manifest.json for whatever single skill dir it resolved outside Jay's actual skill system)
+and `connection` "Skipping DB checks (--fast mode...)" (expected under --fast). Neither blocks anything;
+same as the standing guidance to trust orphans==0/embed-stale==0/git-clean over the doctor headline
+score. So: `gbrain dream` (full cycle) and the lighter `sync`-only happy path converge on the identical
+no-op signal when the 15-min session-end-sync has already kept the brain current — no orphan-linking or
+extra remediation needed this run.
