@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-15T18:15:02",
+ "generated": "2026-08-15T18:30:28",
  "skill_count": 169,
  "skills": [
   {
@@ -347,6 +347,14 @@
    "last_used": "2026-07-24"
   },
   {
+   "name": "sct-menu-sales-closed-mtd-scorecard",
+   "path": "automotive/sct-menu-sales-closed-mtd-scorecard",
+   "category": "automotive",
+   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales CLOSED Month-To-Date scorecard pipeline from the LIVE Tekion OpenAPI (incremental design) and email the PDF to Joe via Stacey. This is the daily 6 PM companion to the noon/5pm \"Opened\" report (see sct-menu-sales-api-scorecard). Covers the incremental master-file design, the ongoing DEALER_QUOTA outage caveat, and the ask-agent send-confirmation timeout workaround.",
+   "times_used": 5,
+   "last_used": "2026-08-15"
+  },
+  {
    "name": "tekion-alignment-by-advisor-report",
    "path": "automotive/tekion-alignment-by-advisor-report",
    "category": "automotive",
@@ -369,14 +377,6 @@
    "description": "Fix an AMG Hermes agent that is silent on Slack because its SLACK_BOT_TOKEN/SLACK_APP_TOKEN are missing or wrong in the profile .env \u2014 including recovering LOST tokens from old session transcripts without asking Joe to regenerate them at api.slack.com. Use when an agent's service is running but it never answers Slack messages (Autumn case, 2026-07-14).",
    "times_used": 4,
    "last_used": "2026-07-14"
-  },
-  {
-   "name": "sct-menu-sales-closed-mtd-scorecard",
-   "path": "automotive/sct-menu-sales-closed-mtd-scorecard",
-   "category": "automotive",
-   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales CLOSED Month-To-Date scorecard pipeline from the LIVE Tekion OpenAPI (incremental design) and email the PDF to Joe via Stacey. This is the daily 6 PM companion to the noon/5pm \"Opened\" report (see sct-menu-sales-api-scorecard). Covers the incremental master-file design, the ongoing DEALER_QUOTA outage caveat, and the ask-agent send-confirmation timeout workaround.",
-   "times_used": 4,
-   "last_used": "2026-08-12"
   },
   {
    "name": "tekion-opcode-create",
