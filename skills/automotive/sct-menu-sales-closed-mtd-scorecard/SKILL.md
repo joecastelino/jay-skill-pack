@@ -57,6 +57,20 @@ Work dir: `/home/itadmin/tekion-reports`
 4. Vision-verify the PNG (title, 4 KPIs, real advisor names not UUIDs, no
    NaN/cut-off). **An empty table with "No menu sales recorded yet for this
    period" is a VALID render** — don't treat it as a renderer bug.
+   - **Pitfall (verified 2026-08-15): `vision_analyze` OCR is noisy on this dense
+     table and gives DIFFERENT wrong details on repeated calls against the same
+     PNG** — e.g. across 3 calls on the same image it read the dealer name as
+     both "Stevens Creek Toyota" (correct) and "Stevens Creek Chrysler Jeep
+     Dodge" (wrong/hallucinated), and per-advisor menu counts/totals drifted
+     between calls (Jaime Sanchez read as 6 vs 8 menus, Cristian Gonzalez 6 vs
+     7, etc.) even though the KPI header totals ($ labor/parts/total, menu
+     count) stayed consistently correct across all calls. **Treat vision_analyze
+     as a structural check only** (title text present + says Closed/MTD, 4 KPI
+     cards present, advisor names look like human names not hex/UUIDs, no
+     NaN/null/cut-off) — do NOT trust its transcribed per-advisor numbers or
+     dealer name as ground truth. Cross-check any numeric claims against the
+     source JSON's `.totals`/`.row_count`/`.rows` directly in Python instead of
+     relying on what vision reports back.
 5. Email via Stacey: draft first (recipient jcastelino@americanmotorscorp.com,
    subject `Menu Sales — Closed MTD Performance Report — SCT <m/d/yy>`,
    attach PDF by full path, body = MTD totals + row_count from the JSON's
