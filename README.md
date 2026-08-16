@@ -2,7 +2,7 @@
 
 Skill library for **Jay**, the Tekion DMS specialist agent at American Motors Group — plus general-purpose agent skills. Built for the [Hermes Agent](https://github.com/NousResearch) skill system (`SKILL.md` + YAML frontmatter, with optional `references/`, `scripts/`, `templates/`).
 
-**169 skills** · auto-synced from the live agent · last sync: 2026-08-16 07:00
+**169 skills** · auto-synced from the live agent · last sync: 2026-08-16 07:15
 
 ## Install into another agent
 
