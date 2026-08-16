@@ -769,6 +769,15 @@ Final state: 1062 pages/2099 chunks/2099 embedded/1884 links, orphans 0, git cle
 happy-path handles single-orphan repairs identically whether the import itself is a no-op or not —
 orphans/links/git-clean are the gating checks, not the import "pages imported" count.
 
+## ORPHAN REPAIR RUN (2026-08-15 evening cron): import was a clean no-op (0 imported/1066 skipped,
+disk 1066), but `gbrain orphans` found 1 same-day session (projects/session-20260815_193420_84963d,
+"SCT alignment report completed with clean draft verification") with no inbound edge. Fixed with the
+standard hub→page pattern (`gbrain link index projects/session-<ts> --link-type references`), added to
+index.md's Sessions list, committed, then final re-import+embed (index.md re-imported as 1 page/20
+chunks, all newly embedded). Final state: 1072 pages/2117 chunks/2117 embedded/1901 links, orphans 0,
+git clean. Same shape as the prior single-orphan repairs — pattern remains stable. gbrain self-upgrade
+now shows 0.42.21.0->0.46.2.0 (still informational-only, not acted on).
+
 ## DIAGNOSTIC: Embedded < Chunks with `embed --stale` = 0 is usually a TRANSIENT, not a failure (2026-07-23)
 Mid-sync `gbrain stats` can show Embedded (e.g. 1627) < Chunks (1637) while `gbrain embed --stale`
 reports "0 stale found" — looks like the Embedded==Chunks invariant is broken with no way to fix it.

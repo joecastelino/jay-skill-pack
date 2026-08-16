@@ -242,6 +242,15 @@ BEFORE flagging it as a missed transfer:
   this specific part whenever 5006 changes. Treat this part like the MULTI-DAY ESCALATION rule
   above: check its live Bin Details EVERY run regardless of whether 5006's diff alone looks like
   a clean sale, and note recurrence count in the report rather than describing it as new each time.
+- **NEW MULTI-DAY ESCALATION TRACKED (2026-08-15): 31532 (LOW VISCOSITY FULL SYN. ATF), bin
+  5001, Primary = SP-ORD (qty 0), non-primary companions 2615 (qty 0) and 5001 itself.** Flat
+  at -20 for the entire month of July into early Aug, then deepened -20→-25 on 2026-08-14, and
+  -25→-29 on 2026-08-15 — 2 consecutive days of deepening after a long flat period. Same
+  pattern class as 87139-YZZ09/17801-F4010/04500-1: check this part's full multi-day history
+  on every future run (not just yesterday-vs-today) and report it as "day N of continuing
+  drift," not a fresh-sounding delta. NOTE the Primary here is SP-ORD, not a front-counter bin
+  like 2420/24xx — this is NOT a 5000s→front-counter transfer case, it's a standalone
+  escalating negative needing direct investigation, same framing as 04500-1.
 - **STANDALONE SINGLE-BIN NEGATIVE = a DIFFERENT case from the back-counter transfer scenario
   — don't apply transfer logic, but DO keep escalating it (verified 2026-08-13, SCT
   04500-1/PLUG&GASKET, bin 5005).** When `multipleBinNumbers: []` AND the bin has no companion
