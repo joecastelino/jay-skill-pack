@@ -589,6 +589,19 @@ don't assume completion — always verify via subject-search before deciding whe
 just move to verification. If the draft isn't there, it's safe to just re-send the same hand-off
 message once (Stacey's dedupe/no-duplicate-found logic handles it fine either way).
 
+## Combining Sent-check + Draft-flag-check into ONE ask can time out (2026-08-15 8:05PM)
+A single verification ask that bundled BOTH "search Sent Mail for exact subject" AND "confirm
+the draft still has the \Draft flag in [Gmail]/Drafts" hit the ~170s exit-124 timeout. Splitting
+it into two separate terse single-question asks (sleep ~45s between them) returned cleanly and
+fast (Sent: 0 in ~69s, Draft flag: yes in ~34s). Keep the Sent-count check and the \Draft-flag
+confirmation as TWO separate asks, not one combined ask — this is a specific case of the general
+"split verification into tiny single-question asks" guidance (item 4 above), now confirmed for
+this exact pairing. That run overall was a fully clean one-shot: no MIME rebuild needed (html +
+png cid=scorecard + pdf attachment correct first try), dedupe handled automatically by Stacey
+without a separate follow-up instruction (1 noon duplicate, UID 72, found and deleted on her own),
+subject-search/MIME-listing verification asks both returned first try, only the combined Sent+flag
+ask needed the split-and-retry.
+
 ## Backgrounding the CLOSED daily-append run — don't over-engineer (learned 2026-08-14 8:05PM)
 The default (non-`--seed`) `tol_menu_sales_closed_mtd.py` run is a light daily-append —
 it typically finishes in well under a minute (8/14: ~10-15s for 158 closed ROs, 1 new
