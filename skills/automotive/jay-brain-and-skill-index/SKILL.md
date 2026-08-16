@@ -733,6 +733,17 @@ stats 1071 pages/2115 chunks/2115 embedded/1900 links. Same shape as the day's f
 4-way AND check remains the reliable signal. gbrain self-upgrade still available (0.42.21.0->0.46.2.0),
 still informational-only, not acted on.
 
+## ORPHAN REPAIR RUN (2026-08-15 20:46 cron): first import picked up 2 fresh same-day sessions
+(2 pages imported/3 chunks, disk 1068), `embed --stale` embedded both immediately, but `gbrain orphans`
+still found both (session-20260815_201131_03d991 "TOL menu sales draft verification workflow refined"
+and session-20260815_201758_3ca483 "Tekion persistent browser and SCT bin watchdog playbook") with no
+inbound edge. Fixed both with the standard hub→page pattern (`gbrain link index projects/session-<ts>
+--link-type references`), added both to index.md's Sessions list in one edit, committed, then final
+re-import+embed (index.md re-imported as 1 page/20 chunks, all newly embedded). Final state: 1074
+pages/2120 chunks/2120 embedded/1903 links, orphans 0, git clean. Confirms multi-orphan streaks from a
+single import batch (not just latecomers across passes) are handled the same way — link both, edit
+index.md once, commit once, then one final reimport+embed pass.
+
 ## ORPHAN REPAIR RUN (2026-08-14 21:00 cron): 2 orphans back-to-back (session-20260814_201855_b38215,
 then latecomer session-20260814_203028_bdaf79 appeared after the first re-import/embed pass). Both
 fixed with the standard hub→page pattern (`gbrain link index projects/session-<ts> --link-type
