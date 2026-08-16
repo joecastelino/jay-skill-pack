@@ -961,3 +961,9 @@ To remove a stale brain page immediately (don't wait for 3 AM orphan-purge): `gb
 - **The brain repo is gitignored in places + shared** — Jay pages live among other agents'; that's
   expected. A future task may split out a Jay-only DB (queued, low priority).
 - Memory tool is FULL (~98%) — put the fuller record in the brain, keep memory for compact facts.
+
+## CLEAN NO-OP RE-CONFIRMED (2026-08-15 21:15 cron): disk 1068 .md == import scan total (0
+imported/1068 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1074 linkable, git tree clean,
+stats 1074 pages/2120 chunks/2120 embedded/1903 links. Same shape as the day's full streak of no-ops —
+4-way AND check remains the reliable signal. gbrain self-upgrade still available (0.42.21.0->0.46.2.0),
+still informational-only, not acted on.
