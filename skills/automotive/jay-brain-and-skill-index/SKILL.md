@@ -1042,8 +1042,14 @@ informational-only, not acted on.
 
 ## CLEAN NO-OP RE-CONFIRMED (2026-08-16 07:30 cron): disk 1068 .md == import scan total (0
 imported/1068 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1074 linkable, git tree clean,
-stats 1074 pages/2123 chunks/2123 embedded/1903 links. Identical to the 06:30 no-op — 4-way AND check
+stats 1075 pages/2123 chunks/2123 embedded/1903 links. Identical to the 06:30 no-op — 4-way AND check
 remains the reliable signal. gbrain self-upgrade now shows 0.42.21.0->0.46.6.0, still
+informational-only, not acted on.
+
+## CLEAN NO-OP RE-CONFIRMED (2026-08-16 08:45 cron): disk 1069 .md == import scan total (0
+imported/1069 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1075 linkable, git tree clean,
+stats 1075 pages/2124 chunks/2124 embedded/1904 links. Same shape as the 07:30 no-op — 4-way AND
+check remains the reliable signal. gbrain self-upgrade still available (0.42.21.0->0.46.6.0), still
 informational-only, not acted on.
 
 ## ORPHAN REPAIR RUN (2026-08-16 07:45 cron): import was a clean no-op (0 imported/1069 skipped,
