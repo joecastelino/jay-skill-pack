@@ -1114,6 +1114,15 @@ stats 1075 pages/2126 chunks/2126 embedded/1904 links. Identical to the 16:46 no
 remains the reliable signal. gbrain self-upgrade still available (0.42.21.0->0.46.6.0), still
 informational-only, not acted on.
 
+## ORPHAN REPAIR RUN (2026-08-16 21:38 cron): import picked up 1 fresh same-day session (1 imported/
+1075 skipped, disk 1076, 1 chunk), embed --stale embedded it immediately, but `gbrain orphans` still
+found it (projects/session-20260816_213818_d828ea, "Nightly GBrain Sync Verified Canonical Brain
+Path") with no inbound edge. Fixed with the standard hub→page pattern (`gbrain link index
+projects/session-<ts> --link-type references`), added to index.md's Sessions list, committed, then
+final re-import+embed (index.md re-imported as 1 page/20 chunks, 1 newly stale and embedded). Final
+state: 1082 pages/2134 chunks/2134 embedded/1912 links, orphans 0, git clean. Same shape as the long
+streak of prior single-orphan repairs — pattern remains stable.
+
 ## FULL DREAM CYCLE (not just sync) CLEAN NO-OP CONFIRMED (2026-08-16 03:00 cron): ran the actual
 `gbrain dream --dir /home/itadmin/brain` (all ~20 phases: lint/backlinks/sync/synthesize/extract/
 extract_facts/resolve_symbol_edges/patterns/consolidate/propose_takes/grade_takes/embed/orphans/
