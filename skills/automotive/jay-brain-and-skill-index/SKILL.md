@@ -499,6 +499,11 @@ imported/1049 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1055 linkab
 stats 2089 chunks/2089 embedded/1877 links (self-upgrade 0.42.21.0->0.45.12.0 still just informational,
 not acted on). Third consecutive 2026-08-14 no-op — 4-way AND check remains the reliable signal.
 
+## CLEAN NO-OP RE-CONFIRMED (2026-08-17 cron, midday): disk 1084 .md == import scan total (0
+imported/1084 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1090 linkable, git tree clean,
+stats 1090 pages/2151 chunks/2151 embedded/1924 links (self-upgrade 0.42.21.0->0.46.12.3 informational
+only). Same shape as the long no-op streak — session-end-sync had already caught everything up.
+
 ## CLEAN NO-OP RE-CONFIRMED (2026-08-14 cron, run #4): disk 1049 .md == import scan total (0
 imported/1049 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1055 linkable, git tree clean,
 stats 1055 pages/2089 chunks/2089 embedded/1877 links. Fourth consecutive 2026-08-14 no-op — 4-way
