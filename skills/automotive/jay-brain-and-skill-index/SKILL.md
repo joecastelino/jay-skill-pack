@@ -397,6 +397,11 @@ scan total (0 imported/1039 skipped/0 errors), `embed --stale`=0, orphans 0 out 
 tree clean, stats 1045 pages/2067 chunks/2067 embedded/1862 links. Identical shape to run #5 — the
 4-way AND check remains the reliable no-op signal; no latecomer/link/commit work needed this pass.
 
+## CLEAN NO-OP RE-CONFIRMED (2026-08-17 cron): disk 1084 .md == import scan total (0 imported/1084
+skipped/0 errors), `embed --stale`=0, orphans 0 out of 1090 linkable, git tree clean, stats 1090
+pages/2151 chunks/2151 embedded/1924 links. Same 4-way-AND no-op shape as prior confirmations —
+session-end-sync had already caught everything up before this cron ran.
+
 ## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #7, morning): disk 1039 .md == import scan total (0
 imported/1039 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1045 linkable, git tree clean,
 stats 1045 pages/2067 chunks/2067 embedded/1862 links. Identical shape to run #6 — the 4-way AND check
