@@ -1,13 +1,13 @@
 {
- "generated": "2026-08-17T16:00:03",
- "skill_count": 170,
+ "generated": "2026-08-17T16:15:26",
+ "skill_count": 171,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 183,
+   "times_used": 184,
    "last_used": "2026-08-17"
   },
   {
@@ -839,6 +839,14 @@
    "path": "automotive/tekion-technician-queue-dispatch",
    "category": "automotive",
    "description": "Explains Tekion's Technician Queue / Claim Work auto-dispatch behavior \u2014 why a tech gets pulled out of the queue when an advisor opens/reopens an RO, and what settings can change that behavior. Use when diagnosing \"why did my tech get grabbed out of queue\" or \"can we stop a tech from being pulled on RO reopen\" questions.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-vi-stock-number-rules-fix",
+   "path": "automotive/tekion-vi-stock-number-rules-fix",
+   "category": "automotive",
+   "description": "Fix Tekion Vehicle Inventory Stock# Rules (Vehicle Inventory Setup > Stock# Rules) when a trade-in of a given Make generates a wrong/random stock number instead of the expected prefix (e.g. Mercedes-Benz trade-in not getting an \"S...\" stock#). Covers navigating to /vi/visettings, editing a rule's Make multi-select via the persistent browser, the modal-scroll gotcha, the two-level Save requirement, and true-remount verification. Verified live at SCT (dealer 876) 2026-08-17.",
    "times_used": 0,
    "last_used": null
   },
