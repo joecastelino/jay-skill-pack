@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-17T06:45:09",
+ "generated": "2026-08-17T07:00:29",
  "skill_count": 170,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 111,
-   "last_used": "2026-08-13"
+   "times_used": 112,
+   "last_used": "2026-08-17"
   },
   {
    "name": "agent-to-agent-bridge",
@@ -55,8 +55,8 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 40,
-   "last_used": "2026-08-13"
+   "times_used": 41,
+   "last_used": "2026-08-17"
   },
   {
    "name": "sct-menu-sales-api-scorecard",
