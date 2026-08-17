@@ -235,6 +235,21 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   run the PARTS-list verify (not just a generic DRAFTS_COUNT ask) — it's the only ask
   that reveals multiple UIDs so you can dedupe by exact UID instead of a vague
   "delete the old ones" request.
+  **Confirmed again 2026-08-16 (6th consecutive clean night, quota fully healthy):**
+  pre-flight OPS probe (same validated RO/job pair) returned 200. Index built 2,364
+  closed ROs, 771 candidates, 0 failed, ~30 min scan (19:01→19:31, no backoff
+  triggered). 221 alignments (199 dedicated + 22 bundled), 221 ROs, 16 advisors, top
+  Cristian Gonzalez (28). Stacey's build completed clean on the FIRST ask (~138s)
+  with file path + on-disk byte sizes baked in. Verify used the standard two-ask
+  minimal set: subject-substring-anchored DRAFTS_COUNT/TO/SENT_FOLDER_COUNT (clean:
+  1/kstapp@sctoyota.com/0) then a PARTS ask — PDF part 266,726B exact byte match to
+  file; HTML part 128,131B >= PNG*4/3=127,280B. Note: the PARTS ask reported "3
+  drafts match that substring" — these were 3 DIFFERENT NIGHTS' drafts (8/14, 8/15,
+  8/16, all with distinct through-dates in the subject), not duplicates of the same
+  night; the earlier DRAFTS_COUNT=1 (dated-today filter) already confirmed only one
+  draft for tonight specifically. Don't confuse a multi-night substring match with
+  same-night duplication — check the through-date in each match before assuming a
+  dedupe is needed.
   **Confirmed again 2026-08-15 (5th consecutive clean night, quota fully healthy,
   no dedupe needed):** pre-flight OPS probe (same validated RO/job pair) returned 200
   before launching — good habit to keep even on a healthy streak. Index built 2,272
