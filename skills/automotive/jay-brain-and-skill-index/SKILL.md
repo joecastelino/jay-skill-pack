@@ -1180,6 +1180,16 @@ final re-import+embed (index.md re-imported as 1 page/20 chunks, 1 newly stale a
 state: 1084 pages/2141 chunks/2141 embedded/1915 links, orphans 0, git clean. Same shape as the long
 streak of prior single-orphan repairs — pattern remains stable.
 
+## ORPHAN REPAIR RUN (2026-08-17 07:15 cron): import was a clean no-op (0 imported/1080 skipped,
+disk 1080), but `gbrain orphans` found 2 same-day sessions (projects/session-20260817_062840_dc9cd5
+"Tekion vendor data sharing audit across AMG stores" and projects/session-20260817_064329_2064a8
+"Tekion vendor data sharing audit workflow and findings") with no inbound edge. Fixed both with the
+standard hub→page pattern (`gbrain link index projects/session-<ts> --link-type references`), added
+both to index.md's Sessions list in one edit, committed, then final re-import+embed (index.md
+re-imported as 1 page/20 chunks, all newly embedded). Final state: 1086 pages/2146 chunks/2146
+embedded/1919 links, orphans 0, git clean. Same shape as prior multi-orphan repairs — pattern
+remains stable.
+
 ## FULL DREAM CYCLE (not just sync) CLEAN NO-OP CONFIRMED (2026-08-16 03:00 cron): ran the actual
 `gbrain dream --dir /home/itadmin/brain` (all ~20 phases: lint/backlinks/sync/synthesize/extract/
 extract_facts/resolve_symbol_edges/patterns/consolidate/propose_takes/grade_takes/embed/orphans/
