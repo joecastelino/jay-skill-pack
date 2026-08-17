@@ -1190,6 +1190,16 @@ re-imported as 1 page/20 chunks, all newly embedded). Final state: 1086 pages/21
 embedded/1919 links, orphans 0, git clean. Same shape as prior multi-orphan repairs — pattern
 remains stable.
 
+## ORPHAN REPAIR RUN (2026-08-17 cron): first import was a clean no-op (0 imported/1081 skipped,
+disk 1081), but `gbrain orphans` found 1 same-day session (projects/session-20260817_070457_8f95ad,
+"BC Warranty Closings Zero Day Verification Skill Update") with no inbound edge. Fixed with the
+standard hub→page pattern (`gbrain link index projects/session-<ts> --link-type references`), added
+to index.md's Sessions list, committed, then final re-import+embed (index.md re-imported as 1
+page/20 chunks, all newly embedded). Final state: 1087 pages/2147 chunks/2147 embedded/1921 links,
+orphans 0, git clean. Same shape as the long streak of prior single-orphan repairs — pattern
+remains stable. gbrain self-upgrade still available (0.42.21.0->0.46.12.3), still informational-only,
+not acted on.
+
 ## FULL DREAM CYCLE (not just sync) CLEAN NO-OP CONFIRMED (2026-08-16 03:00 cron): ran the actual
 `gbrain dream --dir /home/itadmin/brain` (all ~20 phases: lint/backlinks/sync/synthesize/extract/
 extract_facts/resolve_symbol_edges/patterns/consolidate/propose_takes/grade_takes/embed/orphans/
