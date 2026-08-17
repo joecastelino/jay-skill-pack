@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-17T09:00:09",
+ "generated": "2026-08-17T09:15:52",
  "skill_count": 170,
  "skills": [
   {
@@ -7,8 +7,8 @@
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 177,
-   "last_used": "2026-08-16"
+   "times_used": 178,
+   "last_used": "2026-08-17"
   },
   {
    "name": "persistent-browser-server",
@@ -459,6 +459,14 @@
    "last_used": "2026-07-20"
   },
   {
+   "name": "tekion-uber-lyft-transportation-swap",
+   "path": "automotive/tekion-uber-lyft-transportation-swap",
+   "category": "automotive",
+   "description": "Reference for the AMG project to replace Tekion's native Lyft transportation/ride-fee integration with Uber. Load when asked about Uber API integration, swapping Lyft for Uber in Tekion, or prepping for Uber engineering team talks.",
+   "times_used": 3,
+   "last_used": "2026-08-17"
+  },
+  {
    "name": "gbrain-install",
    "path": "note-taking/gbrain-install",
    "category": "note-taking",
@@ -657,14 +665,6 @@
    "description": "Get ACTUAL technician clocked time (punch time) per OPCODE / per RO / per tech from Tekion via the internal rosearchservice visibility-dashboard TECH_CLOCK datasource, and join it against billed hours to find over-clock / unapplied-time gaps by opcode. Use when Joe asks \"which opcode has the most unapplied time\", \"actual vs billed hours by opcode\", tech clock time analysis, or proficiency drill-downs below the per-technician grain. Verified SV (826) 2026-07-20.",
    "times_used": 1,
    "last_used": "2026-07-20"
-  },
-  {
-   "name": "tekion-uber-lyft-transportation-swap",
-   "path": "automotive/tekion-uber-lyft-transportation-swap",
-   "category": "automotive",
-   "description": "Reference for the AMG project to replace Tekion's native Lyft transportation/ride-fee integration with Uber. Load when asked about Uber API integration, swapping Lyft for Uber in Tekion, or prepping for Uber engineering team talks.",
-   "times_used": 1,
-   "last_used": "2026-08-06"
   },
   {
    "name": "tekion-vendor-data-sharing-audit",
