@@ -2,7 +2,7 @@
 
 Skill library for **Jay**, the Tekion DMS specialist agent at American Motors Group — plus general-purpose agent skills. Built for the [Hermes Agent](https://github.com/NousResearch) skill system (`SKILL.md` + YAML frontmatter, with optional `references/`, `scripts/`, `templates/`).
 
-**169 skills** · auto-synced from the live agent · last sync: 2026-08-16 21:45
+**169 skills** · auto-synced from the live agent · last sync: 2026-08-16 22:00
 
 ## Install into another agent
 
@@ -17,7 +17,7 @@ Secrets (passwords, app passwords, tokens) are redacted with `<PLACEHOLDER>` mar
 
 | # | Skill | Category | Uses | Last used | Description |
 |---|-------|----------|-----:|-----------|-------------|
-| 1 | [`jay-brain-and-skill-index`](skills/automotive/jay-brain-and-skill-index/SKILL.md) | automotive | 176 | 2026-08-16 | Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is "command not found", w... |
+| 1 | [`jay-brain-and-skill-index`](skills/automotive/jay-brain-and-skill-index/SKILL.md) | automotive | 177 | 2026-08-16 | Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is "command not found", w... |
 | 2 | [`persistent-browser-server`](skills/automotive/persistent-browser-server/SKILL.md) | automotive | 111 | 2026-08-13 | Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the "browser blanks to about... |
 | 3 | [`agent-to-agent-bridge`](skills/automotive/agent-to-agent-bridge/SKILL.md) | automotive | 88 | 2026-08-16 | Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine. |
 | 4 | [`tol-menu-sales-reports`](skills/automotive/tol-menu-sales-reports/SKILL.md) | automotive | 54 | 2026-08-16 | Run the Toyota of Lancaster (TOL/TL, dealer 1092) Menu Sales scorecards — Daily Opened and Closed Month-To-Date — from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Sean Preston (spreston@tol-av.com). The Toy... |
