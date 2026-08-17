@@ -523,6 +523,21 @@ skill's dedup section already says — `grep "BC m/d"` — not a bare/partial
 subject string), or you'll mistake yesterday's still-present draft for a
 same-day duplicate.
 
+## 2026-08-16 5pm Daily Closed run — clean zero-menu day, confirms $0.00 zero-count reporting works fine
+0 menus closed today, $0.00/$0.00/$0.00 total. Data pull + render clean (`✓ all
+candidate ROs scanned`). Stacey's build succeeded on the FIRST ask (~110s, no
+timeout) using the literal-numbers rule (embedded "0 menus, $0.00 total" as
+exact text, told her not to regenerate). Only deviation from a normal run: a
+noon draft (42246) for the SAME date/subject already existed with 0 menus too
+(both noon and 5pm runs found 0 closed menus that day) — this is a genuine
+same-day leftover per the twice-daily cadence note, not a new-bug duplicate;
+expunged it, kept the 5pm draft (42248). Byte-for-byte self-serve PNG
+verification (export --full, decode outer base64 CTE on the text/html part,
+regex out data:image/png;base64 payload, decode, compare bytes to source PNG)
+confirmed exact match. To=Restrada only/no Cc/From=Joe, PDF attachment
+confirmed present in raw export, Sent Mail count for this subject = 0. Zero
+menus closed is valid data, not an error — report it plainly.
+
 ## 2026-08-06 5pm Daily Closed run — full trap sequence hit again, playbook held
 5 menus, $1,744.99 labor / $820.10 parts = $2,565.09 (Juan Ramirez 4 menus, Erik
 Mercado 1). Data pull + render clean (`✓ all candidate ROs scanned`). Stacey's
