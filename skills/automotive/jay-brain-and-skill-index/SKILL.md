@@ -1199,6 +1199,16 @@ stats 1149 pages/2226 chunks/2226 embedded/2002 links. Same 4-way AND no-op shap
 streak of prior confirmations — session-end-sync had already caught everything up. gbrain
 self-upgrade still available (0.42.21.0->0.46.19.0), still informational-only, not acted on.
 
+## ORPHAN REPAIR RUN (2026-08-18 11:30 cron): import was a clean no-op (0 imported/1144 skipped,
+disk 1144), but `gbrain orphans` found 1 same-day session (projects/session-20260818_105302_a0052b,
+"SCT Tekion filter sales report extraction setup") with no inbound edge. Fixed with the standard
+hub→page pattern (`gbrain link index projects/session-<ts> --link-type references`), added to
+index.md's Sessions list, committed, then final re-import+embed (index.md re-imported as 1 page/22
+chunks, 2 newly stale and embedded). Final state: 1150 pages/2228 chunks/2228 embedded/2004 links,
+orphans 0, git clean. Same shape as the long streak of prior single-orphan repairs — pattern
+remains stable. gbrain self-upgrade still available (0.42.21.0->0.46.19.0), still
+informational-only, not acted on.
+
 ## FULL DREAM CYCLE (not just sync) CLEAN NO-OP CONFIRMED (2026-08-16 03:00 cron): ran the actual
 `gbrain dream --dir /home/itadmin/brain` (all ~20 phases: lint/backlinks/sync/synthesize/extract/
 extract_facts/resolve_symbol_edges/patterns/consolidate/propose_takes/grade_takes/embed/orphans/
