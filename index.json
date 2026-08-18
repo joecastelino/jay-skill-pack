@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-18T14:00:20",
+ "generated": "2026-08-18T14:15:27",
  "skill_count": 174,
  "skills": [
   {
@@ -23,7 +23,7 @@
    "path": "automotive/agent-to-agent-bridge",
    "category": "automotive",
    "description": "Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine.",
-   "times_used": 91,
+   "times_used": 92,
    "last_used": "2026-08-18"
   },
   {
@@ -491,6 +491,14 @@
    "last_used": "2026-07-14"
   },
   {
+   "name": "jay-gmail-draft-verification",
+   "path": "automotive/jay-gmail-draft-verification",
+   "category": "automotive",
+   "description": "Independently verify a Gmail draft/send that Stacey (email-agent) reports she created \u2014 confirm it's actually in Drafts/Sent with correct recipients, body, and attachments, without trusting her self-report alone. Use whenever Joe asks to \"chase\" or double-check an email Jay routed through Stacey, or when Jay's own Gmail-dependent flow (himalaya/Google API) throws auth errors.",
+   "times_used": 2,
+   "last_used": "2026-08-18"
+  },
+  {
    "name": "jay-google-sheets-drive-access",
    "path": "automotive/jay-google-sheets-drive-access",
    "category": "automotive",
@@ -601,14 +609,6 @@
    "description": "Diagnose and fix an AMG agent (Walter II/base or any profile) that is restarting/flaky with systemd \"Failed with result 'timeout'\" + status=9/KILL in the journal. Root cause is a hung LLM turn (e.g. gpt-5.5/Codex stall) holding an in-flight 300s API call that blocks clean shutdown past the 60s TimeoutStopSec, so systemd SIGKILLs the gateway and loops. This is NOT a crash, NOT out-of-credits, and the OpenRouter fallback can't save it. Covers how to tell this apart from a billing failure, the exact systemd-log signature, and the per-agent (and fleet-wide) drop-in fix.",
    "times_used": 1,
    "last_used": "2026-06-29"
-  },
-  {
-   "name": "jay-gmail-draft-verification",
-   "path": "automotive/jay-gmail-draft-verification",
-   "category": "automotive",
-   "description": "Independently verify a Gmail draft/send that Stacey (email-agent) reports she created \u2014 confirm it's actually in Drafts/Sent with correct recipients, body, and attachments, without trusting her self-report alone. Use whenever Joe asks to \"chase\" or double-check an email Jay routed through Stacey, or when Jay's own Gmail-dependent flow (himalaya/Google API) throws auth errors.",
-   "times_used": 1,
-   "last_used": "2026-08-18"
   },
   {
    "name": "jay-skill-pack-sync",
