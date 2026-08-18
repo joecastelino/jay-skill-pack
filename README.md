@@ -2,7 +2,7 @@
 
 Skill library for **Jay**, the Tekion DMS specialist agent at American Motors Group — plus general-purpose agent skills. Built for the [Hermes Agent](https://github.com/NousResearch) skill system (`SKILL.md` + YAML frontmatter, with optional `references/`, `scripts/`, `templates/`).
 
-**171 skills** · auto-synced from the live agent · last sync: 2026-08-17 17:30
+**171 skills** · auto-synced from the live agent · last sync: 2026-08-17 17:45
 
 ## Install into another agent
 
@@ -17,7 +17,7 @@ Secrets (passwords, app passwords, tokens) are redacted with `<PLACEHOLDER>` mar
 
 | # | Skill | Category | Uses | Last used | Description |
 |---|-------|----------|-----:|-----------|-------------|
-| 1 | [`jay-brain-and-skill-index`](skills/automotive/jay-brain-and-skill-index/SKILL.md) | automotive | 186 | 2026-08-17 | Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is "command not found", w... |
+| 1 | [`jay-brain-and-skill-index`](skills/automotive/jay-brain-and-skill-index/SKILL.md) | automotive | 187 | 2026-08-17 | Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is "command not found", w... |
 | 2 | [`persistent-browser-server`](skills/automotive/persistent-browser-server/SKILL.md) | automotive | 116 | 2026-08-17 | Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the "browser blanks to about... |
 | 3 | [`agent-to-agent-bridge`](skills/automotive/agent-to-agent-bridge/SKILL.md) | automotive | 88 | 2026-08-16 | Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine. |
 | 4 | [`tol-menu-sales-reports`](skills/automotive/tol-menu-sales-reports/SKILL.md) | automotive | 54 | 2026-08-16 | Run the Toyota of Lancaster (TOL/TL, dealer 1092) Menu Sales scorecards — Daily Opened and Closed Month-To-Date — from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Sean Preston (spreston@tol-av.com). The Toy... |
@@ -28,7 +28,7 @@ Secrets (passwords, app passwords, tokens) are redacted with `<PLACEHOLDER>` mar
 | 9 | [`tekion-ghost-bin-negative-onhand`](skills/automotive/tekion-ghost-bin-negative-onhand/SKILL.md) | automotive | 38 | 2026-08-15 | Diagnose a part showing NEGATIVE total on-hand in Tekion that stems from a CDK-migration "ghost bin" (a location-less legacy bin like 5005 / 5000 / 5001 / 5004 / RC1 / RC2 carried over at CDK→Tekion cutover ~4 yrs ago... |
 | 10 | [`bc-gm-menu-build`](skills/automotive/bc-gm-menu-build/SKILL.md) | automotive | 34 | 2026-08-02 | The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-... |
 | 11 | [`sct-alignment-by-advisor-report`](skills/automotive/sct-alignment-by-advisor-report/SKILL.md) | automotive | 34 | 2026-08-16 | Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI — counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. ... |
-| 12 | [`bc-menu-sales-reports`](skills/automotive/bc-menu-sales-reports/SKILL.md) | automotive | 32 | 2026-08-11 | Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards — Daily Closed (2x/day) and Closed Month-To-Date (1x/day) — from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben... |
+| 12 | [`bc-menu-sales-reports`](skills/automotive/bc-menu-sales-reports/SKILL.md) | automotive | 33 | 2026-08-17 | Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards — Daily Closed (2x/day) and Closed Month-To-Date (1x/day) — from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben... |
 | 13 | [`tekion-quotes-menu-price-diagnosis`](skills/automotive/tekion-quotes-menu-price-diagnosis/SKILL.md) | automotive | 32 | 2026-07-22 | Diagnose a Tekion Service Menu pricing problem (e.g. "a rotation is charging $449.45") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLO... |
 | 14 | [`tekion-autonomous-login`](skills/automotive/tekion-autonomous-login/SKILL.md) | automotive | 30 | 2026-08-07 | Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session — no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the aut... |
 | 15 | [`tekion-scheduling`](skills/automotive/tekion-scheduling/SKILL.md) | automotive | 27 | 2026-08-13 | Tekion Service Scheduling Settings — appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the "lowest ceiling wins" capacity model,... |
