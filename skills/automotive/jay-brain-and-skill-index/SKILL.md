@@ -43,6 +43,12 @@ feed it clean, well-formed pages and USE THE RIGHT COMMANDS, not rebuild what it
      then `gbrain link projects/session-<ts> index --link-type child_of` → expect `{"status":"ok"}`.
   4. ALSO add them to index.md's `## Sessions` body list (patch after the last session line; pull the
      title from the page's `title:` frontmatter for the `— description` suffix).
+     **PATCH-TOOL INDENTATION GOTCHA (confirmed 2026-08-18):** when the `old_string`/`new_string` match
+     spans the last session line + the following `## Concepts / Reference` heading, the `patch` tool's
+     fuzzy matching sometimes inserts a leading space on every new line (`- [[session-...]]` becomes
+     ` - [[session-...]]`). This breaks nothing functionally but is inconsistent with the rest of the
+     file. ALWAYS `read_file` the inserted range afterward and check for a leading space; if present,
+     fix with `sed -i '<start>,<end>s/^ - /- /' /home/itadmin/brain/index.md` before committing.
   5. `git add -A` → `git commit -m "brain sync"` (separate calls).
   6. **RE-IMPORT + EMBED AGAIN** so the EDITED index.md page itself gets re-embedded:
      `gbrain import --no-embed` (reports "1 page imported") + `gbrain embed --stale` ("1 chunk").
