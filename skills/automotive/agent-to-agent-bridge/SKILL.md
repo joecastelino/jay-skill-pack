@@ -111,6 +111,17 @@ schedule (e.g. ~/the-goods/data/*.json) and have the agent read the file.
   `/home/itadmin/.hermes/profiles/<calling-agent>/home/bin/ask-agent`).
 - Exit 124/empty reply = timeout, NOT proof the target failed — action asks can time out yet
   still complete. Verify with a fresh terse read-only ask before re-firing an action.
+- **Don't blind-retry a report-build ask that already timed out once** (2026-08-18, BT filter
+  PDF report): the top-level `terminal()` tool's foreground 180s cap is often shorter than a
+  full "build scorecard + draft email" pipeline takes for Stacey (Playwright render + IMAP
+  append can run 3-5 min). A retried request with the exact same subject line creates a SECOND
+  (sometimes third) duplicate draft once the first one eventually lands too — you end up with
+  N drafts to reconcile/trash. Better pattern: fire the ask via
+  `terminal(background=true)` + `process(action="wait", timeout=180)` (repeat wait if still
+  running) so you get the actual completion output instead of a bare exit-124, and only retry
+  if `process wait` shows the process itself died (not just your poll timing out). If you do
+  end up with duplicates, use jay-gmail-draft-verification's cleanup steps (compare bodies,
+  trash the stale ones) before telling Joe it's ready.
 - Always `-u HERMES_HOME` (unset) before re-setting it; Jay's session env points HERMES_HOME at the jay profile.
 - Also unset HERMES_SESSION_KEY so the target doesn't inherit Jay's Slack session binding.
 - Each call is a FRESH session for the target agent — it has no memory of prior bridge messages.

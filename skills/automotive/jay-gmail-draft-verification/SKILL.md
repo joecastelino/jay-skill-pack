@@ -69,6 +69,24 @@ wb = load_workbook('/tmp/<file>.xlsx')
 print(wb.sheetnames)
 ```
 
+## Cleaning up duplicate/stale drafts
+Retrying a bridge request to Stacey after a timeout (see agent-to-agent-bridge
+"Exit 124 ≠ failure" pitfall) commonly produces 2-3 drafts with the IDENTICAL
+subject line — the timed-out first attempt, a retry, and Stacey's real
+completion. Verified 2026-08-18 (BT filter report): compare bodies with
+`himalaya message read` on each ID — the correct one has the intended content
+(right numbers, right attachment TYPE e.g. PDF vs xlsx). Delete/trash the rest:
+
+```bash
+himalaya message move -a personal -f "[Gmail]/Drafts" "[Gmail]/Trash" <id1> <id2>
+```
+NOTE: target folder is a POSITIONAL arg, not `-t`/`--target` (that errors
+"unexpected argument"). Also `himalaya message delete` fails outright with
+"No folder Trash" and `--trash-folder` is not a valid flag — `move` to
+`"[Gmail]/Trash"` is the only working deletion path found. Always re-list
+Drafts after to confirm only the intended one remains before telling Joe it's
+ready for review.
+
 ## Pitfalls
 - **Never trust "Sent Mail" presence as confirmation of anything** — a draft-only
   ask can still get sent by Stacey (see STACEY DRAFT-ONLY TRAP in memory); always
