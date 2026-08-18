@@ -235,6 +235,29 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   run the PARTS-list verify (not just a generic DRAFTS_COUNT ask) — it's the only ask
   that reveals multiple UIDs so you can dedupe by exact UID instead of a vague
   "delete the old ones" request.
+  **Confirmed again 2026-08-17 (7th consecutive clean night, quota fully healthy) —
+  UID INSTABILITY across sequential verify asks:** scan clean (2,618 closed, 869
+  candidates, 0 failed, ~34 min). 247 alignments (224 dedicated + 23 bundled), 247
+  ROs, 16 advisors, top Cristian Gonzalez (30). Stacey's build completed clean on the
+  FIRST ask (115s) with sizes baked in. Verify step 1 (subject-anchored DRAFTS_COUNT/
+  TO/SENT_FOLDER_COUNT) came back clean instantly: 1 | kstapp@sctoyota.com | 0. Verify
+  step 2 (combined PARTS/RAW_SIZE ask) timed out (124) as usual; per note 11's 07-27
+  pattern, degraded to the terse two-line form ("TO=? RAW_SIZE=?") after a 60s pause —
+  but this answer cited **"UID 88"**, while the original build confirmation had cited
+  **"UID 42368"** — two different UID numbers for what should be the same single
+  draft. Rather than assume a duplicate was created, ran ONE more explicit ask: "List
+  all drafts with subject substring X dated today, reply UID=<uid> SIZE=<bytes> per
+  draft, then DRAFTS_COUNT=<n>" — this came back with a THIRD UID (42251) and
+  DRAFTS_COUNT=1, plus a clarifying note that 4 drafts total match the subject
+  substring but only 1 is dated today (others are from different nights, per the
+  8/16 multi-night-match note). **Lesson: Stacey's reported UID numbers are NOT
+  stable/reliable across separate asks, even referring to the same single draft in
+  the same conversation turn window** — don't panic-dedupe on a UID mismatch across
+  asks. The authoritative signal is a DATE-ANCHORED DRAFTS_COUNT (not the UID value
+  itself); if that count is 1, there is one draft, regardless of which UID number
+  she quotes in different replies. Only trust UID values for dedupe INSTRUCTIONS
+  within the SAME ask/reply pair (per the 8/14 "keep UID X delete UID Y" pattern),
+  never across separate asks.
   **Confirmed again 2026-08-16 (6th consecutive clean night, quota fully healthy):**
   pre-flight OPS probe (same validated RO/job pair) returned 200. Index built 2,364
   closed ROs, 771 candidates, 0 failed, ~30 min scan (19:01→19:31, no backoff
