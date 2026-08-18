@@ -188,6 +188,24 @@ source-code export entirely:
 - Chaining multiple open/send hooks across turns corrupts capture — after a hard
   `/navigate` reinstall ONE clean hook, don't stack.
 
+### partNumber PREFIX/LIKE filter is SILENTLY IGNORED on activity-log search (found BT 2026-08-18)
+`POST /api/parts/activity-log/u/search` does NOT support prefix/wildcard filtering on
+`partNumber` — `operator: LIKE` returns 200 but the filter is silently a no-op (still
+returns the whole unfiltered set); other operators (CONTAINS/REGEX/STARTS_WITH) 400.
+So the "prefix-filter ledger variant" MUST filter client-side after a whole-store pull
+(as documented above) — never rely on the API to prefilter by partNumber prefix.
+Confirmed exact-match `IN` on full part numbers still works fine.
+
+### Bisection dead-end fallback: `id NIN [...]` iterative exclusion (found BT 2026-08-18)
+Time-window bisection can hit windows where `count > 20` even at 1-millisecond
+granularity (rows sharing the exact same transactionTime to the ms — seen 44 such
+"stuck" windows in a 1,067-row BT harvest). Time bisection CANNOT split these further.
+Fix: for a stuck window, iteratively add `{"field":"id","operator":"NIN","values":[...ids already seen]}`
+to the filter and re-query the SAME window — each call returns a fresh slice of the
+tied rows, excluding ones already collected, until `count == 0` remaining. This
+fully drains ties with zero duplicates/misses (verified: BT reconciled 0 mismatches
+between expected count and rows actually retrieved across all 44 stuck windows).
+
 ## Numbers reconciliation (Joe will ask)
 sale-history groupByMonth (gross events, list-price est.) ≥ ledger net invoiced.
 TOL Q2: 1,329 gross/est-$288K-list vs 1,176 net/$226,965 actual (avg $193 vs $217
