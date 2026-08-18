@@ -627,6 +627,18 @@ without a separate follow-up instruction (1 noon duplicate, UID 72, found and de
 subject-search/MIME-listing verification asks both returned first try, only the combined Sent+flag
 ask needed the split-and-retry.
 
+## \Draft-flag confirmation timeout — 1 try is enough if Sent-check already returned 0 (2026-08-17 8:05PM)
+When the Sent-folder check already came back clean (`Sent: 0`) on its own terse ask, a
+SEPARATE follow-up "\Draft flag still intact?" confirmation timing out (exit 124) does NOT
+need the full 3x-retry treatment from item 4 above — one timeout is sufficient to stop and
+report the draft as confirmed-not-sent. Sent=0 for the exact subject is already strong proof
+nothing went out; the \Draft-flag check is a nice-to-have belt-and-suspenders, not the primary
+evidence. That run (8/17 EOD) was otherwise a fully clean one-shot: initial hand-off hit the
+usual ~200s exit-124 (draft still saved fine), and subject-search (72.89s), MIME part-listing
+(34.85s — multipart/mixed > related > alternative(text/plain+html) + image/png CID=scorecard +
+application/pdf), and Sent-check (31.25s) all returned FIRST try with correct results, zero
+dedupe needed (only one draft existed with today's exact subject).
+
 ## Backgrounding the CLOSED daily-append run — don't over-engineer (learned 2026-08-14 8:05PM)
 The default (non-`--seed`) `tol_menu_sales_closed_mtd.py` run is a light daily-append —
 it typically finishes in well under a minute (8/14: ~10-15s for 158 closed ROs, 1 new
