@@ -383,50 +383,21 @@ stats 1043 pages/2065 chunks/2065 embedded/1859 links. Same shape as the evening
 above — confirms the 4-way AND check (disk==import-total, embed-stale==0, orphans==0, git clean) is
 stable across same-day runs once session-end-sync has caught everything up.
 
-## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #3 that day): disk 1038 .md == import scan total (0
-imported/1038 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1044 linkable, git tree clean,
-stats 1044 pages/2066 chunks/2066 embedded/1860 links. Same shape as the two earlier 2026-08-13 no-ops
-(1037 pages each) — confirms multiple same-day cron runs stay no-ops once session-end-sync has caught
-everything up; no drift or regression between runs.
+## CLEAN NO-OP PATTERN (2026-08-13, runs #3-#9 that day, condensed): repeated same-day cron passes
+(1038→1040 pages growing slowly) all showed the same 4-way-AND no-op shape (disk≈import-total,
+embed-stale==0, orphans==0, git clean) confirming stability across back-to-back same-day runs with
+session-end-sync keeping pace. One run (#9) had a 1-page disk-vs-import-scan gap with orphans still 0 —
+confirmed NOT a signal to chase (trust orphans+stats over raw disk-file-count diff, per 2026-08-07 note).
 
-## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #4 that day): disk 1038 .md == import scan total (0
-imported/1038 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1044 linkable, git tree clean,
-stats 1044 pages/2066 chunks/2066 embedded/1860 links. Identical shape to run #3 same day (1038 pages) —
-confirms the 4-way AND check stays stable across back-to-back same-day runs with session-end-sync keeping
-pace.
-
-## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #5 that day): disk 1039 .md == import scan total (0
-imported/1039 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1045 linkable, git tree clean,
-stats 1045 pages/2067 chunks/2067 embedded/1862 links. Same shape as runs #3/#4 same day — confirms
-the 4-way AND check stays stable across repeated same-day cron runs with session-end-sync keeping pace.
-
-## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #6, morning of next cycle): disk 1039 .md == import
-scan total (0 imported/1039 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1045 linkable, git
-tree clean, stats 1045 pages/2067 chunks/2067 embedded/1862 links. Identical shape to run #5 — the
-4-way AND check remains the reliable no-op signal; no latecomer/link/commit work needed this pass.
-
-## CLEAN NO-OP RE-CONFIRMED (2026-08-17 cron): disk 1084 .md == import scan total (0 imported/1084
+## CLEAN NO-OP RE-CONFIRMED (2026-08-17 cron, night run): disk 1084 .md == import scan total (0 imported/1084
 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1090 linkable, git tree clean, stats 1090
 pages/2151 chunks/2151 embedded/1924 links. Same 4-way-AND no-op shape as prior confirmations —
 session-end-sync had already caught everything up before this cron ran.
 
-## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #7, morning): disk 1039 .md == import scan total (0
-imported/1039 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1045 linkable, git tree clean,
-stats 1045 pages/2067 chunks/2067 embedded/1862 links. Identical shape to run #6 — the 4-way AND check
-remains stable; session-end-sync keeping pace.
-
-## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #8, morning): disk 1039 .md == import scan total (0
-imported/1039 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1045 linkable, git tree clean,
-stats 1045 pages/2067 chunks/2067 embedded/1862 links. Identical shape to run #7 — the 4-way AND check
-remains stable across an 8th same-day cron pass; no latecomer/link/commit work needed.
-
-## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #9, late morning): disk 1040 .md vs import scan total
-1039 (0 imported/1039 skipped/0 errors) — a 1-page gap that looked like a possible latecomer-miss, but
-`embed --stale`=0, orphans 0 out of 1045 linkable, git tree clean, stats 1045 pages/2068 chunks/2068
-embedded/1862 links all confirm nothing is actually missing. Per the established 4-way AND rule
-(disk≈import-total, embed-stale==0, orphans==0, git clean), a small 1-page disk-vs-import-scan gap with
-orphans==0 is NOT a signal to chase (same as the 2026-08-07 note re page-count gaps) — trust orphans+stats
-over the raw disk-file-count diff.
+## CLEAN NO-OP RE-CONFIRMED (2026-08-17 late-night cron): disk 1108 .md == import scan total (0
+imported/1108 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1114 linkable, git tree clean,
+stats 1114 pages/2186 chunks/2186 embedded/1960 links. Same 4-way-AND no-op shape as prior
+confirmations — session-end-sync had already caught everything up before this cron ran.
 
 ## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #10, afternoon): disk 1040 .md == import scan total (0
 imported/1040 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1046 linkable, git tree clean,
