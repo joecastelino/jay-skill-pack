@@ -240,6 +240,8 @@ post("/navigate", {"url":".../parts/inventory/part/view/M_TMNA_9008091180/detail
 If `login.py --check` reports a stale token, run `login.py` (no flag) to refresh
 the storage-state file first.
 
+**`--check` "file_ok:true" does NOT mean the session still authenticates (verified 2026-08-18, BC daily warranty report):** `login.py --check` returned `{"file_ok": true, "detail": "137986B all-keys"}` — file looked complete and correctly-shaped — yet a real cookie+localStorage injection into :9223 with that exact file failed: cookies added fine, all 21 keys set with correct lengths, but `/navigate /home` redirected to `/login?redirectTo=/home` and the page showed `hasUsername:true, hasWelcome:false` (i.e. rendered the login form). `--check` only validates file shape/JWT-exp locally, not server-side acceptance. **Fast fix that stays on :9223 (no need to jump to standalone headless for this failure mode):** run `login.py --force` (full fresh OTP re-login, ~30-60s) to get a genuinely new session, then repeat the SAME cookie+localStorage injection sequence into :9223 with the fresh file — this worked cleanly, landed on `/home` with `hasWelcome:true`, and (bonus) the dealer was already on the correct target store (BC/1251) with no UI dealer-switch needed. This is a DIFFERENT failure mode than the chrome-error/ERR_FAILED nav failure documented above (which genuinely does require abandoning :9223 for standalone headless) — a clean navigate that just shows the login form means "stale session, re-login," not "instance broken."
+
 ---
 
 ## ⚠️ (LEGACY pessimistic note — kept for context, but see corrections above)
