@@ -509,5 +509,66 @@ Also: top-level `id` is null on search results — the RO document id for fan-ou
 **`documentId`** field. Working example: `/home/itadmin/tekion-reports/sv_flag_below_actual_h1jul.py`.
 Don't believe a "0 results" run without checking `meta.totalCount` vs rows returned.
 
+## Filtering ROs by DEPARTMENT (e.g. isolating Body Shop/Collision Center) — PROVEN 2026-08-18
+
+`assignee.department` is a free `LinkedResource` on every `repair-orders:search` result
+(`assignee.department.id`) — no fan-out needed. Resolve the id via `GET /departments/{id}`
+(`support__get-department.json` spec) → `{"data":{"id","name"}}`.
+
+**Fleet department census (confirmed live across all 7 stores, 2026-08-18):**
+- **BT (1249)**: `1249_department_3`=Service, **`1249_department_5`=Collision Center**
+- BC (1251): `1251_department_d`=Service, `628efbdc...`=Express Service, `640635e2...`=PDI, `640635f5...`=UCD
+- ST (876): `876_department_03`=SERVICE, `6421a787...`=Used Car Department
+- SV (826): `826_department_64`=SERVICE VW
+- TL (1092): `1092_department_3`=Service
+- AR (6195), VC (1891): only a single generic `<dealer>_department_64` id, name resolves `null` (single-department stores)
+
+**⚠️ BT is the ONLY AMG store with a Collision Center / Body Shop department in Tekion.**
+Don't assume other stores have a body-shop dept — verify per store before scoping a scan.
+
+**Department discovery gotcha:** a single time-window snapshot can miss department ids
+that only appear in ROs outside that window. Sample MULTIPLE anchor timestamps spread
+across the full period you care about (e.g. 15 anchors across 92 days, `creationTime LTE
+<anchor>` pageSize 50 each) and union all `assignee.department.id` values seen before
+concluding "these are the only depts" — a single-page sample at BC missed 2 of 4 real
+departments (Express Service, PDI) on the first pass.
+
+**Filter recipe**: pull the full RO set for the store/window via `creationTime BTW`
+pagination (works fine with plain `paginationToken` chaining here — no bisection needed;
+the bisection-required pagination bug documented above is specific to `closedTime` filters),
+then `results = [r for r in ros if (r.get("assignee") or {}).get("department",{}).get("id")
+== target_dept_id]`. Exclude `status == "VOIDED"` for any dollar/count analysis.
+
+## Collision/Body Shop ROs — line items are LUMP SUM, not itemized (learned 2026-08-18)
+
+Asked to find "calibration" mentions with a dollar figure across 3 months of BT body shop
+ROs (Joe's alignment-machine ROI calc). Scanned all 168 active Collision Center ROs —
+every job concern text, operation description/opcode, AND part name/description — for
+"calibrat*". **Result: only 2 hits, both buried in customer-concern free text, not a
+broken-out billable line.**
+
+**Why:** Collision ROs are billed against an EXTERNAL insurance estimate (CCC ONE /
+Mitchell "work file id" appears in the job concern text) using a small set of generic
+lump-sum opcodes: `BSRPE` ("Collision Center Repair Per Estimate"), `BS6` (Body Labor),
+`BS7` (Paint Labor), `BS8`/`BS10`, `BSRANDIGLASS`, `PDRWHEEL`/`PDRDENT`. Whatever line
+items exist on the ADJUSTER's estimate (ADAS/camera/radar recalibration after bumper,
+windshield, or fender work is standard) get folded into ONE lump `saleAmount`/`costAmount`
+on the RO — they are NEVER broken out as their own Tekion opcode or part line. Text-mining
+Tekion RO data for a keyword like "calibration" will systematically UNDERCOUNT — the real
+itemized figure lives only in the CCC ONE/Mitchell estimate PDF, which Tekion does not
+ingest at the line-item level.
+
+**What IS available in Tekion as a fallback data point:** the store's DEDICATED alignment
+opcode (e.g. BT's `4ALIGN`) — count + `labor.saleAmount` sum via the existing tags-first
+scan method above — gives a real in-house alignment volume/dollar baseline even though it
+won't capture insurance-billed calibration work.
+
+**Recommendation for any "scrub body shop ROs for line-item X and $" ask:** if X is an
+insurance-estimate line item (calibration, glass, PDR sub-items), tell the user up front
+that Tekion structured search will undercount and that the ground truth is the CCC
+ONE/Mitchell estimate export — offer to pull those directly (portal access) or hand-sample
+a batch of "Per Estimate" RO estimate PDFs, rather than shipping a Tekion-only text-scan
+result as if it were complete.
+
 ## Verification
 After any new endpoint, sanity-check against known data: today's RO count at SCT should roughly match the store's appointment volume; labor amounts are integer cents.

@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-18T15:16:02",
+ "generated": "2026-08-18T15:31:21",
  "skill_count": 175,
  "skills": [
   {
@@ -7,7 +7,7 @@
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 230,
+   "times_used": 231,
    "last_used": "2026-08-18"
   },
   {
@@ -339,6 +339,14 @@
    "last_used": "2026-08-18"
   },
   {
+   "name": "jay-gmail-draft-verification",
+   "path": "automotive/jay-gmail-draft-verification",
+   "category": "automotive",
+   "description": "Independently verify a Gmail draft/send that Stacey (email-agent) reports she created \u2014 confirm it's actually in Drafts/Sent with correct recipients, body, and attachments, without trusting her self-report alone. Use whenever Joe asks to \"chase\" or double-check an email Jay routed through Stacey, or when Jay's own Gmail-dependent flow (himalaya/Google API) throws auth errors.",
+   "times_used": 6,
+   "last_used": "2026-08-18"
+  },
+  {
    "name": "tekion-api-upgrade-audit",
    "path": "automotive/tekion-api-upgrade-audit",
    "category": "automotive",
@@ -385,14 +393,6 @@
    "description": "Fix an AMG Hermes agent that is silent on Slack because its SLACK_BOT_TOKEN/SLACK_APP_TOKEN are missing or wrong in the profile .env \u2014 including recovering LOST tokens from old session transcripts without asking Joe to regenerate them at api.slack.com. Use when an agent's service is running but it never answers Slack messages (Autumn case, 2026-07-14).",
    "times_used": 4,
    "last_used": "2026-07-14"
-  },
-  {
-   "name": "jay-gmail-draft-verification",
-   "path": "automotive/jay-gmail-draft-verification",
-   "category": "automotive",
-   "description": "Independently verify a Gmail draft/send that Stacey (email-agent) reports she created \u2014 confirm it's actually in Drafts/Sent with correct recipients, body, and attachments, without trusting her self-report alone. Use whenever Joe asks to \"chase\" or double-check an email Jay routed through Stacey, or when Jay's own Gmail-dependent flow (himalaya/Google API) throws auth errors.",
-   "times_used": 4,
-   "last_used": "2026-08-18"
   },
   {
    "name": "tekion-opcode-create",
@@ -563,6 +563,14 @@
    "last_used": "2026-07-06"
   },
   {
+   "name": "tekion-parts-sales-by-advisor-report",
+   "path": "automotive/tekion-parts-sales-by-advisor-report",
+   "category": "automotive",
+   "description": "Build a Tekion parts-sales-by-service-advisor report (e.g. cabin/engine air filters, or any specific part category) for any AMG store \u2014 units, revenue, menu-attach, ranked bar-chart summary AND full RO-level line-item detail per advisor. Use whenever Joe asks for a parts sales report \"broken down by advisor\" or \"like the alignment report\" \u2014 he means BOTH a summary table AND the underlying RO detail, not just aggregate numbers.",
+   "times_used": 2,
+   "last_used": "2026-08-18"
+  },
+  {
    "name": "tekion-physical-inventory",
    "path": "automotive/tekion-physical-inventory",
    "category": "automotive",
@@ -665,14 +673,6 @@
    "description": "Restrict Tekion Parts-on-Appointments (Parts RO Sales > Appointments queue) to a subset of opcodes \u2014 e.g. recalls only, per Glade at SCT. Covers the per-opcode \"Consider for Parts preparation on Appointment\" checkbox, Bulk Update, the limited Appointments-tab filters, and how to derive a store's recall keep-list from the opcode list. Load for any \"parts department should only see X appointments\" request.",
    "times_used": 1,
    "last_used": "2026-07-20"
-  },
-  {
-   "name": "tekion-parts-sales-by-advisor-report",
-   "path": "automotive/tekion-parts-sales-by-advisor-report",
-   "category": "automotive",
-   "description": "Build a Tekion parts-sales-by-service-advisor report (e.g. cabin/engine air filters, or any specific part category) for any AMG store \u2014 units, revenue, menu-attach, ranked bar-chart summary AND full RO-level line-item detail per advisor. Use whenever Joe asks for a parts sales report \"broken down by advisor\" or \"like the alignment report\" \u2014 he means BOTH a summary table AND the underlying RO detail, not just aggregate numbers.",
-   "times_used": 1,
-   "last_used": "2026-08-18"
   },
   {
    "name": "tekion-parts-shipped-not-received-report",
