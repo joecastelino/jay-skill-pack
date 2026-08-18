@@ -459,6 +459,31 @@ broken. The himalaya Sent-folder search still works fine and is sufficient to pr
 leak (0 matches for today's exact subject + comparison against the actual last-sent TOL
 email's date confirms the search executed for real, not a silent no-op).
 
+(8/17 8:05PM) OAUTH OUTAGE STILL DEAD 10 DAYS LATER — DEFAULT TO IMAP FOR ALL VERIFICATION
+ASKS: the Gmail refresh token first reported revoked 8/07 was STILL dead on 8/17 (10 days).
+This run burned ~10 minutes: an unspecified-method MIME part-listing ask timed out
+(exit 124) THREE times in a row (~170-220s each) before explicitly adding "use
+himalaya/raw IMAP, not Gmail API" to the ask, which then returned correct results in
+48s on the very next try. A separate unspecified-method Sent-check ask, in contrast,
+came back FAST with an explicit "Gmail OAuth token is dead (invalid_grant)" message
+rather than timing out — so failure mode is inconsistent (sometimes silent timeout,
+sometimes fast explicit error) but the underlying cause is the same dead token.
+LESSON: given the outage has now persisted 10+ days, stop trying unspecified-method
+verification asks first. Lead EVERY verification ask (draft-list, MIME part-listing,
+Sent-check, Draft-flag-check) with "use himalaya/raw IMAP, not Gmail API" by default —
+don't wait for a timeout or an explicit invalid_grant error to discover this. This
+saves 2-3 wasted retry cycles (roughly 8-10 minutes) per run. Re-test occasionally
+(drop the IMAP instruction once) to see if the token has finally been re-authorized;
+until then, IMAP-first is the efficient default. That run: draft-list-by-subject (no
+IMAP instruction) actually DID return fine via Gmail API on the first try (19 stacked
+Opened drafts, one clean hit for today's exact subject, 08/02 true-dup pair 41542/41547
+still unresolved) — so Gmail API isn't uniformly broken, just unreliable enough that
+IMAP-first is the safer default for the slower/heavier calls (MIME listing, Sent-check).
+The final \Draft-flag-in-Drafts confirmation timed out once even with IMAP specified and
+was skipped after one attempt (acceptable per policy since no send action was ever
+requested) — Sent-check=0 plus the subject-search confirming exactly one draft was
+judged sufficient proof of no leak.
+
 (8/09 noon) CLEAN ONE-SHOT, NO REBUILD NEEDED: draft 41903 (subject exactly right,
 greeting "Sean,", multipart/related with image/png Content-ID=scorecard inline + a
 real application/pdf attachment) came out correct on the FIRST hand-off with no
