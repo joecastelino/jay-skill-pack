@@ -69,6 +69,121 @@ wb = load_workbook('/tmp/<file>.xlsx')
 print(wb.sheetnames)
 ```
 
+## CRITICAL FAILURE MODE (2026-08-18): Stacey can report a draft ID that doesn't exist at all
+Worse than the draft-vs-sent trap: Stacey self-reported "draft #42420 created,
+IN_DRAFTS=y, SENT=n" with specific structure details (CID-embedded PNG, PDF
+attached, etc.) — but that draft **never existed anywhere**: not in Drafts, not
+in Trash, not in All Mail, under any UID. Meanwhile `himalaya envelope list`
+even *displayed* "42420" in a stale list output momentarily, but a direct
+`himalaya message read -a personal -f "[Gmail]/Drafts" 42420` returned nothing,
+and raw IMAP `UID FETCH 42420` returned `None` — the ID was a phantom (likely
+himalaya's local numbering desyncing after a rapid create/trash cycle, or
+Stacey's own tool call silently no-opping while still emitting a success
+narrative). **himalaya's sequence-number-style IDs can desync from real IMAP
+UIDs — do not trust `himalaya envelope list` alone to prove a message exists.**
+
+### Robust verification: raw IMAP with Gmail X-GM-RAW search (bypasses himalaya ID drift)
+Use `imaplib` directly with Gmail's native search operators via `X-GM-RAW` —
+this searches by actual content/labels, not a locally-cached sequence number,
+so it can't be fooled by himalaya ID drift:
+```python
+import imaplib
+M = imaplib.IMAP4_SSL('imap.gmail.com', 993)
+M.login('jcastelino@americanmotorscorp.com', '<current app password>')
+
+# Search ANY folder (works even if you don't know which folder it landed in)
+M.select('"[Gmail]/All Mail"', readonly=True)
+typ, data = M.uid('search', None, 'X-GM-RAW', '"subject:\\"exact subject text\\""')
+uids = data[0].split()   # empty list = message truly does not exist anywhere
+
+# For each hit, check labels to see Draft vs Sent vs Inbox (ground truth)
+for u in uids:
+    typ, d = M.uid('fetch', u, '(X-GM-LABELS FLAGS)')
+    print(u, d)   # X-GM-LABELS will show \\Draft, \\Sent, \\Inbox, etc.
+```
+Other useful X-GM-RAW query fragments (combine with spaces, AND-style):
+`label:draft`, `has:attachment`, `newer_than:1d`, `cabin` (bare keyword).
+`X-GM-LABELS` is the ONLY reliable ground truth for "is this actually a draft
+vs did it get sent" — a message can carry `\Inbox \Sent` (self-sent report)
+or just `\Draft` (true draft, unsent). Don't infer from folder alone.
+
+If `X-GM-RAW` search returns zero hits for a subject Stacey claims she used,
+the draft is a phantom — go back to Stacey with a fresh, explicit request
+rather than assuming a formatting/content bug in an existing draft.
+
+## PDF verification: text extraction (pypdf) AND visual rendering (fitz/PyMuPDF) — use BOTH
+CORRECTION (2026-08-18, same day, later in session): the earlier claim that
+`fitz`/PyMuPDF was "broken" in this environment was WRONG — it works fine
+(`pymupdf` 1.28.2 installed, `import fitz` succeeds, just emits a deprecation
+warning to stderr suggesting `import pymupdf` instead). `pdftoppm`/`pdfinfo`
+(poppler-utils) genuinely are missing and installing needs sudo password
+(not available) — that part still stands, use fitz instead of poppler.
+
+**Use pypdf text extraction to verify CONTENT/NUMBERS** (page count, totals,
+row values reconcile). **Use fitz-render-to-PNG + vision_analyze to verify
+LAYOUT** — text extraction cannot detect visual bugs like overlapping/
+overflowing table cells. This combo caught a real bug (2026-08-18, BT filter
+report): a ReportLab `Table` with plain Python strings in the Customer column
+let long names overflow into the next column — pypdf's `extract_text()` still
+returned all the right words in the right order (text extraction doesn't
+care about visual boundaries), but the RENDERED page clearly showed
+"JACQUELINE CASTROCAMACHO Cabin" running together. **Always render at least
+one detail/table page to PNG and vision-check it when the PDF has a table
+with variable-length text columns (customer names, notes, descriptions)** —
+don't rely on text extraction alone for those.
+
+```python
+import fitz  # pymupdf — WORKS, ignore the deprecation warning
+doc = fitz.open('/path/to/file.pdf')
+pix = doc[1].get_pixmap(dpi=150)   # page index 1 = page 2
+pix.save('/tmp/check_page2.png')
+# then vision_analyze(image_url='/tmp/check_page2.png',
+#   question="Any overlapping/overflowing text or misaligned columns?")
+```
+
+**ReportLab fix for overflow**: any table column holding variable-length text
+(names, descriptions) must use a `Paragraph` object (wrapping), not a plain
+string — plain strings do NOT wrap in `reportlab.platypus.Table` cells, they
+either overflow into the neighbor column visually or get silently clipped
+depending on column width:
+```python
+from reportlab.lib.styles import ParagraphStyle
+cell_style = ParagraphStyle('cell', fontSize=7.5, leading=9)
+row = [ro_num, date, Paragraph(customer_name, cell_style), category, ...]
+```
+Widen that column a bit too if names run long (e.g. 1.4in -> 1.5in).
+
+`pypdf.PdfReader` text extraction still works reliably (confirmed 2026-08-18,
+v6.12.2) for confirming page count and that the right numbers/rows are present:
+
+```python
+import imaplib, email, io, pypdf
+M = imaplib.IMAP4_SSL('imap.gmail.com', 993)
+M.login('jcastelino@americanmotorscorp.com', '<app password>')
+M.select('"[Gmail]/Drafts"', readonly=True)
+typ, data = M.uid('fetch', '<uid>', '(BODY.PEEK[])')
+msg = email.message_from_bytes(data[0][1])
+for part in msg.walk():
+    if part.get_content_type() == 'application/pdf':
+        pdf_bytes = part.get_payload(decode=True)   # exact bytes IN the draft
+r = pypdf.PdfReader(io.BytesIO(pdf_bytes))
+print(len(r.pages))                       # confirms page count matches expectation
+print(r.pages[0].extract_text()[:500])    # confirms summary numbers
+print(r.pages[1].extract_text()[:500])    # confirms detail rows present
+```
+Extracting straight from the MIME part bytes (not a separately-downloaded copy)
+proves the exact content Stacey attached — the strongest verification available,
+stronger than comparing file size or trusting a downloaded duplicate matches.
+
+**Fallback if pypdf ever genuinely fails:** verify the PNG instead — Stacey's
+HTML drafts embed the scorecard image either as an inline `cid:` MIME part
+(walk `msg.walk()` for `image/png`) or an externally-hosted URL (e.g.
+`https://i.imgur.com/...png`) in the HTML body — call
+`vision_analyze(image_url=<url>, ...)` directly, no download needed. But note
+a PNG-only check CANNOT prove a multi-page PDF's later pages are correct —
+use pypdf text extraction whenever the deliverable has page-2+ content (e.g.
+RO-level detail tables) that isn't mirrored in the PNG.
+
 ## Cleaning up duplicate/stale drafts
 Retrying a bridge request to Stacey after a timeout (see agent-to-agent-bridge
 "Exit 124 ≠ failure" pitfall) commonly produces 2-3 drafts with the IDENTICAL
@@ -88,6 +203,13 @@ Drafts after to confirm only the intended one remains before telling Joe it's
 ready for review.
 
 ## Pitfalls
+- **A "missing" draft may just be Joe trashing it himself** (2026-08-18) — when
+  Joe says "I don't see it in Drafts," don't assume Stacey's bridge call failed
+  or produced a phantom. Check `"[Gmail]/Trash"` via `X-GM-RAW` subject search
+  FIRST — Joe reviews drafts and trashes ones he's unhappy with (e.g. a layout
+  bug) without necessarily saying so upfront; he may clarify "I trashed it
+  because X" only after you ask/report back. Trash search: same X-GM-RAW
+  pattern, `M.select('"[Gmail]/Trash"')`.
 - **Never trust "Sent Mail" presence as confirmation of anything** — a draft-only
   ask can still get sent by Stacey (see STACEY DRAFT-ONLY TRAP in memory); always
   check the actual target folder (Drafts) the ask specified.
