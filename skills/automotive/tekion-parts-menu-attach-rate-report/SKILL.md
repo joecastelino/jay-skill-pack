@@ -106,3 +106,16 @@ are carrying the part.
 - Bisection dead-ends (count>20 even at 1ms) and the partNumber-LIKE-ignored trap
   are documented in `tekion-part-sales-ledger-report` — read that skill first, this
   one only adds the menu-classification layer on top.
+- **Window pivot after delivery (e.g. Joe says "actually just give me month-to-
+  date" after you already built a 30-day report)**: don't re-harvest. If the new
+  window is a strict subset of the already-harvested range, just refilter the raw
+  ledger JSON on its timestamp field (Pacific tz) and re-run the same
+  aggregate→classify→render pipeline on the subset — the RO-tag classification data
+  you already pulled covers a superset of RO numbers too, so no new OpenAPI calls
+  are needed either. Parameterize the renderer/xlsx-builder scripts with a `tag`
+  CLI arg (e.g. `-mtd`) so both windows' outputs can coexist on disk.
+- **Renderer KPI labels must be dynamic, not hardcoded to the window**: a "(30d)"
+  or similar period label baked into the HTML template will silently go stale when
+  you re-run for a different window (e.g. MTD) — vision_analyze caught a stale
+  "(30d)" label after a same-script MTD re-render. Derive the label text from the
+  actual date range being rendered, not a literal string.

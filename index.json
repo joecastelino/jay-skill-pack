@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-18T11:45:03",
+ "generated": "2026-08-18T12:00:49",
  "skill_count": 173,
  "skills": [
   {
@@ -39,8 +39,8 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 52,
-   "last_used": "2026-08-13"
+   "times_used": 53,
+   "last_used": "2026-08-18"
   },
   {
    "name": "bt-tony-menu-rebuild",
@@ -227,6 +227,14 @@
    "last_used": "2026-08-13"
   },
   {
+   "name": "tekion-part-sales-ledger-report",
+   "path": "automotive/tekion-part-sales-ledger-report",
+   "category": "automotive",
+   "description": "Build a \"parts sold\" report (e.g. tires) for any Tekion store and period with ACTUAL invoiced dollars, split RO vs Sales Order (counter), by counterperson, from the internal part transaction ledger (activity-log API) \u2014 zero OpenAPI quota. Use when Joe asks \"how many X did we sell\" for a parts category, or when the OpenAPI quota is exhausted and RO-level pulls are blocked.",
+   "times_used": 11,
+   "last_used": "2026-08-18"
+  },
+  {
    "name": "tekion-parts-appointments-recalls-only",
    "path": "automotive/tekion-parts-appointments-recalls-only",
    "category": "automotive",
@@ -249,14 +257,6 @@
    "description": "Pull Tekion Standard Reports from the REPORTS module (/core/reports) via the :9223 authenticated browser \u2014 especially the fixed-ops performance suite (Advisor Performance, Tech Performance / proficiency = assigned-billed vs attendance hours). Covers the filter funnel (Flag Date range, Make filter), Group By, and Export. Use when Joe wants advisor/tech performance numbers, or ANY report that is NOT a custom Report Builder report.",
    "times_used": 11,
    "last_used": "2026-08-03"
-  },
-  {
-   "name": "tekion-part-sales-ledger-report",
-   "path": "automotive/tekion-part-sales-ledger-report",
-   "category": "automotive",
-   "description": "Build a \"parts sold\" report (e.g. tires) for any Tekion store and period with ACTUAL invoiced dollars, split RO vs Sales Order (counter), by counterperson, from the internal part transaction ledger (activity-log API) \u2014 zero OpenAPI quota. Use when Joe asks \"how many X did we sell\" for a parts category, or when the OpenAPI quota is exhausted and RO-level pulls are blocked.",
-   "times_used": 10,
-   "last_used": "2026-07-24"
   },
   {
    "name": "tekion-service-settings",
@@ -315,6 +315,14 @@
    "last_used": "2026-07-31"
   },
   {
+   "name": "tekion-parts-sold-by-source-report",
+   "path": "automotive/tekion-parts-sold-by-source-report",
+   "category": "automotive",
+   "description": "Build a \"units of X sold in a period\" report (tires, batteries, brakes, BG products, wipers...) for any Tekion store using the Source Code part list + bulk salehistory API \u2014 NO OpenAPI quota, no RO fan-out. Use when Joe asks \"how many tires/batteries/etc were sold last month/quarter\" and the category maps to a parts Source Code. Verified TOL tires Q2 2026.",
+   "times_used": 7,
+   "last_used": "2026-08-18"
+  },
+  {
    "name": "tekion-roles-permissions",
    "path": "automotive/tekion-roles-permissions",
    "category": "automotive",
@@ -339,12 +347,12 @@
    "last_used": "2026-07-08"
   },
   {
-   "name": "tekion-parts-sold-by-source-report",
-   "path": "automotive/tekion-parts-sold-by-source-report",
+   "name": "tekion-source-code-parts-scrub",
+   "path": "automotive/tekion-source-code-parts-scrub",
    "category": "automotive",
-   "description": "Build a \"units of X sold in a period\" report (tires, batteries, brakes, BG products, wipers...) for any Tekion store using the Source Code part list + bulk salehistory API \u2014 NO OpenAPI quota, no RO fan-out. Use when Joe asks \"how many tires/batteries/etc were sold last month/quarter\" and the category maps to a parts Source Code. Verified TOL tires Q2 2026.",
+   "description": "Extract and analyze the FULL part list for a Tekion Source Code (e.g. SCT Source 103 \"GENERAL STOCK 2-3\") to make stocking recommendations \u2014 which parts to activate, BRP/BSL review, negative-on-hand cleanup, mis-coded fast-movers, and capital-tied-up review. Use when Joe asks to \"scrub a source code\", \"review stocking levels per part\", \"should I activate more parts\", \"what's mis-coded\", or \"pull all the parts in source code X\".",
    "times_used": 6,
-   "last_used": "2026-07-24"
+   "last_used": "2026-08-18"
   },
   {
    "name": "sct-menu-sales-closed-mtd-scorecard",
@@ -361,14 +369,6 @@
    "description": "Build a Tekion \"alignments sold this period, broken down by service advisor\" report for ANY of the 7 AMG stores from the LIVE OpenAPI \u2014 counting BOTH dedicated alignment opcodes AND alignments bundled inside a service menu/combo op. Produces a 2-page scorecard (page 1 advisor ranking, page 2 RO-level chip detail) and optionally has Stacey draft it. The opcode set is PER-STORE \u2014 never reuse one store's alignment codes on another. Verified live at TL Toyota of Lancaster dealer 1092 on 2026-06-29 (105 alignments, 102 dedicated plus 3 bundled, across 104 ROs, June MTD). Use when Joe asks for an \"alignment report\" or \"alignment count by advisor\" for a store, or any single-opcode \"how many of X did we sell, by advisor\" report.",
    "times_used": 5,
    "last_used": "2026-07-01"
-  },
-  {
-   "name": "tekion-source-code-parts-scrub",
-   "path": "automotive/tekion-source-code-parts-scrub",
-   "category": "automotive",
-   "description": "Extract and analyze the FULL part list for a Tekion Source Code (e.g. SCT Source 103 \"GENERAL STOCK 2-3\") to make stocking recommendations \u2014 which parts to activate, BRP/BSL review, negative-on-hand cleanup, mis-coded fast-movers, and capital-tied-up review. Use when Joe asks to \"scrub a source code\", \"review stocking levels per part\", \"should I activate more parts\", \"what's mis-coded\", or \"pull all the parts in source code X\".",
-   "times_used": 5,
-   "last_used": "2026-07-07"
   },
   {
    "name": "bt-menu-sales-reports",
@@ -651,6 +651,14 @@
    "last_used": "2026-07-20"
   },
   {
+   "name": "tekion-parts-menu-attach-rate-report",
+   "path": "automotive/tekion-parts-menu-attach-rate-report",
+   "category": "automotive",
+   "description": "Build a \"how many of part X were sold, and what % were bundled into a service menu vs sold \u00e0 la carte\" report for any Tekion store and part category (e.g. cabin filters, engine air filters, wiper blades). Combines the part-sales ledger with a cheap RO-tag menu classification. Use when Joe asks for a parts sales report that must \"include service menus\" / show menu attach rate.",
+   "times_used": 1,
+   "last_used": "2026-08-18"
+  },
+  {
    "name": "tekion-parts-shipped-not-received-report",
    "path": "automotive/tekion-parts-shipped-not-received-report",
    "category": "automotive",
@@ -823,14 +831,6 @@
    "path": "automotive/tekion-opcode-pricing-v2",
    "category": "automotive",
    "description": "DEEP REFERENCE / ARCHIVE for Tekion opcodeManagementV2. The day-to-day work is now split into three clean skills \u2014 use those FIRST: tekion-opcode-default-pricing (labor + parts), tekion-opcode-overrides (vehicle/part override batch rows), and tekion-opcode-api (read/audit/verify committed rows). Load THIS skill only when you need the full historical detail: complete dealer-switch code, Puppeteer scripts, every selector quirk, and the session-by-session debugging archaeology behind the verified recipes.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tekion-parts-menu-attach-rate-report",
-   "path": "automotive/tekion-parts-menu-attach-rate-report",
-   "category": "automotive",
-   "description": "Build a \"how many of part X were sold, and what % were bundled into a service menu vs sold \u00e0 la carte\" report for any Tekion store and part category (e.g. cabin filters, engine air filters, wiper blades). Combines the part-sales ledger with a cheap RO-tag menu classification. Use when Joe asks for a parts sales report that must \"include service menus\" / show menu attach rate.",
    "times_used": 0,
    "last_used": null
   },
