@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-18T06:30:25",
+ "generated": "2026-08-18T06:45:41",
  "skill_count": 171,
  "skills": [
   {
@@ -371,6 +371,14 @@
    "last_used": "2026-07-07"
   },
   {
+   "name": "bt-menu-sales-reports",
+   "path": "automotive/bt-menu-sales-reports",
+   "category": "automotive",
+   "description": "Run the Blackstone Toyota (BT, dealer 1249) Menu Sales scorecards \u2014 Daily Opened, Daily Closed, and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI. The 4th sibling of the SCT/Kevin, BC/Ruben, and TOL/Sean pipelines. Use for any \"BT menu report\", \"Blackstone Toyota menu sales\", or Tony Garcia menu-sales report request. (Menu REBUILD work is a different skill \u2014 bt-tony-menu-rebuild.)",
+   "times_used": 4,
+   "last_used": "2026-08-18"
+  },
+  {
    "name": "hermes-slack-token-recovery",
    "path": "automotive/hermes-slack-token-recovery",
    "category": "automotive",
@@ -401,14 +409,6 @@
    "description": "Run the Toyota of Lancaster (TL/TOL, Tekion dealer 1092) ALIGNMENT count report, month-to-date, broken down by service advisor (dedicated + bundled + unique ROs, ranked). Produces a 2-page Toyota-red scorecard (page-1 PNG + full PDF) and is drafted to Sean Preston by Stacey. Use when Joe asks for \"the Lancaster/TOL alignment report\" or to schedule it.",
    "times_used": 4,
    "last_used": "2026-07-07"
-  },
-  {
-   "name": "bt-menu-sales-reports",
-   "path": "automotive/bt-menu-sales-reports",
-   "category": "automotive",
-   "description": "Run the Blackstone Toyota (BT, dealer 1249) Menu Sales scorecards \u2014 Daily Opened, Daily Closed, and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI. The 4th sibling of the SCT/Kevin, BC/Ruben, and TOL/Sean pipelines. Use for any \"BT menu report\", \"Blackstone Toyota menu sales\", or Tony Garcia menu-sales report request. (Menu REBUILD work is a different skill \u2014 bt-tony-menu-rebuild.)",
-   "times_used": 3,
-   "last_used": "2026-07-28"
   },
   {
    "name": "tekion-browser-navigation",
