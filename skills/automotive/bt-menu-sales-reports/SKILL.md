@@ -72,4 +72,32 @@ The 7/8 request landed during the multi-day OVERALL_QUOTA exhaustion +
 an active `quota_guard.sh` window reserved for SCT; correct move was: build
 pipeline, queue `bt_seed_watcher.sh` as a background job with
 notify_on_complete, tell Joe honestly (no stale/zero draft), deliver to the
-BT Slack thread when it lands.\n\n## OVERALL_QUOTA reset behavior (observed 7/8–7/9 outage)\nNOT a fixed midnight reset. Behaves like a rolling ~24h+ bucket tied to when\nthe calls were burned; the 7/8 outage ran **29+ hours** with continuous 429s.\nRecovered capacity can be instantly re-drained by queued crons (11PM\ndealer-detail sync, 2AM VI pull), making it look continuously dead.\nIf dead >24h, escalate: ticket to Tekion asking the actual OVERALL_QUOTA\nlimit, reset schedule, and a raise — it's one org-wide bucket shared by all\n7 stores' pipelines and AMG has co-founder-level contact from the bin\nescalation. Never blind-retry; probe-gate everything.
+BT Slack thread when it lands.\n\n## Daily SEND cron (6 AM job `7d023e4565a0`) — bridge call tool choice matters (learned 2026-08-18)
+The daily CLOSED MTD auto-SEND (not draft) to Tony Garcia CC Joe uses the manual
+`env -u HERMES_HOME ... hermes chat -q "<msg>"` bridge pattern (per
+`agent-to-agent-bridge`), NOT `~/bin/ask-agent` (may be wiped by home resets).
+**Don't run that bridge call through `execute_code`'s `terminal()` helper** — its
+own ~5-minute internal cap can kill the whole script (status "timeout") before
+the subprocess even returns, even though the underlying `hermes chat -q` call
+itself would have finished in under 2 minutes. Use the **top-level `terminal`
+tool with `background=true, notify_on_complete=true`**, writing stdout to a log
+file, then `process(action='wait')` (auto-clamped to ~180s, fine — poll again if
+needed) and `read_file` the log. That pattern worked cleanly both for the
+send-hand-off (~102s) and the verify-only Sent-check ask (~78s), zero timeouts.
+
+Confirmed 2026-08-18 (first live SEND-only run, no draft step): Stacey's
+`joe-email-mime-signature` skill auto-loads and builds the correct
+multipart/mixed > multipart/related > multipart/alternative(text/plain+html) +
+image/png(Content-ID=scorecard,inline) + application/pdf structure and actually
+SENDS via SMTP first try — no rebuild cycle needed for a send (unlike the
+TOL/BC draft pipelines' frequent MIME-rebuild traps). Verification via a single
+terse read-only ask (`in:sent subject:(BT Menu Sales Closed MTD)`) returned
+fast with the standard **token-match trap**: 4 hits total, 3 were prior weeks'
+sends (Aug 1-8, July 1-30, July 1-28) plus today's exact match — always compare
+the FULL exact subject/date, don't treat a multi-hit count as a red flag. Her
+first himalaya invocation errored (`himalaya search ... --folder Sent` — wrong
+subcommand) and she self-corrected to `himalaya envelope list -f "[Gmail]/Sent
+Mail" -s 50 '...'` plus a raw imaplib cross-check; this is a normal self-healing
+retry, not a failure to flag (same spirit as the TOL em-dash IMAP-search hiccup).
+
+## OVERALL_QUOTA reset behavior (observed 7/8–7/9 outage)\nNOT a fixed midnight reset. Behaves like a rolling ~24h+ bucket tied to when\nthe calls were burned; the 7/8 outage ran **29+ hours** with continuous 429s.\nRecovered capacity can be instantly re-drained by queued crons (11PM\ndealer-detail sync, 2AM VI pull), making it look continuously dead.\nIf dead >24h, escalate: ticket to Tekion asking the actual OVERALL_QUOTA\nlimit, reset schedule, and a raise — it's one org-wide bucket shared by all\n7 stores' pipelines and AMG has co-founder-level contact from the bin\nescalation. Never blind-retry; probe-gate everything.
