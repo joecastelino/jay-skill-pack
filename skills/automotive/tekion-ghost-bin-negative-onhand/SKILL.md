@@ -251,6 +251,11 @@ BEFORE flagging it as a missed transfer:
   drift," not a fresh-sounding delta. NOTE the Primary here is SP-ORD, not a front-counter bin
   like 2420/24xx — this is NOT a 5000s→front-counter transfer case, it's a standalone
   escalating negative needing direct investigation, same framing as 04500-1.
+- **NEW MULTI-DAY ESCALATION TRACKED (2026-08-17): 87139-42040 (ELEMENT, AIR REFINER), bin
+  5005, Primary = 2424 (qty 0), companion = 5005 only.** Steadily deepening for 2+ weeks:
+  -8 flat 8/3–8/10 → -9 (8/11–8/13) → -10 (8/14–8/16) → -11 (8/17). Same pattern class as
+  87139-YZZ09/17801-F4010/31532/04500-1 — check this part's full multi-day history every
+  future run (not just yesterday-vs-today) and report as "day N of continuing drift."
 - **STANDALONE SINGLE-BIN NEGATIVE = a DIFFERENT case from the back-counter transfer scenario
   — don't apply transfer logic, but DO keep escalating it (verified 2026-08-13, SCT
   04500-1/PLUG&GASKET, bin 5005).** When `multipleBinNumbers: []` AND the bin has no companion
@@ -388,6 +393,14 @@ DRIFTS between turns, verify `currentActiveDealerId` first):
    Apply → ONE combined generate XHR covering all selected bins (each hit carries `binNumber`,
    so rows split cleanly per bin). No need for one-bin-at-a-time loops in the UI path — that
    caution applies only to the headless API-replay harvest (server 500s under load).
+   **SCROLL BECOMES UNNECESSARY when you use the "Search Bin Names" filter first (verified
+   2026-08-17, all 7 SCT 5000-section bins in one pass):** after typing "500" into the filter
+   box, the narrowed list (9 rows: 3500, 4500, 5000-5007) renders ENTIRELY within the visible
+   panel (leaf y-coords ~382–621, no scrolling needed) — just enumerate all target leaves in
+   one `/eval`, walk each up to its checkbox, and `/mouse`-click all 7 back-to-back with no
+   `scrollIntoView` calls at all. Verify `document.querySelectorAll('input[type=checkbox]:checked').length===7`
+   before Apply. This is faster than the scroll-per-leaf loop above — use it whenever the
+   filter narrows the list enough that every target fits on-screen.
 3. Click the visible **Apply** button → report loads, XHR captured.
 4. Pagination: "Showing 1-50 out of N"; scrolling `.rt-tbody` does NOTHING (not infinite scroll)
    — click the visible **'Next'** text element at the bottom (~x794,y686) and capture page 2's
