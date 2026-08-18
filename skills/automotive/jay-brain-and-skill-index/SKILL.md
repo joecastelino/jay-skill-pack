@@ -499,6 +499,11 @@ imported/1049 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1055 linkab
 stats 2089 chunks/2089 embedded/1877 links (self-upgrade 0.42.21.0->0.45.12.0 still just informational,
 not acted on). Third consecutive 2026-08-14 no-op — 4-way AND check remains the reliable signal.
 
+## CLEAN NO-OP RE-CONFIRMED (2026-08-17 cron, evening): disk 1098 .md == import scan total (0
+imported/1098 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1104 linkable, git tree clean,
+stats 1104 pages/2172 chunks/2172 embedded/1944 links. Self-upgrade now flags 0.42.21.0->0.46.12.3
+(still informational only). Same 4-way AND no-op shape as the long streak of prior confirmations.
+
 ## CLEAN NO-OP RE-CONFIRMED (2026-08-17 cron, midday): disk 1084 .md == import scan total (0
 imported/1084 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1090 linkable, git tree clean,
 stats 1090 pages/2151 chunks/2151 embedded/1924 links (self-upgrade 0.42.21.0->0.46.12.3 informational
