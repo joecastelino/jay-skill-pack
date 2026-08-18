@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-18T07:15:28",
+ "generated": "2026-08-18T07:30:46",
  "skill_count": 171,
  "skills": [
   {
@@ -7,7 +7,7 @@
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 211,
+   "times_used": 212,
    "last_used": "2026-08-18"
   },
   {
@@ -15,8 +15,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 116,
-   "last_used": "2026-08-17"
+   "times_used": 117,
+   "last_used": "2026-08-18"
   },
   {
    "name": "agent-to-agent-bridge",
