@@ -175,6 +175,17 @@ Extracting straight from the MIME part bytes (not a separately-downloaded copy)
 proves the exact content Stacey attached — the strongest verification available,
 stronger than comparing file size or trusting a downloaded duplicate matches.
 
+**Strongest check of all — byte-identical comparison**: when you (Jay) built the
+source file locally before handing it to Stacey, compare the MIME part bytes
+pulled from the draft directly against your local file with `==`:
+```python
+local = open('/path/to/your/source.pdf', 'rb').read()
+print("byte-identical:", local == pdf_bytes)   # pdf_bytes = bytes pulled from MIME part above
+```
+This proves Stacey attached YOUR exact file with zero re-encoding/corruption —
+stronger than page-count or text-content checks, and catches the case where she
+attached a similarly-sized but stale/wrong-version file.
+
 **Fallback if pypdf ever genuinely fails:** verify the PNG instead — Stacey's
 HTML drafts embed the scorecard image either as an inline `cid:` MIME part
 (walk `msg.walk()` for `image/png`) or an externally-hosted URL (e.g.

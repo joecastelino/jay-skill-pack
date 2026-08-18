@@ -60,10 +60,40 @@ Script: `/home/itadmin/tekion-reports/cabin-air-filter-bt/render_bt_cabin_air_ro
   a compact `Table` of that advisor's individual line items (RO#, date,
   customer, category, part#, type, qty, revenue), alternating row shading.
 - Gotcha: `customer` field can be `None` in raw ledger rows — guard with
-  `(r.get('customer') or 'N/A')[:20]` before slicing, else `TypeError:
+  `(r.get('customer') or 'N/A').strip() or 'N/A'` before use, else `TypeError:
   'NoneType' object is not subscriptable` on render.
-- This naturally produces a long PDF (17 pages for ~500 line items across 17
-  advisors) — that's expected and correct, not a formatting bug.
+- **Customer/description columns MUST use `Paragraph`, not a plain string** —
+  a plain Python string in a `reportlab.platypus.Table` cell does NOT wrap; a
+  long customer name visually overflows into the next column (e.g.
+  "JACQUELINE CASTROCAMACHO Cabin" running together) even though `pypdf`
+  text-extraction still reads the words in the right order (extraction doesn't
+  care about visual boundaries, so this bug is INVISIBLE to text-only
+  verification — you must render to PNG and vision-check at least one detail
+  page). Fix:
+  ```python
+  cell_style = ParagraphStyle('cell', fontSize=7.5, leading=9)
+  row = [ro_num, date, Paragraph(customer_name, cell_style), category, ...]
+  ```
+  Widen that column slightly too (e.g. 1.4in -> 1.5in).
+- This naturally produces a long PDF (17-25+ pages for ~500 line items across
+  17 advisors) — that's expected and correct, not a formatting bug.
+- **Joe wants each advisor's detail section starting on its OWN page**, not
+  just back-to-back in a running list (corrected 2026-08-18, after the
+  overflow-bug rebuild). Insert a `PageBreak()` before every advisor except the
+  first:
+  ```python
+  for idx, a in enumerate(adv_summary):
+      if idx > 0:
+          story.append(PageBreak())
+          story.append(Paragraph("Repair Order Detail — By Service Advisor (cont.)", sub_style))
+      story.append(Paragraph(f"{a['name']} — ...", h3_style))
+      ... # that advisor's table
+  ```
+  A busy advisor's table can still spill onto a 2nd physical page if it has
+  many rows (e.g. 60 line items) — that's fine, the NEXT advisor still starts
+  fresh on a new page after that spillover. Don't treat page count growing
+  past the advisor count as a bug — verify by extracting each page's text and
+  checking which advisor-header lines start which page indices.
 
 ## Delivery via Stacey (draft-only)
 Route through Stacey (`agent-to-agent-bridge`) as usual — background/`nohup`
