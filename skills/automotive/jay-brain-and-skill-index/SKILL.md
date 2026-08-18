@@ -399,69 +399,14 @@ imported/1108 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1114 linkab
 stats 1114 pages/2186 chunks/2186 embedded/1960 links. Same 4-way-AND no-op shape as prior
 confirmations — session-end-sync had already caught everything up before this cron ran.
 
-## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #10, afternoon): disk 1040 .md == import scan total (0
-imported/1040 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1046 linkable, git tree clean,
-stats 1046 pages/2071 chunks/2071 embedded/1863 links. Identical shape to runs #5-#9 same day — the
-4-way AND check remains the reliable no-op signal across a 10th same-day pass.
-
-## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #11): disk 1042 .md == import scan total (0
-imported/1042 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1048 linkable, git tree clean,
-stats 1048 pages/2073 chunks/2073 embedded/1865 links. Same shape as prior same-day no-ops — the
-4-way AND check remains reliable across an 11th same-day pass.
-
-## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #12): disk 1042 .md == import scan total (1 imported/
-1041 skipped/0 errors — the 1 import created 21 chunks but `embed --stale` immediately found 0 stale,
-meaning session-end-sync had already embedded it before this cron ran), orphans 0 out of 1048 linkable,
-git tree clean, stats 2073 chunks/2073 embedded/1865 links. Confirms: a nonzero "pages imported" count
-with 0 stale-to-embed right after is a benign race with the 15-min sync, not a problem — still check the
-4-way AND (disk≈import-total, embed-stale resolves to 0 either way, orphans==0, git clean) before doing
-any link/commit work.
-
-## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #13/afternoon): disk 1042 .md == import scan total (0
-imported/1042 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1048 linkable, git tree clean,
-stats 1048 pages/2073 chunks/2073 embedded/1865 links. Same shape as runs #10-#12 same day — the 4-way
-AND check remains the reliable no-op signal.
-
-## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #14): disk 1042 .md == import scan total (0
-imported/1042 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1048 linkable, git tree clean,
-stats 1048 pages/2074 chunks/2074 embedded/1865 links. Same shape as runs #10-#13 same day — the
-4-way AND check remains the reliable no-op signal across a 14th same-day pass.
-
-## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, evening run): disk 1043 .md == import scan total (0
-imported/1043 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1049 linkable, git tree clean,
-stats 1049 pages/2076 chunks/2076 embedded/1866 links. Same shape as the day's earlier no-ops —
-4-way AND check remains stable.
-
-## CLEAN NO-OP RE-CONFIRMED (2026-08-13 evening cron): disk 1043 .md == import scan total (0
-imported/1043 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1049 linkable, git tree clean,
-stats 1049 pages/2076 chunks/2076 embedded/1866 links. Same shape as the day's earlier no-ops —
-4-way AND check remains stable across a full day of repeated cron passes.
-
-## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #16/evening): disk 1044 .md == import scan total (0
-imported/1044 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1050 linkable, git tree clean,
-stats 1050 pages/2077 chunks/2077 embedded/1868 links. Same shape as the day's earlier no-ops —
-4-way AND check remains stable across a 16th same-day pass. gbrain also flagged 0.42.21.0 -> 0.45.12.0
-self-upgrade available (informational only, not acted on per standing guidance above).
-
-## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, run #17/night): disk 1048 .md == import scan total (0
-imported/1048 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1054 linkable, git tree clean,
-stats 1054 pages/2087 chunks/2087 embedded/1875 links. Same shape as the day's earlier no-ops —
-4-way AND check remains stable across a 17th same-day pass.
-
-## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, night run #18): disk 1049 .md == import scan total (0
-imported/1049 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1055 linkable, git tree clean,
-stats 1055 pages/2088 chunks/2088 embedded/1877 links. Same shape as the day's earlier no-ops —
-4-way AND check remains stable across an 18th same-day pass.
-
-## CLEAN NO-OP RE-CONFIRMED (2026-08-13 cron, night run #19): disk 1049 .md == import scan total (0
-imported/1049 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1055 linkable, git tree clean,
-stats 1055 pages/2088 chunks/2088 embedded/1877 links. Same shape as the day's earlier no-ops —
-4-way AND check remains stable across a 19th same-day pass.
-
-## CLEAN NO-OP RE-CONFIRMED (2026-08-13 late-night cron, run #20): disk 1049 .md == import scan total (0
-imported/1049 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1055 linkable, git tree clean,
-stats 1055 pages/2088 chunks/2088 embedded/1877 links. Same shape as the day's earlier no-ops —
-4-way AND check remains stable across a 20th same-day pass.
+## CLEAN NO-OP STREAK CONDENSED (2026-08-13 cron, runs #10-#20, afternoon through late-night): 11
+consecutive same-day passes (disk 1040→1049 .md growing slowly, 0 imported each time except run #12
+which saw a benign 1-page/0-stale race with the 15-min sync), `embed --stale`=0 throughout, orphans
+0 out of 1046→1055 linkable, git tree clean every run, stats climbing 1046→1055 pages / 2071→2088
+chunks (embedded==chunks always), 1863→1877 links. Confirms the 4-way AND no-op check (disk≈import-total,
+embed-stale==0, orphans==0, git clean) is stable across an entire day of back-to-back cron passes with
+session-end-sync keeping pace; a nonzero "pages imported" with immediately-0 stale-to-embed (run #12) is
+a benign race, not a problem, as long as the 4-way AND still holds after.
 
 ## CLEAN NO-OP RE-CONFIRMED (2026-08-14 cron): disk 1049 .md == import scan total (0
 imported/1049 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1055 linkable, git tree clean,
@@ -498,6 +443,19 @@ imported/1084 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1090 linkab
 stats 1090 pages/2151 chunks/2151 embedded/1924 links. Same shape as the 2026-08-13/14 no-op streak —
 4-way AND check remains stable; gbrain still flags a self-upgrade available (0.42.21.0->0.46.12.3),
 informational only, not acted on.
+
+## NORMAL SYNC RUN, 2 ORPHANS CLEARED (2026-08-18 09:30 cron): happy-path import found 2 pages
+imported (2 new session captures from the 15-min sync that hadn't been linked yet:
+session-20260818_090210_d75ff1 "Nightly brain sync cron verified canonical path",
+session-20260818_090931_46248770 "Blackstone Toyota Random Requests Channel Context Captured"),
+`embed --stale` embedded those 2 chunks. `orphans` found exactly those 2 (both [projects], no [kb]
+latecomers this run). Linked both `gbrain link index projects/session-<ts> --link-type references`
+-> ok, added both to index.md Sessions list (title pulled from `gbrain get <slug>` frontmatter),
+committed ("brain sync"), re-imported (1 page/22 chunks — index.md itself re-chunked since it's
+large) + re-embedded (2 chunks — the rest were already fresh from the same pass). Final verify:
+orphans 0/1143, git clean, stats 1143 pages/2219 chunks/2219 embedded/1992 links. Confirms the
+one-orphan-round happy path (no self-referential second round needed this time — this session's own
+capture apparently lands in a LATER 15-min sync pass, not this one).
 
 ## CLEAN NO-OP RE-CONFIRMED (2026-08-18 cron): disk 1108 .md == import scan total (0
 imported/1108 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1114 linkable, git tree clean,
