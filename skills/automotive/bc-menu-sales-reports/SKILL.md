@@ -162,6 +162,14 @@ Always label the numbers with the master's `asof` date.
   Michael Reyes, Houa Moua, Jacob Debussey, Valentine Nolasco). No UUIDs/numerics.
 - Vision-verify: crop the top ~460px band, upscale 2x, then vision (full-page OCR
   misreads the small KPI digits). JSON totals are authoritative.
+- **Use `vision_analyze` with the LOCAL PNG file path, not `browser_vision`** —
+  `browser_vision` screenshots whatever page the browser tool currently has
+  loaded (or a blank page if nothing was navigated), NOT the local rendered
+  file, so it returns "image is blank/I can't see anything" even though the
+  render succeeded (hit 2026-08-17). `vision_analyze(image_url=<absolute local
+  path to the .png>, question=...)` reads the file directly and works
+  correctly without needing a browser session at all — skip `browser_vision`
+  entirely for this verification step.
 
 ## Emailing — Stacey DRAFTS to Ruben (do NOT send unless told)
 Give Stacey explicit BC-specific instructions or she'll fall back to Kevin/SCT
