@@ -499,6 +499,12 @@ stats 1090 pages/2151 chunks/2151 embedded/1924 links. Same shape as the 2026-08
 4-way AND check remains stable; gbrain still flags a self-upgrade available (0.42.21.0->0.46.12.3),
 informational only, not acted on.
 
+## CLEAN NO-OP RE-CONFIRMED (2026-08-17 late-night cron #2, 23:00): disk 1108 .md == import scan total (0
+imported/1108 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1114 linkable, git tree clean,
+stats 1114 pages/2185 chunks/2185 embedded/1960 links. Same 4-way AND no-op shape as the long streak —
+session-end-sync had already caught everything up. self-upgrade now flags 0.42.21.0->0.46.18.0
+(still informational only, not acted on).
+
 ## CLEAN NO-OP RE-CONFIRMED (2026-08-14 cron, run #5): disk 1049 .md == import scan total (0
 imported/1049 skipped/0 errors), `embed --stale`=0, orphans 0 out of 1055 linkable, git tree clean,
 stats 1055 pages/2089 chunks/2089 embedded/1877 links. Fifth consecutive 2026-08-14 no-op — 4-way
