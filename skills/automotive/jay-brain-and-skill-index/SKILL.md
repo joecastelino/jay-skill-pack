@@ -48,6 +48,14 @@ feed it clean, well-formed pages and USE THE RIGHT COMMANDS, not rebuild what it
      `gbrain import --no-embed` (reports "1 page imported") + `gbrain embed --stale` ("1 chunk").
      Skipping this leaves index.md's new wikilinks unembedded until 3 AM.
   7. Verify: `gbrain stats` Embedded==Chunks; linked-sessions==disk-sessions count; `git status` clean.
+  **SELF-REFERENTIAL ORPHAN GOTCHA (confirmed 2026-08-17):** the act of running this sync itself gets
+  captured as a NEW session page (e.g. "Nightly GBrain Sync Verified...") sometime during/after your
+  first re-import+embed pass. Running `gbrain orphans` again after step 6 will often find ONE more
+  orphan — that session page about the sync you're currently doing. This is expected, not a bug: link
+  it (`gbrain link index projects/session-<ts> --link-type references`), add it to index.md's Sessions
+  list, commit, then re-import+embed a THIRD time. Keep looping orphans→link→commit→reimport until
+  `gbrain orphans` reports 0 in the same pass as `git status` clean — don't stop after just one round
+  of fixes assuming it's done.
 - **THE GRAPH/EDGES ARE A SEPARATE, MOSTLY-EMPTY LAYER (key gotcha):** `[[wikilinks]]` in page
   BODIES and the frontmatter `links:` field are CONTENT — they are NOT auto-converted into graph
   edges. As of 2026-06-25 the brain had only 42 links across 99 pages and `backlinks index` = [].
