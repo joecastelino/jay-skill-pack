@@ -147,10 +147,28 @@ Caliber invoice scrape + TOL backfill retries). Playbook:
 `"<RO>|<opcode>"`** (e.g. `"98099|TEK45000BNM"`), NOT a list. Each value:
 `{date:"MM/DD/YY", ro, opcode, year, make, model, mileage, labor_gross,
 labor_price, parts_gross, parts_price, job_type, pay_type, advisor, total_gross}`.
-Report **customer-facing totals from `labor_price` + `parts_price`** (the
-scorecard's labor$/parts$), not the `_gross` fields. Menus count =
-`len(records)`; per-advisor / per-day = Counter over `advisor` / `date`.
+⚠️ **CORRECTED 2026-08-18 — report the `_gross` fields, NOT `_price`.** An
+earlier version of this line said to use `labor_price` + `parts_price`; that is
+**WRONG** and will produce numbers that match NO scorecard ever sent to Ruben.
+Verified against the emitted report JSON, the renderer, and every historical run
+logged in this skill: the scorecard KPIs and every reported total are
+**`labor_gross` + `parts_gross`**. Proof (2026-08-18): the same 111 records give
+`_gross` = $18,086.30 labor / $12,533.78 parts / **$30,620.08 total** (what the
+PNG shows and what got drafted) vs `_price` = $23,246.22 / $22,633.31 /
+$45,879.53 (matches nothing). Cross-checked the 8/9 and 8/11 report files: their
+`_gross` sums equal the totals this skill already records for those runs
+($10,822.50 and $15,602.92), confirming `_gross` is the reporting basis.
+So: report **`labor_gross` + `parts_gross`**; per-advisor $ likewise. Menus count
+= `len(records)`; per-advisor / per-day = Counter over `advisor` / `date`.
 Always label the numbers with the master's `asof` date.
+
+**Sanity check that catches this instantly**: after any master-derived
+computation, diff your totals against the emitted
+`data/bc-menu-sales-closed-<today>.json` → `totals` dict (it carries all four
+fields: `labor_gross`, `parts_gross`, `labor_price`, `parts_price`) and against
+the vision-read KPI band on the PNG. If your hand-computed number doesn't match
+the render, you picked the wrong field pair — the render/report JSON is
+authoritative, not your own sum over the master.
 
 ## Reliability (inherited from SCT pipeline)
 - Prefilter on FREE `OPCODE` tags → only ROs carrying a TEK menu opcode get a
@@ -458,6 +476,31 @@ of bug she may not be able to self-diagnose (it's in her tool code, not content)
 so her own skill/code can eventually be patched at the source — routing around
 it is a workaround, not a permanent fix.
 
+### PREVENTION that works first-try: write the numbers as "N dollars" in the ask, have her swap in `$` via a Python replace (verified 2026-08-18)
+Don't wait for the corruption and then fall back to IMAP APPEND — **pre-empt it
+in the very first ask-agent message**. Never put a literal `$` immediately
+followed by a digit anywhere in the message you send Stacey; that sequence is
+what her shell pipeline eats. Instead:
+1. State every figure in the summary sentence as `18,086.30 dollars` /
+   `<b>30,620.08 dollars</b>` (word form, no `$` character at all).
+2. Add an explicit final-step instruction: *"after assembling the HTML, do a
+   final plain Python string replace of ' dollars' with nothing and put a
+   dollar-sign character immediately before each of those numbers. Do this with
+   a Python string replace, NOT a bash/shell command, and never place a dollar
+   sign followed by a digit inside a double-quoted shell string anywhere in
+   your pipeline (that corrupts the figures — it has happened before on this
+   report)."*
+3. Ask her to echo the total back in the terse DONE line (`TOTAL=<figure as it
+   appears in the body>`) so you get a cheap first signal before deep verification.
+This produced a **clean first build** on 2026-08-18 MTD (111 menus /
+$30,620.08): raw MIME showed `total of <b>$30,620.08</b>` with every digit and
+`$` intact — zero rebuild churn, zero duplicates, no need for the imaplib
+APPEND fallback. Prefer this over both the 'USD' placeholder token (which
+produced a garbled MIME build on 8/11) and the self-build workaround; keep
+IMAP APPEND as the escalation only if this ALSO comes back corrupted.
+Still verify the raw draft yourself afterward — her self-reported TOTAL is a
+hint, not proof.
+
 ## Headless/cron gotcha: don't pipe himalaya output to python3/interpreters
 `himalaya envelope list --output json | python3 -c "..."` gets BLOCKED by the
 terminal security scanner (`tirith:pipe_to_interpreter`, "Pipe to interpreter")
@@ -467,7 +510,38 @@ for verification; if you need structured parsing, write the piped output to a
 file first (`himalaya ... > /tmp/x.json`) then read it with `read_file`/
 `execute_code`'s `read_file`, never pipe directly into an interpreter.
 
-## Clean run confirms the documented playbook holds (2026-08-04 MTD run)
+## Running the data pull: it exceeds the 600s foreground cap — use background + process wait (2026-08-18)
+`bc_menu_sales_closed_mtd.py` (even a plain today-only append) can run past the
+`terminal()` foreground maximum. Two traps hit in one run:
+- `execute_code`'s `terminal(..., timeout=900)` is **rejected outright**
+  (`Foreground timeout 900s exceeds the maximum of 600s`) — and it returns that
+  error as `{'error': ...}` with **no `output` key**, so `r["output"]` raises
+  `KeyError`. Print the whole dict (`print(r)`) when unsure rather than
+  subscripting blind.
+- Correct pattern: top-level
+  `terminal(command=..., background=true, notify_on_complete=true)` → then
+  `process(action="wait", session_id=..., timeout=180)`. Note `process wait`
+  clamps to a 180s configured limit regardless of what you request; just call it
+  again if the job is still running. This returns the script's real stdout
+  (including the mandatory `✓ all candidate ROs scanned` line), unlike a bare
+  exit-124.
+The render step (`render_scorecard_bc.py`) is fast and fine in foreground.
+
+## 2026-08-18 6:17pm Closed MTD run — clean, and the two fixes above were what made it clean
+111 menus, $18,086.30 labor / $12,533.78 parts = $30,620.08 (Aug 1-18). Advisors:
+Juan Ramirez 28, Houa Moua 27, Dimetri Reynoso 16, Michael Reyes 12, Humberto
+Dominguez 11, Erik Mercado 8, Jacob Debussey 6, Jeremia Navarro 3. Master asof was
+2026-08-17 → default append (no seed, no catch-up owed); 70 closed ROs → 8 carried
+TEK menu opcodes → 8 new rows; `✓ all candidate ROs scanned`. Vision-verified KPI
+band matched the JSON exactly. Stacey's first build ask hit the documented exit-124
+timeout → single terse `DONE <id> or NOT-DONE` probe returned `DONE 42439`
+immediately. Draft verified: To=Restrada only, Cc=None, From=Joe, PDF present
+(75,842 bytes), inline PNG **byte-for-byte identical** to the source render
+(939,403 bytes), bold `<b>$30,620.08</b>` intact, exactly 1 MTD draft for the date,
+Sent count 0. Notable: the ONLY 8/18 sibling draft was the separate Daily Closed
+report (42436) — per the dedup rule, grep the FULL date-qualified subject AND the
+report-type words ("Month-To-Date" vs "Daily Closed") before calling something a
+duplicate, since both report types share the `BC 8/18` substring.
 Ran with zero deviations: master already existed for the month → default
 append (not --seed); `bc_menu_sales_closed_mtd.py` printed
 `✓ all candidate ROs scanned`; render succeeded first try; Stacey's build
