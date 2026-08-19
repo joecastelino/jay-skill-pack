@@ -32,6 +32,13 @@ Work dir: `/home/itadmin/tekion-reports`
   resolution).
 - `data/sct-menu-closed-mtd-MASTER-<YYYY-MM>.json` — persistent per-month
   cache, keyed `"ro|opcode"`. Auto-created on month rollover.
+  ⚠️ **The cron task spec hardcodes a stale baseline sentence** (e.g. "the
+  current-month master already holds June 1-17 = 28 menus / $10,119.08"). That
+  line was written in June and is NEVER updated — by 2026-08-18 the real master
+  was `MASTER-2026-08` at 68 menus / $31,300.21. Ignore the spec's baseline
+  entirely; read the actual current-month master at the start of the run to get
+  the true pre-run figure, and mention the discrepancy in the final summary so
+  Joe knows the spec text is stale, not the data.
 - `data/sct-menu-sales-closed-<YYYY-MM-DD>.json` — RB-schema MTD snapshot the
   renderer consumes (rewritten every run from the master).
 - `render_scorecard.py` — same renderer as Opened; auto-detects "closed" in
@@ -43,6 +50,24 @@ Work dir: `/home/itadmin/tekion-reports`
 1. Browser auth check on :9223 (see `sct-menu-sales-api-scorecard` /
    `persistent-browser-server` skills) — needed only for advisor-name
    resolution fallback.
+   ⚠️ **A dead :9223 is NOT a blocker for this report — do not spend calls
+   restoring it.** The task spec's step 1 says to restore the session, but the
+   closed pipeline resolves advisor names via the PUBLIC OpenAPI `/users/{id}`
+   (see the ⭐ UPGRADE section in `sct-menu-sales-api-scorecard`). Verified
+   again 2026-08-18: `curl :9223/health` returned **exit 7 (connection
+   refused, server not even running)** and all 15 advisors still resolved to
+   real human names with zero UUIDs. Only restore if advisor names actually
+   come back as digits/UUIDs AFTER the scan — check the emitted JSON, don't
+   pre-emptively fix the browser.
+   Quick post-scan names check (authoritative, cheaper than vision):
+   ```python
+   import json, re
+   from collections import Counter
+   d = json.load(open("data/sct-menu-sales-closed-<today>.json"))
+   adv = Counter(r["advisor"] for r in d["rows"])
+   bad = [a for a in adv if str(a).isdigit() or re.fullmatch(r'[0-9a-fA-F\-]{6,}', str(a))]
+   print(bad, adv.most_common())
+   ```
 2. `cd /home/itadmin/tekion-reports && python3.11 sct_menu_sales_closed_mtd.py`
    — scans **today only** (~100-150 closed ROs), prefilters to ROs carrying a
    TEK menu opcode tag (free on the search response, no fan-out needed), then
@@ -93,6 +118,60 @@ Work dir: `/home/itadmin/tekion-reports`
    more explicit instruction referencing that draft ID directly ("send draft
    42208 now — that's the '<subject>' email") rather than repeating the
    generic subject-only send instruction, then verify Sent again.
+
+7. **MANDATORY second verify: the MIME/attachment check. A passing
+   TO/TS/TOTAL verify does NOT prove the PDF actually went out.**
+   Re-confirmed on the CLOSED report 2026-08-18 (previously only logged for
+   the Opened run 2026-07-21, so this trap hits BOTH reports): the send ask
+   returned empty output (exit 0, silent timeout), the read-only verify came
+   back a clean `SENT 18:05 TO Joe Castelino TOTAL $35,040.89` — correct
+   recipient, correct subject, correct literal figures — yet the Sent copy was
+   a single plain-text part with the `<#part type=application/pdf ...>` markup
+   as literal text. **No real attachment, no inline PNG.** Recipient+numbers
+   passing is exactly what makes this one sneaky; never stop at that verify.
+   - Jay cannot read Sent via himalaya (IMAP AUTHENTICATIONFAILED in Jay's
+     profile), so the MIME check must be a terse one-line ask to Stacey. This
+     exact phrasing worked first try:
+     ```
+     READ-ONLY, send nothing. For that Sent copy of '<subject fragment>'
+     (<HH:MM> today): 1) exact TO email address, 2) is the MIME real multipart
+     with a Content-Disposition attachment filename (not literal <#part>
+     markup as text)?, 3) how many drafts with that subject remain?
+     Reply one line: TO=<addr> | MIME=<REAL-multipart filename=... or
+     MARKUP-ONLY> | DRAFTS=<number>
+     ```
+   - On `MIME=MARKUP-ONLY`, recovery that landed correctly on the FIRST retry:
+     tell her to **REBUILD FROM SCRATCH** (never edit/reuse the broken one) and
+     explicitly instruct the transport — *"Build the message with a real MIME
+     library (multipart/mixed + multipart/alternative) and send over SMTP"* —
+     plus restate TO / greeting / literal figures / real PDF path / inline PNG
+     path in the same ask so no follow-up is needed. Naming the MIME structure
+     explicitly is what makes it stick; a generic "use SMTP template-send"
+     re-ask is weaker.
+   - Then do a final read-only confirm scoped to the NEW message UID:
+     `TO=<addr> | TS=<ts> | PDF=<YES filename / NO> | TOTAL=<$>`.
+   - Leave the broken first copy in Sent — Joe gets two emails, one good; a
+     duplicate is far better than a recall attempt. Note it in the summary.
+
+## Reading the master / RB files in an inspection script (schema gotchas)
+
+- The **master** is a dict `{"month","records","updated","asof"}` where
+  `records` is itself a **dict keyed `"ro|opcode"`** — NOT a list. Iterating
+  the top-level object yields the four key STRINGS and blows up with
+  `AttributeError: 'str' object has no attribute 'get'`. Use
+  `rows = list(json.load(open(master))["records"].values())`.
+- The emitted **RB file** uses `rows` (a list) plus `.totals` /`.row_count` —
+  different shape from the master. `.totals` has `labor_gross`, `parts_gross`,
+  `labor_price`, `parts_price`; total menu gross = labor_gross + parts_gross
+  (it is NOT a stored field).
+- **`row["date"]` is the RO's CREATION date, not its close date** (documented
+  upstream: the search response returns `closedTime`/`invoicedTime` as null, so
+  rows can only be bucketed by `creationTime`). So filtering
+  `[r for r in rows if r["date"] == "<today>"]` legitimately returns **0 rows
+  even on a day that added 10 new menus** — those ROs were opened days earlier
+  and merely closed today. Do NOT treat that as a scan failure. To report
+  today's delta, diff the master row_count/totals before vs. after the run, or
+  read the scanner's own stdout (`master now holds N MTD menu rows`).
 
 ## Pitfall: the scanner does NOT always auto-write `quota_outage_note` — verify manually
 
