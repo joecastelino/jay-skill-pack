@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-18T17:15:55",
+ "generated": "2026-08-18T17:37:35",
  "skill_count": 177,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 121,
+   "times_used": 123,
    "last_used": "2026-08-18"
   },
   {
@@ -99,20 +99,20 @@
    "last_used": "2026-08-17"
   },
   {
+   "name": "tekion-autonomous-login",
+   "path": "automotive/tekion-autonomous-login",
+   "category": "automotive",
+   "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
+   "times_used": 32,
+   "last_used": "2026-08-18"
+  },
+  {
    "name": "tekion-quotes-menu-price-diagnosis",
    "path": "automotive/tekion-quotes-menu-price-diagnosis",
    "category": "automotive",
    "description": "Diagnose a Tekion Service Menu pricing problem (e.g. \"a rotation is charging $449.45\") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLODE the menu into individual opcodes using the \"Add Menu Services as separate operations\" setting to find which opcode carries the bad price and its labor-rate method (Fixed vs Service Catalog Pro Dynamic Pricing). Use when Joe flags a wrong/inflated price on a maintenance menu line for a specific RO/vehicle.",
    "times_used": 32,
    "last_used": "2026-07-22"
-  },
-  {
-   "name": "tekion-autonomous-login",
-   "path": "automotive/tekion-autonomous-login",
-   "category": "automotive",
-   "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
-   "times_used": 31,
-   "last_used": "2026-08-18"
   },
   {
    "name": "tekion-scheduling",
@@ -147,20 +147,20 @@
    "last_used": "2026-08-13"
   },
   {
+   "name": "tekion-opcode-api",
+   "path": "automotive/tekion-opcode-api",
+   "category": "automotive",
+   "description": "Read, audit, and VERIFY Tekion opcode override rows directly from the backend REST API using the session's own auth token. This is the AUTHORITATIVE source of truth \u2014 the override UI grid frequently renders wrong/empty even when rows exist in the backend. Use to get the true committed row count before a batch, detect incomplete (part-less) rows, and confirm persistence after saving.",
+   "times_used": 22,
+   "last_used": "2026-08-18"
+  },
+  {
    "name": "tekion-vi-api-migration",
    "path": "automotive/tekion-vi-api-migration",
    "category": "automotive",
    "description": "Migrate the Vehicle Inventory (\"The Goods\") browser scraper to the Tekion OpenAPI (vehicle-inventory:search) producing per-store JSON that byte-matches the legacy schema. Covers field mapping, the SOLD-pending rule, Pacific-tz dates, rate-limit discipline, and the Don coordination/cutover handoff.",
    "times_used": 22,
    "last_used": "2026-07-12"
-  },
-  {
-   "name": "tekion-opcode-api",
-   "path": "automotive/tekion-opcode-api",
-   "category": "automotive",
-   "description": "Read, audit, and VERIFY Tekion opcode override rows directly from the backend REST API using the session's own auth token. This is the AUTHORITATIVE source of truth \u2014 the override UI grid frequently renders wrong/empty even when rows exist in the backend. Use to get the true committed row count before a batch, detect incomplete (part-less) rows, and confirm persistence after saving.",
-   "times_used": 21,
-   "last_used": "2026-08-02"
   },
   {
    "name": "tekion-opcode-overrides",
@@ -315,6 +315,14 @@
    "last_used": "2026-07-30"
   },
   {
+   "name": "tekion-opcode-create",
+   "path": "automotive/tekion-opcode-create",
+   "category": "automotive",
+   "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
+   "times_used": 7,
+   "last_used": "2026-08-18"
+  },
+  {
    "name": "tekion-parts-sales-orders",
    "path": "automotive/tekion-parts-sales-orders",
    "category": "automotive",
@@ -363,6 +371,14 @@
    "last_used": "2026-07-08"
   },
   {
+   "name": "tekion-uber-lyft-transportation-swap",
+   "path": "automotive/tekion-uber-lyft-transportation-swap",
+   "category": "automotive",
+   "description": "Reference for the AMG project to replace Tekion's native Lyft transportation/ride-fee integration with Uber. Load when asked about Uber API integration, swapping Lyft for Uber in Tekion, or prepping for Uber engineering team talks.",
+   "times_used": 6,
+   "last_used": "2026-08-18"
+  },
+  {
    "name": "sct-menu-sales-closed-mtd-scorecard",
    "path": "automotive/sct-menu-sales-closed-mtd-scorecard",
    "category": "automotive",
@@ -377,14 +393,6 @@
    "description": "Build a Tekion \"alignments sold this period, broken down by service advisor\" report for ANY of the 7 AMG stores from the LIVE OpenAPI \u2014 counting BOTH dedicated alignment opcodes AND alignments bundled inside a service menu/combo op. Produces a 2-page scorecard (page 1 advisor ranking, page 2 RO-level chip detail) and optionally has Stacey draft it. The opcode set is PER-STORE \u2014 never reuse one store's alignment codes on another. Verified live at TL Toyota of Lancaster dealer 1092 on 2026-06-29 (105 alignments, 102 dedicated plus 3 bundled, across 104 ROs, June MTD). Use when Joe asks for an \"alignment report\" or \"alignment count by advisor\" for a store, or any single-opcode \"how many of X did we sell, by advisor\" report.",
    "times_used": 5,
    "last_used": "2026-07-01"
-  },
-  {
-   "name": "tekion-uber-lyft-transportation-swap",
-   "path": "automotive/tekion-uber-lyft-transportation-swap",
-   "category": "automotive",
-   "description": "Reference for the AMG project to replace Tekion's native Lyft transportation/ride-fee integration with Uber. Load when asked about Uber API integration, swapping Lyft for Uber in Tekion, or prepping for Uber engineering team talks.",
-   "times_used": 5,
-   "last_used": "2026-08-18"
   },
   {
    "name": "bt-menu-sales-reports",
@@ -403,12 +411,12 @@
    "last_used": "2026-07-14"
   },
   {
-   "name": "tekion-opcode-create",
-   "path": "automotive/tekion-opcode-create",
+   "name": "tekion-ro-text-keyword-scan",
+   "path": "automotive/tekion-ro-text-keyword-scan",
    "category": "automotive",
-   "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
+   "description": "Search Tekion repair orders for a keyword (e.g. \"calibration\", \"windshield\") across labor descriptions, job concern text, part names, fees, and notes, with a dollar figure on the matching line. Use for ROI/opportunity-sizing questions like \"how much calibration/windshield/etc business did we do in the last N months\". Covers the BT Collision Center / body shop department discovery and the critical \"Per Estimate\" lump-sum blind spot.",
    "times_used": 4,
-   "last_used": "2026-07-12"
+   "last_used": "2026-08-18"
   },
   {
    "name": "tekion-ro-traffic-heatmap-report",
@@ -463,14 +471,6 @@
    "path": "automotive/tekion-parts-sales-by-advisor-report",
    "category": "automotive",
    "description": "Build a Tekion parts-sales-by-service-advisor report (e.g. cabin/engine air filters, or any specific part category) for any AMG store \u2014 units, revenue, menu-attach, ranked bar-chart summary AND full RO-level line-item detail per advisor. Use whenever Joe asks for a parts sales report \"broken down by advisor\" or \"like the alignment report\" \u2014 he means BOTH a summary table AND the underlying RO detail, not just aggregate numbers.",
-   "times_used": 3,
-   "last_used": "2026-08-18"
-  },
-  {
-   "name": "tekion-ro-text-keyword-scan",
-   "path": "automotive/tekion-ro-text-keyword-scan",
-   "category": "automotive",
-   "description": "Search Tekion repair orders for a keyword (e.g. \"calibration\", \"windshield\") across labor descriptions, job concern text, part names, fees, and notes, with a dollar figure on the matching line. Use for ROI/opportunity-sizing questions like \"how much calibration/windshield/etc business did we do in the last N months\". Covers the BT Collision Center / body shop department discovery and the critical \"Per Estimate\" lump-sum blind spot.",
    "times_used": 3,
    "last_used": "2026-08-18"
   },
@@ -587,6 +587,14 @@
    "last_used": "2026-06-29"
   },
   {
+   "name": "tekion-ro-fee-waiver-investigation",
+   "path": "automotive/tekion-ro-fee-waiver-investigation",
+   "category": "automotive",
+   "description": "Investigate whether a specific Tekion Misc/RO-level Fee (e.g. LYFT ride-share charge, shop supply fee, diagnostic fee) is being silently zeroed out on customer-pay ROs while the rest of the ticket bills normally \u2014 i.e. someone quietly waiving a charge without a documented coupon/discount. Use when asked \"is advisor/manager X hiding/not charging for Y\" or \"why did our [fee] revenue drop.",
+   "times_used": 2,
+   "last_used": "2026-08-18"
+  },
+  {
    "name": "tekion-ro-void-job-remove-parts",
    "path": "automotive/tekion-ro-void-job-remove-parts",
    "category": "automotive",
@@ -697,14 +705,6 @@
    "description": "Audit, diagnose, and repair the Tekion scraper pipeline including OTP fetching, session reuse, lock starvation, and Puppeteer navigation timeouts.",
    "times_used": 1,
    "last_used": "2026-08-05"
-  },
-  {
-   "name": "tekion-ro-fee-waiver-investigation",
-   "path": "automotive/tekion-ro-fee-waiver-investigation",
-   "category": "automotive",
-   "description": "Investigate whether a specific Tekion Misc/RO-level Fee (e.g. LYFT ride-share charge, shop supply fee, diagnostic fee) is being silently zeroed out on customer-pay ROs while the rest of the ticket bills normally \u2014 i.e. someone quietly waiving a charge without a documented coupon/discount. Use when asked \"is advisor/manager X hiding/not charging for Y\" or \"why did our [fee] revenue drop.",
-   "times_used": 1,
-   "last_used": "2026-08-18"
   },
   {
    "name": "tekion-tech-clock-time-by-opcode",
