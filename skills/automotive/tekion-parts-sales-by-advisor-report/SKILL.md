@@ -104,6 +104,19 @@ use `pypdf.PdfReader` on the bytes pulled straight from the draft's own
 `application/pdf` MIME part to confirm page count AND that page 2+ actually
 contains the RO detail rows (not just the summary repeated).
 
+## Draft-refresh gotcha (BT cabin/air filter, 2026-08-18)
+If a draft was already sent to Stacey/appended to Drafts BEFORE the final
+per-advisor-page-break fix landed, the draft's PDF attachment is now STALE
+(old page count, no page breaks) even though the subject/body look final.
+**Always re-verify the ACTUAL attachment bytes in the live Drafts message**
+(download via `himalaya attachment download`, then `pypdf.PdfReader` page
+count + spot-check page 0/3/last) — don't trust that "a draft exists with the
+right subject" means it has the latest PDF. If stale: delete the old draft via
+IMAP (`imap.store(id, '+FLAGS', '\\Deleted')` + `imap.expunge()`) and append a
+fresh one with the corrected file. Note: `himalaya envelope list` can still
+show a `\Deleted`-flagged message until expunge fully propagates — confirm
+with a raw IMAP FETCH FLAGS on that UID returning empty/no-data.
+
 ## Reusability
 This pattern (RO-only ledger join + advisor resolution + summary-then-detail
 PDF) generalizes to any "parts sold by X, broken down by advisor" ask —

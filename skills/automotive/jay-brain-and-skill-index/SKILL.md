@@ -41,6 +41,19 @@ feed it clean, well-formed pages and USE THE RIGHT COMMANDS, not rebuild what it
   2. Find unlinked: `comm -23 <(ls brain/projects/session-*.md|sed 's#.*/##;s#\.md$##'|sort -u) <(gbrain backlinks index|grep -io 'session-[0-9_a-f]*'|sort -u)`.
   3. For each: verify it exists with `gbrain get projects/session-<ts>` (head -3 shows frontmatter),
      then `gbrain link projects/session-<ts> index --link-type child_of` → expect `{"status":"ok"}`.
+     **ORPHAN-CLEARING DIRECTION GOTCHA (confirmed 2026-08-18, 2nd brain-sync cron of the day):**
+     `gbrain orphans` does NOT consider a page linked just because it has an outbound edge to a hub
+     (page→hub, e.g. `link projects/session-<ts> index`). It only clears once there's an INBOUND edge
+     FROM the hub TO the page (hub→page): `gbrain link index projects/session-<ts> --link-type
+     references`. Proof: ran `link session-X index --link-type references`, got `{"status":"ok"}`,
+     but `gbrain orphans` still listed session-X; `gbrain graph session-X --depth 1 --direction both`
+     showed only the session→index edge I'd just made. Re-ran as `link index session-X --link-type
+     references` (args swapped) and orphans dropped to 0 immediately. **So when following the cron
+     prompt's own correct instruction ("clear orphans with hub→page edges: `gbrain link index <slug>
+     --link-type references`"), do it exactly that way — hub first, page second — don't default to
+     the page→hub `child_of` pattern from step 3 above for orphan-clearing purposes; that pattern may
+     still be fine for build-brain-edges.py's own bulk edge-building logic (untested here), but for a
+     manual one-off orphan fix during the cron sync, hub→page `references` is what actually works.**
   4. ALSO add them to index.md's `## Sessions` body list (patch after the last session line; pull the
      title from the page's `title:` frontmatter for the `— description` suffix).
      **PATCH-TOOL INDENTATION GOTCHA (confirmed 2026-08-18):** when the `old_string`/`new_string` match
