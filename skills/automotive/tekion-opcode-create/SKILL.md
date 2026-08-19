@@ -196,6 +196,27 @@ Types; instead:
 3. Then `/type` the exact matched NAME (or a substring of it that's unambiguous) into the
    tagged `[data-jay='svc-input']` — this now returns real option(s) to click.
 
+## Dealer-switch click target: find the `cursor-pointer` ancestor, don't count parent hops
+
+When switching dealers on :9223 before creating a store-specific opcode, resolving the row by
+walking a FIXED number of parents up from the text node gives the WRONG element. Walking 3
+hops landed on `root_dealerInfoList_itemListContainer` (the whole list, center y≈287) — the
+click registered `{"success":true}` but `currentActiveDealerId` never changed. The real target
+is the ancestor whose className contains **`cursor-pointer` / `root_dealerInfoItem_container`**
+(center ≈ y262 for the BC row). Resolve it by CLASS, not by hop count:
+
+```js
+let el = textNode;
+while (el && !/cursor-pointer|dealerInfoItem_container/.test(el.className||'')) el = el.parentElement;
+const r = el.getBoundingClientRect();  // click r.x+r.width/2, r.y+r.height/2
+```
+
+Then ALWAYS verify `localStorage.getItem('currentActiveDealerId')` flipped before navigating —
+a silently-failed switch means you create the opcode at the wrong store. Also re-verify the
+dealer id after landing on `/ro/opcode/add`; the SPA drifts back to the prior dealer / a stale
+RO job page between calls, wiping filled form state. Do switch → navigate → verify → fill in
+tight sequences and re-check `/url` after each step.
+
 ## ⚠️ BEFORE creating: audit for near-duplicate opcodes (burned 2026-07-02)
 
 An exact-match existence check (`searchFields:["OPCODE"]` + `hits.find(x=>x.opcode===CODE)`)
