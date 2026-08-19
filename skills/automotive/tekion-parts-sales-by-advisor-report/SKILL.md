@@ -100,9 +100,31 @@ Route through Stacey (`agent-to-agent-bridge`) as usual — background/`nohup`
 the `ask-agent stacey` call (foreground 180s timeouts are normal for PDF+image
 rebuilds), then independently verify per `jay-gmail-draft-verification` skill.
 For a multi-page detail PDF specifically, PNG-only verification isn't enough —
-use `pypdf.PdfReader` on the bytes pulled straight from the draft's own
+extract text from the bytes pulled straight from the draft's own
 `application/pdf` MIME part to confirm page count AND that page 2+ actually
 contains the RO detail rows (not just the summary repeated).
+
+### PDF tooling in Jay's environment (settled 2026-08-18 — don't re-litigate)
+- `import fitz` (PyMuPDF) **works**. An earlier session concluded it was
+  "broken in this venv" — that was a wrong-interpreter artifact. Retry `fitz`
+  first; it's the fastest path to BOTH text (`page.get_text()`) and raster
+  (`page.get_pixmap(dpi=110).save(png)`) for vision checks.
+- `pypdf.PdfReader` failed (exit 1) on these files — don't rely on it.
+- poppler-utils (`pdftoppm`, `pdfinfo`) is **not installed**; `apt-get install`
+  attempts were inconclusive. Don't burn turns on it.
+
+### Two-proof verification loop (mandatory — never trust a self-report)
+1. `himalaya attachment download -a personal -f "[Gmail]/Drafts" <id>`
+   (no `-o` flag; lands in /tmp under its original filename).
+2. **Byte proof**: `sha256sum` / size-compare the downloaded attachment against
+   Jay's local source PDF. Byte-identical = the draft really carries the file
+   Jay built (rules out a stale/swapped attachment).
+3. **Visual proof**: `fitz` render pages → `vision_analyze`. Required because
+   the plain-string-cell overflow bug is INVISIBLE to text extraction.
+4. **Sent-vs-draft proof**: check the message's IMAP FLAGS/labels. `\Draft`
+   only = unsent. Presence of `\Sent` or `\Inbox` means it actually went out —
+   Stacey's `SENT=n` self-report has been wrong before, and a claimed draft ID
+   has also turned out to not exist anywhere (Drafts/Trash/All Mail).
 
 ## Draft-refresh gotcha (BT cabin/air filter, 2026-08-18)
 If a draft was already sent to Stacey/appended to Drafts BEFORE the final
@@ -116,6 +138,12 @@ IMAP (`imap.store(id, '+FLAGS', '\\Deleted')` + `imap.expunge()`) and append a
 fresh one with the corrected file. Note: `himalaya envelope list` can still
 show a `\Deleted`-flagged message until expunge fully propagates — confirm
 with a raw IMAP FETCH FLAGS on that UID returning empty/no-data.
+
+**"I don't see it in drafts" → check Trash first.** Joe will silently trash a
+draft himself the moment he opens the PDF and sees a layout defect. A draft
+vanishing from Drafts is usually Joe rejecting it, not a delivery failure — pull
+it from `[Gmail]/Trash`, download its attachment, and render the pages to find
+what he saw. That's how the customer-name overflow bug was actually caught.
 
 ## Reusability
 This pattern (RO-only ledger join + advisor resolution + summary-then-detail

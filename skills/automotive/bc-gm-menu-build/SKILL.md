@@ -19,8 +19,15 @@ Multi-session project (started 2026-07-12). Sibling of the BT build — load
 `bt-tony-menu-rebuild` for the full proven build mechanics (universal add-on
 row, suppress/swap, included-service Fixed-price fix, quote-explode verify).
 
-Slack home = BC menu thread `slack:C0BGTDMP9U2:1783876336.294119`.
+Slack home = **`slack:C0BR7FHMF17:1787111034.827789`** (the BC/GM-only thread Joe
+designated 2026-08-18; all BC crons deliver here). ⚠️ The OLD BC menu thread
+`C0BGTDMP9U2:1783876336.294119` referenced throughout this skill is **DEAD**
+(`channel_not_found`) — do not post there.
 BC store manager counterpart = Ruben Estrada (Restrada@blackstonegm.com).
+⚠️ **TWO RUBENS — disambiguate before acting**: *Ruben Estrada* = BC service
+manager (this project's stakeholder) vs *Ruben Dominguez* = a BT **service
+advisor** who appears as a line item in BT parts/advisor reports. If Joe says
+"Ruben" in a BC/menu context it's Estrada; in a BT report context it's Dominguez.
 Audit JSON: `/home/itadmin/bc-menu-build-gmlof-audit.json` (move into a
 `/home/itadmin/bc-menu-build/` project dir when the build starts).
 
@@ -784,7 +791,79 @@ row-level Apply/Save modal first.
   pgrep showed no competing process — the drift can occur with nothing in
   ps. Re-pin: pill (1130,32) → leaf (1095,262), verify localStorage.
 
+## 🟠 "RUBEN LIKED BT'S MENU MORE" — the demo-selection failure (2026-08-19)
+
+Joe relayed that Ruben preferred Blackstone Toyota's menu. It was **not taste** —
+he was comparing a finished product against a deliberately-empty pilot with a bug:
+
+| | BT | BC |
+|---|---|---|
+| Menus built | **40** (5K–200K, every interval) | **1** — the 172.5K pilot |
+| Add-on services | **25** (Tony's ordered stack) | **0** |
+| Oil-line tier coverage | all tiers | **3 of 6** combos (bug above) |
+| Card a manager sees | Basic $239.85 / Preferred $4,721.65, 27 services | oil line only — **absent on half the cards** |
+
+**LESSON: 172.5K was chosen as the pilot precisely because it's the DEAD interval
+(zero blast radius, like BT's 160K) — it is the WORST menu to demo.** Never show a
+stakeholder the pilot interval. Before any manager sees BC's menu, either build a
+real-traffic interval or explicitly frame it as a plumbing test. This was a
+demo-selection failure as much as a build failure.
+
+## RECOMMENDATION ON THE TABLE (2026-08-19 — awaiting Joe's ruling)
+
+Jay's recommendation: **convert BC to BT's static-parts architecture.** Joe vetoed
+static parts early on to preserve the dynamic GM parts pull — that veto was
+reasonable then, but a month of evidence says dynamic costs more than it returns.
+**Do NOT reverse this without Joe's explicit call.**
+
+Evidence for converting:
+- **L8T gap** — feed requests oil `19432357`, override covers `19432337`, override
+  silently doesn't fire → bills $175.45 instead of $129.95 (still open).
+- **Per-part matching is inherently fragile** — every GM part-number change silently
+  breaks a tier. No error, no alert, no toast.
+- **Supersession bypass** — forced keying overrides to BOTH original and replacement
+  numbers as belt-and-suspenders.
+- **6 tiers × N part numbers** = a maintenance surface that grows forever.
+- **BT has had ZERO price drift since July** (nothing dynamic). Its one drift
+  (SMMOAEPR +$9.08) came from a *real part* repricing — the exact failure mode static
+  placeholder parts eliminate.
+
+Honest tradeoff to state to Joe: static parts show a nominal quantity rather than the
+VIN-exact one, and Parts substitutes the real part on the RO. **Joe already accepted
+exactly this at BT** with the generic "Transmission Fluid" placeholder — and there it
+SOLVED a customer-facing problem (WS fluid quoted on a CVT).
+
+Structural contrast to keep straight: **BT's prices cannot drift because nothing is
+dynamic; BC's prices drift any time GM changes a part number.**
+
+### Rollout is already tooled (whichever architecture wins)
+One pilot menu is not a product. BT's rollout used `rollout_one.py` — ~6.5 min/menu,
+22 menus unattended, zero failures — and is directly portable to BC. Plus the **21 BG
+add-on services** (parsed from Joe's sheet 7/12, `bg-op-list.json`, never built) are
+the Factory-Recs-Plus equivalent and the single biggest reason BT's menu *looks* like
+a real menu. If Joe says the add-on stack is what Ruben liked, start there —
+  it's independent of the architecture question.
+Suggested first intervals if rolling out: **5K–60K** (BT's real traffic band) to put
+a usable menu in front of Ruben fastest.
+
+⚠️ Three separate open issues are easy to conflate when reporting to Joe — keep them
+distinct: (a) the tier-coverage hole (5 rows, "missing items"), (b) T7 Mobil 1 unbuilt
+so Corvettes/Camaros fall through to the V8-gas row, (c) the L8T 6.6L-gas $175.45 gap.
+Ruben could have hit any of the three.
+
 ## OPEN DECISIONS (waiting on Joe)
+- [ ] **Tier-coverage fix go/no-go** (the live bug above) — enable the sibling on the
+  3 missing combos × 5 rows, publish, re-verify all six. Should happen regardless of
+  the architecture call.
+- [ ] **Should all six tier/condition combos carry the oil line?** (Jay's read: yes —
+  suppression is unconditional, so replacement must be too.)
+- [ ] **VALUE tier** — deleted globally at BT, still live at BC and currently carries
+  the oil line on NORMAL. In scope, or vestigial?
+- [ ] **Architecture: convert BC to BT-static, or keep dynamic + patch part numbers as
+  they break?** (Jay recommends convert; Joe vetoed static once — his call.)
+- [ ] **What specifically did Ruben like about BT's** — add-on stack, the two-card
+  Basic/Preferred structure, or the pricing? Not answerable from the API; determines
+  where to start.
 - [ ] Delete the 2 opcode-level ALL-make parts rows on TEK05052501? (blocker above)
 - [ ] Washer fluid line spec (BG9822 $9.99 rides inside GMLOF codes today)
 - [ ] Tier scoping map: which models/engines = 6qt vs 8qt vs L87 vs Mobil 1

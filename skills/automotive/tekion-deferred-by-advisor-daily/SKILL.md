@@ -41,6 +41,20 @@ Note some ids resolve to non-advisor personas (e.g. BC `8c0d2da8…` = Dale Alex
 ## Reference run (BC / 1251, Mon 8/17/2026)
 46 declined lines · 20 ROs · $23,179.47 · 21 Critical. Michael Reyes #1 ($6,233).
 
+## Email delivery (via Stacey)
+Route report emails through Stacey (email-agent) on the bridge — never Jay's direct SMTP.
+Store manager recipients: BC → **Ruben Estrada `Restrada@blackstonegm.com`**, greeting "Ruben,";
+SCT → Kevin Stapp `kstapp@sctoyota.com`; TL → Sean Preston `spreston@tol-av.com` (greeting "Sean,");
+BT → Tony Garcia `agarcia@blackstonetoyota.com`.
+Subject pattern: `<STORE> Deferred Work by Advisor — <Weekday MM/DD/YYYY>`.
+Body = summary line (bold $ total / lines / ROs / Critical count) → advisor table with TOTAL row →
+note that the PDF has a page per advisor for follow-up calls. Scorecard PNG **inline as a base64
+data-URI** (Stacey's first build often omits it — demand it explicitly and verify), PDF + CSV attached,
+Joe's HTML signature.
+DRAFT-ONLY asks: give Stacey a hard stop ("imap.append to Drafts ONLY, no send/SMTP/X-GM-RAW path").
+Then verify independently with `jay-gmail-draft-verification` — confirm labels are `\Draft` only,
+Sent Mail = 0 hits, attachments byte-identical to source files, and the PNG is a real data-URI not a CID stub.
+
 ## Pitfalls
 - `pdfinfo`/`pdftoppm` are NOT installed — QA extra PDF pages by re-rendering the HTML in Playwright
   and screenshotting a single `.page` div, then `vision_analyze`.

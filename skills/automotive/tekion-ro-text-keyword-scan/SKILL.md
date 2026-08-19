@@ -107,6 +107,19 @@ only) or a repeated small trim-kit bundle, call that pattern out explicitly rath
 than just handing over a grand total — that total can be misleadingly low relative
 to the real business question (e.g. ROI for a machine purchase).
 
+## Running / killing scans (operational)
+- **One keyword at a time.** Each scan is a 3-5 call/RO fan-out; two concurrent
+  scans on the same store re-drain the app-wide OpenAPI bucket (`OVERALL_QUOTA`
+  429s block every consumer for hours). If the user pivots keywords mid-run
+  ("scrap it, switch to windshield"), KILL the running scan first, then launch —
+  don't run both.
+- `pgrep -f bt_bodyshop` before launching, to avoid a duplicate runner.
+- A killed background scan reports back later as **exit code 143 (SIGTERM)** with
+  its last progress lines intact. That is expected — don't re-report it as a
+  failure or re-run it; just acknowledge and ignore.
+- Print progress every 10 ROs, but note stdout buffering can hide prints — the
+  checkpoint JSON is the reliable progress signal (`len(done)`).
+
 ## Reusable script pattern
 See `/home/itadmin/tekion-reports/bt_bodyshop_windshield_scan.py` (and the
 calibration variant) for the full working implementation — just swap the `PATTERN`

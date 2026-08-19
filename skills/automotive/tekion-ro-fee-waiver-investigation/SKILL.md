@@ -156,6 +156,43 @@ this endpoint directly.
 - Re-arm any XHR hooks (`window.__auditHook` etc.) after every `/navigate` — a
   full page nav resets `window` state.
 
+## ⭐ SCALING the Audit Log pull across ALL flagged ROs (verified 2026-08-19, 79 ROs)
+Doing steps 1-4 by hand per RO is too slow. The working at-scale pattern:
+1. Build the flagged-RO list from the fee-scan checkpoint, mapping each fee `id`
+   back to the RO's internal `_id` + `documentNumber` via the cached RO index
+   (`/tmp/bt_ros_70d.json`) — join on the `fees[].id` link.
+2. **Arm a PERSISTENT XHR hook once**, then drive the UI per RO. The
+   `POST /api/roaudit/u/v1.0.0/audit/logs` call is XHR (a `window.fetch` hook
+   MISSES it). Override `XMLHttpRequest.prototype.open`+`send`, push
+   `responseText` on 'load' when the url matches `/audit/logs`, into
+   `window.__auditCap`. You get the **raw JSON** (richer + easier to parse than
+   scraping `innerText` off the drawer).
+3. Loop the ROs in a **background script** (`/usr/bin/bash`, `notify_on_complete`)
+   — ~6s per RO, so 79 ROs ≈ 8 min, well past the 300s inline limit. Checkpoint
+   to JSON per RO so a kill resumes. Per RO: `/navigate` to
+   `/ro/repair-orders/{roId}` → re-arm hook (nav wipes `window`) → `/click` the
+   kebab selector → text-match + click "Audit Logs" → poll `window.__auditCap`
+   → save raw JSON.
+4. **Direct RO-to-RO `/navigate` was stable** in the verified run — the dealer
+   context did NOT flip when going straight from one valid RO url to another. The
+   flip-to-1251 problem was triggered by FAILED navs / error pages. Still assert
+   `currentActiveDealerId` per iteration (cheap), but don't build a heavy
+   re-switch dance into the loop.
+5. Parse each log for entries whose change block contains the fee fields
+   (`Overridden Sale Amount`, `Pricing Type`, `Fees ... Added/Deleted Fees`) and
+   attribute to the entry's user name. **Tally "fee editors" SEPARATELY from
+   incidental "RO closers"** (`CP Status: Paid→Closed`, `I Status:
+   Invoiced→Closed`) — conflating them is exactly the error that misidentified
+   Tony Garcia.
+6. Resolving user names via OpenAPI `/users/{id}`: `userNameDetails.completeNames`
+   is a **LIST** `[{nameType:"DISPLAY_NAME",value}]`, NOT a dict — treating it as
+   a dict silently yields nothing (recurring trap).
+
+**Reconcile your flagged count before reporting.** The fee-scan checkpoint file
+grew from 30 → 79 zero-fee ROs between the first analysis and the re-read (the
+scan kept appending after the first partial read). Always re-read the checkpoint
+fresh and state the final N — don't quote a mid-scan number to Joe.
+
 ## Worked example (BT / Lyft / Tony Garcia, 2026-08-18)
 70-day BT scan: 895 CUSTOMER_PAY CLOSED/INVOICED ride-share ROs. 30 (3.4%) had
 `feeCode=LYFT` with `saleAmount=0`; 19 of those 30 still had a positive CP
@@ -168,6 +205,17 @@ share of last-touched ROs (57/895) — a ~3x concentration, on someone who
 shouldn't normally need to re-save a closed RO. Reported as a strong signal with
 the audit-trail caveat, and offered UI-level financial-log confirmation as the
 next step.
+
+**FINAL OUTCOME of that case (2026-08-19) — the correction that matters:** a full
+re-read of the fee-scan checkpoint gave **79** flagged zero-LYFT-fee ROs (not 30 —
+the background scan was still appending when the first analysis ran). The Audit
+Log pull identified **JONATHAN SALDANA-BACA** as the person manually setting the
+LYFT fee's `Overridden Sale Amount` to 0. **Tony Garcia was NOT the culprit** —
+his appearances were day-end RO-closing status changes only. Note the extra
+sensitivity here: Tony Garcia is also the BT store contact who RECEIVES Jay's
+daily BT menu-sales emails, so a wrong accusation goes to the wrong place fast.
+This is HR/fraud-sensitive material — deliver findings to Joe directly and
+confirm before any wider distribution; do not auto-email a named-suspect report.
 
 ## Generalization
 Swap `feeCode` (e.g. `"LYFT"` → shop-supply/hazmat/diagnostic fee code — look

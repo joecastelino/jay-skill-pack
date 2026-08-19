@@ -465,6 +465,57 @@ Published menus — don't change anything), or (B, preferred for a Published men
 zero edit risk) read the menu config JSON from the service-menu-setups API by menuId,
 which returns every group's exact model/year/trim filter + included opcodes untruncated.
 
+## 🔴 THE TIER-SET INVARIANT — suppression and replacement MUST cover identical tiers
+
+**Applies to EVERY store. This is the #1 cause of "the menu is missing items."**
+(Root-caused at BC 2026-08-19 after the store manager rejected a 172.5K menu; the
+same class of bug is possible anywhere the suppress/swap pattern is used.)
+
+The suppress/swap pattern = uncheck a factory line in **Modify System Services**,
+then add a replacement service via **Add Services**. The trap:
+
+> Unchecking the factory line suppresses it on **ALL SIX** tier/condition combos
+> (BASIC/PREMIUM/VALUE × NORMAL/SEVERE). The replacement only renders on the combos
+> you explicitly check. **Any combo with suppression-but-no-replacement renders
+> NOTHING — no line, no price, no error, no toast.** Silent hole in the menu.
+
+**RULE: a swap replacement's enabled tier set must EXACTLY EQUAL the suppression's
+tier set.** A replacement is not an optional add-on.
+- **Add-on service** → selective tiers is fine/intentional (BT deliberately puts
+  optional upsells on PREMIUM/SEVERE only, over untouched factory content).
+- **Swap replacement** → must be ALL tiers the suppression touched.
+
+Cross-store muscle-memory hazard: carrying a store's *add-on* tier convention into
+another store's *swap* architecture is exactly how this happened (BT add-ons are
+Premium-only; BC's oil line is a core swap → needed all six).
+
+### ⚠️ Your verification method probably shares the bug's blind spot
+Penny-verifying a package total only proves the ONE tier/condition card you opened.
+At BC, six tiers were each marked "✅ LIVE, penny-verified" over a month — every
+check happened to land on a card where the replacement WAS enabled, so three broken
+combos survived unseen. **A tier/row is not verified until all six
+packageType × drivingCondition combos are read.**
+
+### Audit it from the API (no browser needed)
+`menus[].servicesMetaData.services[].tierMappings[]` = `{packageType,
+drivingCondition, enabled}`. For each row, for each of the six combos, assert:
+factory-line `enabled:false` **⟺** replacement-sibling `enabled:true`. Any combo
+where BOTH are false = a silent hole. Reference implementation:
+`/home/itadmin/bc-menu-build/tier_coverage.py` (plain urllib + captured headers,
+prints `NOTHING ENABLED (factory suppressed, no replacement)` per offending combo);
+siblings `check_base_interval.py`, `resolve_row_services.py`.
+
+### Rule out `baseSystemInterval` FIRST — the other "missing items" cause
+A new vehicle row inherits the **menu-level default** `baseSystemInterval`
+(often 5000/10000), NOT the interval of the menu it lives in — so a 30K/172.5K menu
+can render the 10K factory package: structure and pricing look fine, factory content
+is short. **Missing items.** (Caught at BT on a 30K Corolla: no engine air filter, no
+ATF inspection, no ball joints/brake lines/driveshaft boots.) Check
+`menus[].baseSystemInterval == menu interval` on every row before assuming the
+tier-set bug — at BC all 5 rows were correctly stamped 172500, so it was the tier
+gap, not the interval stamp. **Verify, don't assert; the two look identical from the
+customer's side.**
+
 ## Pitfalls
 
 - **Don't guess sub-paths** like `/ro/service-menu/settings`, `/setup`, `/list` —

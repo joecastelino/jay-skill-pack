@@ -1,6 +1,6 @@
 {
- "generated": "2026-08-19T04:00:04",
- "skill_count": 179,
+ "generated": "2026-08-19T04:15:06",
+ "skill_count": 180,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -839,6 +839,14 @@
    "path": "automotive/local-nemotron-stt-fleet",
    "category": "automotive",
    "description": "Stand up NVIDIA Nemotron 3.5 ASR (streaming, CPU ONNX) as the shared speech-to-text backend for every Hermes agent on this machine, replacing the broken faster-whisper/libcublas path. Use when voice messages arrive untranscribed or when asked to enable local speech recognition for the agent fleet.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "slack-store-thread-cron-retarget",
+   "path": "automotive/slack-store-thread-cron-retarget",
+   "category": "automotive",
+   "description": "Retarget an AMG store's Hermes cron report deliveries to a new Slack thread when Joe says \"can this thread be <store> reports only?\", and sweep the whole fleet for dead channel_not_found cron deliveries.",
    "times_used": 0,
    "last_used": null
   },
