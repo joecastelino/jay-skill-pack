@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-18T21:00:05",
+ "generated": "2026-08-18T21:15:38",
  "skill_count": 179,
  "skills": [
   {
@@ -47,8 +47,8 @@
    "path": "automotive/bt-tony-menu-rebuild",
    "category": "automotive",
    "description": "The Blackstone Toyota (BT, dealer 1249) service-menu rebuild project for Tony Garcia (Service Manager). Tony wants menus restructured into Factory Recs / Factory Recs Plus with 25 ordered add-on services. Contains the FULL locked spec, Joe's approved decisions, the opcode audit results, and the build plan. Load for ANY \"BT menu\", \"Tony menu\", \"Factory Recs\", or Blackstone Toyota service menu work. STATUS 2026-07-21: full 5K\u2013200K range (5K-step) built, PUBLISHED, Tony-validated; Phase 7 generic Transmission Fluid placeholders DONE; Phase 8 Tony's BG MENU REVAMP 2026 part-match batch DONE + quote-verified (baseline tony-partmatch-baseline-20260721.json). Remaining: x2.5K half-step menus + EV rows only.",
-   "times_used": 48,
-   "last_used": "2026-08-02"
+   "times_used": 49,
+   "last_used": "2026-08-18"
   },
   {
    "name": "tekion-sitemap",
@@ -75,20 +75,20 @@
    "last_used": "2026-08-18"
   },
   {
+   "name": "bc-gm-menu-build",
+   "path": "automotive/bc-gm-menu-build",
+   "category": "automotive",
+   "description": "The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-override plan for vehicle-correct GM parts, and open decisions. Load for ANY \"GM menu\", \"BC menu build\", \"GMLOF\", or Blackstone Chevrolet service menu work.",
+   "times_used": 35,
+   "last_used": "2026-08-18"
+  },
+  {
    "name": "sct-alignment-by-advisor-report",
    "path": "automotive/sct-alignment-by-advisor-report",
    "category": "automotive",
    "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
    "times_used": 35,
    "last_used": "2026-08-17"
-  },
-  {
-   "name": "bc-gm-menu-build",
-   "path": "automotive/bc-gm-menu-build",
-   "category": "automotive",
-   "description": "The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-override plan for vehicle-correct GM parts, and open decisions. Load for ANY \"GM menu\", \"BC menu build\", \"GMLOF\", or Blackstone Chevrolet service menu work.",
-   "times_used": 34,
-   "last_used": "2026-08-02"
   },
   {
    "name": "bc-menu-sales-reports",
@@ -419,6 +419,14 @@
    "last_used": "2026-07-14"
   },
   {
+   "name": "tekion-parts-sales-by-advisor-report",
+   "path": "automotive/tekion-parts-sales-by-advisor-report",
+   "category": "automotive",
+   "description": "Build a Tekion parts-sales-by-service-advisor report (e.g. cabin/engine air filters, or any specific part category) for any AMG store \u2014 units, revenue, menu-attach, ranked bar-chart summary AND full RO-level line-item detail per advisor. Use whenever Joe asks for a parts sales report \"broken down by advisor\" or \"like the alignment report\" \u2014 he means BOTH a summary table AND the underlying RO detail, not just aggregate numbers.",
+   "times_used": 4,
+   "last_used": "2026-08-18"
+  },
+  {
    "name": "tekion-ro-traffic-heatmap-report",
    "path": "automotive/tekion-ro-traffic-heatmap-report",
    "category": "automotive",
@@ -465,14 +473,6 @@
    "description": "Set a vehicle-scoped CUSTOM package price and labor hours on a Tekion Service Menu by adding a new vehicle row (e.g. \"2014 Camry 90K VNM = 2.4 hrs / $469.88\"). Use when Joe wants a specific vehicle's menu package price/hours changed without touching other vehicles or tiers. Verified SCT 90K menu 2026-07-03.",
    "times_used": 3,
    "last_used": "2026-07-12"
-  },
-  {
-   "name": "tekion-parts-sales-by-advisor-report",
-   "path": "automotive/tekion-parts-sales-by-advisor-report",
-   "category": "automotive",
-   "description": "Build a Tekion parts-sales-by-service-advisor report (e.g. cabin/engine air filters, or any specific part category) for any AMG store \u2014 units, revenue, menu-attach, ranked bar-chart summary AND full RO-level line-item detail per advisor. Use whenever Joe asks for a parts sales report \"broken down by advisor\" or \"like the alignment report\" \u2014 he means BOTH a summary table AND the underlying RO detail, not just aggregate numbers.",
-   "times_used": 3,
-   "last_used": "2026-08-18"
   },
   {
    "name": "tekion-tech-flag-hours-pay",
