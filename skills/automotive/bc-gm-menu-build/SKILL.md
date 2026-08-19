@@ -94,6 +94,69 @@ BELOW overlapping engine rows (bottom-most applicable row wins). All tiers
 0.5 Customer Hrs. Chevrolet first; Cadillac/Buick/GMC rows after Joe approves.
 Old LOF-family audits remain at `/home/itadmin/bc-menu-build/{gmlof,lof}-audit.json`.
 
+## 🔴🔴 CRITICAL LIVE BUG — TIER-COVERAGE GAP ON ALL 5 ROWS (found 2026-08-18, Ruben)
+**Symptom Ruben reported: the 172.5 service was "missing items."** NOT a pricing
+bug — the oil line renders NOTHING AT ALL on half the cards.
+
+**Root cause (verified via API, all 5 tier rows identical):** the factory oil line
+was suppressed across **all six** packageType/drivingCondition combos, but the
+replacement sibling service was enabled on only **three**:
+
+| Tier / Condition | Oil line renders? |
+|---|---|
+| BASIC / NORMAL | ✅ |
+| BASIC / **SEVERE** | ❌ **nothing** |
+| PREMIUM / **NORMAL** | ❌ **nothing** |
+| PREMIUM / SEVERE | ✅ |
+| VALUE / NORMAL | ✅ |
+| VALUE / **SEVERE** | ❌ **nothing** |
+
+Factory suppressed everywhere + replacement on half = oil change silently VANISHES
+from Basic/Severe, Premium/Normal, Value/Severe. No line, no price, no error toast.
+
+**⚠️ THE TIER-SET INVARIANT (the rule I violated — applies to EVERY store):**
+> When you SUPPRESS a factory line and ADD a replacement sibling, the replacement's
+> enabled tier set MUST exactly equal the suppression's tier set. A swap replacement
+> is NOT an optional add-on.
+
+Why I got it wrong: at BT the add-ons are deliberately **PREMIUM/SEVERE-only**
+(they're optional upsells over untouched factory content). I carried that
+Premium-only muscle memory into BC — but BC's architecture is the OPPOSITE: the
+oil line is the CORE service replacing a suppressed factory line. BT's own
+oil/rotation/cabin *swaps* were correctly set all-tiers; only its *add-ons* were
+tier-selective. **Add-on = selective tiers OK. Swap replacement = must match
+suppression exactly.**
+
+**⚠️ MY PENNY-VERIFICATION HAD THE SAME BLIND SPOT AS THE BUG.** Every "✅ LIVE,
+penny-verified" tier in the map above ($119.95 / $129.95 / $179.95 / $204.95 /
+$214.95 / $249.95) was verified on a card that happened to have the sibling
+enabled. Six tiers, a month of builds, all "verified" — and not one check ever hit
+the three broken combos. **Treat those ✅ marks as PARTIALLY verified: price-correct
+on 3 of 6 cards, content-BROKEN on the other 3.** Any future tier is not done until
+all six combos are read.
+
+**Diagnostic scripts (built 2026-08-18, in `/home/itadmin/bc-menu-build/`):**
+- `check_base_interval.py <menuId>` — per-row baseSystemInterval + scope (rules the
+  BT interval-stamp bug in/out first; BC rows all correctly stamped 172500)
+- `resolve_row_services.py` — resolves referenceId → service name/opcode per row
+- `tier_coverage.py` — **the money script**: prints every tier/condition combo per
+  row and flags `NOTHING ENABLED (factory suppressed, no replacement)`
+All read via plain urllib + `/tmp/tekion_rec_headers.json` with `dealerId`/
+`tek-siteId` swapped to 1251 — no browser needed. NOTE the header file is often
+SCT-scoped, so `included-service/<refId>` name lookups 404 under a swapped dealer;
+the tier-flag structure still reads fine, which is all the coverage audit needs.
+
+**FIX (NOT YET APPLIED — awaiting Joe, 2 open questions):**
+1. Confirm all six combos should carry the oil line (my read: yes — suppression is
+   unconditional so replacement must be too).
+2. VALUE tier still live at BC (deleted globally at BT) — in scope or vestigial?
+Then: enable sibling on the 3 missing combos × 5 rows, save, publish, and re-verify
+EVERY tier/condition combo on a real quote.
+
+**Also still open + possibly what Ruben actually hit:** T7 Mobil 1 unbuilt
+(Corvette/Camaro fall through to V8-gas row) and the L8T 6.6L-gas gap ($175.45 vs
+$129.95). Don't conflate the three when reporting.
+
 **Add-on stack** = Joe's BG sheet (`bc-menu-build/bg-services.xlsx`, parsed to
 `bg-op-list.json`) — **21 services** (FISVC $259.95, DIESELFI, BGMOA, BGFSC 44k,
 DFSC/DFC diesel cleaners, TRANS/TRSV10/TRSV-FILTER8/TRSV-FILTER trans tiers,

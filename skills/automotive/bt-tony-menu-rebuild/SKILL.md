@@ -799,6 +799,27 @@ before every mutating step and hard-abort on drift regardless.
 ## SERVICE ORDER (locked 2026-07-13 — Tony's requirement)
 Add-on render order on the quote = the order services were ADDED to the row. Tony wants: factory natives (Tekion auto-renders these first) → oil change + tire rotation swaps → his #1–25 exact order. The canonical add sequence lives in `/home/itadmin/bt-menu-build/resequence_row.py` TARGET list — **use TARGET (not build_row.py's old ADD list) for all future menu builds (40K–150K)**. resequence_row.py also FIXES an existing menu: deletes all added rows (per-row `icon-trash` inside `.rt-tr`, no confirm modal) and re-adds in order. Run with `--no-expand` if row already expanded. GOTCHA: the last-added row's innerText carries a screen-reader artifact ("option <name>, selected.") — blur activeElement + normalize before comparing order; script's order_ok check fails on it (save manually after verifying normalized order). Verify persistence via full location.reload() (React Query caches; pushState jiggle does NOT refetch, in-page fetch w/ captured headers = 401). Verified on QO#2265 (VIN JTNC4MBE0S3251213): 10K/20K Preferred $4,721.65 (27 svcs), 30K $4,800.64 (28, air filter first), all in Tony's order; Basic $239.85 (10K/20K) / $318.84 (30K).
 
+## ⚠️ TIER-SET INVARIANT — swap vs add-on (learned the hard way at BC, 2026-08-18)
+BT's tier discipline is correct but ASYMMETRIC, and copying the wrong half of it to
+another store causes silently blank menu lines:
+
+| Kind | Tier coverage | BT example |
+|---|---|---|
+| **Swap replacement** (factory line suppressed, custom op replaces it) | **must match the suppression exactly — ALL tiers** | SMLOF, ROTATE, SMCABIN |
+| **Add-on** (optional upsell, factory content untouched) | tier-selective is fine | the 25 PREMIUM/SEVERE-only add-ons |
+
+**The rule:** when you suppress a factory line and add a replacement, the
+replacement's enabled tier set MUST exactly equal the suppression's tier set. A swap
+replacement is NOT an optional add-on. Suppressed on 6 combos + enabled on 3 = the
+service renders **nothing at all** on the other 3 — no line, no price, no error.
+
+I carried BT's "add-ons are Premium/Severe-only" muscle memory into BC's oil swap and
+produced exactly that bug on all 5 rows of the 172.5K menu; Ruben reported it as
+"missing items". Full write-up + audit script: skill
+`tekion-menu-missing-services-diagnosis`. Before declaring ANY suppress/swap build
+done, run `menu_audit.py <menuId> <dealerId>` — a penny-verified quote proves the
+menu is correct on ONE tier/condition card only.
+
 ## CRITICAL PITFALL — Base Services interval (burned 2026-07-13)
 When building the universal row on a NON-10K menu, the row's "Base Services" interval (`baseSystemInterval`) defaults to **10000** (menu-level default / inherited from replicating the 10K template) — NOT the menu's own interval. Result: the row pulls the **10K factory package** onto the 20K/30K menu (Tony's 30K Corolla quote showed the 10K $239.85 Basic + short inspection list; missing engine air filter, ATF/ball-joint/brake-line inspections etc.). Joe fixed both manually in the UI (20K row → 20000, 30K row → 30000) on 2026-07-13. Native rows are stamped with their menu's interval (30K natives = 30000) — the universal row must match. **For every 40K–150K rollout menu: set the row's Base Services to that menu's interval as part of the build, and verify via API diff (`baseSystemInterval` on the new row == menu interval) before publish.** Diagnostic tell: quote price exactly equals the 10K package ($239.85) = wrong base interval.
 
