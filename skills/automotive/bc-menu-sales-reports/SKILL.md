@@ -384,6 +384,44 @@ piped to an interpreter (blocked by the security scanner). This makes Jay
 fully self-sufficient for inline-PNG verification instead of bouncing timeout-prone
 asks back to Stacey.
 
+## Use the stdlib `email` parser for the .eml, NOT a hand-rolled regex MIME split (2026-08-19)
+The skill's export→decode→compare procedure works, but **do not implement step 2
+by regex-splitting the .eml on the boundary and string-partitioning on `\n\n`** —
+that silently yields a **0-length text/html part** and a full false negative
+(`data-URI found: False`, every number token counting 0, `HASPNG: False`) even
+when the draft is perfect. Hit this 2026-08-19; the draft was flawless.
+Correct implementation (one block, no fragile parsing):
+```python
+import email, base64, re
+from email import policy
+msg = email.message_from_bytes(open('/tmp/x.eml','rb').read(), policy=policy.default)
+print(msg['To'], msg['Cc'], msg['From'], msg['Subject'])   # Subject auto-decoded from =?utf-8?q?
+html = next(p.get_content() for p in msg.walk() if p.get_content_type()=='text/html')
+m = re.search(r'data:image/png;base64,([A-Za-z0-9+/=\s]+)', html)
+raw = base64.b64decode(re.sub(r'\s','',m.group(1)))
+assert raw == open(png_path,'rb').read()      # byte-for-byte
+```
+`policy.default` + `get_content()` transparently handles the outer base64 CTE
+layer that the skill's EMAIL-VERIFICATION section describes, so you never touch
+base64 manually for the body. Bonus: `msg.walk()` also gives the PDF part —
+compare `len(part.get_payload(decode=True))` to the source PDF size for an exact
+attachment check, and `msg['Cc']` is a real `None` when there's no Cc (cleaner
+than grepping headers). Also decode the Subject via `msg['Subject']` rather than
+grepping the raw `=?utf-8?q?...?=` encoded-word, which won't match a plain-text
+grep for the em-dash subject.
+
+## Stacey's reported draft ID is a DIFFERENT UID than himalaya shows — don't treat the mismatch as a failure (2026-08-19)
+Stacey's terse `DONE <id>` line reported **102**, but himalaya listed the draft
+as **42471**. Not an error and not a duplicate: Gmail's `APPENDUID` response
+returns the **All-Mail** UID, while the message actually lands in
+`[Gmail]/Drafts` under a different folder-local UID. Stacey self-diagnosed this
+mid-run (her "skip own draft" dedupe check was comparing the wrong UID and had
+been deleting her own freshly-appended draft, then re-appending). Consequences
+for verification: **ignore the ID in her DONE line** — always locate the draft
+yourself with `envelope list --folder '[Gmail]/Drafts' | grep "BC m/d"` and use
+THAT id for `message export`/`attachment download`/`flag add`. Passing her
+reported id to himalaya will fail or hit the wrong message.
+
 ## himalaya verification from Jay's session needs an explicit --config (hit 2026-08-07)
 Running bare `himalaya envelope list --folder '[Gmail]/Drafts'` from Jay's own
 profile/session fails with `AUTHENTICATIONFAILED ... Invalid credentials` even
@@ -556,6 +594,28 @@ real base64 `<img>` IS present in the raw MIME — this is the same known
 himalaya false-negative from the skill's EMAIL VERIFICATION section, not a new
 bug. Numbers: 10 menus, $3,133.60 labor / $2,654.35 parts = $5,787.95 (MTD
 Aug 1-4), top advisor Juan Ramirez (5 menus).
+
+## 2026-08-19 noon Daily Closed run — clean one-shot, "N dollars" prevention rule confirmed again
+5 menus, $1,357.74 labor / $762.77 parts = $2,120.51 (Juan Ramirez 2 / $709.80,
+Humberto Dominguez 2 / $605.30, Michael Reyes 1 / $805.41). 42 closed ROs → 5
+carried TEK menu opcodes; `✓ all candidate ROs scanned`; vision-verified KPI band
+matched JSON exactly. Ran the pull via `terminal(background=true)` +
+`process(action="wait")` per the 600s-cap rule — needed 3 consecutive 180s waits
+(process-wait clamps to 180s; just call it again). Stacey's build: fired via
+`execute_code` + `subprocess.run` with an **argument list** (avoids the
+top-level `terminal()` paren/`&` false-positive blocks) wrapped in
+`timeout 600` — took ~8 min but returned cleanly with no exit-124, so no recovery
+probe was needed. The 2026-08-18 "N dollars" prevention rule worked again on the
+FIRST ask: zero `$digit` corruption, every figure intact
+(`<b>$2,120.51</b>`, $1,357.74, $762.77, $709.80, $605.30, $805.41 all present
+exactly once), no ' dollars'/'USD' leftovers. Exactly ONE draft, no dedupe churn.
+Verified: To=Restrada, Cc=None, From=Joe, inline PNG **byte-for-byte identical**
+(114,195 bytes) and PDF **byte-for-byte size match** (53,483 bytes), Daily-Closed
+Sent count 0. Note the Sent folder DID show one `BC 8/19` hit — Stacey's separate
+auto-sent **Daily Opened** report; filtering with `grep -i "Daily Closed"` gave 0,
+exactly as the dedup section warns. Lesson bank: use `timeout 600` (not 170) on
+the ask-agent subprocess for BC draft builds — 170s reliably under-runs a full
+build and manufactures a needless exit-124.
 
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
