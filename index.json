@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-18T17:45:04",
+ "generated": "2026-08-18T18:01:05",
  "skill_count": 177,
  "skills": [
   {
@@ -7,7 +7,7 @@
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 238,
+   "times_used": 239,
    "last_used": "2026-08-18"
   },
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 123,
+   "times_used": 124,
    "last_used": "2026-08-18"
   },
   {
@@ -103,7 +103,7 @@
    "path": "automotive/tekion-autonomous-login",
    "category": "automotive",
    "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
-   "times_used": 32,
+   "times_used": 33,
    "last_used": "2026-08-18"
   },
   {
@@ -347,6 +347,14 @@
    "last_used": "2026-08-18"
   },
   {
+   "name": "tekion-uber-lyft-transportation-swap",
+   "path": "automotive/tekion-uber-lyft-transportation-swap",
+   "category": "automotive",
+   "description": "Reference for the AMG project to replace Tekion's native Lyft transportation/ride-fee integration with Uber. Load when asked about Uber API integration, swapping Lyft for Uber in Tekion, or prepping for Uber engineering team talks.",
+   "times_used": 7,
+   "last_used": "2026-08-18"
+  },
+  {
    "name": "jay-gmail-draft-verification",
    "path": "automotive/jay-gmail-draft-verification",
    "category": "automotive",
@@ -371,14 +379,6 @@
    "last_used": "2026-07-08"
   },
   {
-   "name": "tekion-uber-lyft-transportation-swap",
-   "path": "automotive/tekion-uber-lyft-transportation-swap",
-   "category": "automotive",
-   "description": "Reference for the AMG project to replace Tekion's native Lyft transportation/ride-fee integration with Uber. Load when asked about Uber API integration, swapping Lyft for Uber in Tekion, or prepping for Uber engineering team talks.",
-   "times_used": 6,
-   "last_used": "2026-08-18"
-  },
-  {
    "name": "sct-menu-sales-closed-mtd-scorecard",
    "path": "automotive/sct-menu-sales-closed-mtd-scorecard",
    "category": "automotive",
@@ -395,6 +395,14 @@
    "last_used": "2026-07-01"
   },
   {
+   "name": "tekion-ro-text-keyword-scan",
+   "path": "automotive/tekion-ro-text-keyword-scan",
+   "category": "automotive",
+   "description": "Search Tekion repair orders for a keyword (e.g. \"calibration\", \"windshield\") across labor descriptions, job concern text, part names, fees, and notes, with a dollar figure on the matching line. Use for ROI/opportunity-sizing questions like \"how much calibration/windshield/etc business did we do in the last N months\". Covers the BT Collision Center / body shop department discovery and the critical \"Per Estimate\" lump-sum blind spot.",
+   "times_used": 5,
+   "last_used": "2026-08-18"
+  },
+  {
    "name": "bt-menu-sales-reports",
    "path": "automotive/bt-menu-sales-reports",
    "category": "automotive",
@@ -409,14 +417,6 @@
    "description": "Fix an AMG Hermes agent that is silent on Slack because its SLACK_BOT_TOKEN/SLACK_APP_TOKEN are missing or wrong in the profile .env \u2014 including recovering LOST tokens from old session transcripts without asking Joe to regenerate them at api.slack.com. Use when an agent's service is running but it never answers Slack messages (Autumn case, 2026-07-14).",
    "times_used": 4,
    "last_used": "2026-07-14"
-  },
-  {
-   "name": "tekion-ro-text-keyword-scan",
-   "path": "automotive/tekion-ro-text-keyword-scan",
-   "category": "automotive",
-   "description": "Search Tekion repair orders for a keyword (e.g. \"calibration\", \"windshield\") across labor descriptions, job concern text, part names, fees, and notes, with a dollar figure on the matching line. Use for ROI/opportunity-sizing questions like \"how much calibration/windshield/etc business did we do in the last N months\". Covers the BT Collision Center / body shop department discovery and the critical \"Per Estimate\" lump-sum blind spot.",
-   "times_used": 4,
-   "last_used": "2026-08-18"
   },
   {
    "name": "tekion-ro-traffic-heatmap-report",
