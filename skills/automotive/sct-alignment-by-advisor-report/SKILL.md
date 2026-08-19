@@ -258,6 +258,21 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   she quotes in different replies. Only trust UID values for dedupe INSTRUCTIONS
   within the SAME ask/reply pair (per the 8/14 "keep UID X delete UID Y" pattern),
   never across separate asks.
+  **Confirmed again 2026-08-18 (8th consecutive clean night) — SENT_FOLDER_COUNT>0 is
+  NOT a send-trap alarm once Joe starts sending prior drafts:** pre-flight OPS probe 200.
+  Index 2,786 closed ROs, 932 candidates, 0 failed, ~29 min (19:01→19:30). 264 alignments
+  (239 dedicated + 25 bundled), 264 ROs, 16 advisors, top Cristian Gonzalez (31). Stacey's
+  build clean on the FIRST ask (163s) with paths + on-disk sizes baked in; her own reply
+  gave HTML part 176,412B >= PNG*4/3=129,825B and PDF part 288,540B = EXACT on-disk size.
+  The subject-anchored verify returned `DRAFTS_COUNT=1 | TO=kstapp@sctoyota.com |
+  SENT_FOLDER_COUNT=3` — the 3 are PRIOR NIGHTS' reports Joe reviewed and sent himself in
+  the morning (the whole point of draft-only), NOT evidence Stacey sent anything. Do NOT
+  panic on a nonzero Sent count now that the nightly has been running for weeks. Correct
+  tiebreaker = a TODAY-scoped one-liner: "In Sent Mail, how many with subject substring
+  'SCT Alignment' were sent TODAY? Reply: SENT_TODAY=<n>" → came back 0. (The richer
+  "list every Sent match with subject+date" ask timed out exit 124; per note 11, a 60s
+  pause then the ultra-terse single-number form answered fine. Keep re-asks to ONE
+  question with ONE number.)
   **Confirmed again 2026-08-16 (6th consecutive clean night, quota fully healthy):**
   pre-flight OPS probe (same validated RO/job pair) returned 200. Index built 2,364
   closed ROs, 771 candidates, 0 failed, ~30 min scan (19:01→19:31, no backoff
