@@ -667,6 +667,18 @@ exact-subject-today matches. Data note: closed-append ran foreground in ~10s (96
 2 prefilter hits, 15 MTD rows / $4,691.57) — confirms the foreground-with-generous-timeout
 pattern below.
 
+## (8/19 12:05PM, Opened) Initial hand-off exit-124 with draft NOT saved — re-fire worked
+Repeat of the 8/13 Closed-MTD pattern: the first hand-off ask hit exit-124 at ~203s and the
+draft was genuinely NOT saved (subject-search right after returned 6 drafts, all 08/13-08/18,
+none for today). Re-fired the SAME message once with "there is NO existing draft yet, no
+dedupe needed" added — completed in 55s, clean first-try MIME (multipart/mixed > related >
+alternative(text/plain+html) + image/png Content-ID=<scorecard> + application/pdf). ALWAYS
+verify by subject-search after an exit-124 before deciding to re-fire; do not assume the
+timed-out call completed. All three verification asks returned FIRST try with "use raw IMAP,
+NOT the Gmail API" leading the ask (subject-list 30s, part-listing 19s, Sent-check 47s) —
+IMAP-first default (8/17) keeps paying off. Sent-check = 4 hits, all old em-dash-era emails
+(06/30-07/03), zero today = no leak. Opened draft stack now 7 (08/13-08/19), no true dupes.
+
 ## Backgrounding the CLOSED daily-append run — don't over-engineer (learned 2026-08-14 8:05PM)
 The default (non-`--seed`) `tol_menu_sales_closed_mtd.py` run is a light daily-append —
 it typically finishes in well under a minute (8/14: ~10-15s for 158 closed ROs, 1 new
