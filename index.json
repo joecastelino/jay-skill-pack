@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-18T17:00:20",
+ "generated": "2026-08-18T17:15:55",
  "skill_count": 177,
  "skills": [
   {
@@ -7,7 +7,7 @@
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 237,
+   "times_used": 238,
    "last_used": "2026-08-18"
   },
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 120,
+   "times_used": 121,
    "last_used": "2026-08-18"
   },
   {
@@ -31,7 +31,7 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 58,
+   "times_used": 59,
    "last_used": "2026-08-18"
   },
   {
@@ -111,8 +111,8 @@
    "path": "automotive/tekion-autonomous-login",
    "category": "automotive",
    "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
-   "times_used": 30,
-   "last_used": "2026-08-07"
+   "times_used": 31,
+   "last_used": "2026-08-18"
   },
   {
    "name": "tekion-scheduling",
@@ -379,6 +379,14 @@
    "last_used": "2026-07-01"
   },
   {
+   "name": "tekion-uber-lyft-transportation-swap",
+   "path": "automotive/tekion-uber-lyft-transportation-swap",
+   "category": "automotive",
+   "description": "Reference for the AMG project to replace Tekion's native Lyft transportation/ride-fee integration with Uber. Load when asked about Uber API integration, swapping Lyft for Uber in Tekion, or prepping for Uber engineering team talks.",
+   "times_used": 5,
+   "last_used": "2026-08-18"
+  },
+  {
    "name": "bt-menu-sales-reports",
    "path": "automotive/bt-menu-sales-reports",
    "category": "automotive",
@@ -409,14 +417,6 @@
    "description": "Build a \"when do we get the most traffic\" staffing report from Tekion \u2014 RO open times bucketed by day-of-week x hour, per store, rendered as a Toyota-red heatmap. Zero fan-out (opcode tags are free on repair-orders:search). Built 2026-07-15 for Joe's TXM (Toyota Express Maintenance) department staffing question. Also covers the Slack-download-fails fallback (copy files to Joe's Windows Downloads via /mnt/c).",
    "times_used": 4,
    "last_used": "2026-08-13"
-  },
-  {
-   "name": "tekion-uber-lyft-transportation-swap",
-   "path": "automotive/tekion-uber-lyft-transportation-swap",
-   "category": "automotive",
-   "description": "Reference for the AMG project to replace Tekion's native Lyft transportation/ride-fee integration with Uber. Load when asked about Uber API integration, swapping Lyft for Uber in Tekion, or prepping for Uber engineering team talks.",
-   "times_used": 4,
-   "last_used": "2026-08-18"
   },
   {
    "name": "tol-alignment-by-advisor-report",
@@ -457,6 +457,22 @@
    "description": "Set a vehicle-scoped CUSTOM package price and labor hours on a Tekion Service Menu by adding a new vehicle row (e.g. \"2014 Camry 90K VNM = 2.4 hrs / $469.88\"). Use when Joe wants a specific vehicle's menu package price/hours changed without touching other vehicles or tiers. Verified SCT 90K menu 2026-07-03.",
    "times_used": 3,
    "last_used": "2026-07-12"
+  },
+  {
+   "name": "tekion-parts-sales-by-advisor-report",
+   "path": "automotive/tekion-parts-sales-by-advisor-report",
+   "category": "automotive",
+   "description": "Build a Tekion parts-sales-by-service-advisor report (e.g. cabin/engine air filters, or any specific part category) for any AMG store \u2014 units, revenue, menu-attach, ranked bar-chart summary AND full RO-level line-item detail per advisor. Use whenever Joe asks for a parts sales report \"broken down by advisor\" or \"like the alignment report\" \u2014 he means BOTH a summary table AND the underlying RO detail, not just aggregate numbers.",
+   "times_used": 3,
+   "last_used": "2026-08-18"
+  },
+  {
+   "name": "tekion-ro-text-keyword-scan",
+   "path": "automotive/tekion-ro-text-keyword-scan",
+   "category": "automotive",
+   "description": "Search Tekion repair orders for a keyword (e.g. \"calibration\", \"windshield\") across labor descriptions, job concern text, part names, fees, and notes, with a dollar figure on the matching line. Use for ROI/opportunity-sizing questions like \"how much calibration/windshield/etc business did we do in the last N months\". Covers the BT Collision Center / body shop department discovery and the critical \"Per Estimate\" lump-sum blind spot.",
+   "times_used": 3,
+   "last_used": "2026-08-18"
   },
   {
    "name": "tekion-tech-flag-hours-pay",
@@ -563,28 +579,12 @@
    "last_used": "2026-07-06"
   },
   {
-   "name": "tekion-parts-sales-by-advisor-report",
-   "path": "automotive/tekion-parts-sales-by-advisor-report",
-   "category": "automotive",
-   "description": "Build a Tekion parts-sales-by-service-advisor report (e.g. cabin/engine air filters, or any specific part category) for any AMG store \u2014 units, revenue, menu-attach, ranked bar-chart summary AND full RO-level line-item detail per advisor. Use whenever Joe asks for a parts sales report \"broken down by advisor\" or \"like the alignment report\" \u2014 he means BOTH a summary table AND the underlying RO detail, not just aggregate numbers.",
-   "times_used": 2,
-   "last_used": "2026-08-18"
-  },
-  {
    "name": "tekion-physical-inventory",
    "path": "automotive/tekion-physical-inventory",
    "category": "automotive",
    "description": "Run a Tekion Parts Physical Inventory or Bin Spot Check audit \u2014 the full Setup \u2192 Counting \u2192 Reconciliation \u2192 Summary workflow that compares system count vs physical count, surfaces variance, and writes on-hand adjustments. Use when Joe asks about counting parts, bin spot checks, inventory variance, reconciling shelf qty vs Tekion, or \"Make Adjustments\". Load alongside tekion-sitemap.",
    "times_used": 2,
    "last_used": "2026-06-29"
-  },
-  {
-   "name": "tekion-ro-text-keyword-scan",
-   "path": "automotive/tekion-ro-text-keyword-scan",
-   "category": "automotive",
-   "description": "Search Tekion repair orders for a keyword (e.g. \"calibration\", \"windshield\") across labor descriptions, job concern text, part names, fees, and notes, with a dollar figure on the matching line. Use for ROI/opportunity-sizing questions like \"how much calibration/windshield/etc business did we do in the last N months\". Covers the BT Collision Center / body shop department discovery and the critical \"Per Estimate\" lump-sum blind spot.",
-   "times_used": 2,
-   "last_used": "2026-08-18"
   },
   {
    "name": "tekion-ro-void-job-remove-parts",

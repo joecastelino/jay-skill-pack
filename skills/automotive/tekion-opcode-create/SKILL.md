@@ -168,6 +168,34 @@ Convention cloned for BT maintenance add-ons (matches BGMOAG/4ALIGN/WIPER/CABIN)
 Service / Category=Maintenance / Service Type=Maintenance Service / Default Pay Type=CP /
 Fixed Price CP / Skill=DEFAULT / no parts for labor-only services.
 
+## Service Type dropdown: search terms are LITERAL, not fuzzy (BC "DECLINED" opcode, 2026-08-18)
+
+The Service Type react-select's option list does NOT fuzzy-match the way Category's does.
+Typing a plausible fragment (e.g. `"Miscell"`, which correctly matches Category →
+"Miscellaneous") can return a genuinely **empty** option list (`[]`) for Service Type even
+though valid options exist — it's filtering on the literal option text, and "Miscellaneous"
+is not itself a Service Type. Don't conclude the field is broken or the store lacks Service
+Types; instead:
+
+1. **Pull the dealer's full Service Type list via API** (no guessing required):
+   ```js
+   fetch('https://app.tekioncloud.com/api/service-module/u/opcode/serviceTypes', {
+     credentials:'include',
+     headers:{dealerId: localStorage.getItem('currentActiveDealerId'), 'tekion-api-token': localStorage.getItem('t_token'), /* + userId/roleId/tek-siteId/tenantname from localStorage, see tekion-opcode-api */}
+   })
+   ```
+   Returns `data[]` of `{name, key, id, status, priceDetails}` — e.g. BC (1251) has Sublet,
+   Service Contract, PDI, **Main Service**, Maintenance Service, Service Interval Menu,
+   XPRESS SERVICE, ACCESSORIES, MPVI, Used Car Department, Service Catalog, Service Menu,
+   Cadillac Express Shop. Names vary per dealer — always pull fresh per store.
+2. **To mirror an existing opcode's convention** (e.g. Joe/precedent says "set it up like
+   REC"): search that opcode via `/api/service-module/u/opcode/search` (body
+   `{"searchText":"REC","page":{"size":10,"number":0}}`), read its `serviceTypeIds[]`, then
+   match the id against the full list from step 1 to get the human-readable name to type into
+   the dropdown (e.g. REC → id `629607f6857aba0007201fbc` → "Main Service").
+3. Then `/type` the exact matched NAME (or a substring of it that's unambiguous) into the
+   tagged `[data-jay='svc-input']` — this now returns real option(s) to click.
+
 ## ⚠️ BEFORE creating: audit for near-duplicate opcodes (burned 2026-07-02)
 
 An exact-match existence check (`searchFields:["OPCODE"]` + `hits.find(x=>x.opcode===CODE)`)

@@ -70,19 +70,91 @@ otherwise fully-billed customer-pay RO."
 7. **Trend it by month** (`creationTime` → month) to corroborate a "this started
    recently" claim — bucket zero-rate% per month, don't just give a raw count.
 
-## Limitations — be upfront about these
+## Limitations (OpenAPI) — but see the UI Audit Logs method below, which SOLVES this
 - The public OpenAPI has **NO field-level audit/history endpoint** for fees
   (`/history`, `/audit`, `/activity` all 404 — confirmed in
   `tekion-openapi-repair-orders`). `modifiedByUserId` is the RO's last-saver,
-  not proof that THIS PERSON zeroed THIS FEE LINE specifically. Present findings
-  as a strong statistical/circumstantial signal, not a definitive edit-log proof.
-- For a courtroom-grade confirmation, someone needs to open the flagged RO(s) in
-  the Tekion UI and check the RO's Financial/Activity log for the fee section
-  directly (browser-only — not exposed via API). Offer this as the follow-up step.
+  not proof that THIS PERSON zeroed THIS FEE LINE specifically. Treat pure-API
+  correlation as a lead, not a conclusion — see the worked example below where
+  `modifiedByUserId` correlation pointed at the WRONG person.
 - `priceType: SYSTEM_CALCULATED` with `saleAmount: 0` is itself a little odd —
   if it were truly system-calculated it should reflect the actual ride cost; a
   $0 value alongside `source: USER` suggests a person touched it, not that the
   system genuinely calculated zero.
+
+## ⭐ DEFINITIVE PROOF: the RO's built-in "Audit Logs" drawer (verified 2026-08-18)
+
+Every Tekion RO detail page has a **field-level edit history** exposed in the UI —
+this gets you the exact old→new value, the exact user, and the exact timestamp for
+a fee edit. It fully resolves the `modifiedByUserId`-is-just-a-proxy limitation
+above. Use the persistent browser (`:9223`, see `persistent-browser-server` skill).
+
+**How to open it:**
+1. Navigate to `https://app.tekioncloud.com/ro/repair-orders/{roId}` (get `roId`
+   from the OpenAPI RO record's `fees.id` / `invoices.id` link — same id as the RO
+   document's own `_id`).
+2. Click the kebab (⋮) menu in the RO header: selector
+   `.ro_KebabMenuTrigger_kebabMenuTrigger__x1sbQKzWtx`. **Use `/click` with this
+   CSS selector, NOT `/mouse` with computed x/y coordinates** — the element's
+   bounding-rect can sit partially or fully OFF the 1280px viewport (e.g. x:1262,
+   right:1302), so a coordinate click silently misses and can land on an unrelated
+   page (seen: landed on `/ro/opcode/add`). Selector-based `/click` finds and
+   clicks the real element regardless of on/off-screen position.
+3. In the opened menu, find "Audit Logs" by text match (`textContent.trim()===
+   'Audit Logs'`, no children) and `/mouse`-click ITS computed center — this one
+   is reliably inside the viewport once the menu renders.
+4. The Audit Logs drawer opens with a `.ro_rightDrawer_modalScroll__ri6PwshvMm`
+   scroll container. It's **virtualized/paginated** — only ~15-20 entries render
+   initially. Loop `el.scrollTop = el.scrollHeight` ~10-15x with a short sleep
+   between each to force more entries to load, then read `el.innerText` for the
+   full log (grew from 1.6KB to 12.6KB after scrolling in the verified case).
+
+**What a fee-zeroing edit looks like in the log** (real example, RO #147340):
+```
+Jul 29 2026 1:57 PM — by JONATHAN SALDANA-BACA
+Fee Details
+  Overridden Sale Amount : 5292 → 0        (i.e. $52.92 → $0.00, in CENTS)
+  Pricing Type : FLAT_PRICE → None
+  Fee Min Amount / Max Amount / Flat Price : 0.0 → None
+```
+This is a genuine manual override on the fee's dollar field — not a coupon
+(`ro-coupons` was independently confirmed empty), not a system recalculation.
+
+**CRITICAL correction this method produced**: pure `modifiedByUserId` correlation
+(the OpenAPI-only method above) had flagged **Tony Garcia** (BT Service Director)
+as overrepresented among zero-fee ROs' last-modifiers. The real Audit Log showed
+Tony's ONLY touches on that RO were routine end-of-day closing actions
+(`CP Status: Paid→Closed`, `I Status: Invoiced→Closed`) — normal manager duties,
+NOT the fee edit. The actual fee-zeroing edit was made by a **different**
+employee (Jonathan Saldana-Baca) earlier the same day. **Lesson: `modifiedByUserId`
+last-save correlation can implicate the wrong person** — a manager who closes ROs
+at day's end will always show up as "last modifier" on many ROs regardless of who
+touched the fee. Always pull the real Audit Log on flagged ROs before naming a
+specific person to Joe/a store manager.
+
+**Internal API behind the drawer** (discovered via XHR hook, NOT directly
+callable): `POST /api/roaudit/u/v1.0.0/audit/logs` with body
+`{"parentAssetId":"<roId>","parentAssetType":"REPAIR_ORDER","pageSize":20,
+"pageToken":""}`. A raw XHR/fetch replay of this call from the page (even with a
+valid `t_token` in localStorage) returns `500 {"message":"Token doesn't exist or
+is invalid"}` — same as other Tekion internal APIs, the app's axios interceptor
+attaches auth that a bare XHR/fetch can't replicate. **You must drive the actual
+UI click** (steps 1-4 above) to get real data; don't waste time trying to call
+this endpoint directly.
+
+**Navigation pitfalls hit while doing this at scale:**
+- The dealer context (`localStorage.currentActiveDealerId`) can silently flip
+  back to the default dealer (1251/BC) on/after a `/navigate` call, especially
+  right after a failed nav (e.g. "No such ro exist" error page). **Re-check
+  `currentActiveDealerId` after every navigate**, and if wrong, re-switch via the
+  UI dealer pill (top-right "BC"/"BT" text, click it, then click the target store
+  name in the popover — setting the localStorage key directly does NOT work, it
+  gets reset on next paint).
+- A stray `/mouse` click that misses (goes to an off-screen element) can silently
+  navigate the whole SPA to an unrelated route (`/ro/opcode/add`) with no error —
+  always verify `/url` after any click before assuming you're still on the RO.
+- Re-arm any XHR hooks (`window.__auditHook` etc.) after every `/navigate` — a
+  full page nav resets `window` state.
 
 ## Worked example (BT / Lyft / Tony Garcia, 2026-08-18)
 70-day BT scan: 895 CUSTOMER_PAY CLOSED/INVOICED ride-share ROs. 30 (3.4%) had
