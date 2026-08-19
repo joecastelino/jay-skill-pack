@@ -422,4 +422,22 @@ each digit. Wait for a NEW OTP email by envelope ID (>last seen), not by count.
 - **React ignores synthetic events** — always use `/press` for form submission, never JS `.click()`
 - **Crash recovery** — if page crashes, server auto-creates new page from persistent context
 - **500 errors on click/type** — element not found or ref stale; run `/snapshot` first
-- **Restart drops session** — fresh context means re-login; the `browser-data/` dir preserves state
+- **A COLD SERVER RESTART DOES *NOT* DROP THE TEKION SESSION — do NOT preemptively run login.py
+  (verified 2026-08-18, SCT daily bin check).** Starting state was the worst case: `/health` gave
+  `Connection refused` (server fully dead, not just wedged). Full recovery was `fuser -k 9223/tcp`
+  → `rm -f browser-data/{SingletonLock,SingletonCookie,SingletonSocket}` → restart → `/navigate
+  /home`, and the context came back **already authenticated** (`hasWelcome:true`, `hasUsername:false`,
+  32 localStorage keys) — zero cookie/localStorage injection, zero OTP. `launchPersistentContext`
+  genuinely persists the session across process death. It landed on whatever dealer was last active
+  (1249/BT here), so only a UI dealer-pill switch was needed. **Sequence after ANY restart: navigate
+  → check for "Welcome back" → only if you see the login form do you touch login.py.** Jumping
+  straight to `login.py --force` on a dead server burns ~60s and a needless OTP.
+  (The old "restart drops session, fresh context means re-login" claim here was wrong.)
+- **Clear the Singleton* lock files as part of the normal restart, not just when debugging.** A
+  server that died uncleanly (connection refused) has almost certainly left a stale profile lock;
+  removing them preemptively costs nothing and avoids the "/health ok but Browser context not
+  initialized" follow-up cycle documented above.
+- **Start with `HOME` pointed at the profile home**: `cd /home/itadmin/.hermes/profiles/jay/home/persistent-browser
+  && HOME=/home/itadmin/.hermes/profiles/jay/home xvfb-run -a node server.js` (background=true).
+  This keeps Playwright resolving its browser cache to `<profile-home>/.cache/ms-playwright/`,
+  matching the `executablePath` other clones hardcode.

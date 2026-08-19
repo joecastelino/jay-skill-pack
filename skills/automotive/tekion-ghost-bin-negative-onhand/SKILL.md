@@ -278,7 +278,40 @@ BEFORE flagging it as a missed transfer:
   unexplained change — note it as "expected residual of today's redistribution," not a fresh
   flag needing action. Example: 17801-0P100 5005 8→7 the same day as its live Edit-Part
   consolidate/split (2026-08-07).
-- 65/175 parts having lastTransactionTime in 24h is NORMAL on a busy day — the 24h-activity
+- **FAST TELL for a companion-bin negative: compare the 5000s bin's own qty against "Total
+  Inventory Qty" in the rendered Bin Details (verified 2026-08-18).** You don't have to eyeball
+  every bin row — if the tracked bin shows e.g. 6 but Total Inventory Qty reads 4, the missing 2
+  is sitting NEGATIVE in a companion bin that the snapshot diff cannot see. Conversely when they
+  agree (or the sum of visible rows reconciles cleanly, e.g. 87139-YZZ93: 5007=21 + 4111=30 +
+  TXM/2422=0 → Total 51 ✓), the change is a clean ordinary movement and needs no flag. Make this
+  the first check on every part you open, before reasoning about which bin is Primary.
+- **A qty INCREASE on a 5000s bin that IS Primary is a restock, not a sale — but still open the
+  part** (2026-08-18, 17801-F4010 5006 2→6, recurrence #3 of the companion case): the increase
+  itself is benign, yet the stale companion negative (2418 = −2) was still sitting there
+  uncorrected from prior runs. Report the recurrence count and the unresolved companion, not the
+  increase.
+- **STATUS OF TRACKED MULTI-DAY ESCALATIONS (as of 2026-08-18) — read before re-deriving history:**
+  - **31532** (5001, Primary=SP-ORD, companions 2615/SP-ORD both 0): −20 flat July→8/13 → −25
+    (8/14) → −29 (8/15–8/17) → **−43 (8/18, −14 in ONE day)**. Day 5, and ACCELERATING — the
+    single-day move is now larger than the entire prior drift. On Order = 0, stocking ACTIVE.
+    Not a transfer case (Primary is a process bin). Escalate hard.
+  - **04500-1** (5005, single-bin, 5005 IS Primary): −69 (7/04) → −105 (8/03) → −114 (8/17) →
+    **−116 (8/18)**. 7+ weeks open, standalone negative, outside transfer scope.
+  - **17801-F4010** (5006 Primary, companion 2418): recurrences 8/11, 8/14, **8/18**. 2418 stuck
+    at −2 across all three; Total Inventory Qty keeps reading 2 less than bin 5006.
+  - **87139-YZZ09** (5007, Primary=TXM): deepened −14→−22 through 8/08, then **flat at −22 for 11
+    consecutive days** (8/08–8/18). Stable but never corrected — report as "open, not worsening"
+    rather than re-flagging as fresh drift.
+  - **87139-42040** (5005, Primary=2424): −8 → −11 over two weeks, **flat at −11 since 8/17**.
+  When a tracked part goes FLAT, say so explicitly ("open N days, not worsening") — a silent
+  omission reads as "fixed," and re-flagging it as new drift is noise.
+- **Also surface the standing-negative TOP LIST and its bin concentration each run** — 26
+  negatives across the section on 2026-08-18, and bin **5007 held 4 of the 6 deepest**
+  (87139-YZZ83 −93, 00475-1BF03 −69, 17801-YZZ10 −51, 87139-YZZ09 −22). A single bin owning most
+  of the deep negatives is itself the finding (suggests a whole-shelf process problem, not
+  per-part drift) and is worth recommending as a scoped Bin Spot Check target — the daily
+  yesterday-vs-today diff alone will never reveal it because those rows are flat.
+- 65-70/175 parts having lastTransactionTime in 24h is NORMAL on a busy day — the 24h-activity
   list is a reminder roster (sales relieve Primary only), not an alarm list. Only qty
   changes/new negatives are alarms.
 
@@ -401,6 +434,18 @@ DRIFTS between turns, verify `currentActiveDealerId` first):
    `scrollIntoView` calls at all. Verify `document.querySelectorAll('input[type=checkbox]:checked').length===7`
    before Apply. This is faster than the scroll-per-leaf loop above — use it whenever the
    filter narrows the list enough that every target fits on-screen.
+   **TAG EACH CHECKBOX WITH A `data-jaybin` ATTRIBUTE during enumeration (verified 2026-08-18,
+   7/7 bins first try, zero retries).** Instead of collecting coords once and replaying them
+   blind, in the SAME enumeration `/eval` do `cb.setAttribute('data-jaybin', binNumber)` on each
+   walked-up checkbox. Then the click loop per bin is: re-read the live rect via
+   `document.querySelector('[data-jaybin="5005"]').getBoundingClientRect()` → `/mouse` it →
+   verify `document.querySelector('[data-jaybin="5005"]').checked === true` by the SAME selector.
+   Why this is better than the coord-list approach: coords go stale the instant the list
+   re-renders (checking one box can reflow the panel), and a stale coord silently checks the
+   WRONG bin — the exact failure the "walk up to the checkbox" rule already warns about. The tag
+   survives re-render, so every read/click/verify targets a provably identical element. Also skip
+   any bin whose tagged checkbox already reads `checked` (idempotent re-runs). Full loop for 7
+   bins took ~4s.
 3. Click the visible **Apply** button → report loads, XHR captured.
 4. Pagination: "Showing 1-50 out of N"; scrolling `.rt-tbody` does NOTHING (not infinite scroll)
    — click the visible **'Next'** text element at the bottom (~x794,y686) and capture page 2's

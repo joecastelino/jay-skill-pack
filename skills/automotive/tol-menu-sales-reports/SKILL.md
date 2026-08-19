@@ -654,6 +654,19 @@ compare exact subjects in the returned list instead. Sent: 4 hits, all old (06/3
 matching today = no leak. Opened draft stack down to 6 (Aug 13-18); the old 08/02 true-duplicate
 pair (41542/41547) is gone from the listing, so Joe appears to have cleared the older backlog.
 
+## (8/18 8:05PM, Closed MTD) Fully clean one-shot, zero exit-124s across ALL 4 calls
+Hyphen-subject tactic + full MIME prevention spec + bundled dedupe instruction in ONE initial
+ask = draft 42442 correct first try (multipart/mixed > related > alternative(text/plain+html) +
+image/png Content-ID=<scorecard> + application/pdf). Hand-off returned in 113s (no timeout);
+subject-search 23s, MIME part-listing 40s, Sent-check 50s — ALL first try, all with "use raw
+IMAP, NOT the Gmail API" specified up front (IMAP-first default from 8/17 continues to pay off).
+No dedupe needed (7 stacked Closed-MTD drafts Aug 1-12 through 1-18, each a unique date range,
+zero true dupes). Sent-check = 2 hits, both the old June 1-29 emails (token trap, item 5b) — no
+leak; \Draft-flag follow-up skipped as unnecessary per the 8/17 note since Sent had zero
+exact-subject-today matches. Data note: closed-append ran foreground in ~10s (96 closed ROs,
+2 prefilter hits, 15 MTD rows / $4,691.57) — confirms the foreground-with-generous-timeout
+pattern below.
+
 ## Backgrounding the CLOSED daily-append run — don't over-engineer (learned 2026-08-14 8:05PM)
 The default (non-`--seed`) `tol_menu_sales_closed_mtd.py` run is a light daily-append —
 it typically finishes in well under a minute (8/14: ~10-15s for 158 closed ROs, 1 new
