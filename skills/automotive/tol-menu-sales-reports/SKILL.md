@@ -639,6 +639,21 @@ usual ~200s exit-124 (draft still saved fine), and subject-search (72.89s), MIME
 application/pdf), and Sent-check (31.25s) all returned FIRST try with correct results, zero
 dedupe needed (only one draft existed with today's exact subject).
 
+## (8/18 8:05PM, Opened) Clean one-shot; only the Sent-check needed a retry
+Hyphen-subject tactic held again ("TOL Menu Sales - Opened (08/18/2026)"). Initial hand-off
+returned in 82s with NO exit-124 (draft 42441 correct first try: multipart/mixed > related >
+alternative(text/plain+html) + image/png Content-ID=scorecard + application/pdf), and TRUE
+dedupe — she found and deleted the noon draft on her own, subject-search confirmed exactly one
+hit for today. Subject-search (29s) and MIME part-listing (29s) both returned FIRST try with
+"use raw IMAP, not Gmail API" specified up front (per the 8/17 IMAP-first default — it keeps
+working). ONLY the Sent-check timed out (exit 124 at 206s) when the subject filter included the
+full parenthesised date; a sleep-45 + terser re-ask with the subject truncated to just
+"TOL Menu Sales - Opened" (no date/parens) returned in 32s. TIP: parenthesised date strings in
+an IMAP subject search seem to be the expensive/fragile part — search the short subject stem and
+compare exact subjects in the returned list instead. Sent: 4 hits, all old (06/30-07/03), zero
+matching today = no leak. Opened draft stack down to 6 (Aug 13-18); the old 08/02 true-duplicate
+pair (41542/41547) is gone from the listing, so Joe appears to have cleared the older backlog.
+
 ## Backgrounding the CLOSED daily-append run — don't over-engineer (learned 2026-08-14 8:05PM)
 The default (non-`--seed`) `tol_menu_sales_closed_mtd.py` run is a light daily-append —
 it typically finishes in well under a minute (8/14: ~10-15s for 158 closed ROs, 1 new
