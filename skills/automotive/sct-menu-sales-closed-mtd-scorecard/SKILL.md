@@ -148,6 +148,19 @@ Work dir: `/home/itadmin/tekion-reports`
      path in the same ask so no follow-up is needed. Naming the MIME structure
      explicitly is what makes it stick; a generic "use SMTP template-send"
      re-ask is weaker.
+   - **`DRAFTS=1` in the verify line does NOT mean the send failed.** Verified
+     2026-08-19: send ask returned empty (exit 0), verify came back
+     `SENT=18:05 | MIME=<png filename> | DRAFTS=1` — the remaining draft was a
+     **leftover copy of the message that had already gone out** (same ID 42521,
+     created 18:03, two minutes before the 18:05 send), not an unsent message.
+     Don't re-send on a nonzero DRAFTS count; ask one disambiguating question
+     (`DRAFT=<leftover-copy or UNSENT>`) first, or you'll double-mail Joe.
+   - Also note the verify's `MIME=` field may echo only the **inline PNG**
+     filename even when the PDF attachment is present — that alone is not proof
+     the PDF is missing. Ask specifically:
+     `PDF=<YES filename/NO> | TOTAL=<dollar figure in body> | DRAFT=<leftover-copy or UNSENT>`
+     (this exact one-liner worked first try on 2026-08-19 and settled both
+     ambiguities in a single call).
    - Then do a final read-only confirm scoped to the NEW message UID:
      `TO=<addr> | TS=<ts> | PDF=<YES filename / NO> | TOTAL=<$>`.
    - Leave the broken first copy in Sent — Joe gets two emails, one good; a
