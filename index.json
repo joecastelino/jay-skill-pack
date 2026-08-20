@@ -1,6 +1,6 @@
 {
- "generated": "2026-08-20T12:00:09",
- "skill_count": 181,
+ "generated": "2026-08-20T12:15:03",
+ "skill_count": 182,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -879,6 +879,14 @@
    "path": "automotive/tekion-computer-use",
    "category": "automotive",
    "description": "Autonomous vision-guided browser automation for Tekion DMS. Uses the persistent Playwright browser server (port 9223) as the interaction layer and Claude Sonnet 4 (via OpenRouter) as the vision/decision-making brain. Claude sees page snapshots, decides what to click/type, and the agent executes via HTTP API calls.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-fee-not-showing-diagnosis",
+   "path": "automotive/tekion-fee-not-showing-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose \"the store can't see / isn't getting charged fee X\" in Tekion \u2014 e.g. \"SCT isn't seeing fees 1TIRE 2TIRE 3TIRE 4TIRE\". Covers the Fee Management v3 API (list + per-fee detail), the ADD_TO_RO (\"Allow to Add at RO Level\") flag that controls whether a fee appears in the RO fee dropdown, opcode\u2192fee attachment, and how to prove whether a fee is actually landing on real ROs. Use for any Tekion fee visibility, fee-not-auto-applying, or fee-attach-rate question.",
    "times_used": 0,
    "last_used": null
   },

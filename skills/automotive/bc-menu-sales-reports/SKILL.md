@@ -668,6 +668,25 @@ Subject auto-decoded with em-dashes, inline PNG **byte-for-byte identical**
 8/19 draft, Sent MTD count 0 (the sibling 8/19 Daily Closed draft 42520 is not a
 duplicate — filter on "Month-To-Date" per the dedup rule).
 
+## 2026-08-20 noon Daily Closed run — textbook one-shot, 5th consecutive clean "N dollars" build
+7 menus, $923.31 labor / $658.94 parts = $1,582.25 (Dimetri Reynoso 2 / $557.60,
+Humberto Dominguez 2 / $291.80, Houa Moua 1 / $511.94, Michael Reyes 1 / $134.45,
+Jeremia Navarro 1 / $86.46). 37 closed ROs → 7 carried TEK menu opcodes;
+`✓ all candidate ROs scanned`; vision-verified KPI band matched JSON exactly.
+Pull ran via `terminal(background=true)` + a SINGLE `process(action="wait",
+timeout=180)`. Stacey's build: `execute_code` + `subprocess.run` argument list
+wrapped in `timeout 600` → returned cleanly in **67s**, no exit-124, no recovery
+probe, terse DONE line correctly formatted with `TOTAL=$1,582.25`. The
+"N dollars" + Python-replace prevention rule worked a 5th consecutive time: all
+8 figures present exactly once, zero ' dollars'/'USD' leftovers, bold total
+intact. **Exactly ONE draft on the first ask (42536) — no self-correction text
+in her reply, and correspondingly no duplicate** (consistent with the 8/19 MTD
+lesson: duplicates track her "let me fix and re-create" retry loop, not the ask
+itself). Verified via the stdlib-`email` parser: To=Restrada, Cc real None,
+From=Joe, inline PNG **byte-for-byte identical** (142,491 bytes), PDF
+**byte-for-byte identical** (54,676 bytes), Daily-Closed Sent count 0, no stale
+noon/prior draft at the 8/20 subject to clean up.
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.

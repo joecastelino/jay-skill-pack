@@ -377,6 +377,17 @@ unchanged from 8/18 — i.e. 8/19 contributed nothing). LESSON: a watcher's `rc=
 sanity check to a watcher's backfill output, and cross-check a sibling store if a
 recovery-window pull comes back suspiciously empty.
 
+### 8/19 CLOSED BACKFILL RESOLVED (2026-08-20 noon run)
+Per the ACTION note above, re-ran `tol_menu_sales_closed_mtd.py 2026-08-19` this run —
+the suspect watcher result WAS bogus. Clean re-run pulled **178 closed ROs for 8/19**
+(watcher had logged 0), prefilter 5 of 178 carried TEK menu opcodes, 5 new menu rows.
+August master went 15 rows / $4,691.57 -> **20 rows / $5,554.64** ($3,865.73 labor +
+$1,688.91 parts), `✓ all candidate ROs scanned (no truncation)`. CONFIRMS the lesson:
+a recovery-window pull returning 0 on a business day is starvation, not a real zero —
+always re-run the dated backfill once the API is fully healthy, and never trust a
+watcher's `rc=0`/`QUEUE DONE` as validation. The 500 outage is fully over (this run's
+opened pull scanned 93 ROs with zero 429s/500s).
+
 ## 429 OVERALL_QUOTA ≠ OVERALL_RATELIMIT (learned 2026-07-07)
 Two distinct 429 messages:
 - `Limit exhausted for type : OVERALL_RATELIMIT` — short rolling window; the 8-try
@@ -738,6 +749,21 @@ All 3 verification asks returned FIRST try with "use raw IMAP, NOT the Gmail API
 (subject-list 60s, part-listing 28s, Sent-check 48s). Sent-check via the SHORT subject stem
 ("TOL Menu Sales - Opened", no date/parens, per the 8/18 tip) returned 4 hits, all old em-dash-era
 sends (06/30-07/03), zero today = no leak. Hyphen-instead-of-em-dash subject tactic held again.
+
+## (8/20 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, zero corrections
+Best-case run on record for the Opened pipeline. Hand-off returned in **74s** (no timeout),
+draft 42535 correct FIRST TRY: multipart/mixed > related > alternative(text/plain+html) +
+image/png Content-ID=<scorecard> (51,288 B) + application/pdf (45,013 B). All three
+verification asks returned FIRST try and FAST with "use raw IMAP, NOT the Gmail API"
+leading the ask: subject-list **14s**, MIME part-listing **25s**, Sent-check **33s** —
+markedly faster than the 30-70s typical, suggesting Gmail/IMAP was healthy. No dedupe
+needed (no prior draft with today's exact subject). Sent-check = 4 hits, all the old
+em-dash-era sends (06/30-07/03), zero today = no leak; \Draft-flag follow-up skipped as
+unnecessary per the 8/17 note. Hyphen-instead-of-em-dash subject tactic held again
+(now 5+ consecutive clean subjects). Opened draft stack down to just **2** (08/19, 08/20)
+— Joe has cleared the backlog, including the long-standing 08/02 duplicate pair.
+Running the verification asks via `execute_code` + `subprocess.run([...])` with an argv
+LIST (never a shell string) continues to sidestep every quoting/paren/`&` pitfall.
 
 ## Backgrounding the CLOSED daily-append run — don't over-engineer (learned 2026-08-14 8:05PM)
 The default (non-`--seed`) `tol_menu_sales_closed_mtd.py` run is a light daily-append —

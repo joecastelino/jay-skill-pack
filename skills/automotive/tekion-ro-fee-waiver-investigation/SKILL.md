@@ -19,6 +19,21 @@ waiver / revenue-leakage detection**, not a normal reporting task — the signal
 you're hunting for is "$0 on a fee line that should have a real amount, on an
 otherwise fully-billed customer-pay RO."
 
+## ⚠️ FIRST: is the fee RO-level or JOB-level? (added 2026-08-20)
+`GET /repair-orders/{roId}/ro-fees` returns **ONLY RO-level fees**. Fees attached
+to an **opcode** land at JOB level and are invisible to that endpoint:
+`GET /repair-orders/{roId}/jobs/{jobId}/job-fees` — note BOTH responses use the
+same `data.roFees[]` key, so it's easy to believe you already checked.
+Scanning 6,000 SCT ROs with only `/ro-fees` produced a flatly wrong
+"this fee has NEVER posted to any RO" conclusion; the job-level rescan showed
+90%+ attach rates. **If the fee of interest is opcode-driven (hazmat/LOFDISP,
+CA tire tax/CATIR*, disposal), you must scan job-fees.** Manually-added RO-wide
+fees (LYFT, RENTAL, StorageFee, SS) genuinely live on `/ro-fees`.
+For fee CONFIG questions (is it active, why can't advisors select it, what's the
+attach rate) use skill `tekion-fee-not-showing-diagnosis` instead — it documents
+the `fee/v3/search` + `fee/v3/details` Fee Management API and the `ADD_TO_RO`
+("Allow to Add at RO Level") flag.
+
 ## Core data model (OpenAPI, verified 2026-08-18 on BT/Lyft)
 - `repair-orders:search` result carries a **free** `transportation` LinkedResource
   (`{link,id}`) per RO — resolves via `GET /transportation-types/{id}` →
