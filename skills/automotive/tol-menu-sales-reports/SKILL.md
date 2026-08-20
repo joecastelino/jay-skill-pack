@@ -329,6 +329,39 @@ run) crashes the whole run after the RO search already succeeded. Fix: just
 (7/22: 87 ROs, clean). No code change needed unless it recurs repeatedly; if it
 does, wrap the per-op `call()` in the same retry pattern for `TimeoutError`.
 
+## HTTP 500 `internal.service.failure` / code 3001 — Tekion-side outage (2026-08-19 8:05PM)
+NEW failure mode, distinct from every 429 variant below. `/repair-orders:search` returns
+`500 {"id":"internal.service.failure","detail":"Internal server error","code":"3001"}`.
+Key facts learned that run:
+- The script's 8-try backoff DOES cover 5xx (`st >= 500` branch in `search_closed`), so a
+  crash with `RuntimeError: closed RO search 500` means it already burned 8 retries over
+  ~10 min. Each failed run therefore takes ~11-12 min of wall clock — do NOT keep
+  re-running the full script to test recovery. Use a tiny probe script instead.
+- **It is ACCOUNT/PLATFORM-wide, not store- or filter-specific.** Verified by probing:
+  closedTime / invoicedTime / creationTime, with and without a status filter, today and
+  yesterday windows — all 500. And BT / BC / SCT modules (different dealer IDs, same
+  OpenAPI creds) ALSO returned 500. So don't waste time varying the filter or blaming
+  the TOL pipeline.
+- It can start MID-EVENING with no warning: the 20:02 Opened run that same day succeeded
+  cleanly (165 ROs scanned, 7 menu records) and the 500s began by ~20:20.
+- Diagnostic probe pattern (fast, ~1s per call — reuse it):
+  ```py
+  import sys; sys.path.insert(0,"/home/itadmin/tekion-reports")
+  import tol_menu_sales_api as O           # or bt_/bc_/sct_menu_sales_api
+  st,out = O.call("POST","/repair-orders:search",
+      {"filters":[{"field":"creationTime","operator":"BTW","values":[ms0,ms1]}],"pageSize":5})
+  ```
+  Saved as `_probe2.py` (TOL) / `_probe3.py` (cross-store) in `/home/itadmin/tekion-reports`.
+- **Do NOT draft a report on stale/partial data.** Same policy as OVERALL_QUOTA: report the
+  outage honestly to Joe, skip the Stacey hand-off entirely (no PNG/PDF exists to attach —
+  the render step also can't run without a fresh closed JSON), and leave a backfill watcher.
+- Recovery watcher used: `backfill_tol_closed_20260819.sh` (flock
+  `/tmp/tekion-tol-backfill-20260819.lock`, log `data/tol-closed-backfill-<date>.log`) —
+  probes every 15 min for 12h, and on the first 200 runs
+  `tol_menu_sales_closed_mtd.py <date>` (dated positional backfill, merges into the month
+  master) then `render_menu_sales_paged_tol.py <date> closed`. Copy/adapt it by date rather
+  than writing a new one. CHECK ITS LOG on the next run before doing anything else.
+
 ## 429 OVERALL_QUOTA ≠ OVERALL_RATELIMIT (learned 2026-07-07)
 Two distinct 429 messages:
 - `Limit exhausted for type : OVERALL_RATELIMIT` — short rolling window; the 8-try
