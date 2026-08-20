@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-20T10:15:23",
+ "generated": "2026-08-20T10:30:26",
  "skill_count": 181,
  "skills": [
   {
@@ -47,7 +47,7 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 51,
+   "times_used": 52,
    "last_used": "2026-08-20"
   },
   {
@@ -243,6 +243,14 @@
    "last_used": "2026-07-30"
   },
   {
+   "name": "tekion-parts-sales-orders",
+   "path": "automotive/tekion-parts-sales-orders",
+   "category": "automotive",
+   "description": "Tekion Parts Sales Orders (counter sales) + Parts RO Sales (parts on repair orders) + the full parts PRICING system (hierarchy, price codes, price breaks/formulas, matrices, defaults). Covers /parts/sales-order, P&A vs Fulfillment, cores, prepaid parts, core returns (CM credit memos), and the 5-tier pricing hierarchy where manual override is \"king of kings.\" Load for counter-sale, parts-on-RO, or parts-pricing questions.",
+   "times_used": 11,
+   "last_used": "2026-08-20"
+  },
+  {
    "name": "tekion-report-builder-scraper",
    "path": "automotive/tekion-report-builder-scraper",
    "category": "automotive",
@@ -257,14 +265,6 @@
    "description": "Pull Tekion Standard Reports from the REPORTS module (/core/reports) via the :9223 authenticated browser \u2014 especially the fixed-ops performance suite (Advisor Performance, Tech Performance / proficiency = assigned-billed vs attendance hours). Covers the filter funnel (Flag Date range, Make filter), Group By, and Export. Use when Joe wants advisor/tech performance numbers, or ANY report that is NOT a custom Report Builder report.",
    "times_used": 11,
    "last_used": "2026-08-03"
-  },
-  {
-   "name": "tekion-parts-sales-orders",
-   "path": "automotive/tekion-parts-sales-orders",
-   "category": "automotive",
-   "description": "Tekion Parts Sales Orders (counter sales) + Parts RO Sales (parts on repair orders) + the full parts PRICING system (hierarchy, price codes, price breaks/formulas, matrices, defaults). Covers /parts/sales-order, P&A vs Fulfillment, cores, prepaid parts, core returns (CM credit memos), and the 5-tier pricing hierarchy where manual override is \"king of kings.\" Load for counter-sale, parts-on-RO, or parts-pricing questions.",
-   "times_used": 10,
-   "last_used": "2026-08-20"
   },
   {
    "name": "tekion-service-settings",
@@ -579,6 +579,14 @@
    "last_used": "2026-07-06"
   },
   {
+   "name": "tekion-parts-tax-not-calculating-diagnosis",
+   "path": "automotive/tekion-parts-tax-not-calculating-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose \"sales tax isn't calculating / tax is $0\" on Tekion Parts Sales Orders (counter sales), especially for CUSTOM sale order types like ONLINE RETAIL. Finds whether the store was migrated to the NEW Parts Tax Code Setup and whether a sale type is missing from the saved tax-code grid. Use when a Parts Manager reports missing tax on SOs.",
+   "times_used": 2,
+   "last_used": "2026-08-20"
+  },
+  {
    "name": "tekion-physical-inventory",
    "path": "automotive/tekion-physical-inventory",
    "category": "automotive",
@@ -705,14 +713,6 @@
    "description": "Build the \"parts ordered/shipped and NOT received\" report for a Tekion store (outstanding part lines on open POs, with aging + $ value). Uses the Parts Receiving \"Orders Not Received\" queue and an XHR hook on partTrade/u/purchase/search to harvest full per-part JSON (ordered/received/backorder/cancelled qty, unit cost, ref RO/SO, customer). Verified SCT 2026-07-06 (400 POs, 1127 lines, $180K). Load when Joe asks for shipped-not-received, unreceived parts, open PO parts, or PO aging reports.",
    "times_used": 1,
    "last_used": "2026-07-06"
-  },
-  {
-   "name": "tekion-parts-tax-not-calculating-diagnosis",
-   "path": "automotive/tekion-parts-tax-not-calculating-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose \"sales tax isn't calculating / tax is $0\" on Tekion Parts Sales Orders (counter sales), especially for CUSTOM sale order types like ONLINE RETAIL. Finds whether the store was migrated to the NEW Parts Tax Code Setup and whether a sale type is missing from the saved tax-code grid. Use when a Parts Manager reports missing tax on SOs.",
-   "times_used": 1,
-   "last_used": "2026-08-20"
   },
   {
    "name": "tekion-pipeline-operations",
