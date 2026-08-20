@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-20T10:00:36",
+ "generated": "2026-08-20T10:15:23",
  "skill_count": 181,
  "skills": [
   {
@@ -47,7 +47,7 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 50,
+   "times_used": 51,
    "last_used": "2026-08-20"
   },
   {
@@ -259,6 +259,14 @@
    "last_used": "2026-08-03"
   },
   {
+   "name": "tekion-parts-sales-orders",
+   "path": "automotive/tekion-parts-sales-orders",
+   "category": "automotive",
+   "description": "Tekion Parts Sales Orders (counter sales) + Parts RO Sales (parts on repair orders) + the full parts PRICING system (hierarchy, price codes, price breaks/formulas, matrices, defaults). Covers /parts/sales-order, P&A vs Fulfillment, cores, prepaid parts, core returns (CM credit memos), and the 5-tier pricing hierarchy where manual override is \"king of kings.\" Load for counter-sale, parts-on-RO, or parts-pricing questions.",
+   "times_used": 10,
+   "last_used": "2026-08-20"
+  },
+  {
    "name": "tekion-service-settings",
    "path": "automotive/tekion-service-settings",
    "category": "automotive",
@@ -281,14 +289,6 @@
    "description": "Build the DealerDetail Tekion API-driven data pipeline (replacing the email/Excel prototype) by acting as PM and delegating tickets to Claude Code, then verifying independently. Covers the ticket workflow, the live infra (Supabase project, branch, creds), and the hard-won gotchas (Supabase shadow-DB, server-only smoke tests, git credential path, Tekion app-scope 403 on user lookups).",
    "times_used": 9,
    "last_used": "2026-08-11"
-  },
-  {
-   "name": "tekion-parts-sales-orders",
-   "path": "automotive/tekion-parts-sales-orders",
-   "category": "automotive",
-   "description": "Tekion Parts Sales Orders (counter sales) + Parts RO Sales (parts on repair orders) + the full parts PRICING system (hierarchy, price codes, price breaks/formulas, matrices, defaults). Covers /parts/sales-order, P&A vs Fulfillment, cores, prepaid parts, core returns (CM credit memos), and the 5-tier pricing hierarchy where manual override is \"king of kings.\" Load for counter-sale, parts-on-RO, or parts-pricing questions.",
-   "times_used": 9,
-   "last_used": "2026-08-20"
   },
   {
    "name": "tekion-writer-handoff-report",
