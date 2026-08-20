@@ -87,17 +87,99 @@ If the complained-about sale type is **absent from `saleTypeTaxSetup`**, that's 
 Count non-VOIDED orders of that sub-type created since `data.createdTime`, sum
 `saleAmount.amount / 100`. Report orders, dollars, and est. missed tax. Joe wants the number.
 
-## Step 4 — The fix
+## Step 4 — The fix (CONFIRMED WORKING, SCT 8/20/2026 9:41 AM PT)
 
-**Parts → Settings → Tax Setup for Parts** (`/parts/tax-code-setup`) → **Edit** → on each
-missing sale-type row, **explicitly re-select the tax code in every component cell** (Parts,
-Core Sale, Core Returns, Fees, Labour) *even though they already appear filled* → **Save**.
+Navigate by **DIRECT URL `/parts/tax-code-setup`** ("Tax Setup for Parts").
 
-Verify: re-`GET /api/parts-settings/u/tax-setup` and confirm the sale type now appears in
-`saleTypeTaxSetup` with a real `taxCodeId`. Then create a test SO of that type and confirm
-`taxCodeGrid.length == 5`.
+⚠️ **There is no "Parts → Settings" menu item** — Joe pushed back on that exact wording.
+The app-grid Settings tab has a tile called **"Parts Settings"** which goes to
+`/parts/parts-settings` — a *different* page. Other near-miss tiles that waste your time:
+"Tax Codes Setup" → `/core/taxCodes/list` (the master tax-CODE list, not the mapping grid),
+and "Code Setup" → `/parts/priority-codes` (special-order priority codes). Just give the
+direct URL.
+
+On the page: **Edit** → on each missing sale-type row, **uncheck / re-check (re-select) the
+tax code in every component cell** (Parts, Core Sale, Core Returns, Fees, Labour) *even
+though they already appear filled* → **Save**. The uncheck-and-recheck is what forces the
+row to actually persist — a plain Save with the phantom-rendered values does nothing.
+
+**Verify by API, not by the screen:**
+```js
+GET /api/parts-settings/u/tax-setup
+// every sale type should now appear with n=5 taxCodeMappings:
+//   RETAIL 5 · WHOLESALE 5 · INTERNAL 5 · ONLINE RETAIL_RETAIL 5 · ONLINE WHOLESALE_WHOLESALE 5
+```
+Then pull the newest order of that sub-type and confirm `taxCodeGrid.length == 5` and
+`taxSummary.totalTaxAmount > 0`. SCT proof: same $1.55 order shape went $0 tax at 8:36 AM →
+**$0.16 at 9:42 AM** (order 331391, grid 5, `10% Tax`).
+
+### Orders created during the broken window DO NOT self-heal
+
+They keep `grid: 0` forever. List them and hand them back for re-keying:
+DRAFT ones must be deleted and re-entered (or a line removed/re-added to force a tax
+recalc) **before invoicing**, or they invoice untaxed. Already-DELIVERED/CLOSED ones need a
+manual tax correction. At SCT this was 4 orders (~$248 of the $250.10 exposure sat in 3
+DRAFTs).
 
 ⚠️ This is a live financial-control change — **get Joe's explicit go before saving.**
+(In the SCT case Joe had a store user do the uncheck/recheck rather than Jay saving it.)
+
+## "The row is GREYED OUT and I can't change it" (BT, 8/20/2026)
+
+**Not a bug and not a permission problem.** A sale-type row on `/parts/tax-code-setup` is
+rendered disabled when that custom sale sub-type is **Inactive**.
+
+Source of truth — one call, all stores:
+```js
+GET /api/parts-settings/u/settings   // per dealerId header
+// -> data.saleSubTypes[] = [{saleSubTypeId, saleType, saleSubType, active}]
+```
+`active:false` ⇒ that row is greyed on the tax screen. Exact 1:1 match, verified at BT:
+disabled inputs sat at row y=499 (`Online Wholesale`) and y=542 (`Wholesale Credit Card`),
+and those are precisely the two with `active:false`.
+
+**It does not need fixing.** An inactive sale type can't be selected on a new SO, so it
+cannot generate untaxed orders. Only unlock it (Parts Settings → Custom Sale Order Types →
+flip Status to Active) if the store actually intends to *use* that type again — then
+re-do the tax-setup uncheck/recheck for the newly-active row.
+
+Confirm the row-to-status mapping visually: the greyed cells have a grey background and
+**no dropdown caret**; enabled cells are white with a caret. Count them in the DOM with
+`[...document.querySelectorAll('input')].filter(e=>e.offsetParent!==null&&e.disabled)` —
+they come in groups of 5 (one per component), so `10 disabled` = exactly 2 locked rows.
+
+### Not every store has custom sale types
+
+Before hunting a missing row, check whether the store even has one. `saleSubTypes` was
+`[]` at VC and all-inactive at AR and SV — those stores only run native
+RETAIL/WHOLESALE/INTERNAL and are **not exposed to this bug at all**. Don't apply the fix
+there and don't report them as broken.
+
+## Fleet-wide sweep (do this once, don't check stores one at a time)
+
+`window.__H` can be retargeted to ANY dealer by swapping two headers — no dealer switching,
+no re-login:
+```js
+const H = Object.assign({}, window.__H, {dealerId:'1249', 'tek-siteId':'-1_1249'});
+```
+Loop all 7 (AR 6195, BC 1251, BT 1249, ST 876, SV 826, TL 1092, VC 1891) against
+`/api/parts-settings/u/tax-setup` + `/api/parts-settings/u/settings` and print
+`saleTypes:n` and `saleSubTypes[].active`. Whole fleet audited in one call.
+
+### Fleet state at 8/20/2026 ~10 AM (post-fix reference)
+
+| Store | Setup modified | Sale types in grid | Custom sub-types | Verdict |
+|---|---|---|---|---|
+| ST 876 | 8/20 9:41 AM | 5 | ONLINE RETAIL ✓, ONLINE WHOLESALE ✓ | fixed |
+| BC 1251 | 8/20 9:48 AM | 5 | both active | fixed |
+| BT 1249 | 8/20 9:49 AM | 8 | 3 active, 2 **inactive** (greyed) | fixed, greying is correct |
+| TL 1092 | 8/20 9:50 AM | 5 | both active | fixed |
+| AR 6195 | 8/19 8:10 PM | 3 | Body/Mechanical Shop, both inactive | N/A — no active custom types |
+| VC 1891 | 8/19 8:10 PM | 3 | none (`[]`) | N/A |
+| SV 826 | 5/19/2026 | 5 | Body/Mechanical Shop, both inactive | N/A — migrated long before, unaffected |
+
+Note SV migrated 10/28/2025 — **the 8/19/2026 8:10–8:12 PM cutover hit 6 of 7 stores in a
+90-second window**, which is what made this look like a fleet-wide outage.
 
 ## Ruled-out causes (check fast, then move on)
 
