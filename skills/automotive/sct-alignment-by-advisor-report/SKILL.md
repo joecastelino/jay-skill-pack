@@ -273,6 +273,25 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   "list every Sent match with subject+date" ask timed out exit 124; per note 11, a 60s
   pause then the ultra-terse single-number form answered fine. Keep re-asks to ONE
   question with ONE number.)
+  **Confirmed again 2026-08-19 (9th consecutive clean night, quota fully healthy):**
+  pre-flight OPS probe (same validated RO/job pair, unchanged since 8/3) returned 200 —
+  keep doing this probe even deep into a healthy streak, it costs one call. Index 3,046
+  closed ROs, 1,008 candidates, 0 failed, ~38 min scan (19:01→19:39, no backoff). 287
+  alignments (256 dedicated + 31 bundled), 287 ROs, 16 advisors, top Cristian Gonzalez
+  (33) — note Jaime Sanchez and Artist Battle tied at 30, so Cristian's usual #1 spot is
+  narrowing. Stacey's build clean on the FIRST ask (67s) with paths + on-disk sizes baked
+  in; her own reply gave HTML part 176,942B and PDF part 405,746B. Standard two-ask verify
+  both answered on the first try with only a short sleep (15s then 10s, not 60s):
+  `DRAFTS_COUNT=1 | TO=kstapp@sctoyota.com | SENT_FOLDER_COUNT=0`, then PARTS
+  `RAW_SIZE=591,957 | text/html=179,240 | application/pdf=411,016` — HTML >= PNG*4/3
+  (130,233) confirms inline PNG, PDF part +2.6% over PDF*4/3 (400,476) is the normal
+  CRLF-wrap variance, and RAW_SIZE ≈ html+pdf parts cross-checks. Note her reply strips
+  underscores (`DRAFTSCOUNT`, `PDFPART_BYTES`) — same answer, don't re-ask. Also note the
+  part sizes she reports in the BUILD confirmation vs the later PARTS ask differ slightly
+  (176,942 vs 179,240 html; 405,746 vs 411,016 pdf) — both pass the lower-bound math;
+  small discrepancies between her two reports of the same part are NOT a duplicate-draft
+  signal (the date-anchored DRAFTS_COUNT=1 is authoritative, per the 8/17 UID-instability
+  note).
   **Confirmed again 2026-08-16 (6th consecutive clean night, quota fully healthy):**
   pre-flight OPS probe (same validated RO/job pair) returned 200. Index built 2,364
   closed ROs, 771 candidates, 0 failed, ~30 min scan (19:01→19:31, no backoff
