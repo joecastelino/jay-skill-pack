@@ -617,6 +617,27 @@ exactly as the dedup section warns. Lesson bank: use `timeout 600` (not 170) on
 the ask-agent subprocess for BC draft builds — 170s reliably under-runs a full
 build and manufactures a needless exit-124.
 
+## 2026-08-19 5pm Daily Closed run — textbook clean, zero deviations
+8 menus, $1,644.02 labor / $1,050.54 parts = $2,694.56 (Humberto Dominguez 4 /
+$888.72, Juan Ramirez 2 / $709.80, Michael Reyes 1 / $805.41, Erik Mercado 1 /
+$290.63). 65 closed ROs → 8 carried TEK menu opcodes; `✓ all candidate ROs
+scanned`; vision-verified KPI band matched JSON exactly. Pull ran via
+`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)` —
+finished well inside one wait this time (contrast 8/19 noon which needed 3).
+Stacey's build: `execute_code` + `subprocess.run` argument list wrapped in
+`timeout 600` → returned cleanly in 117s, no exit-124, no recovery probe, and
+her terse DONE line was correctly formatted with `TOTAL=$2,694.56`. The
+"N dollars" prevention rule worked a 3rd consecutive time: every figure intact
+exactly once, zero ' dollars'/'USD' leftovers, `<b>$2,694.56</b>` bold.
+Verified via the stdlib-`email`-parser method: To=Restrada, Cc=None (real
+None), From=Joe, inline PNG **byte-for-byte identical** (145,550 bytes), PDF
+**byte-for-byte identical** (54,788 bytes, compared full bytes not just size),
+Daily-Closed Sent count 0. Deleted the stale noon draft (42471) per the
+twice-daily cadence rule, kept 42520 → exactly 1 draft.
+Reinforced: pre-telling Stacey "there is an older noon draft at this subject,
+leave it alone, I will clean it up myself, just create ONE new draft" produced
+zero duplicate churn — worth including in every 5pm ask.
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
