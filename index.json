@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-20T09:30:08",
+ "generated": "2026-08-20T09:45:19",
  "skill_count": 181,
  "skills": [
   {
@@ -55,8 +55,8 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 48,
-   "last_used": "2026-08-18"
+   "times_used": 49,
+   "last_used": "2026-08-20"
   },
   {
    "name": "sct-menu-sales-api-scorecard",
@@ -291,6 +291,14 @@
    "last_used": "2026-07-15"
   },
   {
+   "name": "tekion-parts-sales-orders",
+   "path": "automotive/tekion-parts-sales-orders",
+   "category": "automotive",
+   "description": "Tekion Parts Sales Orders (counter sales) + Parts RO Sales (parts on repair orders) + the full parts PRICING system (hierarchy, price codes, price breaks/formulas, matrices, defaults). Covers /parts/sales-order, P&A vs Fulfillment, cores, prepaid parts, core returns (CM credit memos), and the 5-tier pricing hierarchy where manual override is \"king of kings.\" Load for counter-sale, parts-on-RO, or parts-pricing questions.",
+   "times_used": 8,
+   "last_used": "2026-08-20"
+  },
+  {
    "name": "tekion-parts-sold-by-source-report",
    "path": "automotive/tekion-parts-sold-by-source-report",
    "category": "automotive",
@@ -337,14 +345,6 @@
    "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
    "times_used": 7,
    "last_used": "2026-08-18"
-  },
-  {
-   "name": "tekion-parts-sales-orders",
-   "path": "automotive/tekion-parts-sales-orders",
-   "category": "automotive",
-   "description": "Tekion Parts Sales Orders (counter sales) + Parts RO Sales (parts on repair orders) + the full parts PRICING system (hierarchy, price codes, price breaks/formulas, matrices, defaults). Covers /parts/sales-order, P&A vs Fulfillment, cores, prepaid parts, core returns (CM credit memos), and the 5-tier pricing hierarchy where manual override is \"king of kings.\" Load for counter-sale, parts-on-RO, or parts-pricing questions.",
-   "times_used": 7,
-   "last_used": "2026-07-31"
   },
   {
    "name": "tekion-roles-permissions",
