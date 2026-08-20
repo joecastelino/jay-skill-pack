@@ -362,6 +362,21 @@ Key facts learned that run:
   master) then `render_menu_sales_paged_tol.py <date> closed`. Copy/adapt it by date rather
   than writing a new one. CHECK ITS LOG on the next run before doing anything else.
 
+### 500-outage RESOLVED 2026-08-20 03:13 AM — but the backfill result is SUSPECT
+`backfill_tol_closed_20260819.sh` logged `probe=500` every ~15 min from 21:01 8/19 until
+`probe=200` at **03:13:38 8/20** (~7h outage), then ran the dated backfill + render, rc=0,
+`QUEUE DONE`. BUT it recorded `closed/invoiced ROs today: 0` for 8/19 — which by this
+skill's own $0-validation rule is a STARVED run on a business day, not a genuine zero.
+Corroborating evidence it's bogus: the BT pipeline (dealer 1249, same creds) probed clean
+at 06:02 8/20 and pulled **141 closed ROs for 8/19**. Likely the API was only partially
+recovered at 03:13 (search returns 200 but empty result sets). ACTION for the next TOL
+run: re-run `tol_menu_sales_closed_mtd.py 2026-08-19` to backfill the real 8/19 closed
+data before trusting the August master (it currently shows 15 MTD rows / $4,691.57,
+unchanged from 8/18 — i.e. 8/19 contributed nothing). LESSON: a watcher's `rc=0` +
+`QUEUE DONE` is NOT validation — always apply the ro_count_scanned / "closed ROs today"
+sanity check to a watcher's backfill output, and cross-check a sibling store if a
+recovery-window pull comes back suspiciously empty.
+
 ## 429 OVERALL_QUOTA ≠ OVERALL_RATELIMIT (learned 2026-07-07)
 Two distinct 429 messages:
 - `Limit exhausted for type : OVERALL_RATELIMIT` — short rolling window; the 8-try
