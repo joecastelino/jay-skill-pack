@@ -679,6 +679,18 @@ NOT the Gmail API" leading the ask (subject-list 30s, part-listing 19s, Sent-che
 IMAP-first default (8/17) keeps paying off. Sent-check = 4 hits, all old em-dash-era emails
 (06/30-07/03), zero today = no leak. Opened draft stack now 7 (08/13-08/19), no true dupes.
 
+## (8/19 8:05PM, Opened) Initial hand-off exit-124 but draft DID save — verify before re-firing
+Opposite outcome to the 8/19 noon run: the initial hand-off ask hit exit-124 at 230s, but a
+subject-search right after showed the draft (42525) HAD been saved correctly and TRUE dedupe had
+already happened (the noon draft with the identical subject was gone; exactly 7 drafts, one per
+day 08/13-08/19, all unique subjects). MIME was clean first try (multipart/related >
+alternative(text/plain+html) + image/png Content-ID=scorecard + application/pdf). So exit-124 on
+the initial ask means NOTHING either way — always subject-search first, never blind re-fire.
+All 3 verification asks returned FIRST try with "use raw IMAP, NOT the Gmail API" leading the ask
+(subject-list 60s, part-listing 28s, Sent-check 48s). Sent-check via the SHORT subject stem
+("TOL Menu Sales - Opened", no date/parens, per the 8/18 tip) returned 4 hits, all old em-dash-era
+sends (06/30-07/03), zero today = no leak. Hyphen-instead-of-em-dash subject tactic held again.
+
 ## Backgrounding the CLOSED daily-append run — don't over-engineer (learned 2026-08-14 8:05PM)
 The default (non-`--seed`) `tol_menu_sales_closed_mtd.py` run is a light daily-append —
 it typically finishes in well under a minute (8/14: ~10-15s for 158 closed ROs, 1 new
