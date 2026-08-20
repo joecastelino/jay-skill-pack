@@ -290,27 +290,41 @@ BEFORE flagging it as a missed transfer:
   itself is benign, yet the stale companion negative (2418 = −2) was still sitting there
   uncorrected from prior runs. Report the recurrence count and the unresolved companion, not the
   increase.
-- **STATUS OF TRACKED MULTI-DAY ESCALATIONS (as of 2026-08-18) — read before re-deriving history:**
-  - **31532** (5001, Primary=SP-ORD, companions 2615/SP-ORD both 0): −20 flat July→8/13 → −25
-    (8/14) → −29 (8/15–8/17) → **−43 (8/18, −14 in ONE day)**. Day 5, and ACCELERATING — the
-    single-day move is now larger than the entire prior drift. On Order = 0, stocking ACTIVE.
-    Not a transfer case (Primary is a process bin). Escalate hard.
+- **STATUS OF TRACKED MULTI-DAY ESCALATIONS (as of 2026-08-19) — read before re-deriving history:**
+  - **31532** (5001, Primary=SP-ORD qty 0, companion 2615 qty 0): −20 flat July→8/13 → −25
+    (8/14) → −29 (8/15–8/17) → −43 (8/18) → **−56 (8/19, −13 more)**. Day 6 and STILL
+    ACCELERATING — −36 units in 6 days after ~6 weeks flat, with 8/18+8/19 alone = −27. Total
+    Inventory Qty == the bin (−56); On Order = 0, stocking ACTIVE. Not a transfer case (Primary
+    is a process bin). This is the fastest-deteriorating item on the board — escalate hard and
+    recommend direct human investigation, it is outrunning the daily report.
   - **04500-1** (5005, single-bin, 5005 IS Primary): −69 (7/04) → −105 (8/03) → −114 (8/17) →
-    **−116 (8/18)**. 7+ weeks open, standalone negative, outside transfer scope.
-  - **17801-F4010** (5006 Primary, companion 2418): recurrences 8/11, 8/14, **8/18**. 2418 stuck
-    at −2 across all three; Total Inventory Qty keeps reading 2 less than bin 5006.
-  - **87139-YZZ09** (5007, Primary=TXM): deepened −14→−22 through 8/08, then **flat at −22 for 11
-    consecutive days** (8/08–8/18). Stable but never corrected — report as "open, not worsening"
+    −116 (8/18) → **−117 (8/19)**. 7+ weeks open, standalone negative, outside transfer scope.
+  - **17801-F4010** (5006 Primary, companion 2418): recurrences 8/11, 8/14, 8/18, **8/19 (#4)**.
+    2418 stuck at −2 across ALL FOUR; Total Inventory Qty keeps reading 2 less than bin 5006
+    (8/19: 5006=4, Total=2). The 5006 qty itself oscillates 2↔6 (sales + restocks off Primary),
+    which is why only the bin-vs-Total tell catches it — never the 5006 delta alone.
+  - **87139-YZZ09** (5007, Primary=TXM): deepened −14→−22 through 8/08, then **flat at −22 for 12
+    consecutive days** (8/08–8/19). Stable but never corrected — report as "open, not worsening"
     rather than re-flagging as fresh drift.
   - **87139-42040** (5005, Primary=2424): −8 → −11 over two weeks, **flat at −11 since 8/17**.
+  - **87139-YZZ93** (5007 IS Primary, companions 4111/2422/TXM) is a KNOWN HIGH-CHURN part, not
+    an escalation: it swings hard almost daily (8/06→8/19: 27,17,8,2,0,27,50,36,25,52,47,32,21,41)
+    from ordinary sales off Primary plus restocks. Every check so far reconciles cleanly
+    (8/19: 5007=41 + 4111=30 + TXM/2422=0 → Total 71 ✓). Still open it each run (the bin-vs-Total
+    tell is cheap), but expect a benign result and don't write it up as drift.
   When a tracked part goes FLAT, say so explicitly ("open N days, not worsening") — a silent
   omission reads as "fixed," and re-flagging it as new drift is noise.
 - **Also surface the standing-negative TOP LIST and its bin concentration each run** — 26
-  negatives across the section on 2026-08-18, and bin **5007 held 4 of the 6 deepest**
-  (87139-YZZ83 −93, 00475-1BF03 −69, 17801-YZZ10 −51, 87139-YZZ09 −22). A single bin owning most
-  of the deep negatives is itself the finding (suggests a whole-shelf process problem, not
-  per-part drift) and is worth recommending as a scoped Bin Spot Check target — the daily
-  yesterday-vs-today diff alone will never reveal it because those rows are flat.
+  negatives across the section on BOTH 2026-08-18 and 2026-08-19, and bin **5007 held 4 of the 6
+  deepest on both days** (87139-YZZ83 −93, 00475-1BF03 −69, 17801-YZZ10 −51, 87139-YZZ09 −22),
+  with bin 5005 carrying the most ROWS (11 of 26, incl. 04500-1 at −117). The 5007 concentration
+  is now a CONFIRMED PERSISTENT pattern, not a one-day snapshot artifact — a single bin owning
+  most of the deep negatives is itself the finding (suggests a whole-shelf process problem, not
+  per-part drift) and is worth recommending as a scoped Bin Spot Check target. The daily
+  yesterday-vs-today diff will NEVER reveal it because those rows are flat — you must compute the
+  negative roster + per-bin counts fresh from the current snapshot every run, independent of the
+  diff. Cheap to do: one pass over the saved snapshot, sort ascending by onHandQuantity, and
+  `Counter(bin)` the negatives.
 - 65-70/175 parts having lastTransactionTime in 24h is NORMAL on a busy day — the 24h-activity
   list is a reminder roster (sales relieve Primary only), not an alarm list. Only qty
   changes/new negatives are alarms.
