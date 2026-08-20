@@ -9,6 +9,14 @@ Source: Tekion "Jump Start" webinar, Parts Workflows & Pricing (Emily Shaw, CVA 
 
 > **NEVER-GUESS RULE:** On parts-pricing troubleshooting, if you hit something not covered here, STOP and ask Joe — do not invent a plausible answer. He is deeply parts-knowledgeable and rejects wrong root-cause diagnoses instantly.
 
+> **SALES TAX $0 / "tax isn't calculating" on a Sales Order → load skill
+> `tekion-parts-tax-not-calculating-diagnosis`.** Short version: Parts tax config lives at
+> `GET /api/parts-settings/u/tax-setup` (UI `/parts/tax-code-setup`), NOT under `/api/tax-codes/u/*`
+> and NOT the Service screen `/service/settings/ro-settings/tax-code-settings`. When Tekion migrates
+> a store to the new Parts Tax Code Setup it drops CUSTOM sale order types (ONLINE RETAIL etc.) from
+> `saleTypeTaxSetup[]` → those orders get `taxConfiguration.taxCodeGrid: []` → $0 tax. The
+> `/parts/tax-code-setup` screen falsely renders "10% Tax" for the missing rows — verify via API only.
+
 ## Apps & Navigation
 - **Sales Order** app — nine-dots launcher → Sales Order (under Parts). The **Parts Sales Order / counter sales** screen. Path = `/parts/sales-order`. **This is the Caliber RO-dollars source** (no OpenAPI endpoint; browser scrape only).
 - **Parts RO Sales** app — sell/quote parts against **Repair Orders**.

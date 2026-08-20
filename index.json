@@ -1,6 +1,6 @@
 {
- "generated": "2026-08-20T09:15:06",
- "skill_count": 180,
+ "generated": "2026-08-20T09:30:08",
+ "skill_count": 181,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -895,6 +895,14 @@
    "path": "automotive/tekion-parts-shortage-diagnosis",
    "category": "automotive",
    "description": "[DEPRECATED \u2014 use tekion-parts-autoorder-diagnosis] Old name for the Tekion parts stock-out / why-didn't-this-auto-order diagnosis. All content was merged into tekion-parts-autoorder-diagnosis (the canonical, fuller skill). This file is a redirect only.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-parts-tax-not-calculating-diagnosis",
+   "path": "automotive/tekion-parts-tax-not-calculating-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose \"sales tax isn't calculating / tax is $0\" on Tekion Parts Sales Orders (counter sales), especially for CUSTOM sale order types like ONLINE RETAIL. Finds whether the store was migrated to the NEW Parts Tax Code Setup and whether a sale type is missing from the saved tax-code grid. Use when a Parts Manager reports missing tax on SOs.",
    "times_used": 0,
    "last_used": null
   },
