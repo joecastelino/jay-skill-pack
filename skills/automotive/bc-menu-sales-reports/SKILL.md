@@ -638,6 +638,36 @@ Reinforced: pre-telling Stacey "there is an older noon draft at this subject,
 leave it alone, I will clean it up myself, just create ONE new draft" produced
 zero duplicate churn — worth including in every 5pm ask.
 
+## 2026-08-19 6:16pm Closed MTD run — clean data, but Stacey self-corrected mid-build and left a DUPLICATE
+120 menus, $20,068.52 labor / $13,699.76 parts = $33,768.28 (Aug 1-19). Advisors:
+Juan Ramirez 30 / $9,742.00, Houa Moua 28 / $6,240.06, Dimetri Reynoso 16 /
+$4,036.78, Humberto Dominguez 15 / $5,395.54, Michael Reyes 13 / $3,046.26, Erik
+Mercado 9 / $3,237.75, Jacob Debussey 6 / $1,293.79, Jeremia Navarro 3 / $776.10.
+Master asof was 2026-08-18 → default append (no seed/catch-up); 69 closed ROs → 9
+carried TEK menu opcodes; `✓ all candidate ROs scanned`. Pull ran via
+`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
+Vision KPI band matched JSON exactly; master `_gross` sums matched the emitted
+report `totals` exactly.
+**Deviation — duplicate from Stacey's own mid-build self-corrections**: her
+ask-agent stdout showed two self-caught mistakes ("Typo in the display name —
+RubEn should be Ruben. Let me fix and re-create" and "Syntax error in the
+f-string. Let me fix and re-run properly") before the terse DONE line. Each
+"re-create" APPENDED a new draft rather than replacing, leaving 42522 + 42523 one
+minute apart. Her DONE line named only 42523. Lesson: **when Stacey's reply text
+contains any "let me fix and re-create/re-run" self-correction, treat a duplicate
+as near-certain and run the dedupe grep immediately** — the explicit "create ONE
+draft, don't touch existing ones" instruction in the ask does NOT prevent her own
+retry loop from appending extras. Kept 42523 (byte-verified), expunged 42522.
+Otherwise textbook: the "N dollars" + Python-replace prevention rule worked a 4th
+consecutive time (zero `$digit` corruption, all 11 figures present exactly once,
+no ' dollars'/'USD' leftovers, `<b>$33,768.28</b>` bold), `timeout 600` on the
+subprocess argument-list ask returned cleanly in 164s with no exit-124.
+Verified via stdlib-`email` parser: To=Restrada, Cc real None, From=Joe,
+Subject auto-decoded with em-dashes, inline PNG **byte-for-byte identical**
+(1,010,311 bytes), PDF **byte-for-byte identical** (77,419 bytes), exactly 1 MTD
+8/19 draft, Sent MTD count 0 (the sibling 8/19 Daily Closed draft 42520 is not a
+duplicate — filter on "Month-To-Date" per the dedup rule).
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
