@@ -292,6 +292,33 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   small discrepancies between her two reports of the same part are NOT a duplicate-draft
   signal (the date-anchored DRAFTS_COUNT=1 is authoritative, per the 8/17 UID-instability
   note).
+  **Confirmed again 2026-08-20 (10th consecutive clean night) — FLAT-DAY / STORE
+  POSTING-LAG false alarm:** OPS probe 200. Index 3,065 closed ROs, 1,008 candidates,
+  0 failed, ~42 min (19:01→19:43). Result 287 alignments (256 ded + 31 bundled), 287
+  ROs, 16 advisors — **byte-for-byte the same candidate count (1,008) and the same
+  total (287) as 8/19**, which looks exactly like the stale-same-day-index trap. It was
+  NOT. Diagnosis recipe when today's MTD numbers don't move:
+  1. Confirm the index is FRESH, not a cached reuse — compare the `window` end
+     timestamp in `sct-mtd-<today>-closed-index.json` vs yesterday's (must advance one
+     day: 1787209199999 → 1787295599999) and diff the RO id sets
+     (`new in 8/20: 19, dropped: 0`). A reused index would have an IDENTICAL window.
+  2. Then confirm at the API level with a single-day closed count per day rather than
+     trusting the MTD delta: closed 8/18=167, 8/19=261, **8/20=19**. Only 19 ROs closed
+     store-side all day (cashiering/posting lag), and none of the 19 were alignment
+     candidates → new candidates today = 0 → totals legitimately unchanged.
+  So identical day-over-day totals can be REAL. Always run the two checks above before
+  suspecting a stale index or a broken scan; conversely a matching `window` end
+  timestamp is the definitive tell that you DID hit the stale-index trap.
+  Also note: `sct-mtd-latest-align-by-advisor.json` is a COPY, not a symlink — a
+  `realpath` comparison against the dated file will (correctly) return False. Don't
+  treat that as a stale-pointer bug; verify by reading its `period_label`/`totals`
+  instead.
+  Stacey's build clean on the FIRST ask (70s) with paths + on-disk sizes baked in
+  (HTML part 131,086 >= PNG*4/3=130,319; PDF part exactly 300,357B = on-disk size).
+  Standard two-ask verify, short sleeps (15s then 10s), both first-try:
+  `DRAFTS_COUNT=1 | TO=kstapp@sctoyota.com | SENT_FOLDER_COUNT=0`, then
+  `RAW_SIZE=592,097 | text/html=179,384 | application/pdf=411,016` (+2.6% CRLF variance,
+  RAW_SIZE ≈ html+pdf). Underscore-stripped keys again — same answer, don't re-ask.
   **Confirmed again 2026-08-16 (6th consecutive clean night, quota fully healthy):**
   pre-flight OPS probe (same validated RO/job pair) returned 200. Index built 2,364
   closed ROs, 771 candidates, 0 failed, ~30 min scan (19:01→19:31, no backoff
