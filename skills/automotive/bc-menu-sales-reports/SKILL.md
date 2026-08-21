@@ -687,6 +687,24 @@ From=Joe, inline PNG **byte-for-byte identical** (142,491 bytes), PDF
 **byte-for-byte identical** (54,676 bytes), Daily-Closed Sent count 0, no stale
 noon/prior draft at the 8/20 subject to clean up.
 
+## 2026-08-20 5pm Daily Closed run — textbook one-shot, 6th consecutive clean "N dollars" build
+13 menus, $1,383.58 labor / $1,070.35 parts = $2,453.93 (Juan Ramirez 3 / $455.63,
+Houa Moua 2 / $603.09, Dimetri Reynoso 2 / $557.60, Jacob Debussey 2 / $324.90,
+Humberto Dominguez 2 / $291.80, Michael Reyes 1 / $134.45, Jeremia Navarro 1 /
+$86.46). 74 closed ROs → 13 carried TEK menu opcodes; `✓ all candidate ROs
+scanned`; vision-verified KPI band matched JSON exactly. Pull ran via
+`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
+Stacey's build: `execute_code` + `subprocess.run` argument list wrapped in
+`timeout 600` → returned cleanly in **90s**, no exit-124, no recovery probe,
+terse DONE line correct with `TOTAL=$2,453.93`. No self-correction text in her
+reply → no duplicate (pattern holds). Verified via the stdlib-`email` parser:
+To=Restrada, Cc real None, From=Joe, inline PNG **byte-for-byte identical**
+(205,216 bytes), PDF **byte-for-byte identical** (57,338 bytes), all 10 figures
+present exactly once, zero ' dollars'/'USD' leftovers, `<b>$2,453.93</b>` bold.
+Deleted the stale noon draft (42536) per the twice-daily cadence rule, kept
+42540 → exactly 1 draft. Sent folder showed two `BC 8/20` hits — both Stacey's
+separate auto-sent **Daily Opened** reports; `grep -i "Daily Closed"` = 0.
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
