@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-21T09:15:44",
+ "generated": "2026-08-21T09:30:56",
  "skill_count": 183,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 128,
+   "times_used": 129,
    "last_used": "2026-08-21"
   },
   {
@@ -47,7 +47,7 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 53,
+   "times_used": 54,
    "last_used": "2026-08-21"
   },
   {
@@ -79,7 +79,7 @@
    "path": "automotive/tekion-quotes-menu-price-diagnosis",
    "category": "automotive",
    "description": "Diagnose a Tekion Service Menu pricing problem (e.g. \"a rotation is charging $449.45\") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLODE the menu into individual opcodes using the \"Add Menu Services as separate operations\" setting to find which opcode carries the bad price and its labor-rate method (Fixed vs Service Catalog Pro Dynamic Pricing). Use when Joe flags a wrong/inflated price on a maintenance menu line for a specific RO/vehicle.",
-   "times_used": 37,
+   "times_used": 38,
    "last_used": "2026-08-21"
   },
   {
@@ -183,8 +183,8 @@
    "path": "automotive/tekion-opcode-default-pricing",
    "category": "automotive",
    "description": "Set Default-tab labor pricing and add parts to a Tekion opcode in the opcodeManagementV2 UI. Covers reaching the edit page, the V2 flat-form layout, setting the dollar rate via the Customer/Manufacturer spinbuttons, adding parts via react-select (bare-number-first search), and the incremental Save Draft pattern that the browser tool requires. This is the SIMPLE common case \u2014 for vehicle/part override rows use tekion-opcode-overrides.",
-   "times_used": 14,
-   "last_used": "2026-08-05"
+   "times_used": 15,
+   "last_used": "2026-08-21"
   },
   {
    "name": "tekion-parts-autoorder-diagnosis",
@@ -387,6 +387,14 @@
    "last_used": "2026-07-08"
   },
   {
+   "name": "tekion-menu-missing-services-diagnosis",
+   "path": "automotive/tekion-menu-missing-services-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose a Tekion service-menu ticket where a manager/advisor says the menu is \"missing items\", \"missing services\", \"the service didn't show up\", or the package looks short \u2014 i.e. WRONG CONTENT, not wrong price. Differential diagnosis across the 4 known root causes (row tier-coverage gap, wrong baseSystemInterval stamp, row-scope miss, inert Modify-System-Services entry), all readable over the API without a browser. Sibling of tekion-quotes-menu-price-diagnosis (that one = wrong DOLLARS; this one = missing LINES).",
+   "times_used": 6,
+   "last_used": "2026-08-21"
+  },
+  {
    "name": "tekion-parts-sales-by-advisor-report",
    "path": "automotive/tekion-parts-sales-by-advisor-report",
    "category": "automotive",
@@ -417,14 +425,6 @@
    "description": "Build a Tekion \"alignments sold this period, broken down by service advisor\" report for ANY of the 7 AMG stores from the LIVE OpenAPI \u2014 counting BOTH dedicated alignment opcodes AND alignments bundled inside a service menu/combo op. Produces a 2-page scorecard (page 1 advisor ranking, page 2 RO-level chip detail) and optionally has Stacey draft it. The opcode set is PER-STORE \u2014 never reuse one store's alignment codes on another. Verified live at TL Toyota of Lancaster dealer 1092 on 2026-06-29 (105 alignments, 102 dedicated plus 3 bundled, across 104 ROs, June MTD). Use when Joe asks for an \"alignment report\" or \"alignment count by advisor\" for a store, or any single-opcode \"how many of X did we sell, by advisor\" report.",
    "times_used": 5,
    "last_used": "2026-07-01"
-  },
-  {
-   "name": "tekion-menu-missing-services-diagnosis",
-   "path": "automotive/tekion-menu-missing-services-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose a Tekion service-menu ticket where a manager/advisor says the menu is \"missing items\", \"missing services\", \"the service didn't show up\", or the package looks short \u2014 i.e. WRONG CONTENT, not wrong price. Differential diagnosis across the 4 known root causes (row tier-coverage gap, wrong baseSystemInterval stamp, row-scope miss, inert Modify-System-Services entry), all readable over the API without a browser. Sibling of tekion-quotes-menu-price-diagnosis (that one = wrong DOLLARS; this one = missing LINES).",
-   "times_used": 5,
-   "last_used": "2026-08-21"
   },
   {
    "name": "hermes-slack-token-recovery",

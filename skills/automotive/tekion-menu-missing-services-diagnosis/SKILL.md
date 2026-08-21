@@ -118,6 +118,97 @@ That is literally "no labor or parts."
    unless the tier prices are raised. Always surface this before adding a line to a
    fixed-price row.
 
+### ✅ EXECUTED REMEDIATION PLAYBOOK (SCT 2026-08-21, all 3 parts saved & verified)
+Joe approved and this ran end-to-end. Exact mechanics, browser :9225 (`/eval` body key
+is **`js`**; screenshot is **`GET /screenshot?path=...` returning base64** — `POST
+/screenshot` 404s on this server build).
+
+**PART 1 — build the opcode** (`/ro/opcode/edit/TEK05050913`, Default tab):
+- Labor is **NOT** a seconds field. It's two `input.ant-input-number-input` boxes
+  labeled **Customer** and **Manufacturer**, in **HOURS** (`1.00`). They sit ABOVE
+  Labor Rate Configuration and default to 1.00 — set both explicitly anyway.
+- Labor Rate Configuration → **Add** row → Pay Type resolves to `CP - Default` →
+  Labor Rate dropdown → **Fixed Price** → price input (`placeholder="Enter price"`).
+  Match the row's existing convention (SCT 100K row 3 = flat dollars: SMERP $20.00,
+  BGBAT $67.80, SM4ALIGN $75.00) — do not back-solve hours × rate.
+- Parts: react-select **`#partName_undefined`**. Type the part number **without
+  dashes** (`00272SLLC2`); the option list `[class*="-option"]` returns index 0 =
+  `Create "…"` (**never click this**) and index 1 = the real `00272-SLLC2 - SUPER
+  LONG LIFE COOL`. Then Qty + Parts Price on that row's
+  `input.ant-input-number-input` pair.
+- Commit with **Update** (buttons are `Save Draft` / `Cancel` / **`Update`**).
+  Require toast `Opcode 'TEK05050913' has been updated successfully`.
+
+**PART 2 — inject via Add Services on the menu row**
+(`/ro/service-menu-setups/edit/<menuId>`, expand row caret at **x≈111**, row y from
+`.rt-tr-group` bounding rects):
+- ⚠️ **THE DISAMBIGUATION TRAP:** after you add it, the SAME service name exists in
+  BOTH `Modify System Services` and `Add Services`. Never match by text alone —
+  locate the three section headers as **leaf elements** with exact text
+  (`Modify System Services` / `Add Services` / `Modify System Inspections`), read
+  their `y`, and bucket each service row by which header it falls under.
+- ⚠️ **HIDDEN DUPLICATE:** the page renders a second off-screen copy of the row
+  builder at **negative y** (saw cells at `y:-203` and `y:374` for the same service).
+  Always target the positive-y / visible one.
+- The Add Services blank row's react-select is the 2nd `[class*="-control"]`
+  containing "Select" under that row. Type the service name, click the single option.
+  New rows arrive with **all 4 tier checkboxes already true** — verify, don't assume.
+
+**PART 3 — raise the tier prices (mandatory on TOTAL_MENU_PRICE rows)**
+- Find the price inputs by matching their CURRENT values (`857.88` / `1,081.88` /
+  `1,271.88`), tag them, `/type` the new values, then Tab. They reformat with commas
+  (`1,032.88`) — read back allowing for the comma.
+- **Labor Hours** are a SEPARATE `Custom / Menu Labor Hours hrs` row (same
+  `/^\d[\d,]*\.\d\d$/` input pattern, lower y — e.g. 2.50/4.10/4.80). ASK Joe whether
+  to bump them; it's a pay decision, not a Tekion one. On this case he said "bump the
+  hours as you needed to" → added the new op's 1.00 hr to all three:
+  **2.50→3.50 / 4.10→5.10 / 4.80→5.80**.
+- **Save** (buttons `Save` / `Cancel` / **`Publish`**) → toast
+  `Service menu saved successfully`. **Do not Publish without explicit go.**
+  Publish is a plain button with **no confirmation modal** → toast
+  `Service menu published successfully`.
+
+⚠️ **`/type` (page.fill) INVALIDATES `data-jay` TAGS ON SIBLING INPUTS.** Filling one
+React number input re-renders the group and strips the attributes off the others →
+the next `/type` dies after 30s with `page.fill: Timeout … waiting for locator`.
+**FIX: re-tag ALL inputs after EVERY single `/type`, `scrollIntoView` the next target,
+then fill it. One at a time, re-query between each.** This bit me on the 3 labor-hour
+fields (first succeeded, next two timed out) and cost ~65s per failed call.
+
+**VERIFY LIKE THIS OR YOU'RE LYING TO YOURSELF:** re-reading the same DOM after Save
+just re-reads your own unsaved state. Navigate to `/home`, wait, navigate BACK to the
+edit URL, re-expand the row, and re-read. Only then are the persisted values real.
+(Confirmed: service present under Add Services w/ 4 tiers true, prices 1,032.88 /
+1,256.88 / 1,446.88 survived the remount.)
+
+**Also:** BT-style Pendo tour overlays swallow `/mouse` clicks — run
+`document.querySelectorAll('[id*=pendo],[class*=pendo]').forEach(e=>e.remove())`
+after every hard nav.
+
+### ✅ FINAL RESULT — PUBLISHED & QUOTE-VERIFIED (SCT 2026-08-21)
+Joe cleared Publish. Post-publish clean quote, VIN `4T1B21HK6JU004820` @ 100,000 mi
+(QO# 000657), all three tiers walked with the opcode suffix confirmed flipping:
+
+| Tier | Package OpCode | Price | Inverter line | Svc count |
+|---|---|---|---|---|
+| Basic | TEK100000**BNM** | **$1,032.88** | ✔ present | 8 |
+| Basic + | TEK100000**VNM** | **$1,256.88** | ✔ present | 11 |
+| Signature | TEK100000**PSM** | **$1,446.88** | ✔ present | 13 |
+
+`Replace Engine & Inverter Coolant.` now renders on all three cards, priced $175.00
+(2 × 00272-SLLC2 @ $57.60 = $115.20 parts + $59.80 flat labor), 1.00 flag hr added to
+each tier's menu hours. Root cause #4 confirmed fixed by the Add-Services route.
+
+**QUOTE-PORTAL NAV (exact, this build):** `/ro/quotes` → **Create Quote** btn
+(top-right ≈1168,96) → `Search VIN #` input + **Enter** → odometer input → **Continue**
+→ lands on `/ro/quotes/<id>/service/new`. In the RIGHT panel the **Service Menu** tab
+(≈1009,304) must be clicked *before* the interval tile is live; the interval rail then
+renders and the tile (`100K mi`) opens the package card. Tier tabs sit at **y≈325**:
+Basic **622** / Basic + **718** / Signature **829** — real `/mouse` clicks only
+(synthetic MouseEvents no-op and fake "all tiers identical"). Read price + opcode by
+regex off `document.body.innerText`; **do not trust vision here** — at a 720px viewport
+it reports "no tier tabs / no package panel" simply because they're below the fold.
+
 **FLEET-WIDE CENSUS ONE-LINER** (every ACTIVE menu's hybrid rows + their MSS entries, ~5s):
 ```python
 for m in active_menus:                       # /u/opcode/service-menu/list

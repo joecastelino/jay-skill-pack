@@ -9,6 +9,37 @@ triggers:
 
 # Tekion OpenAPI — Repair Orders, Parts, and APC Portal Scraping
 
+## Search payload shape — the two-hour trap (2026-08-21)
+
+`POST /openapi/v4.0.0/repair-orders:search` takes **`filters`** (a LIST of
+`{field, operator, values}`) — NOT a `filter` dict and NOT a `page` object.
+
+```python
+# ✅ WORKS — returns exactly 1 RO
+{"filters":[{"field":"documentNumber","operator":"IN","values":["566709"]}],
+ "pageSize":50}
+
+# ❌ SILENTLY WRONG — filter is IGNORED, returns the first 20 ROs in the store
+{"filter":{"documentNumber":{"operator":"IN","values":["566709"]}},
+ "page":{"pageNumber":1,"pageSize":5}}
+```
+The bad shape does **not** error. It 200s with 20 unrelated rows, and the first one
+looks plausible enough to burn time on (I chased documentNumber 580460 thinking
+566709 didn't exist). **Tell:** you asked for 1 RO and got exactly your pageSize back.
+
+Valid search fields confirmed at SCT: `documentNumber` ✔, `vin` ✔, `creationTime`
+(BTW, epoch-ms strings) ✔. **`roNumber` returns 0 results** — it is not a field,
+even though the UI calls it the RO number. Use `documentNumber`.
+
+Pagination is `meta.nextPageToken` → echo back as `paginationToken` (there is no
+`pageNumber`). Reference implementation: `~/tekion-reports/sct_menu_sales_api.py::fetch_ros`.
+
+The search result row is a **link envelope**, not the RO: it carries
+`documentNumber`, `documentId`, `status`, `creationTime`, `modifiedTime`, `type`,
+`tagNumber` — and `{link,id}` stubs for jobs/invoices/vehicle/customers. There is
+**no `id`, no `mileageIn`, no `mileageOut`** at this level; `id` is null. Follow
+`documentId` / the sub-links to get mileage, jobs and dollars.
+
 ## Critical correction
 Our existing API key (Don's, `~/tekion-api/config.json`) **DOES have repair-order and parts scope**. Past 403/404 results were caused by **wrong paths**. Tekion v4 uses **colon-action endpoints**, not REST-plural ones:
 
