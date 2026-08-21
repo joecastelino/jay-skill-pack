@@ -22,6 +22,19 @@ Headers from `/tmp/tekion_rec_headers.json` (see `tekion-declined-deferred-servi
 passive XHR-hook re-capture). Store switch = swap `dealerId` + `tek-siteId: -1_<id>` only.
 $ are **CENTS** → /100. Offset pagination is fine at day granularity (<10K rows).
 
+### STEP ZERO: the header file WILL be 401-stale between runs
+Symptom: `deferred_by_advisor_daily.py` prints `retry 1..5 HTTP Error 401` then
+`RuntimeError: failed`. This is expected any time the Tekion session has refreshed —
+it is NOT a broken script. Re-capture headers BEFORE debugging anything else:
+1. `:9223` health/url/dealer check (`/eval` `{"js": "..."}`, key is `js`).
+   Note `curl http://127.0.0.1:9223/status` does not exist and will HANG the terminal tool — use
+   `/health`, `/url`, `/eval` from `execute_code` + urllib, never curl in a shell.
+2. Arm the XHR hook (override open/setRequestHeader/send, stash `{u,h}` for any `/api/` with >3 headers).
+3. **Click a refetch button on whatever page is already loaded** (Opcode List → `Reset`).
+   Passive polling and the `history.pushState` soft-nav both caught ZERO on an idle page (2026-08-20);
+   the button click captured in ~4s. Full detail in `tekion-declined-deferred-services-report`.
+4. Merge over the old file, re-run the pull. Whole recovery ≈ 90s.
+
 ## CRITICAL: the index lags ~1 day
 The deferred-services index rebuilds nightly (~11:45 PM). **Today always returns 0 at all 7 stores**
 (verified 2026-08-18: today=0 everywhere, yesterday=SCT 97 / BC 46 / BT 289 / SV 19 / TL 125 / AR 4 / VC 28).
@@ -40,6 +53,19 @@ Note some ids resolve to non-advisor personas (e.g. BC `8c0d2da8…` = Dale Alex
 
 ## Reference run (BC / 1251, Mon 8/17/2026)
 46 declined lines · 20 ROs · $23,179.47 · 21 Critical. Michael Reyes #1 ($6,233).
+
+## Reference run (BC / 1251, Wed 8/19/2026)
+25 declined lines · 16 ROs · $21,658.61 · 6 Critical. Juan Ramirez #1 ($6,793.43).
+Trailing-7 peak was Fri 8/14 at $54,931.33 — daily volume swings hard, so a low day is
+not evidence of a pull failure. Always sanity-check the day against the trend panel.
+BC advisor set as of 8/2026: Juan Ramirez, Erik Mercado, Houa Moua, Jacob Debussey,
+Michael Reyes, Jeremia Navarro (+ Dale Alexander, non-advisor, see below).
+
+## Non-advisor personas in the ranking
+BC `8c0d2da8…` = **Dale Alexander, INVENTORY_MANAGER** — recurs as RO primary advisor with
+$0-priced lines. He is NOT a writer. The scripts keep him (he legitimately holds the RO), but
+**call it out explicitly when presenting to Joe** and offer to filter non-advisor personas —
+an unexplained $0.00 row at the bottom of an advisor ranking reads as a bug.
 
 ## Email delivery (via Stacey)
 Route report emails through Stacey (email-agent) on the bridge — never Jay's direct SMTP.

@@ -24,6 +24,43 @@ each advisor sold on"). For PARTS reports specifically, "by advisor" means:
 Always build BOTH pages/sections into one PDF from the start for any
 parts-sales-by-advisor ask. Don't ship summary-only and wait for a correction.
 
+## V2 PIPELINE — USE THIS (rebuilt 2026-08-20, tag-parameterized, 3 clean steps)
+The 2026-08-18 one-off scripts (`build_bt_filter_report.py`,
+`render_bt_cabin_air_ro_detail.py`) are SUPERSEDED. Rebuild used three small
+tag-parameterized scripts in `/home/itadmin/tekion-reports/cabin-air-filter-bt/`
+so any date range is one command each:
+
+```sh
+cd /home/itadmin/tekion-reports/cabin-air-filter-bt
+python3 pull_bt_filters.py   2026-08-01 2026-08-21 mtd0820      # start, end(EXCLUSIVE), tag
+python3 enrich_bt_filters.py mtd0820
+python3 render_bt_filters.py mtd0820 "Month to Date — August 1–20, 2026"
+```
+Outputs `bt-{rows,summary,classification}-<tag>.json` +
+`BT-Cabin-Air-Filter-By-Advisor-<tag>.{pdf,png,csv}`. The renderer prints a
+`CHECK units N == summary N | rev X == X` line every run — if it doesn't match,
+stop and fix the join, don't ship.
+
+### Ledger pagination: use the `start` OFFSET — time-bisection is NOT needed
+Big simplification found 2026-08-20. The internal
+`POST /api/parts/activity-log/u/search` ledger **does** paginate via a `start`
+offset with page size 500. Verified exact on BT: offsets 0/500/1000 returned
+500/500/387 = 1387 rows, and 1387 UNIQUE ids == reported `total` 1387 (no dupes,
+no drops). The older `tekion-part-sales-ledger-report` note that "pageNumber is
+ignored, must recursively bisect the time window" applies to the `pageNumber`
+param only — **try `start` first**, and only fall back to time-window bisection
+if unique-id count != `total`. Always assert that equality before trusting a pull.
+
+### Zero-OpenAPI-quota data path
+- Sales data: internal activity-log ledger (headers reused from
+  `/home/itadmin/sct-physical-2025/api-headers.json`, just override
+  `dealerId` and `tek-siteId` — BT = `1249` / `-1_1249`). No browser needed,
+  no OpenAPI quota burned.
+- Enrichment: OpenAPI `/repair-orders:search` batched by `documentNumber`
+  returns BOTH the OPCODE tags (menu vs à la carte classification) and
+  `assignee` (advisor) on the same free call — one pass, no per-RO fan-out and
+  no `users/{id}` name resolution needed.
+
 ## Data pipeline (BT cabin/air filter example, dealer 1249)
 Working directory: `/home/itadmin/tekion-reports/cabin-air-filter-bt/`
 
@@ -94,6 +131,43 @@ Script: `/home/itadmin/tekion-reports/cabin-air-filter-bt/render_bt_cabin_air_ro
   fresh on a new page after that spillover. Don't treat page count growing
   past the advisor count as a bug — verify by extracting each page's text and
   checking which advisor-header lines start which page indices.
+
+## Page-1 must be SELF-CONTAINED (fixed 2026-08-20)
+Page 1 = KPI row + ranked advisor table + top-menu-package strip + footnote,
+all on ONE page. Failure mode hit: rendering the top menu packages as a
+vertical 2-column table pushed the definitions footnote onto page 2, so page 2
+opened with orphaned footnote text instead of the "Repair Order Detail" header.
+Fix that worked — render the menu packages as a **compact horizontal strip**
+capped at 6 opcodes (two rows: opcode row in `Courier-Bold` 7.5pt, units row in
+`Helvetica-Bold` 12pt RED on LIGHT, `colWidths=[1.2*inch]*len(tops)`, centered,
+white grid). Chose the visual redesign over shrinking the advisor table.
+Verify after every layout change with BOTH:
+- `p1 has footer: True` (grep page-1 extracted text for the footnote), and
+- page-2 first lines == `['Repair Order Detail — By Service Advisor', '<store> · <period>']`,
+then a `vision_analyze` pass on the page-1 PNG.
+Trimming `top_menu_opcodes[:8]` → `[:5]` alone did NOT fix it — the table shape
+was the problem, not the item count.
+
+### Draft-only ask to Stacey — the prompt shape that worked first try (2026-08-20)
+Invoke via `execute_code` + `subprocess.run([...])` argv list (NOT the top-level
+`terminal` tool — parens/quotes in the message break it), with
+`timeout 600` (a PDF+CSV+inline-PNG draft build takes ~135s; the 180s
+foreground cap causes duplicate drafts on retry). Message must contain, in order:
+1. Hard stop up front: "Create a Gmail DRAFT ONLY... DO NOT SEND. Do NOT call
+   SMTP, do NOT call any send path, do NOT use X-GM-RAW send. Create the draft
+   via imap.append() into [Gmail]/Drafts ONLY."
+2. "Override any hardcoded report-recipient default" + explicit `TO:` — Stacey
+   has store-report recipient defaults (Kevin/Tony/Ruben/Sean) that will
+   hijack a Joe-only draft.
+3. Body spec as numbered items with the literal numbers to print.
+4. Inline PNG demanded explicitly as a **base64 data-URI img tag in the middle
+   of the body**, with the note "This is required - a prior draft missed it."
+5. Absolute attachment paths.
+6. Terse verification one-liner to echo back:
+   `TO=<addr> | INLINE_PNG=<y/n> | PDF=<y/n> | CSV=<y/n> | SENT=<y/n> | IN_DRAFTS=<y/n>`
+Then INDEPENDENTLY confirm — `himalaya envelope list -a personal -f
+"[Gmail]/Drafts" -s 5` (draft present) AND `-f "[Gmail]/Sent Mail" -s 3`
+(nothing went out, and no duplicate drafts). Stacey's self-report alone is not proof.
 
 ## Delivery via Stacey (draft-only)
 Route through Stacey (`agent-to-agent-bridge`) as usual — background/`nohup`

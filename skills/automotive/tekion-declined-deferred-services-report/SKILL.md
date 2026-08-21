@@ -83,6 +83,29 @@ If the armed hook catches nothing in ~2 min (page truly idle, e.g. parked on opc
 2. Still nothing → SPA soft-nav (keeps hooks alive): `history.pushState({},'','/ro/opcode'); window.dispatchEvent(new PopStateEvent('popstate',{state:{}}))` — the route change fires XHRs within seconds (captured `groupFilter/OPCODE_LIST/filter/preference/list` headers this way; any >3-header /api/ request works for the recommendation/search auth).
 Also note :9223 /eval takes `{"js": "..."}` (key is `js`, not code/expr/expression).
 
+### ⚠️ BOTH nudges above can catch ZERO — the reliable fix is a REFRESH BUTTON (verified 2026-08-20)
+Real run: `/tmp/tekion_rec_headers.json` was 401-stale, :9223 was parked on `/ro/opcode` (Opcode List,
+2,066 results, authenticated, dealer 876). Armed the hook → **polled 12× / 60s and captured 0 XHRs**.
+The `focus` nudge did nothing. The `history.pushState('/ro/opcode')` soft-nav ALSO did nothing —
+**because the page was ALREADY on `/ro/opcode`, so it wasn't a route change at all**. If you use the
+pushState trick, push a route the SPA is NOT currently on (check `/url` first) or it's a no-op.
+
+**What worked instantly:** click a visible refetch control on whatever page is already loaded.
+On the Opcode List page that's the toolbar **`Reset`** button:
+```python
+api("/click","POST",{"text":"Reset"})   # plain text click works, no /mouse needed
+time.sleep(4)
+api("/eval","POST",{"js":"JSON.stringify((window.__jayHdrs||[]).map(x=>x.u))"})
+# -> ["https://app.tekioncloud.com/api/service-module/u/opcode/search"]
+```
+Headers captured off `opcode/search` **replay fine on `recommendation/search`** (re-confirmed) — any
+`/api/` request with >3 headers carries the same auth set. So: DON'T navigate to the Deferred Services
+report just to re-capture; hook + hit whatever Reset/Search/Refresh button is already on screen.
+
+Merge (don't blind-overwrite) the new dict over the old file so no key is lost, then `json.dump` to
+`/tmp/tekion_rec_headers.json`. Captured `dealerId` will be whatever store :9223 sits on (876 here) —
+irrelevant, the pull scripts swap `dealerId`/`tek-siteId` per target store (pulled BC/1251 fine).
+
 ## Aggregation gotchas
 - **$ are CENTS** — divide by 100 (forgetting = $27.8M cabin filters).
 - `concern` is FREE TEXT — same service appears under many wordings (e.g. SCT writes "CUSTOMER AUTHORIZED REPLACEMENT OF CABIN AIR FILTER", BT writes "REPLACE CABIN AIR FILTER"). For "most declined service" bucket with regex categories (cabin filter / engine filter / tires / alignment / brakes / battery / fluid exchanges / wipers...), don't rank raw strings.
