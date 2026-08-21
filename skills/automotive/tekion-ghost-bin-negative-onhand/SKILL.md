@@ -290,6 +290,13 @@ BEFORE flagging it as a missed transfer:
   itself is benign, yet the stale companion negative (2418 = −2) was still sitting there
   uncorrected from prior runs. Report the recurrence count and the unresolved companion, not the
   increase.
+- **STATUS UPDATE 2026-08-20:** 31532 **BROKE ITS ACCELERATION — flat at −56** (first non-worsening
+  day after 6 straight); 04500-1 −117→**−119**; 87139-42040 −11→**−12** (resumed after 3 flat days);
+  87139-YZZ09 **flat −22 for 13 days**; 17801-F4010 5006 unchanged at 4 but companion 2418 STILL −2
+  (Total 2 vs bin 4 — the bin-vs-Total tell still fires even with no diff, so open it every run even
+  when the diff is silent); 87139-YZZ93 5007 41→29 reconciled clean (29+30=59 ✓, benign churn).
+  Negatives held at 26 for a 3rd consecutive day; 5005 = 11 rows, 5007 = 7 rows and still owns 4 of
+  the 6 deepest. Only 3 diffs total out of 174 rows — a very quiet day is normal, don't hunt for more.
 - **STATUS OF TRACKED MULTI-DAY ESCALATIONS (as of 2026-08-19) — read before re-deriving history:**
   - **31532** (5001, Primary=SP-ORD qty 0, companion 2615 qty 0): −20 flat July→8/13 → −25
     (8/14) → −29 (8/15–8/17) → −43 (8/18) → **−56 (8/19, −13 more)**. Day 6 and STILL

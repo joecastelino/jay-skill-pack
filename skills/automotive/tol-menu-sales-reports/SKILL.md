@@ -765,6 +765,21 @@ unnecessary per the 8/17 note. Hyphen-instead-of-em-dash subject tactic held aga
 Running the verification asks via `execute_code` + `subprocess.run([...])` with an argv
 LIST (never a shell string) continues to sidestep every quoting/paren/`&` pitfall.
 
+## (8/20 8:05PM, Opened) Clean one-shot; reported UID was WRONG but Stacey self-corrected
+Hand-off returned in 100s (no exit-124), draft correct FIRST TRY with TRUE dedupe (noon draft
+found and deleted on her own). All 3 verification asks returned FIRST try with "use raw IMAP,
+NOT the Gmail API" leading: subject-list 59s, MIME part-listing 117s, Sent-check 27s.
+BOGUS-ID VARIANT: her save confirmation said "Draft UID: 97", and the subject-list ALSO showed
+`97 | TOL Menu Sales - Opened (08/20/2026)` — but when asked to part-list UID 97 she replied
+"UID 97 does not exist in [Gmail]/Drafts. The draft ... is actually UID 42550" and listed the
+correct MIME anyway (multipart/mixed > related > alternative(text/plain+html) + image/png
+Content-ID=<scorecard> + application/pdf). So even the ids in her SUBJECT-LIST output can be
+her own himalaya numbering rather than real IMAP UIDs — always phrase the part-listing ask as
+"UID N (subject '<exact subject>')" so she can self-correct off the subject when the id misses.
+Sent-check = 4 hits, all old em-dash-era sends (06/30-07/03), zero today = no leak.
+Draft stack back up to 22 (07/31-08/20), including the 08/02 true-duplicate pair (ids 21/23)
+which has REAPPEARED after looking cleared on 8/18/8/20-noon — flag to Joe, don't auto-delete.
+
 ## Backgrounding the CLOSED daily-append run — don't over-engineer (learned 2026-08-14 8:05PM)
 The default (non-`--seed`) `tol_menu_sales_closed_mtd.py` run is a light daily-append —
 it typically finishes in well under a minute (8/14: ~10-15s for 158 closed ROs, 1 new
