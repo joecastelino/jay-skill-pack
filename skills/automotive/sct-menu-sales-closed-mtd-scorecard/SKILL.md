@@ -163,6 +163,29 @@ Work dir: `/home/itadmin/tekion-reports`
      ambiguities in a single call).
    - Then do a final read-only confirm scoped to the NEW message UID:
      `TO=<addr> | TS=<ts> | PDF=<YES filename / NO> | TOTAL=<$>`.
+   - ⚠️ **The em-dash in the subject causes FALSE "GENUINELY-UNSENT" verdicts.**
+     Verified 2026-08-20: verify #1 returned a clean
+     `TO=jcastelino@... | TS=18:08 | PDF=YES SCT-...-2026-08-20.pdf | TOTAL=$42,841.05`,
+     but a follow-up asking her to count messages matching the *exact* subject
+     string `'Closed MTD Performance Report — SCT 8/20/26'` came back
+     `SCOPED_DRAFTS=0 | SENT_COPIES=0 | VERDICT=GENUINELY-UNSENT` — flatly
+     contradicting the first check, on a message that HAD in fact gone out.
+     Her subject matcher does not reliably match the `—` (U+2014) em-dash, so
+     an exact-subject scoped search silently returns zero hits. **Never re-send
+     on a lone `SENT_COPIES=0` / `GENUINELY-UNSENT` answer** — that is how you
+     double-mail Joe. Tie-break with a punctuation-insensitive query, which
+     resolved it first try:
+     ```
+     READ-ONLY, send nothing. Ignore subject punctuation/em-dashes. Search
+     Sent for ANY message sent TODAY to <addr> whose subject mentions
+     'Closed MTD'. List each as: SENT | TS=<HH:MM> | SUBJ=<subject> |
+     PDF=<attachment filename or NONE>. If none, reply exactly: NONE-IN-SENT
+     ```
+     Rule of thumb: always phrase Sent-folder verifies with a short ASCII-only
+     subject fragment (`Closed MTD`) rather than the full em-dashed subject.
+   - Also note `DRAFTS=20+` on the broad verify is just her whole Drafts folder
+     (Stacey accumulates many unrelated drafts), NOT copies of this report —
+     scope any draft count to an ASCII subject fragment before acting on it.
    - Leave the broken first copy in Sent — Joe gets two emails, one good; a
      duplicate is far better than a recall attempt. Note it in the summary.
 
