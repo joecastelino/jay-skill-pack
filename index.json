@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-21T09:45:27",
+ "generated": "2026-08-21T10:00:51",
  "skill_count": 183,
  "skills": [
   {
@@ -7,7 +7,7 @@
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 243,
+   "times_used": 244,
    "last_used": "2026-08-21"
   },
   {
@@ -79,7 +79,7 @@
    "path": "automotive/tekion-quotes-menu-price-diagnosis",
    "category": "automotive",
    "description": "Diagnose a Tekion Service Menu pricing problem (e.g. \"a rotation is charging $449.45\") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLODE the menu into individual opcodes using the \"Add Menu Services as separate operations\" setting to find which opcode carries the bad price and its labor-rate method (Fixed vs Service Catalog Pro Dynamic Pricing). Use when Joe flags a wrong/inflated price on a maintenance menu line for a specific RO/vehicle.",
-   "times_used": 39,
+   "times_used": 40,
    "last_used": "2026-08-21"
   },
   {
@@ -307,6 +307,14 @@
    "last_used": "2026-08-21"
   },
   {
+   "name": "tekion-menu-missing-services-diagnosis",
+   "path": "automotive/tekion-menu-missing-services-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose a Tekion service-menu ticket where a manager/advisor says the menu is \"missing items\", \"missing services\", \"the service didn't show up\", or the package looks short \u2014 i.e. WRONG CONTENT, not wrong price. Differential diagnosis across the 4 known root causes (row tier-coverage gap, wrong baseSystemInterval stamp, row-scope miss, inert Modify-System-Services entry), all readable over the API without a browser. Sibling of tekion-quotes-menu-price-diagnosis (that one = wrong DOLLARS; this one = missing LINES).",
+   "times_used": 8,
+   "last_used": "2026-08-21"
+  },
+  {
    "name": "tekion-parts-sold-by-source-report",
    "path": "automotive/tekion-parts-sold-by-source-report",
    "category": "automotive",
@@ -337,14 +345,6 @@
    "description": "Build an \"actual tech clocked time vs billed time BY OPCODE\" report (over-clock / unapplied-time-at-opcode-grain) for any Tekion store. Uses the internal rosearchservice visibility-dashboard TECH_CLOCK datasource (the engine behind the custom \"Ro Actual Time Report\"), which carries opcode on every clock punch \u2014 something the standard Tech Performance report cannot do (its Unapplied Hours is per-technician only). Verified SV (826) 2026-07-20.",
    "times_used": 7,
    "last_used": "2026-07-30"
-  },
-  {
-   "name": "tekion-menu-missing-services-diagnosis",
-   "path": "automotive/tekion-menu-missing-services-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose a Tekion service-menu ticket where a manager/advisor says the menu is \"missing items\", \"missing services\", \"the service didn't show up\", or the package looks short \u2014 i.e. WRONG CONTENT, not wrong price. Differential diagnosis across the 4 known root causes (row tier-coverage gap, wrong baseSystemInterval stamp, row-scope miss, inert Modify-System-Services entry), all readable over the API without a browser. Sibling of tekion-quotes-menu-price-diagnosis (that one = wrong DOLLARS; this one = missing LINES).",
-   "times_used": 7,
-   "last_used": "2026-08-21"
   },
   {
    "name": "tekion-opcode-create",
