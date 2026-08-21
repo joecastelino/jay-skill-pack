@@ -780,6 +780,28 @@ Sent-check = 4 hits, all old em-dash-era sends (06/30-07/03), zero today = no le
 Draft stack back up to 22 (07/31-08/20), including the 08/02 true-duplicate pair (ids 21/23)
 which has REAPPEARED after looking cleared on 8/18/8/20-noon — flag to Joe, don't auto-delete.
 
+## (8/20 8:05PM, Closed MTD) Clean one-shot; hyphen-subject made the OLD em-dash draft invisible to search
+Hand-off returned in 114s (no exit-124), draft correct FIRST TRY (multipart/related >
+alternative(text/plain+html) + image/png Content-ID=<scorecard> 135KB + application/pdf 103KB).
+All 3 verification asks returned FIRST try with "use raw IMAP, NOT the Gmail API" leading:
+subject-list 28s, MIME part-listing 37s, Sent-check 72s.
+NEW WRINKLE from the hyphen tactic: a literal-hyphen subject search on
+"TOL Menu Sales - Closed MTD" only matched 2 of the stacked drafts — the current one plus an
+old em-dash "August 1-2" one that Stacey flagged herself; the other prior-day em-dash drafts
+didn't surface. That's the expected consequence of mixing hyphen and em-dash subjects across
+days, and it's harmless (dedupe only cares about TODAY's exact subject), but don't read a
+small draft count as "Joe cleared the backlog" — search the SHORT stem "TOL Menu Sales Closed"
+if you actually want the full stack count.
+BOGUS-UID VARIANT recurred (same as 8/20 Opened): her save confirmation and the subject-list
+both said UID 98, but the part-listing ask replied "UID 98 was wrong — the draft lives at
+actual IMAP UID 42551" and listed the correct MIME anyway. Phrasing the part-listing ask as
+`UID N (subject "<exact subject>")` + "if that UID is wrong, find it by that exact subject
+instead" lets her self-correct in one shot — keep using that wording.
+Stacey also self-checked the numbers against the JSON before building, and noted the
+"MASTER file is stale (0 menus)" while doing so — that's her looking at the wrong master
+(she checks a different path); the real
+`data/tol-menu-closed-mtd-MASTER-2026-08.json` was fine. Ignore that remark.
+
 ## Backgrounding the CLOSED daily-append run — don't over-engineer (learned 2026-08-14 8:05PM)
 The default (non-`--seed`) `tol_menu_sales_closed_mtd.py` run is a light daily-append —
 it typically finishes in well under a minute (8/14: ~10-15s for 158 closed ROs, 1 new
