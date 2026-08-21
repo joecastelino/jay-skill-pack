@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-21T06:15:06",
+ "generated": "2026-08-21T06:30:37",
  "skill_count": 182,
  "skills": [
   {
@@ -403,20 +403,20 @@
    "last_used": "2026-08-18"
   },
   {
+   "name": "bt-menu-sales-reports",
+   "path": "automotive/bt-menu-sales-reports",
+   "category": "automotive",
+   "description": "Run the Blackstone Toyota (BT, dealer 1249) Menu Sales scorecards \u2014 Daily Opened, Daily Closed, and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI. The 4th sibling of the SCT/Kevin, BC/Ruben, and TOL/Sean pipelines. Use for any \"BT menu report\", \"Blackstone Toyota menu sales\", or Tony Garcia menu-sales report request. (Menu REBUILD work is a different skill \u2014 bt-tony-menu-rebuild.)",
+   "times_used": 5,
+   "last_used": "2026-08-21"
+  },
+  {
    "name": "tekion-alignment-by-advisor-report",
    "path": "automotive/tekion-alignment-by-advisor-report",
    "category": "automotive",
    "description": "Build a Tekion \"alignments sold this period, broken down by service advisor\" report for ANY of the 7 AMG stores from the LIVE OpenAPI \u2014 counting BOTH dedicated alignment opcodes AND alignments bundled inside a service menu/combo op. Produces a 2-page scorecard (page 1 advisor ranking, page 2 RO-level chip detail) and optionally has Stacey draft it. The opcode set is PER-STORE \u2014 never reuse one store's alignment codes on another. Verified live at TL Toyota of Lancaster dealer 1092 on 2026-06-29 (105 alignments, 102 dedicated plus 3 bundled, across 104 ROs, June MTD). Use when Joe asks for an \"alignment report\" or \"alignment count by advisor\" for a store, or any single-opcode \"how many of X did we sell, by advisor\" report.",
    "times_used": 5,
    "last_used": "2026-07-01"
-  },
-  {
-   "name": "bt-menu-sales-reports",
-   "path": "automotive/bt-menu-sales-reports",
-   "category": "automotive",
-   "description": "Run the Blackstone Toyota (BT, dealer 1249) Menu Sales scorecards \u2014 Daily Opened, Daily Closed, and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI. The 4th sibling of the SCT/Kevin, BC/Ruben, and TOL/Sean pipelines. Use for any \"BT menu report\", \"Blackstone Toyota menu sales\", or Tony Garcia menu-sales report request. (Menu REBUILD work is a different skill \u2014 bt-tony-menu-rebuild.)",
-   "times_used": 4,
-   "last_used": "2026-08-18"
   },
   {
    "name": "hermes-slack-token-recovery",
