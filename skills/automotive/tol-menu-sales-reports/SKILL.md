@@ -780,6 +780,21 @@ Sent-check = 4 hits, all old em-dash-era sends (06/30-07/03), zero today = no le
 Draft stack back up to 22 (07/31-08/20), including the 08/02 true-duplicate pair (ids 21/23)
 which has REAPPEARED after looking cleared on 8/18/8/20-noon — flag to Joe, don't auto-delete.
 
+## (8/21 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, zero corrections, correct UID
+Hand-off returned in 136s (no timeout), draft UID 42573 correct FIRST TRY (multipart/mixed >
+related > alternative(text/plain 502B + text/html 962B) + image/png Content-ID=<scorecard>
+80,124B + application/pdf 69,108B). No dedupe needed. All 3 verification asks returned FIRST
+try with "use raw IMAP, NOT the Gmail API" leading: subject-list 47s, MIME part-listing 59s,
+Sent-check 35s. Notably the reported/listed UID 42573 was CORRECT this time (no bogus-ID
+self-correction needed) — but keep phrasing the part-listing ask as `UID N (subject "<exact>")`
++ "if that UID is wrong, find it by that exact subject instead" since it costs nothing.
+Sent-check via the SHORT subject stem returned 4 hits, all old em-dash-era sends (06/30-07/03),
+zero today = no leak. Draft stack down to 3 total TOL drafts (08/20 Opened, 08/20 Closed MTD,
+08/21 Opened) — the 08/02 duplicate pair is gone again. Stacey noted mid-run that a raw
+"cid:scorecard byte search missed because the HTML body gets content-transfer-encoded" — that
+is a NORMAL false-negative on her own self-check (quoted-printable/base64 encoded HTML part),
+not a problem; the part-listing verification is what settles it.
+
 ## (8/20 8:05PM, Closed MTD) Clean one-shot; hyphen-subject made the OLD em-dash draft invisible to search
 Hand-off returned in 114s (no exit-124), draft correct FIRST TRY (multipart/related >
 alternative(text/plain+html) + image/png Content-ID=<scorecard> 135KB + application/pdf 103KB).

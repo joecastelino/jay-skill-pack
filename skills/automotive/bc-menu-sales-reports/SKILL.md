@@ -734,6 +734,36 @@ Left the sibling Daily Closed 8/20 draft (42540) untouched — different report
 type, not a duplicate; Sent folder's two `BC 8/20` hits were Stacey's separate
 auto-sent Daily Opened reports.
 
+## 2026-08-21 noon Daily Closed run — clean, 8th consecutive "N dollars" build; Stacey self-corrected but did NOT duplicate
+10 menus, $1,253.13 labor / $559.46 parts = $1,812.59 (Humberto Dominguez 3 /
+$854.19, Jacob Debussey 3 / $610.23, Michael Reyes 2 / $126.61, Dimetri Reynoso
+1 / $137.70, Houa Moua 1 / $83.86). 42 closed ROs → 10 carried TEK menu opcodes;
+`✓ all candidate ROs scanned`; vision-verified KPI band matched JSON exactly.
+Pull ran via `terminal(background=true)` + a SINGLE `process(action="wait",
+timeout=180)`. Stacey's build: `execute_code` + `subprocess.run` argument list
+wrapped in `timeout 600` → returned cleanly in 176s, no exit-124, terse DONE line
+correct with `TOTAL=$1,812.59`.
+**Refinement to the 8/19-MTD duplicate heuristic**: her reply DID contain
+self-correction text ("The append likely succeeded before the cleanup search
+failed on the em-dash… Let me rebuild cleanly — skip the Unicode search, just
+append"), which per the 8/19 lesson predicts a duplicate — but this time there
+was NO duplicate, because her failure happened in the *cleanup search* step
+BEFORE the IMAP append, so nothing had been appended yet (she checked and
+confirmed "No drafts exist yet" before retrying). So: self-correction text means
+*run the dedupe grep immediately* (still correct), but it does NOT guarantee a
+duplicate — read WHERE in her pipeline the failure occurred. A crash before the
+append leaves nothing behind; a crash/retry after the append leaves an extra.
+Note her em-dash cleanup-search failure is a recurring wrinkle: the subject's
+em-dashes break her IMAP search step, so she skips dedupe search and blind-
+appends — which is exactly why Jay's own dedupe grep is mandatory every run.
+Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe,
+Subject auto-decoded with em-dashes, inline PNG **byte-for-byte identical**
+(163,633 bytes), PDF **byte-for-byte identical** (54,625 bytes), all 8 figures
+present exactly once, `<b>$1,812.59</b>` bold, footer + "Ruben," greeting
+present, zero ' dollars'/USD leftovers (checked after stripping the data URI),
+exactly 1 draft (42574), Daily-Closed Sent count 0. The only `BC 8/21` Sent hit
+was Stacey's separate auto-sent Daily Opened report (14160) — not a leak.
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
