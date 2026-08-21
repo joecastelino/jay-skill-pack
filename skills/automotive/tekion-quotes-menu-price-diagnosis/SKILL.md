@@ -954,7 +954,15 @@ selected tier (screenshot+vision is the reliable cross-check), not just the doll
 figure. 565663 confirmed Signature genuinely showed only 2 services (same as Basic) —
 so the equal price was real, not stale.
 
-### Root cause + where the fix lives (get Joe's go before any change)
+### ⛔ SUPERSEDED — the 2026-06-26 read of RO 565663 was WRONG (corrected 2026-08-21)
+> Everything in this 10K/$217.10 block was built on the ticket's bogus "12K". The RO's
+> real `mileageIn` is **136,213** (→ 120K package, $554.01), and the actual root cause is
+> **MAKE-SCOPE FALL-THROUGH** (Scion has no row in the menu at all) — see ROOT CAUSE 2
+> below. Keep this block only as a worked example of the tier-read technique; do NOT
+> reuse its conclusion. LESSON: pulling the wrong odometer produced a plausible-but-wrong
+> root cause that sat in this skill for 2 months.
+
+### Root cause + where the fix lives (get Joe's go before any change)  ← superseded, see above
 The upper tiers carry no extra included services for this vehicle's scope. Likely
 either (a) the Basic+/Signature tier columns in this menu's setup have no additional
 services assigned to the Scion tC's vehicle row, or (b) the upper tiers were never
@@ -969,6 +977,53 @@ selected" warning (same MT/AT ambiguity as the 2010 Camry) — note it, but for 
 "all tiers same price" ticket the trim is usually NOT the cause (the equal-price bug is
 a tier-content problem, not a trim problem). Don't let the trim warning derail the
 tier-content diagnosis.
+
+### ⭐⭐⭐ ROOT CAUSE 2 — **MAKE-SCOPE FALL-THROUGH** (Scion tC, SCT, verified 2026-08-21)
+The FASTEST-to-check cause of "all 3 tiers same price," and it is invisible to any
+row-by-row trim walk. **The vehicle's MAKE has no row in that interval menu at all**, so
+it matches NOTHING, falls through to raw factory (SCP) content, and every tier renders
+the identical factory package → same services, same price on Basic/Basic+/Signature.
+
+**CASE:** RO 565663, 2016 **Scion** tC, VIN JTKJF5C79GJ024481, 136,213 mi (ticket said
+"12K" — that was NOT the odometer; always pull real `mileageIn` off the RO, don't trust
+the ticket's interval). Quote @136,213 → 120K package:
+- Basic TEK120000BNM / Basic+ TEK120000VNM / Signature TEK120000PSM — **all $554.01, all
+  the same 4 services** (Engine Air Filter, Spark Plugs, Oil+Filter, Tire Rotation).
+- CONTROL 2016 **Toyota** Corolla @136,213 same 120K menu: $1,195.11 (10 svc) /
+  $1,917.39 (15) / $2,249.39 (18) — ladders correctly.
+Diff between the two = MAKE. That's the whole bug.
+
+**THE ONE-QUERY PROOF (do this FIRST on any "all tiers same price" ticket):** dump every
+menu's row MAKE scope across the store and see if the complaint vehicle's make appears.
+```python
+# after capturing headers (XHR hook) — see BULK MENU-ROW DUMP below
+makes=set()
+for m in menu_ids:                       # from the React-fiber menu list
+    d=get(f'{B}/service-menu/{m}')['data']
+    for r in (d.get('menus') or []):
+        p={x['parameter']:x['value'] for x in (r.get('parameters') or [])}
+        makes.update((p.get('MAKE') or {}).get('makes') or [])
+```
+SCT result: **163 rows across 25 menus, and 'scion' appears on exactly ONE row —
+row 4 of the 7,500 mi menu.** Every other interval (5K,10K,15K,…,120K) is Toyota-only.
+So EVERY Scion at EVERY interval except 7.5K collapses. This is a fleet-wide gap for a
+whole make, not a one-vehicle glitch — sizing it takes ~8s over the API.
+
+**Why the tiers collapse specifically:** with no matching row there is no
+`priceTierMappings` override, so nothing supplies per-tier `TOTAL_MENU_PRICE` and no
+tier-specific services are layered on. Factory content is tier-agnostic → three
+identical cards. Same end-state signature as the SUM_OF_SERVICES-with-no-add-ons case
+below, but a completely different cause and a different fix surface.
+
+**Fix (needs Joe's go — live Published menus):** add a `scion` row to each interval menu,
+cloned from the Toyota ALL_MODELS row for that interval. NOTE Scion is a dead badge
+(2004-2016) and these VINs decode `make=scion` / `oem=toyota` / `brand=toyota` — an
+alternative is mapping Scion VINs onto the Toyota rows, which is one change instead of 24.
+Ask Joe which he wants before touching anything.
+
+**GENERALIZE:** any make that came in through an acquisition, a rebadge, or a dead brand
+(Scion, and check Cadillac/Buick/GMC at BC — its rows are Chevrolet-only) is a candidate.
+Run the make-census whenever a menu ticket involves a non-primary badge.
 
 ### ⭐⭐ VERIFIED CASE + THE ATTRIBUTE-BUCKET ROOT CAUSE (2023 Sienna hybrid, SCT, 2026-07-15)
 Kevin's ticket: "Sienna menus broken, same price on all three tiers." Full diagnosis worked
@@ -1046,6 +1101,24 @@ included-service variant), NOT the opcode default and NOT Opcode Management.
 opcode/catalog labor price (Intervals & Opcodes tab), NOT a flat tier override.
 
 ## Pitfalls
+- **TIER CLICKS: synthetic MouseEvents SILENTLY NO-OP on the tier tabs** (verified SCT
+  2026-08-21). Dispatching mousedown/mouseup/click on the tier label's ancestor returned
+  'ok' but the Package OpCode stayed `TEK…BNM` through 4 retries on all three tiers —
+  which fakes a PERFECT "all tiers identical" result and would have produced a false
+  positive if I hadn't checked the opcode. **Use the server's real `/mouse {x,y}` endpoint
+  on the tier label coords instead** (tabs sit at y≈325: Basic x≈622, "Basic +" x≈718,
+  Signature x≈829) — flips the opcode first try. Rule: a tier reading is only valid once
+  `Package OpCode` ends in the matching suffix (BNM/VNM/PSM); equal prices across tiers
+  where the opcode never changed = your clicks failed, NOT a menu bug.
+- **Interval rail may show ONE card only.** At 136,213 mi the rail rendered just "120K mi
+  Maintenance Package" (no carousel) — the card-regex + synthetic click works fine there;
+  it's the tier tabs that need real mouse.
+- **VIN decode confirms the make** — `[class*=singleValue]` read ["Scion","2016","tC"],
+  which is what exposed the make-scope gap. Always read the decoded make/year/model
+  singleValues after VIN entry; don't assume the RO's make string.
+- **Trust the RO's `mileageIn`, not the ticket's interval text.** The ticket said "12K";
+  actual odometer was 136,213 (→120K package). Quoting at 12,000 would have tested the
+  wrong menu entirely and "not reproduced" the bug.
 - `/ro/service-menu` viewer may not resolve a VIN; Quotes does — use Quotes.
 - Tier total strings can split across DOM nodes; regex the innerText for `$X.XX`.
 - The package list shows totals only; per-line price is ONLY obtainable by the
