@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-20T17:45:43",
+ "generated": "2026-08-20T18:00:52",
  "skill_count": 182,
  "skills": [
   {
@@ -23,7 +23,7 @@
    "path": "automotive/agent-to-agent-bridge",
    "category": "automotive",
    "description": "Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine.",
-   "times_used": 95,
+   "times_used": 97,
    "last_used": "2026-08-20"
   },
   {
@@ -387,6 +387,14 @@
    "last_used": "2026-07-08"
   },
   {
+   "name": "tekion-parts-sales-by-advisor-report",
+   "path": "automotive/tekion-parts-sales-by-advisor-report",
+   "category": "automotive",
+   "description": "Build a Tekion parts-sales-by-service-advisor report (e.g. cabin/engine air filters, or any specific part category) for any AMG store \u2014 units, revenue, menu-attach, ranked bar-chart summary AND full RO-level line-item detail per advisor. Use whenever Joe asks for a parts sales report \"broken down by advisor\" or \"like the alignment report\" \u2014 he means BOTH a summary table AND the underlying RO detail, not just aggregate numbers.",
+   "times_used": 6,
+   "last_used": "2026-08-20"
+  },
+  {
    "name": "tekion-ro-text-keyword-scan",
    "path": "automotive/tekion-ro-text-keyword-scan",
    "category": "automotive",
@@ -401,14 +409,6 @@
    "description": "Build a Tekion \"alignments sold this period, broken down by service advisor\" report for ANY of the 7 AMG stores from the LIVE OpenAPI \u2014 counting BOTH dedicated alignment opcodes AND alignments bundled inside a service menu/combo op. Produces a 2-page scorecard (page 1 advisor ranking, page 2 RO-level chip detail) and optionally has Stacey draft it. The opcode set is PER-STORE \u2014 never reuse one store's alignment codes on another. Verified live at TL Toyota of Lancaster dealer 1092 on 2026-06-29 (105 alignments, 102 dedicated plus 3 bundled, across 104 ROs, June MTD). Use when Joe asks for an \"alignment report\" or \"alignment count by advisor\" for a store, or any single-opcode \"how many of X did we sell, by advisor\" report.",
    "times_used": 5,
    "last_used": "2026-07-01"
-  },
-  {
-   "name": "tekion-parts-sales-by-advisor-report",
-   "path": "automotive/tekion-parts-sales-by-advisor-report",
-   "category": "automotive",
-   "description": "Build a Tekion parts-sales-by-service-advisor report (e.g. cabin/engine air filters, or any specific part category) for any AMG store \u2014 units, revenue, menu-attach, ranked bar-chart summary AND full RO-level line-item detail per advisor. Use whenever Joe asks for a parts sales report \"broken down by advisor\" or \"like the alignment report\" \u2014 he means BOTH a summary table AND the underlying RO detail, not just aggregate numbers.",
-   "times_used": 5,
-   "last_used": "2026-08-20"
   },
   {
    "name": "bt-menu-sales-reports",
