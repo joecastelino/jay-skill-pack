@@ -557,6 +557,14 @@ To remove a stale brain page immediately (don't wait for 3 AM orphan-purge): `gb
 **(superseded) OPEN DECISION raised 2026-06-25:** two models for the searchable\nmemory layer — (1) GBrain as the SINGLE embedded search layer: backfill all ~38 automotive skills +\nmemory entries into GBrain pages and route manuals there too (one query searches everything; Jay's\nrecommendation; cheap duplication) vs (2) keep layers separate (skills stay in skill system, GBrain\nholds only sessions + manuals + concepts). TWO TODOs flow from whichever is chosen: (a) BACKFILL the\nexisting skills+memory into GBrain as embedded pages; (b) build the TEKION-MANUAL INGESTION PIPELINE\n(PDF/KB article → structured markdown page(s) → capture-session.sh → embedded GBrain pages → linked\nin index.md). Do NOT start the big backfill until Joe picks the model.
 
 ## Pitfalls
+- **`UPGRADE_AVAILABLE` banner pollutes STDOUT on every command (seen 2026-08-21, installed 0.42.21.0,
+  offered 0.46.25.0).** Two lines (`UPGRADE_AVAILABLE 0.42.21.0 0.46.25.0` + `gbrain 0.42... available.
+  Run: gbrain self-upgrade`) are prepended to `gbrain link` / `get` / `orphans` output, so anything that
+  parses the JSON (`{"status":"ok"}`) or the frontmatter must strip them: pipe through
+  `| grep -v -i upgrade` (or `head`/`tail` past them). **Do NOT run `gbrain self-upgrade` from inside a
+  brain-sync cron** — a mid-run version jump would change import/chunk behavior with no chance to verify;
+  raise it to Joe as a separate maintenance task instead. NOTE the skill body cites v0.42.37 behaviors
+  (content-hash import, `list` 42-row cap) while the box actually runs 0.42.21 — those notes still held true.
 - **Run gbrain with `HOME=/home/itadmin`** (the cron HOME). Jay's session HOME differs; both configs
   point at the same DB, but be consistent.
 - **bun is at `/home/itadmin/.hermes/node/bin/bun`** — if `gbrain` errors, this PATH is almost always why.

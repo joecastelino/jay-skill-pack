@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-21T08:46:10",
+ "generated": "2026-08-21T09:00:29",
  "skill_count": 183,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 127,
-   "last_used": "2026-08-20"
+   "times_used": 128,
+   "last_used": "2026-08-21"
   },
   {
    "name": "agent-to-agent-bridge",
@@ -79,7 +79,7 @@
    "path": "automotive/tekion-quotes-menu-price-diagnosis",
    "category": "automotive",
    "description": "Diagnose a Tekion Service Menu pricing problem (e.g. \"a rotation is charging $449.45\") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLODE the menu into individual opcodes using the \"Add Menu Services as separate operations\" setting to find which opcode carries the bad price and its labor-rate method (Fixed vs Service Catalog Pro Dynamic Pricing). Use when Joe flags a wrong/inflated price on a maintenance menu line for a specific RO/vehicle.",
-   "times_used": 36,
+   "times_used": 37,
    "last_used": "2026-08-21"
   },
   {
@@ -419,20 +419,20 @@
    "last_used": "2026-07-01"
   },
   {
+   "name": "tekion-menu-missing-services-diagnosis",
+   "path": "automotive/tekion-menu-missing-services-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose a Tekion service-menu ticket where a manager/advisor says the menu is \"missing items\", \"missing services\", \"the service didn't show up\", or the package looks short \u2014 i.e. WRONG CONTENT, not wrong price. Differential diagnosis across the 4 known root causes (row tier-coverage gap, wrong baseSystemInterval stamp, row-scope miss, inert Modify-System-Services entry), all readable over the API without a browser. Sibling of tekion-quotes-menu-price-diagnosis (that one = wrong DOLLARS; this one = missing LINES).",
+   "times_used": 5,
+   "last_used": "2026-08-21"
+  },
+  {
    "name": "hermes-slack-token-recovery",
    "path": "automotive/hermes-slack-token-recovery",
    "category": "automotive",
    "description": "Fix an AMG Hermes agent that is silent on Slack because its SLACK_BOT_TOKEN/SLACK_APP_TOKEN are missing or wrong in the profile .env \u2014 including recovering LOST tokens from old session transcripts without asking Joe to regenerate them at api.slack.com. Use when an agent's service is running but it never answers Slack messages (Autumn case, 2026-07-14).",
    "times_used": 4,
    "last_used": "2026-07-14"
-  },
-  {
-   "name": "tekion-menu-missing-services-diagnosis",
-   "path": "automotive/tekion-menu-missing-services-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose a Tekion service-menu ticket where a manager/advisor says the menu is \"missing items\", \"missing services\", \"the service didn't show up\", or the package looks short \u2014 i.e. WRONG CONTENT, not wrong price. Differential diagnosis across the 4 known root causes (row tier-coverage gap, wrong baseSystemInterval stamp, row-scope miss, inert Modify-System-Services entry), all readable over the API without a browser. Sibling of tekion-quotes-menu-price-diagnosis (that one = wrong DOLLARS; this one = missing LINES).",
-   "times_used": 4,
-   "last_used": "2026-08-21"
   },
   {
    "name": "tekion-ro-fee-waiver-investigation",

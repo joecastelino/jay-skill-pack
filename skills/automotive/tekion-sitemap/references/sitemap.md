@@ -155,11 +155,23 @@ Harvest at scale: in-page concurrent worker (conc=10) looping partIds, batches o
 | Report Builder | sidebar **RB** |
 | Reports | sidebar **R** |
 
-### Accounting
+### Accounting (VERIFIED SCT 2026-08-21)
 | Workflow | URL / Nav |
 |----------|-----------|
-| Chart of Accounts | App Grid → Chart of Accounts |
-| Financial Statements | App Grid → Financial Statements |
+| Chart of Accounts | ✅ `/accounting/chartOfAccounts/list` (sidebar **CA**). 1,331 accounts at SCT. |
+| **Journal Entries** | ✅ **`/accounting/journalEntry/list`** (camelCase; `/accounting/journalentry/list` also works). Status tabs at y≈146: All / Draft / **Error** (x≈281) / Pending Approval. Virtualized table — parse `body.innerText`, no `.ant-table-row`. Open a row by `/mouse`-clicking the ID leaf cell at x≈344. |
+| JE detail (auto-posting) | `/accounting/journalEntry/transactionId/<txnId>/dealerId/<dealerId>/transactionType/AUTO_POSTING/edit` |
+| **GL Account Transaction Mapping** | ✅ **`/accounting/glaccountmapping/list`** (ALL LOWERCASE). Left-nav accordion: Variable Operations (New/Used Vehicles, F&I, Receivables, Payables) · Fixed Operations (Services, Part & Accessories, Purchase Orders, Warranty Credit, **Others**) · Payment Receipts (Variable Ops, Fixed Ops, Tekion Pay) · Payroll. Cash-holding accounts live under **Others → Fixed Operations (Other)**. |
+| Financial Statements | App Grid → Financial Statements (sidebar **FS**) |
+| Accounting Global Settings / Distribution Accounts | App Grid → search "account" → Settings group |
+
+⚠ **Accounting dead-end URLs (all tested, all waste turns):**
+`/accounting/journal-entry`, `/accounting/journal-entries`, `/accounting/glam` → **silently redirect to chartOfAccounts/list** (looks successful — ALWAYS assert `location.href` after navigate).
+`/accounting/journal/list`, `/accounting/glAccountMapping` (camelCase) → blank page.
+`/accounting/accountSetup`, `/accounting/accountingSettings`, `/accounting/settings/glAccountMapping` → bounce to `/ro/quotes`.
+`/gl/journal-entry` → bounces to `/home`.
+
+Diagnosing JEs stuck in Error → skill **`tekion-journal-entry-error-diagnosis`**.
 
 ### Admin
 | Workflow | URL / Nav |
@@ -190,6 +202,23 @@ Harvest at scale: in-page concurrent worker (conc=10) looping partIds, batches o
   Tekion work through `:9223` HTTP API in `execute_code`. Use `vision_analyze` on a saved
   `/screenshot` PNG (write to `/tmp/...`, the sandbox can't see `/home/itadmin`).
 - Sessions expire ~30 min idle / ~20h hard. Re-login when `t_token` missing.
+- **`:9223` API shapes (easy to get wrong):** `/eval` takes `{"js": "..."}` NOT `{"expression":...}`.
+  `/type` REQUIRES a `selector` — `{"text":"..."}` alone returns **HTTP 400**. Screenshot is
+  **GET** `/screenshot` → `{"screenshot":"<base64>"}`; **POST /screenshot is 404**. There is no `/status`
+  endpoint (use `/health`).
+- **Expandable page-level search fields start at width 0** — click the `.icon-search` magnifier next to
+  them first, then `/type` into the now-visible input. A width-0 input silently swallows typing.
+- **A "successful" navigate can be a redirect.** Several Tekion URLs 200 into a *different* screen
+  (e.g. bad accounting URLs land on chartOfAccounts). Always read back `location.href` after
+  `/navigate` before trusting the page.
+- **Left-nav accordions / virtualized lists:** coordinates shift as sections expand. Always
+  `scrollIntoView({block:'center'})` the target element, RE-READ `getBoundingClientRect()`, then
+  `/mouse` click. A stale coord clicks the previously-selected item and you'll misread the panel as
+  belonging to your target.
+- **Editable vs read-only rows:** in editable (Draft/Error) records, dropdown cells are react-selects
+  (`[class*="tekion-select-b62m3t-container"]`, innerText `"Select"` when empty) and values live in
+  `input.value`; in posted/read-only records the same table renders as plain text. If a value-extraction
+  JS returns empty arrays, you're probably on a read-only record — read `innerText` instead.
 
 ## Global Security Settings (session auto-logout, MFA, IP) — verified via KB 2026-07-23
 - Nav: App Grid → Settings → Core Settings → **Global Security Settings** tile → Default Policy → Configure Policy tab → left pane **Session Management**
