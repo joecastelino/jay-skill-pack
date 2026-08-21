@@ -219,6 +219,26 @@ vanishing from Drafts is usually Joe rejecting it, not a delivery failure — pu
 it from `[Gmail]/Trash`, download its attachment, and render the pages to find
 what he saw. That's how the customer-name overflow bug was actually caught.
 
+## Automating it (Joe's usual next ask after approving a draft)
+Joe reviews one hand-built draft, then says "now automate it." Before wiring a
+cron, get three answers from him: **cadence** (daily MTD / weekly / month-end),
+**recipient** (Joe only, or the store manager too — BT = Tony Garcia
+agarcia@blackstonetoyota.com), and **auto-send vs draft-only**. Don't guess —
+draft-only vs auto-send is the one he cares about most.
+
+Cron shape is just the three tag-parameterized commands with a date-derived tag:
+```sh
+TAG=$(date +mtd%m%d); START=$(date +%Y-%m-01); END=$(date -d tomorrow +%Y-%m-%d)
+cd /home/itadmin/tekion-reports/cabin-air-filter-bt
+python3 pull_bt_filters.py   "$START" "$END" "$TAG"
+python3 enrich_bt_filters.py "$TAG"
+python3 render_bt_filters.py "$TAG" "Month to Date — $(date '+%B 1–%-d, %Y')"
+```
+Then hand the PDF/CSV/PNG paths to Stacey via the bridge. Gate the render on the
+`CHECK units N == summary N` line — abort the email step if it doesn't match
+rather than mailing a broken report. Follow the BT/BC/TOL cron pattern: deliver
+to the store's designated Slack thread and/or Stacey draft, never both blind.
+
 ## Reusability
 This pattern (RO-only ledger join + advisor resolution + summary-then-detail
 PDF) generalizes to any "parts sold by X, broken down by advisor" ask —

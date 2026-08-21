@@ -121,8 +121,20 @@ recalc) **before invoicing**, or they invoice untaxed. Already-DELIVERED/CLOSED 
 manual tax correction. At SCT this was 4 orders (~$248 of the $250.10 exposure sat in 3
 DRAFTs).
 
-⚠️ This is a live financial-control change — **get Joe's explicit go before saving.**
-(In the SCT case Joe had a store user do the uncheck/recheck rather than Jay saving it.)
+### ⚠️ DO NOT APPLY THIS YOURSELF — Joe's standing rule
+
+This is a live financial-control change. **Jay stays read-only (GET / POST-search only) on
+tax + settings screens.** Deliver the diagnosis and the exact click instructions; Joe or a
+store user performs the save.
+
+Joe said it flat out on 2026-08-20 after the fleet was fixed: **"I don't want you to fix
+it."** At SCT he had a store user do the uncheck/recheck; at BT/BC/TOL his people applied
+the same fix from Jay's writeup. Jay's job was verification only. Never assume that
+"I gave you the fix and you didn't object" = approval to save.
+
+**Say the nav path in the user's own menu terms.** Joe pushed back with *"I don't see
+'parts' and then 'settings'"* on a path that didn't exist in his UI. Walk the real screen
+(or give the direct URL) before quoting a breadcrumb — see the tile traps above.
 
 ## "The row is GREYED OUT and I can't change it" (BT, 8/20/2026)
 

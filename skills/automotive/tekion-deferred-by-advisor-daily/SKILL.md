@@ -82,6 +82,10 @@ Then verify independently with `jay-gmail-draft-verification` — confirm labels
 Sent Mail = 0 hits, attachments byte-identical to source files, and the PNG is a real data-URI not a CID stub.
 
 ## Pitfalls
+- **Stale test drafts accumulate.** Each test run leaves a dated draft in `[Gmail]/Drafts`
+  (e.g. "BC Deferred Work by Advisor - Monday 08/17/2026" UID 42447 from the 8/18 run).
+  After verifying a new draft, list Drafts and offer Joe the cleanup of prior-day copies —
+  don't silently trash them.
 - `pdfinfo`/`pdftoppm` are NOT installed — QA extra PDF pages by re-rendering the HTML in Playwright
   and screenshotting a single `.page` div, then `vision_analyze`.
 - Store brand colors/labels live in the `BRAND` dict of the renderer — add new stores there.
