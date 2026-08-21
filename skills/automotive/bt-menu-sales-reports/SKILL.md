@@ -100,4 +100,41 @@ subcommand) and she self-corrected to `himalaya envelope list -f "[Gmail]/Sent
 Mail" -s 50 '...'` plus a raw imaplib cross-check; this is a normal self-healing
 retry, not a failure to flag (same spirit as the TOL em-dash IMAP-search hiccup).
 
+### BEST PATTERN for the bridge call: write a .sh wrapper with a quoted heredoc (2026-08-21)
+Cleanest way to fire BOTH the send hand-off and the verification ask, avoiding every
+known quoting pitfall (`&` false-positive block, literal parens breaking bash, `$`/
+backtick expansion, em-dashes, multi-line):
+
+1. `write_file` a throwaway script, e.g. `/home/itadmin/tekion-reports/_bt_send_<date>.sh`:
+   ```sh
+   #!/bin/bash
+   REAL=/home/itadmin
+   read -r -d '' MSG <<'EOF'
+   ...full multi-line message, ANY punctuation, zero escaping needed...
+   EOF
+   timeout 300 env -u HERMES_HOME -u HERMES_SESSION_KEY HOME=$REAL \
+     HERMES_HOME=$REAL/.hermes/profiles/email-agent \
+     $REAL/.hermes/hermes-agent/venv/bin/hermes chat -q "$MSG"
+   echo "EXIT=$?"
+   ```
+   The **quoted** heredoc delimiter (`<<'EOF'`) is what makes the body literal.
+2. Run it via top-level `terminal(background=true, notify_on_complete=true)` redirecting
+   to a log, then `process(action='wait', timeout=180)` + `read_file` the log.
+   (`read -r -d '' MSG` returns exit 1 at EOF — harmless, don't `set -e`.)
+
+This beats both the `execute_code`+`subprocess.run(argv-list)` approach (5-min internal
+cap risk) and inlining the message in a top-level `terminal` string (scanner/bash traps).
+8/21 run: send returned in ~60s, verification in ~43s, zero timeouts, zero corrections.
+Log-reading tip: the hermes banner is ~60 lines of ASCII art — read the log via
+`execute_code` and slice from `Initializing agent` to keep context small.
+
+### Verification ask wording that works first try
+Lead with `IMPORTANT: print the answer as plain text IN THIS REPLY` AND
+`Use himalaya / raw IMAP against "[Gmail]/Sent Mail" (NOT the Gmail API)` — the
+IMAP-first default (inherited from the TOL skill's 8/17 lesson) applies here too and
+returned in 43s first try on 8/21. Search the SHORT subject stem
+(`BT Menu Sales - Closed MTD`, no date/parens — parenthesised dates are the fragile part
+of IMAP subject searches). Expect the token-match trap: 8/21 returned `Sent: 5`, four of
+which were prior sends (Jul 1-28, Jul 1-30, Aug 1-8, Aug 1-18) plus today's exact match.
+
 ## OVERALL_QUOTA reset behavior (observed 7/8–7/9 outage)\nNOT a fixed midnight reset. Behaves like a rolling ~24h+ bucket tied to when\nthe calls were burned; the 7/8 outage ran **29+ hours** with continuous 429s.\nRecovered capacity can be instantly re-drained by queued crons (11PM\ndealer-detail sync, 2AM VI pull), making it look continuously dead.\nIf dead >24h, escalate: ticket to Tekion asking the actual OVERALL_QUOTA\nlimit, reset schedule, and a raise — it's one org-wide bucket shared by all\n7 stores' pipelines and AMG has co-founder-level contact from the bin\nescalation. Never blind-retry; probe-gate everything.
