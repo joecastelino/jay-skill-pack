@@ -195,6 +195,53 @@ a PNG-only check CANNOT prove a multi-page PDF's later pages are correct —
 use pypdf text extraction whenever the deliverable has page-2+ content (e.g.
 RO-level detail tables) that isn't mirrored in the PNG.
 
+## BROKEN IMAGE IN GMAIL = `data:` URI, not a bad PNG (root-caused 2026-08-21)
+Joe reported "the image is broken" on the BC Deferred Work by Advisor draft.
+The PNG was fine and byte-identical to the source. The bug: Stacey embedded it
+as `<img src="data:image/png;base64,...">`. **Gmail strips/blocks `data:` URIs
+in message bodies** — it renders as a broken-image placeholder. This is NOT
+detectable by the standard "INLINE_PNG=y" self-report or even by a byte-compare,
+because the bytes ARE correct — only the delivery mechanism is wrong.
+
+### Detect it
+```python
+html = [p.get_payload(decode=True).decode('utf-8','replace')
+        for p in msg.walk() if p.get_content_type()=='text/html'][0]
+print('data uri:', 'data:image' in html)      # must be False
+print('cid ref :', 'cid:' in html)            # must be True
+# and the MIME tree must contain an image/png part with Content-ID set
+```
+Also a tell-tale: an HTML body of ~180KB for a simple table = a base64 blob
+inlined in the HTML. A correct CID body is ~4KB.
+
+### The fix — rebuild as multipart/related with a CID inline part
+Required MIME structure:
+```
+multipart/mixed
+  multipart/related
+    multipart/alternative
+      text/plain
+      text/html            <img src="cid:scorecard" ...>
+    image/png              Content-ID: <scorecard>, Content-Disposition: inline
+  application/pdf          attachment
+  text/csv                 attachment
+```
+Practical recipe: pull the existing broken draft, regex-swap the img tag, write
+the fixed HTML + plain text to `/tmp/`, then hand Stacey an explicit
+rebuild-and-replace ask (draft-only hard stop, exact To/Cc, exact file paths,
+"do not regenerate the files"), and tell her to trash the old UID afterwards.
+```python
+new_html, n = re.subn(r'src="data:image/png;base64,[^"]+"',
+    'src="cid:scorecard" width="900" style="width:100%;max-width:900px;'
+    'height:auto;display:block;border:1px solid #ddd;"', html)
+```
+Watch for a leftover duplicate `style=` attribute after the swap if the original
+img already had one — strip it, browsers take the first and ignore the second.
+
+**Standing rule:** any Jay->Stacey email ask that includes an inline image must
+say "CID inline attachment (`multipart/related`, `Content-ID: <scorecard>`) —
+do NOT use a `data:` URI." Verify `data:image not in html` before calling it good.
+
 ## Cleaning up duplicate/stale drafts
 Retrying a bridge request to Stacey after a timeout (see agent-to-agent-bridge
 "Exit 124 ≠ failure" pitfall) commonly produces 2-3 drafts with the IDENTICAL
