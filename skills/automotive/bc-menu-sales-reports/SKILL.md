@@ -705,6 +705,35 @@ Deleted the stale noon draft (42536) per the twice-daily cadence rule, kept
 42540 → exactly 1 draft. Sent folder showed two `BC 8/20` hits — both Stacey's
 separate auto-sent **Daily Opened** reports; `grep -i "Daily Closed"` = 0.
 
+## 2026-08-20 6:16pm Closed MTD run — textbook one-shot, 7th consecutive clean "N dollars" build
+134 menus, $21,559.91 labor / $14,824.10 parts = $36,384.01 (Aug 1-20). Advisors:
+Juan Ramirez 33 / $10,197.63, Houa Moua 30 / $6,843.15, Humberto Dominguez 18 /
+$5,849.14, Dimetri Reynoso 18 / $4,594.38, Michael Reyes 14 / $3,180.71, Erik
+Mercado 9 / $3,237.75, Jacob Debussey 8 / $1,618.69, Jeremia Navarro 4 / $862.56.
+Master asof was 2026-08-19 → default append (no seed/catch-up); 78 closed ROs → 14
+carried TEK menu opcodes → 14 new rows; `✓ all candidate ROs scanned`. Pull ran via
+`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
+Vision KPI band matched JSON exactly; master `_gross` sums matched the emitted
+report `totals` exactly ($21,559.91 / $14,824.10 / $36,384.01).
+Stacey's build: `execute_code` + `subprocess.run` argument list wrapped in
+`timeout 600` → returned cleanly in **179s**, no exit-124, no recovery probe,
+terse DONE line correct with `TOTAL=$36,384.01`. No "let me fix and re-create"
+self-correction text in her reply → no duplicate (pattern holds for the 3rd run
+straight). Verified via the stdlib-`email` parser: To=Restrada, Cc real None,
+From=Joe, Subject auto-decoded with em-dashes, inline PNG **byte-for-byte
+identical** (1,107,961 bytes), PDF **byte-for-byte identical** (79,691 bytes),
+all 11 figures present exactly once, `<b>$36,384.01</b>` bold, footer present,
+zero ' dollars' leftovers, exactly 1 MTD 8/20 draft (42548), MTD Sent count 0.
+**New minor gotcha — the "USD" leftover check can FALSE-POSITIVE**: a naive
+`html.count("USD")` returned 2, but both hits were inside the ~1.5MB base64
+data-URI payload (random base64 triplets), not visible text. Strip the data URI
+before running any placeholder/leftover greps:
+`re.sub(r'data:image/png;base64,[A-Za-z0-9+/=\s]+','IMG',html)` → USD count 0.
+Same applies to any short-token search on the HTML body.
+Left the sibling Daily Closed 8/20 draft (42540) untouched — different report
+type, not a duplicate; Sent folder's two `BC 8/20` hits were Stacey's separate
+auto-sent Daily Opened reports.
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
