@@ -183,6 +183,32 @@ Work dir: `/home/itadmin/tekion-reports`
      ```
      Rule of thumb: always phrase Sent-folder verifies with a short ASCII-only
      subject fragment (`Closed MTD`) rather than the full em-dashed subject.
+   - ⚠️ **A literal `SENT=<HH:MM>` reply from the send ask can be FALSE.**
+     Verified 2026-08-21: the send instruction for draft 42577 returned a crisp
+     `SENT=18:05`, but an unfiltered Sent listing showed the newest message was
+     17:07 and `DRAFT42577=EXISTS created 18:03` — it had never left Drafts.
+     A re-send ask then returned **empty output (exit 0)** and *that* one
+     actually worked (Sent showed 18:03, MIME=REAL-multipart, PDF attached).
+     So the send ask's reply text is uninformative in BOTH directions: a
+     confident `SENT=` can be a hallucination, and silence can be success.
+     Only an actual Sent-folder read settles it.
+   - ⚠️ **Best tie-breaker is a SUBJECT-AGNOSTIC Sent listing**, not a subject
+     search (which the em-dash breaks, see above) and not a `Closed MTD`
+     fragment search (which returned a false `NONE-IN-SENT` on 2026-08-21 even
+     though the message was there). This phrasing is the reliable one:
+     ```
+     READ-ONLY, send nothing. Do NOT filter by subject. List the last 8
+     messages in Sent, newest first: TS=<YYYY-MM-DD HH:MM> | TO=<addr> |
+     SUBJ=<subject> | ATT=<attachment filenames or NONE>.
+     Final line: DRAFT<id>=<EXISTS created HH:MM / GONE>
+     ```
+     Comparing the newest Sent timestamp against the draft's creation time
+     tells you unambiguously whether the send happened.
+   - ⚠️ **`ATT=NONE` in that list view is meaningless** — it shows NONE for
+     every row including messages verified to carry a real PDF. Her tabular
+     view doesn't surface attachments (she'll also note it doesn't surface
+     `TO`). Never conclude the PDF is missing from a list-view `ATT=NONE`;
+     confirm attachments only via the raw-MIME one-liner check.
    - Also note `DRAFTS=20+` on the broad verify is just her whole Drafts folder
      (Stacey accumulates many unrelated drafts), NOT copies of this report —
      scope any draft count to an ASCII subject fragment before acting on it.
