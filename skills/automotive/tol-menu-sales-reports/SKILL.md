@@ -795,6 +795,24 @@ zero today = no leak. Draft stack down to 3 total TOL drafts (08/20 Opened, 08/2
 is a NORMAL false-negative on her own self-check (quoted-printable/base64 encoded HTML part),
 not a problem; the part-listing verification is what settles it.
 
+## (8/21 8:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, correct UID, no corrections
+Second consecutive textbook run. Hand-off returned in **69s** (no timeout), draft saved correct
+FIRST TRY. All 3 verification asks returned FIRST try with "use raw IMAP, NOT the Gmail API"
+leading the ask: subject-list 57s, MIME part-listing 42s, Sent-check 30s. MIME clean:
+multipart/related > alternative(text/plain 608B + text/html 1052B) + image/png
+Content-ID=<scorecard> 81,002B + application/pdf 70,082B; bold total $590.13 confirmed in body
+(good extra check — ask her to quote the bolded total in the part-listing reply, it verifies the
+body content matches today's data in the same call at zero cost). No dedupe needed (noon run's
+draft did not exist — noon draft absent, only today's EOD one). BOGUS-ID VARIANT recurred mildly:
+her save confirmation said "Gmail Drafts ID: 42580" but the real IMAP UID was 57; she self-noted
+"That ID doesn't match the draft" and switched to raw IMAP search on her own. Sent-check via the
+SHORT subject stem returned 6 hits, all old em-dash-era sends (06/29-07/03), zero today = no leak;
+\Draft-flag follow-up skipped per the 8/17 note. NOTE: the 08/02 em-dash draft (UID 20,
+"TOL Menu Sales — Opened (08/02/2026)") is BACK in the Drafts listing again — it keeps
+reappearing/disappearing across runs depending on whether the search stem is hyphen or em-dash.
+Only ONE copy showed this time (not the old 41542/41547 pair), so it is not a true duplicate;
+keep flagging, don't auto-delete.
+
 ## (8/20 8:05PM, Closed MTD) Clean one-shot; hyphen-subject made the OLD em-dash draft invisible to search
 Hand-off returned in 114s (no exit-124), draft correct FIRST TRY (multipart/related >
 alternative(text/plain+html) + image/png Content-ID=<scorecard> 135KB + application/pdf 103KB).

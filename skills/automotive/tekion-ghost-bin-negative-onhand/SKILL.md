@@ -290,6 +290,13 @@ BEFORE flagging it as a missed transfer:
   itself is benign, yet the stale companion negative (2418 = −2) was still sitting there
   uncorrected from prior runs. Report the recurrence count and the unresolved companion, not the
   increase.
+- **STATUS UPDATE 2026-08-21:** ALL FIVE tracked escalations FLAT — 31532 −56 (3rd flat day, acceleration
+  confirmed broken), 04500-1 −119 (2nd flat day, first pause in ~7 weeks), 87139-42040 −12 (2nd flat),
+  87139-YZZ09 −22 (day 14 flat), 17801-F4010 companion 2418 still −2 (recurrence #5: bin 5006=2 vs Total
+  Inventory Qty=0 — the bin-vs-Total tell fired again). 87139-YZZ93 5007 29→21 reconciled clean (21+30=51 ✓).
+  Negatives held at 26 for a 4th consecutive day; 5005=11 rows, 5007=7 rows and still owns 4 of the 6
+  deepest. Only 2 diffs out of 174 rows. When every tracked item goes flat in the same run, SAY SO as the
+  headline finding — a first-quiet-day-in-weeks is itself signal, not an empty report.
 - **STATUS UPDATE 2026-08-20:** 31532 **BROKE ITS ACCELERATION — flat at −56** (first non-worsening
   day after 6 straight); 04500-1 −117→**−119**; 87139-42040 −11→**−12** (resumed after 3 flat days);
   87139-YZZ09 **flat −22 for 13 days**; 17801-F4010 5006 unchanged at 4 but companion 2418 STILL −2
