@@ -80,6 +80,8 @@ For an **editable (Error/Draft)** JE the GL cells are react-selects, not text. P
 - Amounts pair positionally with the GL list (index 0 ↔ index 0).
 - A **Posted** JE renders the same table as plain text (no selects) — the JS above returns empty; just read `innerText` instead. **This difference is the tell for Posted vs Error.**
 - Header line `"Auto Posting Journal Entry - <id> / Error / N of 10"` confirms you're in the error set and gives your position.
+- **`Gross Profit` in the header does NOT match the line math** (e.g. JE 1685205 shows $116.83 while revenue−cost = $46.58−$37.53 = $9.05; its deposit sibling shows $107.78; a posted wholesale JE shows −$70.85). Looks like a running/aggregate figure, not per-entry. **Unverified — flag it to Joe as unexplained rather than inventing a definition** (NEVER-GUESS rule).
+- The sale JE and its deposit JE are a **pair per sales order** and both carry the same defect. Always pull both: sale = `Dr Holding / Cr Revenue + Tax`, deposit = `Dr Cash (2045) / Cr Holding`. Reference/control number on both = the parts SO number.
 
 Cross-check with `vision_analyze` on a screenshot — it reliably calls out the red-highlighted blank
 select. Screenshot endpoint is **GET** `http://127.0.0.1:9223/screenshot` returning `{"screenshot": "<b64>"}`
@@ -135,6 +137,18 @@ only half its mappings were built.
 
 Fix (only with explicit go-ahead): add the missing row via the mapping card's **Add** button, then
 re-open each errored JE and Submit.
+
+### OPEN ITEM — SCT 876 (as of 2026-08-21, diagnosed read-only, NOT fixed, awaiting Joe)
+`Parts Cash Holding Account` exists only for dept `05 - PARTS & ACCESSORIES (Parts)` → `2045 - CASH SALES`.
+No dept-`06 - Online Parts Sales (Parts)` row. Proposed fix:
+`Parts Cash Holding Account | 06 - Online Parts Sales (Parts) | 2045 - CASH SALES`, then re-submit the 10 errored JEs.
+Affected: journal 32 PARTS CASH SALES, SOs 331573 / 331575 / 331577 / 331579 / 331580 (sale + deposit each),
+all created by Tiffany Dao on 8/21/2026, ~$264 sale side + ~$158 deposit side.
+Reference JEs: errored `1685205` (sale, $88.77) / `1685203` (deposit, $51.24); working posted control `1685197` / `1685196` (wholesale, dept 05).
+Errored sale lines: `[BLANK] $51.24` · `4748 SLS-TOY PARTS ONLINE RETAIL -$46.58` · `6748 CST PRT ONLINE RTL-TOY $37.53` · `2410 PARTS INV-TOY EXCL-TIRES -$37.53` · `3140 ACCRD TAXES-SALES -$4.66`.
+Likely related to the 8/19/2026 SCT parts tax-code-setup migration that also dropped the ONLINE sale types
+(see `tekion-parts-tax-not-calculating-diagnosis`) — first online retail sales ran 8/21 and exposed both gaps.
+**Check whether this was ever applied before re-diagnosing.**
 
 ---
 
