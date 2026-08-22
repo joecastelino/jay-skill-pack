@@ -813,6 +813,25 @@ reappearing/disappearing across runs depending on whether the search stem is hyp
 Only ONE copy showed this time (not the old 41542/41547 pair), so it is not a true duplicate;
 keep flagging, don't auto-delete.
 
+## (8/21 8:05PM, Closed MTD) Clean one-shot, zero exit-124s; bogus-ID variant recurred again
+Hand-off returned in 157s (no timeout), draft correct FIRST TRY. All 3 verification asks
+returned FIRST try with "use raw IMAP, NOT the Gmail API" leading: subject-list 40s, MIME
+part-listing 102s, Sent-check 37s. MIME clean: text/plain 530B + text/html 954B + image/png
+Content-ID=<scorecard> 135,044B + application/pdf 105,256B; bolded total $6,645.14 confirmed
+in the body (keep asking her to quote the bolded total in the part-listing reply — free
+content check). No dedupe needed (only the old 08/02 em-dash draft UID 41546 also matched
+the stem; different subject, left alone per policy).
+BOGUS-ID VARIANT recurred: her save confirmation said "draft_uid: 58 (himalaya ID 42581)"
+and the subject-list showed `42581 | ...`, but the part-listing ask replied "UID 42581 not
+found. The actual IMAP UID is 58." She self-corrected off the exact subject and listed the
+right MIME — confirming the standing wording `UID N (subject "<exact>") ... if that UID is
+wrong, find it by that exact subject instead` is what makes this self-heal. NOTE the IDs in
+her SUBJECT-LIST output can ALSO be himalaya numbering, not IMAP UIDs (same as 8/20).
+Sent-check = 2 hits, both the old June 1-29 em-dash emails (token trap, item 5b) — no leak;
+\Draft-flag follow-up skipped per the 8/17 note. Data: 117 closed ROs scanned, 2 prefilter
+hits, 26 MTD rows / $6,645.14; closed-append ran FOREGROUND in ~8s (confirms the
+foreground-with-generous-timeout pattern).
+
 ## (8/20 8:05PM, Closed MTD) Clean one-shot; hyphen-subject made the OLD em-dash draft invisible to search
 Hand-off returned in 114s (no exit-124), draft correct FIRST TRY (multipart/related >
 alternative(text/plain+html) + image/png Content-ID=<scorecard> 135KB + application/pdf 103KB).
