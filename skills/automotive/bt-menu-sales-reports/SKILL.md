@@ -128,6 +128,23 @@ cap risk) and inlining the message in a top-level `terminal` string (scanner/bas
 Log-reading tip: the hermes banner is ~60 lines of ASCII art — read the log via
 `execute_code` and slice from `Initializing agent` to keep context small.
 
+### DUPLICATE SEND from a false "SMTP connection dropped" retry (2026-08-22) — NEW, IMPORTANT
+On the 8/22 run (Aug 1-21 report) Stacey's first `execute_code` SMTP attempt returned an
+error, she announced "SMTP connection dropped. Retrying - Gmail sometimes rejects on first
+attempt for large MIME messages," and re-sent. **The first attempt had ALREADY delivered.**
+Tony + Joe received TWO identical emails (Sent Mail UIDs 8484/8485, distinct Message-IDs,
+06:03:56 and 06:04:46 PDT, 50s apart). The error was on the Python side AFTER the SMTP
+`sendmail` succeeded, not a real delivery failure. Unlike the draft pipelines, a duplicate
+SEND cannot be cleaned up — the recipient already has both.
+MITIGATION for future runs: add to the hand-off message a line like
+"If your first SMTP attempt raises an error, DO NOT immediately re-send — first check
+[Gmail]/Sent Mail for a message with this exact subject sent in the last 2 minutes; only
+re-send if there is none."
+DETECTION: the Sent-check verification returning TWO hits with TODAY'S EXACT subject (not
+the usual old-date token-match hits) is the tell. Confirm with a follow-up raw-IMAP ask for
+UID + Message-ID + Date-to-the-second per hit; two distinct Message-IDs = real duplicate.
+Report it to Joe rather than trying to fix it.
+
 ### Verification ask wording that works first try
 Lead with `IMPORTANT: print the answer as plain text IN THIS REPLY` AND
 `Use himalaya / raw IMAP against "[Gmail]/Sent Mail" (NOT the Gmail API)` — the
