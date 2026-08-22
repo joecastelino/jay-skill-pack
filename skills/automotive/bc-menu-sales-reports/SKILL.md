@@ -806,6 +806,29 @@ present, zero ' dollars'/USD leftovers (checked after stripping the data URI),
 exactly 1 MTD 8/21 draft, MTD Sent count 0 (the two `BC 8/21` Sent hits were
 Stacey's separate auto-sent Daily Opened reports).
 
+## 2026-08-22 noon Daily Closed run — textbook one-shot, 11th consecutive clean "N dollars" build
+5 menus, $788.66 labor / $546.26 parts = $1,334.92 (Juan Ramirez 3 / $852.40,
+Dimetri Reynoso 2 / $482.52). 13 closed ROs → 5 carried TEK menu opcodes;
+`✓ all candidate ROs scanned`; vision-verified KPI band matched JSON exactly.
+Pull ran via `terminal(background=true)` + a SINGLE `process(action="wait",
+timeout=180)`. Stacey's build: `execute_code` + `subprocess.run` argument list
+wrapped in `timeout 600` → returned cleanly in **163s**, no exit-124, no recovery
+probe, terse DONE line correct with `TOTAL=$1,334.92`, and her reported id
+(42584) MATCHED himalaya's for once (the APPENDUID mismatch is intermittent —
+don't assume either way, always grep). No self-correction text → no duplicate
+(pattern holds 6 runs straight). Verified via the stdlib-`email` parser:
+To=Restrada, Cc real None, From=Joe, Subject auto-decoded with em-dashes, inline
+PNG **byte-for-byte identical** (105,642 bytes), PDF **byte-for-byte identical**
+(52,012 bytes), all 5 figures present exactly once, `<b>$1,334.92</b>` bold,
+greeting + footer present, zero ' dollars'/USD leftovers (checked after stripping
+the data URI), exactly 1 draft, Daily-Closed Sent count 0 (the single `BC 8/22`
+Sent hit was Stacey's separate auto-sent Daily Opened report, 14245). No stale
+prior draft at the 8/22 subject to clean up.
+**Minor authoring note**: the ask-agent message I sent contained a self-correction
+typo mid-sentence ("$605.30-no wait, ignore that last one") while listing the
+figures. Stacey handled it correctly and did not emit the stray number, but don't
+rely on that — compose the figure list once, cleanly, before sending.
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
