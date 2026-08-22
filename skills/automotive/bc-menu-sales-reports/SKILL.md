@@ -783,6 +783,29 @@ the twice-daily cadence rule, kept 42576 → exactly 1 draft. Sent folder's two
 `BC 8/21` hits were both Stacey's separate auto-sent Daily Opened reports
 (14160, 14184); Daily-Closed Sent count 0.
 
+## 2026-08-21 6:16pm Closed MTD run — textbook one-shot, 10th consecutive clean "N dollars" build
+151 menus, $23,728.51 labor / $15,838.31 parts = $39,566.82 (Aug 1-21). Advisors:
+Juan Ramirez 36 / $10,829.34, Houa Moua 32 / $7,017.61, Humberto Dominguez 22 /
+$7,145.35, Dimetri Reynoso 19 / $4,732.08, Michael Reyes 17 / $3,410.68, Jacob
+Debussey 12 / $2,331.45, Erik Mercado 9 / $3,237.75, Jeremia Navarro 4 / $862.56.
+Master asof was 2026-08-20 → default append (no seed/catch-up); 83 closed ROs → 17
+carried TEK menu opcodes → master 151 rows; `✓ all candidate ROs scanned`. Pull ran
+via `terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
+Vision KPI band matched JSON exactly; master `_gross` sums matched the emitted
+report `totals` exactly. Stacey's build: `execute_code` + `subprocess.run` argument
+list wrapped in `timeout 600` → returned cleanly in **77s** (fastest MTD build yet),
+no exit-124, no recovery probe, no self-correction text → no duplicate (pattern
+holds 4 runs straight). Terse DONE line reported id **55** while himalaya showed
+**42578** — the documented Gmail APPENDUID/All-Mail vs Drafts-local UID mismatch,
+not an error; located the draft via the dedupe grep and used 42578 for all
+verification. Verified via the stdlib-`email` parser: To=Restrada, Cc real None,
+From=Joe, Subject auto-decoded with em-dashes, inline PNG **byte-for-byte
+identical** (1,228,395 bytes), PDF **byte-for-byte identical** (82,040 bytes), all
+11 figures present exactly once, `<b>$39,566.82</b>` bold, greeting + footer
+present, zero ' dollars'/USD leftovers (checked after stripping the data URI),
+exactly 1 MTD 8/21 draft, MTD Sent count 0 (the two `BC 8/21` Sent hits were
+Stacey's separate auto-sent Daily Opened reports).
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
