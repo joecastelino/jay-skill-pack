@@ -319,6 +319,22 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   `DRAFTS_COUNT=1 | TO=kstapp@sctoyota.com | SENT_FOLDER_COUNT=0`, then
   `RAW_SIZE=592,097 | text/html=179,384 | application/pdf=411,016` (+2.6% CRLF variance,
   RAW_SIZE ≈ html+pdf). Underscore-stripped keys again — same answer, don't re-ask.
+  **Confirmed again 2026-08-21 (11th consecutive clean night) — TIGHT HTML-part pass is
+  still a PASS:** OPS probe 200 (same validated RO/job pair, unchanged since 8/3). Index
+  3,089 closed ROs, 1,012 candidates, 0 failed, ~37 min (19:01→19:38, no backoff).
+  Window end 1787381999999 advanced one day from 8/20's 1787295599999 — the definitive
+  not-a-stale-index check. 290 alignments (259 dedicated + 31 bundled), 290 ROs, 16
+  advisors, top Cristian Gonzalez (33). Stacey's build clean on the FIRST ask (52s) with
+  paths + on-disk sizes baked in. Two-ask verify, short sleeps (15s then 10s), both
+  first-try: `DRAFTS_COUNT=1 | TO=kstapp@sctoyota.com | SENT_FOLDER_COUNT=0`, then
+  `RAW_SIZE=594,374 | text/plain=434 text/html=131,618 application/pdf=301,484`. Note the
+  HTML part cleared the PNG*4/3 floor (131,060) by only **558 bytes** — a far tighter pass
+  than the usual ~45KB headroom nights where Joe's heavy HTML signature inflates it. Per
+  note 13 a tight pass IS a pass (her build sometimes omits the heavy signature); do NOT
+  rebuild over thin headroom when the PDF part is an exact on-disk byte match (301,484)
+  and DRAFTS_COUNT=1. Also: RAW_SIZE (594,374) exceeding html + pdf*4/3 (533,597) is
+  normal header/encoding overhead — only a RAW_SIZE *below* that sum is a red flag.
+  Underscore-stripped keys again (`DRAFTSCOUNT`, `SENTFOLDER_COUNT`) — same answer.
   **Confirmed again 2026-08-16 (6th consecutive clean night, quota fully healthy):**
   pre-flight OPS probe (same validated RO/job pair) returned 200. Index built 2,364
   closed ROs, 771 candidates, 0 failed, ~30 min scan (19:01→19:31, no backoff
