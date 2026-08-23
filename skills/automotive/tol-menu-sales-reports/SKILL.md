@@ -855,6 +855,20 @@ perennial 08/02 em-dash pair (UIDs 19/20) — still flag-don't-delete.
 Data: 143 closed ROs scanned, 2 prefilter hits, 28 MTD rows / $7,101.35; closed-append ran
 FOREGROUND in ~12s (foreground-with-generous-timeout pattern confirmed again).
 
+## (8/23 12:05PM, Opened) Clean one-shot on a genuine $0 day; only part-listing needed a retry
+Hand-off returned in 58s (no exit-124), draft UID 42593 correct FIRST TRY, no dedupe needed
+(no prior draft with today's exact subject). Subject-list returned FIRST try (63s) with
+"use raw IMAP, NOT the Gmail API" leading. MIME part-listing 124'd once at 234s even with the
+parts-only wording that worked 8/22 — a sleep-45 + STRIPPED-FURTHER re-ask (dropped the
+"If that UID is wrong..." clause and the "One raw IMAP fetch only" phrasing down to
+"Raw IMAP only... One fetch: [Gmail]/Drafts, subject \"<exact>\"") returned in 22s with clean
+parts (multipart/related > alternative(text/plain+text/html) + image/png Content-ID=scorecard
++ application/pdf). So when parts-only still 124s, drop the UID entirely and search by subject
+only. Sent-check FIRST try (102s) = 4 hits, all old em-dash-era sends (06/30-07/03), zero today
+= no leak. Data: 58 opened ROs scanned, 0 menus / $0.00 — genuine zero per the $0-validation
+rule (healthy RO count, plausible for a Sunday noon pull). Drafts stack tiny (4): 08/21, 08/22,
+08/23 hyphen-subject Opened drafts plus the perennial 08/02 em-dash one (UID 41547).
+
 ## (8/21 8:05PM, Closed MTD) Clean one-shot, zero exit-124s; bogus-ID variant recurred again
 Hand-off returned in 157s (no timeout), draft correct FIRST TRY. All 3 verification asks
 returned FIRST try with "use raw IMAP, NOT the Gmail API" leading: subject-list 40s, MIME

@@ -874,6 +874,28 @@ Daily Opened report (14245). Pre-telling Stacey "there is an existing older draf
 at a DIFFERENT subject, leave it alone, create ONE new draft" again produced zero
 duplicate churn — keep including that line on MTD asks, not just 5pm Daily asks.
 
+## 2026-08-23 noon Daily Closed run — zero-menu SUNDAY, textbook one-shot, 14th consecutive clean "N dollars" build
+0 menus, $0.00 labor / $0.00 parts = $0.00. **0 closed ROs at the store today** (Sunday
+— BC service is closed; contrast the 2026-08-16 zero-menu Saturday which had closed ROs
+but none carrying TEK menu opcodes). Pull printed `✓ all candidate ROs scanned`;
+renderer produced the "No menu sales recorded yet for this period." empty-table variant
+and vision-verified all four KPI tiles at $0.00 / 0. Pull ran via
+`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)` and
+finished almost instantly (nothing to fan out). Stacey's build: `execute_code` +
+`subprocess.run` argument list wrapped in `timeout 600` → returned cleanly in **77s**,
+no exit-124, no recovery probe, no self-correction text → no duplicate (pattern holds 8
+runs straight). Her reported id (42594) MATCHED himalaya's. Verified via the
+stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject auto-decoded with
+em-dashes, inline PNG **byte-for-byte identical** (52,393 bytes), PDF **byte-for-byte
+identical** (39,406 bytes), `<b>$0.00</b>` bold, greeting + footer present, zero
+' dollars'/USD leftovers (checked after stripping the data URI), exactly 1 draft,
+Daily-Closed Sent count 0, no stale prior 8/23 draft to clean up.
+**Note on zero days**: the "N dollars" prevention rule still applies to `0.00 dollars` —
+`$0` is just as much a `$digit` sequence as `$9`, so don't skip the word-form trick just
+because the figures are zero. Also worth writing an explicit sentence like "No repair
+orders were closed at the store today" into the summary so Ruben reads it as a genuine
+closed-store Sunday rather than a broken feed.
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
