@@ -140,6 +140,19 @@ Work dir: `/home/itadmin/tekion-reports`
      Reply one line: TO=<addr> | MIME=<REAL-multipart filename=... or
      MARKUP-ONLY> | DRAFTS=<number>
      ```
+   - ⚠️ **Verified 2026-08-22: asking her to "build the message with a real MIME
+     library" is NOT strong enough on its own** — that phrasing was used in the
+     original draft ask AND the rebuild ask, and the message STILL went out
+     `MIME=MARKUP-ONLY | PDF=NO`. What fixed it first try was instructing the
+     *mechanism* explicitly: **"Do it by WRITING AND RUNNING A PYTHON SCRIPT
+     that uses email.mime (MIMEMultipart('mixed') + MIMEMultipart('alternative')
+     + MIMEApplication for the PDF with Content-Disposition attachment header)
+     and sends via smtplib SMTP. Do NOT use the himalaya `<#part>` template
+     syntax — that is what broke it."** Naming himalaya's `<#part>` syntax as
+     the thing to avoid is the key ingredient. Also ask her to **confirm the
+     actual attachment size in bytes**, then cross-check it against
+     `ls -la` on the PDF (150,092 B matched exactly) — a byte-exact match is
+     the cheapest hard proof the real file went out.
    - On `MIME=MARKUP-ONLY`, recovery that landed correctly on the FIRST retry:
      tell her to **REBUILD FROM SCRATCH** (never edit/reuse the broken one) and
      explicitly instruct the transport — *"Build the message with a real MIME
@@ -214,6 +227,21 @@ Work dir: `/home/itadmin/tekion-reports`
      scope any draft count to an ASCII subject fragment before acting on it.
    - Leave the broken first copy in Sent — Joe gets two emails, one good; a
      duplicate is far better than a recall attempt. Note it in the summary.
+
+## Pitfall: a genuine 0-closed-RO day (validate, don't assume outage)
+
+**Verified 2026-08-22 (Saturday):** the scan printed `closed/invoiced ROs
+today: 0` and `prefilter: 0 of 0`, leaving MTD flat. Prior Saturdays were NOT
+zero (8/15=137, 8/8=48, 8/1=28 closed ROs), so a Saturday zero is not
+self-evidently normal — but it was real, not a quota outage. Cheap way to tell
+the difference in ONE call: re-probe `search_closed` for today plus the two
+prior days. If adjacent days return healthy counts (8/21=24 ROs, 8/20=19) with
+no 429s, the API is fine and today's zero is genuine (invoicing simply hadn't
+posted by the 6 PM run). An outage instead shows 429/`DEALER_QUOTA` or zeros
+across ALL probed days. Still render + email on a genuine zero — the MTD total
+stands — and say so explicitly in the body ("No repair orders were
+invoiced/closed today as of the 6 PM run, so MTD is unchanged from yesterday")
+so Joe doesn't read the flat number as a broken pipeline.
 
 ## Reading the master / RB files in an inspection script (schema gotchas)
 

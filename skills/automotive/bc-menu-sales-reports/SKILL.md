@@ -850,6 +850,30 @@ the twice-daily cadence rule, kept 42586 → exactly 1 draft. Daily-Closed Sent
 count 0 (the single `BC 8/22` Sent hit was Stacey's separate auto-sent Daily
 Opened report, 14245).
 
+## 2026-08-22 6:22pm Closed MTD run — textbook one-shot, 13th consecutive clean "N dollars" build
+160 menus, $24,810.30 labor / $16,591.51 parts = $41,401.81 (Aug 1-22). Advisors:
+Juan Ramirez 41 / $11,967.09, Houa Moua 32 / $7,017.61, Dimetri Reynoso 23 /
+$5,429.32, Humberto Dominguez 22 / $7,145.35, Michael Reyes 17 / $3,410.68, Jacob
+Debussey 12 / $2,331.45, Erik Mercado 9 / $3,237.75, Jeremia Navarro 4 / $862.56.
+Master asof was 2026-08-21 → default append (no seed/catch-up); 21 closed ROs → 9
+carried TEK menu opcodes → master 160 rows; `✓ all candidate ROs scanned`. Pull ran
+via `terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
+Vision KPI band matched JSON exactly; master `_gross` sums matched the emitted
+report `totals` exactly. Stacey's build: `execute_code` + `subprocess.run` argument
+list wrapped in `timeout 600` → returned cleanly in **105s**, no exit-124, no
+recovery probe, no self-correction text → no duplicate (pattern holds 7 runs
+straight). Her reported id (42588) MATCHED himalaya's. Verified via the
+stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject auto-decoded
+with em-dashes, inline PNG **byte-for-byte identical** (1,292,812 bytes), PDF
+**byte-for-byte identical** (83,527 bytes), all 11 figures present exactly once,
+`<b>$41,401.81</b>` bold, greeting + footer present, zero ' dollars'/USD leftovers
+(checked after stripping the data URI), exactly 1 MTD 8/22 draft, MTD Sent count 0.
+Left the sibling Daily Closed 8/22 draft (42586) untouched — different report type,
+not a duplicate; the single `BC 8/22` Sent hit was Stacey's separate auto-sent
+Daily Opened report (14245). Pre-telling Stacey "there is an existing older draft
+at a DIFFERENT subject, leave it alone, create ONE new draft" again produced zero
+duplicate churn — keep including that line on MTD asks, not just 5pm Daily asks.
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
