@@ -335,6 +335,29 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   and DRAFTS_COUNT=1. Also: RAW_SIZE (594,374) exceeding html + pdf*4/3 (533,597) is
   normal header/encoding overhead — only a RAW_SIZE *below* that sum is a red flag.
   Underscore-stripped keys again (`DRAFTSCOUNT`, `SENTFOLDER_COUNT`) — same answer.
+  **Confirmed again 2026-08-22 (12th consecutive clean night) — SECOND flat-day, and a
+  TRUE ZERO-CLOSE day:** OPS probe 200. Index 3,089 closed ROs, 1,012 candidates, 0 failed,
+  ~37 min (19:01→19:38). Totals 290 alignments (259 ded + 31 bundled), 290 ROs, 16 advisors,
+  top Cristian Gonzalez (33) — **byte-identical to 8/21 in every figure, and the index file
+  was even the same byte size (425,567)**, which looks alarming. Ran the note-20 flat-day
+  recipe and it cleared: the `window` end advanced one day (1787381999999 → 1787468399999,
+  so NOT a cached index), but the RO id-set diff was `new: 0, dropped: 0` — unusual, since
+  8/20's flat day still had 19 new ROs. Per-day API closed counts explained it: 8/19=261,
+  8/20=19, 8/21=24, **8/22=0**. A Saturday with literally zero ROs closed store-side means
+  the MTD set cannot change at all, so identical index size + identical totals are correct.
+  Recipe refinement: `new in index = 0` alone is NOT proof of a stale index — pair it with
+  the window-end check (definitive stale tell) and the single-day closed count; if that
+  count is 0, an unchanged report is the right answer. Also note the per-day count helper
+  must send `values` (not `value`) as STRING lists in the search filter — a `value`/int
+  form returns HTTP 500 with no totalCount and will mislead you into thinking the API is
+  broken; paginate and count results rather than trusting a `meta.totalCount` field (it
+  isn't returned). Stacey's build clean on the FIRST ask (93s) with paths + on-disk sizes
+  baked in. Two-ask verify, short sleeps (15s then 10s), both first-try:
+  `DRAFTS_COUNT=1 | TO=kstapp@sctoyota.com | SENT_FOLDER_COUNT=0`, then
+  `RAW_SIZE=594,777 | text/plain=608 text/html=180,502 application/pdf=412,560` — HTML part
+  clears PNG*4/3 (131,174) with the usual heavy-signature headroom, PDF part +2.6% over
+  PDF*4/3 (401,979) is the normal CRLF variance, RAW_SIZE ≈ html+pdf parts. Underscore-
+  stripped keys again.
   **Confirmed again 2026-08-16 (6th consecutive clean night, quota fully healthy):**
   pre-flight OPS probe (same validated RO/job pair) returned 200. Index built 2,364
   closed ROs, 771 candidates, 0 failed, ~30 min scan (19:01→19:31, no backoff
