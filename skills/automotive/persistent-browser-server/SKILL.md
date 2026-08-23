@@ -381,6 +381,30 @@ each digit. Wait for a NEW OTP email by envelope ID (>last seen), not by count.
 
 ## Pitfalls
 
+- **`POST /navigate` returning HTTP 500 (not chrome-error) = same "instance is broken" verdict — bail to
+  standalone headless immediately (verified 2026-08-22, SCT daily bin check).** New signature distinct from
+  the `chrome-error://chromewebdata` case below: the :9223 *server endpoint itself* 500s, so the Python
+  client raises `urllib.error.HTTPError: HTTP Error 500` rather than returning a chrome-error URL. Sequence
+  that produced it: session found on `/login?redirectTo=/home` → `login.py` said REUSED/ALIVE → injection
+  bounced to login form → `login.py --force` got a fresh OTP (LOGGED_IN) → cookies added:5, **22/22 keys
+  length-verified** → first `/navigate /home` → HTTP 500. Auth was demonstrably fine (the same fresh
+  storage-state drove a clean standalone headless pull minutes later). Treat 500-on-navigate exactly like
+  chrome-error: **do NOT retry, do NOT re-login again** — go straight to the standalone headless script.
+- **Restart :9223 at the END of a run that fell back to headless, not at the start of the next one.** After
+  finishing the work via standalone Playwright, do the full clean restart (`fuser -k 9223/tcp` → `rm -f
+  browser-data/Singleton*` → `terminal(background=true)` xvfb-run node server.js → verify `/health` **and**
+  `/url`). Costs ~20s and leaves the next scheduled run with a working instance instead of making it burn
+  its first 3 minutes rediscovering the same breakage. `/url` returning `about:blank` on a fresh restart is
+  normal and healthy — it's `{"error":"Browser context not initialized"}` that means the lock clear failed.
+- **`nohup`/`&` are REJECTED by the terminal tool** — starting the server with a shell-level background
+  wrapper errors out ("Use terminal(background=true)"). Split it: one foreground command to
+  `fuser -k` + `rm -f Singleton*`, then a separate `terminal(background=true)` for `xvfb-run -a node
+  server.js`, then a third foreground command for `sleep 14; curl /health; curl /url`.
+- **A wildly long `t_token` exp in login.py's probe does NOT mean the session is good** (2026-08-22:
+  `token exp in 43137 min` ≈ 30 days → `ALIVE — reusing`, yet the injected session rendered the login
+  form). The probe reads the JWT's own expiry claim; Tekion invalidates server-side independently. An
+  implausibly large exp is if anything a hint the file is stale/odd — go straight to `--force`.
+
 - **`execute_code` is STATELESS across calls — variables do NOT persist between separate
   execute_code invocations** (verified 2026-08-09, SCT bin-check run). Each call spins up a
   fresh Python process; a variable like a paginated XHR accumulator (`all_hits`, a `pull_full()`

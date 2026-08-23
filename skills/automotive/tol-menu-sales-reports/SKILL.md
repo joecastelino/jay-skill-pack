@@ -828,6 +828,19 @@ free-content-check tip (8/21) makes the ask heavy enough to time out. Ask parts-
 Drafts stack is tiny (3 TOL Opened drafts: 08/21, 08/22, plus the perennial 08/02 em-dash one
 UID 20 which has reappeared again — still not a true duplicate, still flag-don't-delete).
 
+## (8/22 8:05PM, Opened) Clean one-shot, zero exit-124s; parts-only part-listing ask confirmed
+Hand-off returned in 79s (no timeout), draft correct FIRST TRY with TRUE dedupe (noon draft
+deleted on her own). All 3 verification asks returned FIRST try with "use raw IMAP, NOT the
+Gmail API" leading: subject-list 25s, MIME part-listing 146s, Sent-check 27s. The 8/22-noon
+lesson held — asking for MIME PARTS ONLY (no bolded-total quote, no extra fallback clauses
+beyond the one-line "if that UID is wrong find it by subject") returned cleanly with no 124.
+BOGUS-UID VARIANT recurred: her save confirmation AND the subject-list both said UID 62, but
+part-listing replied "UID 62 not found. Actual draft is UID 42590" and listed correct MIME
+(multipart/mixed > related > alternative(text/plain+text/html) + image/png Content-ID=scorecard
++ application/pdf). Sent-check = 4 hits, all old em-dash-era sends (06/30-07/03), zero today =
+no leak. Drafts stack tiny (3): 08/21, 08/22, plus the perennial 08/02 em-dash draft UID 20 —
+still not a true duplicate, still flag-don't-delete.
+
 ## (8/21 8:05PM, Closed MTD) Clean one-shot, zero exit-124s; bogus-ID variant recurred again
 Hand-off returned in 157s (no timeout), draft correct FIRST TRY. All 3 verification asks
 returned FIRST try with "use raw IMAP, NOT the Gmail API" leading: subject-list 40s, MIME

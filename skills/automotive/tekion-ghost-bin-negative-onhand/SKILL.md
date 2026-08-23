@@ -290,6 +290,16 @@ BEFORE flagging it as a missed transfer:
   itself is benign, yet the stale companion negative (2418 = −2) was still sitting there
   uncorrected from prior runs. Report the recurrence count and the unresolved companion, not the
   increase.
+- **STATUS UPDATE 2026-08-22:** Quietest run to date — **ONE diff out of 174 rows**, and ALL FIVE tracked
+  escalations flat again: 31532 −56 (4th flat day), 04500-1 −119 (3rd flat), 87139-42040 −12 (3rd flat),
+  87139-YZZ09 −22 (day 15 flat), 17801-F4010 recurrence **#6** (5006=2 vs Total Inventory Qty=**0**,
+  companion 2418 still −2 and unmoved since 8/11 — the bin-vs-Total tell fired with NO diff on 5006 at
+  all, so keep opening this part every run even on silent days). 87139-YZZ93 5007 21→46 reconciled clean
+  (46+30=76 ✓, Primary confirmed = 5007). Negatives held at 26 for a **5th** consecutive day; 5005=11 rows,
+  5007=7 rows and still owns 4 of the 6 deepest (−235 units combined across YZZ83/00475-1BF03/17801-YZZ10/
+  YZZ09). When the whole board goes flat multiple days running, LEAD with that as the finding and note the
+  streak length — and keep re-stating the two standing recommendations (scoped Bin Spot Check on 5007; the
+  2-unit 17801-F4010/2418 fix) with their AGE, since an aging unactioned recommendation is the real signal.
 - **STATUS UPDATE 2026-08-21:** ALL FIVE tracked escalations FLAT — 31532 −56 (3rd flat day, acceleration
   confirmed broken), 04500-1 −119 (2nd flat day, first pause in ~7 weeks), 87139-42040 −12 (2nd flat),
   87139-YZZ09 −22 (day 14 flat), 17801-F4010 companion 2418 still −2 (recurrence #5: bin 5006=2 vs Total
@@ -419,6 +429,25 @@ switch (FAIL_DEALER). TWO MORE PITFALLS baked into it:
 - Match pagination on the COUNT of generate captures, not len(all captures) — messaging/
   clock-poll XHRs land constantly and fake a "new page arrived" signal.
 Note: a part's Primary is NOT always 2420 (e.g. 17801-77050's primary = **2419**).
+
+**⚠️ RUN STANDALONE PLAYWRIGHT SCRIPTS FROM A CLEAN CWD — module shadowing will kill the import
+(cost 3 wasted runs, 2026-08-22).** An ad-hoc Bin-Details script failed with
+`AttributeError: module 'inspect' has no attribute 'FrameInfo'` deep inside
+`playwright/_impl/_connection.py`. Cause: **`/tmp/inspect.py` exists and shadows the stdlib `inspect`
+module** when cwd is `/tmp` (Python puts cwd first on `sys.path`). Running from
+`/home/itadmin/tekion-reports` failed differently — some module in that directory executes on import
+and dumped a whole BC Menu Sales JSON to stdout before the same traceback. Diagnose with
+`python3 -c "import inspect; print(inspect.__file__)"` — if it prints anything other than the
+stdlib path, your cwd is poisoned. **FIX: run from a scratch dir with no .py files**, e.g.
+`mkdir -p /home/itadmin/tmp-jay && cp script.py /home/itadmin/tmp-jay/ && cd /home/itadmin/tmp-jay
+&& python3 script.py`. The committed `bin5000s_daily_pull.py` is unaffected (it runs fine from
+`/home/itadmin/tekion-reports`) — this bites only ad-hoc scripts written to /tmp.
+
+**⚠️ PORTING SKILL SNIPPETS TO STANDALONE PYTHON: `page.evaluate("document.body.innerText")`
+returns a PYTHON str, not a JS string.** The skill's Bin-Details recipe is written as in-browser JS
+(`t.lastIndexOf('Bin Details')`), and copying it verbatim into a Playwright Python script throws
+`AttributeError: 'str' object has no attribute 'lastIndexOf'`. Use `t.rfind("Bin Details")`. Same
+class of bug for `indexOf`→`.find()`. Only keep `.lastIndexOf()` inside a `/eval` `js` payload.
 
 ## LIVE BIN REPORT PULL via :9223 (the reusable scrape, verified 2026-07-03)
 
