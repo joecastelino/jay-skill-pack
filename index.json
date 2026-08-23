@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-23T14:45:05",
+ "generated": "2026-08-23T15:00:33",
  "skill_count": 183,
  "skills": [
   {
@@ -435,6 +435,14 @@
    "last_used": "2026-07-14"
   },
   {
+   "name": "tekion-deferred-by-advisor-daily",
+   "path": "automotive/tekion-deferred-by-advisor-daily",
+   "category": "automotive",
+   "description": "Build the \"work deferred/declined per DAY, broken down by service advisor\" report for any AMG Tekion store \u2014 advisor ranking + trailing-day trend + per-advisor RO-level detail pages (PNG/PDF/CSV). Zero OpenAPI quota.",
+   "times_used": 4,
+   "last_used": "2026-08-23"
+  },
+  {
    "name": "tekion-ro-fee-waiver-investigation",
    "path": "automotive/tekion-ro-fee-waiver-investigation",
    "category": "automotive",
@@ -481,14 +489,6 @@
    "description": "Detect CSI/survey-manipulation fraud by scanning Tekion customer records for redirect emails via the OpenAPI customer-search endpoint (GET /customers?email=). Two modes \u2014 KNOWN-EMAIL mode scans all 7 AMG stores for a suspect email Joe names (returns every record currently pointing at it + lastUpdateTime timeline); DISCOVERY mode pages a store's whole customer base to find ALL emails shared across 3+ unrelated customers, then attributes each to the RO-creating advisor (single-advisor-lock = bad actor) to surface ADDITIONAL bad actors beyond the first. Use when Joe says an advisor swapped customer emails to redirect surveys/CSI, asks \"how many customers have email X\" / \"when was this changed\", or \"find anything else / who else is doing this.\" Covers the count-param 400 trap, the floor-not-total caveat, the no-modifiedBy / no-change-history API limits, the exclude-staff-domain+dummy-placeholder rules, and the >=85% single-advisor-lock classification threshold.",
    "times_used": 3,
    "last_used": "2026-06-29"
-  },
-  {
-   "name": "tekion-deferred-by-advisor-daily",
-   "path": "automotive/tekion-deferred-by-advisor-daily",
-   "category": "automotive",
-   "description": "Build the \"work deferred/declined per DAY, broken down by service advisor\" report for any AMG Tekion store \u2014 advisor ranking + trailing-day trend + per-advisor RO-level detail pages (PNG/PDF/CSV). Zero OpenAPI quota.",
-   "times_used": 3,
-   "last_used": "2026-08-20"
   },
   {
    "name": "tekion-deferred-services-report",
