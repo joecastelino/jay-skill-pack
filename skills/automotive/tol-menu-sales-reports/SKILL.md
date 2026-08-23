@@ -841,6 +841,20 @@ part-listing replied "UID 62 not found. Actual draft is UID 42590" and listed co
 no leak. Drafts stack tiny (3): 08/21, 08/22, plus the perennial 08/02 em-dash draft UID 20 —
 still not a true duplicate, still flag-don't-delete.
 
+## (8/22 8:05PM, Closed MTD) Clean one-shot, zero exit-124s across ALL 4 calls
+Hand-off returned in 78s (no timeout), draft correct FIRST TRY. Verification asks all FIRST try
+with "use raw IMAP, NOT the Gmail API" leading: subject-list 32s, MIME part-listing 128s (parts-only
+wording per the 8/22-noon lesson — no bolded-total request), Sent-check 52s. MIME clean:
+text/plain + text/html + image/png Content-ID=<scorecard> + application/pdf. No dedupe needed.
+BOGUS-UID VARIANT recurred yet again: save confirmation said "#42591", subject-list said 63, and
+the part-listing ask replied "UID 42591 (UID 63 was wrong; found by subject)" — the
+`UID N (subject "<exact>") ... if that UID is wrong, find it by that exact subject instead`
+wording keeps self-healing this. Sent-check = 2 hits, both old June 1-29 em-dash emails (token
+trap, item 5b), no leak. Drafts stack tiny (6 TOL total): 08/21 + 08/22 Opened & Closed, plus the
+perennial 08/02 em-dash pair (UIDs 19/20) — still flag-don't-delete.
+Data: 143 closed ROs scanned, 2 prefilter hits, 28 MTD rows / $7,101.35; closed-append ran
+FOREGROUND in ~12s (foreground-with-generous-timeout pattern confirmed again).
+
 ## (8/21 8:05PM, Closed MTD) Clean one-shot, zero exit-124s; bogus-ID variant recurred again
 Hand-off returned in 157s (no timeout), draft correct FIRST TRY. All 3 verification asks
 returned FIRST try with "use raw IMAP, NOT the Gmail API" leading: subject-list 40s, MIME
