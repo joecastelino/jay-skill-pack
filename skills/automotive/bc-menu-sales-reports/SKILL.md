@@ -829,6 +829,27 @@ typo mid-sentence ("$605.30-no wait, ignore that last one") while listing the
 figures. Stacey handled it correctly and did not emit the stray number, but don't
 rely on that — compose the figure list once, cleanly, before sending.
 
+## 2026-08-22 5pm Daily Closed run — textbook one-shot, 12th consecutive clean "N dollars" build
+9 menus, $1,081.79 labor / $753.20 parts = $1,834.99 (Juan Ramirez 5 / $1,137.75,
+Dimetri Reynoso 4 / $697.24). 21 closed ROs → 9 carried TEK menu opcodes;
+`✓ all candidate ROs scanned`; vision-verified KPI band matched JSON exactly.
+Pull ran via `terminal(background=true)` + a SINGLE `process(action="wait",
+timeout=180)`. Stacey's build: `execute_code` + `subprocess.run` argument list
+wrapped in `timeout 600` → returned cleanly in **74s**, no exit-124, no recovery
+probe, terse DONE line correct with `TOTAL=$1,834.99`, and her reported id
+(42586) MATCHED himalaya's. Her reply DID mention "The search error was just a
+verification step" (the recurring em-dash IMAP-search failure) — per the 8/21
+refinement, that failure happens BEFORE the append, so no duplicate resulted;
+the dedupe grep confirmed only the expected stale noon draft. Verified via the
+stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject auto-decoded
+with em-dashes, inline PNG **byte-for-byte identical** (135,558 bytes), PDF
+**byte-for-byte identical** (53,278 bytes), all 5 figures present exactly once,
+`<b>$1,834.99</b>` bold, greeting + footer present, zero ' dollars'/USD leftovers
+(checked after stripping the data URI). Deleted the stale noon draft (42584) per
+the twice-daily cadence rule, kept 42586 → exactly 1 draft. Daily-Closed Sent
+count 0 (the single `BC 8/22` Sent hit was Stacey's separate auto-sent Daily
+Opened report, 14245).
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
