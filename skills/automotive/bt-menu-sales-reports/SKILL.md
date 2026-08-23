@@ -144,6 +144,14 @@ DETECTION: the Sent-check verification returning TWO hits with TODAY'S EXACT sub
 the usual old-date token-match hits) is the tell. Confirm with a follow-up raw-IMAP ask for
 UID + Message-ID + Date-to-the-second per hit; two distinct Message-IDs = real duplicate.
 Report it to Joe rather than trying to fix it.
+CONFIRMED FIXED 2026-08-23: adding the explicit "CRITICAL - DO NOT DOUBLE SEND: if your
+first SMTP attempt raises an error, DO NOT immediately re-send; first check
+[Gmail]/Sent Mail for this exact subject sent in the last 2 minutes" paragraph to the
+hand-off message produced a clean single send (one SMTP attempt, no error, no retry).
+Keep that paragraph in every hand-off. The 8/22 duplicate pair (Aug 1-21, 06:03:56 +
+06:04:46) still shows in Sent-folder listings forever — when verifying, expect to see it
+and don't mistake it for a NEW duplicate; only two hits carrying TODAY'S exact date range
+indicate a fresh double-send.
 
 ### Verification ask wording that works first try
 Lead with `IMPORTANT: print the answer as plain text IN THIS REPLY` AND
@@ -153,5 +161,33 @@ returned in 43s first try on 8/21. Search the SHORT subject stem
 (`BT Menu Sales - Closed MTD`, no date/parens — parenthesised dates are the fragile part
 of IMAP subject searches). Expect the token-match trap: 8/21 returned `Sent: 5`, four of
 which were prior sends (Jul 1-28, Jul 1-30, Aug 1-8, Aug 1-18) plus today's exact match.
+
+### LOW "closed/invoiced ROs today" can be a REAL store-side close lag, not starvation (2026-08-23)
+The 8/23 run (for 8/22, a Saturday) logged `closed/invoiced ROs today: 3` — far below the
+prior two Saturdays (8/08 = 80, 8/15 = 75) and every weekday (66-263). By the standard
+$0-validation rule that looks like a starved run, but a clean re-run reproduced exactly 3,
+with zero 429s/500s. A DIRECT API probe settled it: for 8/22, `closedTime` returned
+**3** while `invoicedTime` returned **118** and `creationTime` **125** — and 8/20/8/21
+returned normal counts on all three fields. So the store simply had not run its accounting
+CLOSE on Saturday's invoiced ROs yet; the API was healthy and the data is correct.
+`bt_menu_sales_closed_mtd.py:search_closed()` filters on `closedTime` by design (verified
+2026-06-19: closedTime is true "closed in period"; modifiedTime overcounts).
+DIAGNOSTIC (use this before declaring starvation on ANY low-RO day — ~3s, no full re-run):
+```py
+import sys, datetime; sys.path.insert(0,"/home/itadmin/tekion-reports")
+import bt_menu_sales_api as O
+d = datetime.date.fromisoformat("YYYY-MM-DD")
+a = int(datetime.datetime(d.year,d.month,d.day,0,0,0).timestamp()*1000)
+b = int(datetime.datetime(d.year,d.month,d.day,23,59,59).timestamp()*1000)
+for f in ["closedTime","invoicedTime","creationTime"]:
+    st,out = O.call("POST","/repair-orders:search",
+        {"filters":[{"field":f,"operator":"BTW","values":[a,b]}],"pageSize":1})
+    print(f, st, (out.get("meta") or {}).get("totalCount"))
+```
+Saved as `_bt_probe_0823.py`. DECISION RULE: all three fields 0 / non-200 = real outage,
+skip the email. closedTime low but invoicedTime/creationTime normal = genuine close lag,
+the MTD total is still valid — **render and send normally**, and note the lag in the
+final report so Joe knows the day contributed almost nothing. Also probe an adjacent day
+as a control before concluding anything.
 
 ## OVERALL_QUOTA reset behavior (observed 7/8–7/9 outage)\nNOT a fixed midnight reset. Behaves like a rolling ~24h+ bucket tied to when\nthe calls were burned; the 7/8 outage ran **29+ hours** with continuous 429s.\nRecovered capacity can be instantly re-drained by queued crons (11PM\ndealer-detail sync, 2AM VI pull), making it look continuously dead.\nIf dead >24h, escalate: ticket to Tekion asking the actual OVERALL_QUOTA\nlimit, reset schedule, and a raise — it's one org-wide bucket shared by all\n7 stores' pipelines and AMG has co-founder-level contact from the bin\nescalation. Never blind-retry; probe-gate everything.
