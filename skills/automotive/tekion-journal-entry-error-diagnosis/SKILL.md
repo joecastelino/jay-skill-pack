@@ -27,7 +27,19 @@ All work through the `:9223` persistent browser (`/eval`, `/mouse`, `/type`, `/n
 | Screen | URL |
 |---|---|
 | **Journal Entries list** | ✅ `/accounting/journalEntry/list` (camelCase; `/accounting/journalentry/list` also works) |
-| JE detail (auto-posting) | `/accounting/journalEntry/transactionId/<txnId>/dealerId/<dealerId>/transactionType/AUTO_POSTING/edit` |
+| JE detail (Error/Draft, editable) | `/accounting/journalEntry/transactionId/<txnId>/dealerId/<dealerId>/transactionType/AUTO_POSTING/edit` |
+| JE detail (Posted, read-only) | `/accounting/journalEntry/transactionId/<txnId>/dealerId/<dealerId>/view` |
+
+> ⚠️ **`<txnId>` IS NOT THE 7-DIGIT JE ID** (burned ~6 turns 2026-08-24). The list/header shows a
+> display ID like `1685170`; the URL wants an internal 14-digit transaction id like
+> `60215445227271`. Navigating with the 7-digit number **silently fails** — you stay on whatever
+> page you were on (often a stale RO detail) and `body.innerText` looks like a real page, so it
+> reads as a false success. **There is no way to derive txnId from the display ID** — you must open
+> the row from the list. See §2 "Open a specific JE by its 7-digit ID".
+
+**Stale-route trap:** the first `POST /navigate` to `/accounting/journalEntry/list` can land on a
+previously-open JE detail (`.../transactionId/.../view`). Always assert `location.href` ends in
+`/list`; if not, navigate a second time.
 | Chart of Accounts | `/accounting/chartOfAccounts/list` |
 | **GL Account Transaction Mapping** | ✅ `/accounting/glaccountmapping/list` (all lowercase!) |
 
@@ -44,7 +56,16 @@ All work through the `:9223` persistent browser (`/eval`, `/mouse`, `/type`, `/n
 ## 2. Reading the Error queue
 
 1. Navigate `/accounting/journalEntry/list`, sleep 8.
-2. Status tabs render as leaf nodes at **y≈146**: `All` (x≈112) · `Draft` (x≈183) · **`Error` (x≈281)** · `Pending Approval` (x≈402). `/mouse` click Error.
+2. Status tabs render as leaf nodes at **y≈158** (was y≈146 — coords drift, re-read them):
+   `All` (x≈124) · `Draft` (x≈206) · **`Error` (x≈327)** · `Pending Approval` (x≈515). `/mouse` click Error.
+   Find them live — note the filter picks the FIRST match by y, since "Error" also appears in every row:
+   ```js
+   [...document.querySelectorAll('*')].filter(e=>e.children.length===0 &&
+     ['All','Draft','Error','Pending Approval'].includes((e.innerText||'').trim()) &&
+     e.getBoundingClientRect().width>0)   // tab row is y<200; rows are y>400
+   ```
+   The tab labels contain animated odometer digits (long `0\n1\n2...` runs in `innerText`) —
+   the count is NOT readable from the tab; use the `N Result(s)` line instead.
 3. Row count appears as `N Result(s)` in `document.body.innerText`.
 4. Parse rows straight out of `body.innerText` — the table is virtualized, there are no `.ant-table-row` nodes. Column order:
    `Status · ID · Type · Accounting Date · Reference Type · Reference · Journal · Journal Type · Document Type · Description · Amount · Created By · Modified Time · Franchise`
@@ -54,11 +75,44 @@ All work through the `:9223` persistent browser (`/eval`, `/mouse`, `/type`, `/n
    ```
    then `/mouse` click `x+10, y+8`. Verify `location.href` contains `transactionId` — if not, the click missed.
 
-**Search box gotcha:** the page-level expandable search starts at width 0. Click the magnifier `.icon-search` at **x≈1087, y≈216** to expand, THEN type. `/type` with only `{text:...}` returns **HTTP 400** — always pass a selector:
+**Search box gotcha:** the page-level expandable search starts at width 0. Click the magnifier
+`.icon-search` (**x≈1095, y≈224** on the JE list; find it live and IGNORE the one at ~268,33 =
+the global AI-search toggle) to expand, THEN type. `/type` with only `{text:...}` returns
+**HTTP 400** — always pass a selector:
 ```
 /type {"selector":"input.root_expandableSearchField_expandableInput__3cvPtuyg2T","text":"..."}
 ```
 It's a **prefix/contains match on the ID column only** — searching a description string returns 0 rows.
+Note the search box resets on every navigate and clicking a status tab; re-expand each time.
+
+### Open a specific JE by its 7-digit ID (the ONLY reliable path)
+```python
+api("/navigate",{"url":".../accounting/journalEntry/list"}); sleep(9)   # assert href ends /list
+api("/mouse",{"x":1095,"y":224}); sleep(2)                              # expand search
+api("/type",{"selector":"input.root_expandableSearchField_expandableInput__3cvPtuyg2T","text":"1685170"})
+api("/press",{"key":"Enter"}); sleep(6)                                 # → "1 Result(s)"
+# click the ID leaf (lands ~x374,y314 for a single-result list)
+coords = eval("""[...document.querySelectorAll('*')].filter(x=>x.children.length===0
+   && (x.innerText||'').trim()==='1685170')[0].getBoundingClientRect()""")
+api("/mouse", center(coords)); sleep(8)
+# now location.href carries the real transactionId — verify it changed
+```
+Search works from the **All** tab too (no need to be on Error). ~25s per JE end-to-end, so batch
+the pulls in ONE `execute_code` call.
+
+### Scraping the FULL error list (virtualized — you only get ~20 rows per read)
+The scroll container is an **unclassed `<div>`** (`className===''`) with `scrollHeight>clientHeight`
+and `clientHeight>300`. It is NOT findable by class. Loop: read `body.innerText` → regex rows →
+`el.scrollTop += 350` → repeat until `scrollTop` stops advancing. ~45 iterations covers ~117 rows
+in about 25s. Row regex that works (Type may be multi-word, and some rows carry an extra
+`Rev`/`Adj` badge line — anchor on `Error\n(\d{7})\n`):
+```python
+re.compile(r"Error\n(\d{7})\n([A-Za-z ]+)\n(\d\d/\d\d/\d\d)\n([^\n]+)\n([^\n]+)\n([^\n]+)\n"
+           r"([^\n]+)\n([^\n]+)\n([^\n]+)\n(\$[\d,\.]+)\n([^\n]+)\n([^\n]+)\n")
+```
+Dedupe into a dict keyed by JE id (rows repeat across scroll reads). Then aggregate with `Counter`
+on journal / reference-type / creator / accounting-date — **that grouping IS the report Joe wants**.
+Persist to `/tmp/<store>_je_errors.json` since `execute_code` is stateless between calls.
 
 ---
 
@@ -68,14 +122,20 @@ On the detail page, `document.body.innerText.split('General Information')[1]` gi
 (Franchise / Journal Number-Name / Document Type / Description / Reference Type / Reference /
 Accounting Date) plus Credit / Debit / **Balance** / Gross Profit and the posting-line table.
 
-For an **editable (Error/Draft)** JE the GL cells are react-selects, not text. Pull them with:
+For an **editable (Error/Draft)** JE the GL cells are react-selects, not text. Pull them with
+(**use the loose `[class*="tekion-select"][class*="container"]` selector — the hashed
+`tekion-select-b62m3t-container` class changes between builds — and `y>300`, not `y>500`, or you
+drop the first posting line**):
 ```js
-(()=>{const o=[];[...document.querySelectorAll('[class*="tekion-select-b62m3t-container"]')]
-  .filter(e=>e.getBoundingClientRect().y>500).forEach(s=>o.push((s.innerText||'').trim()));
+(()=>{const o=[];[...document.querySelectorAll('[class*="tekion-select"][class*="container"]')]
+  .filter(e=>e.getBoundingClientRect().y>300).forEach(s=>o.push((s.innerText||'').trim()));
  const a=[...document.querySelectorAll('input')].filter(i=>i.placeholder==='0.00'
   && i.getBoundingClientRect().width>0).map(i=>i.value);
  return JSON.stringify({gl:o,amt:a})})()
 ```
+- The `gl` array's **first two entries are the header selects** (Reference Type e.g.
+  `"Parts Sales Order"`, and Reference e.g. `"331575"`) — posting lines start at index 2, and
+  `amt[0]` pairs with `gl[2]`. Don't off-by-two the diagnosis.
 - A GL cell reading literally **`"Select"`** = the blank/unmapped account. That is the error.
 - Amounts pair positionally with the GL list (index 0 ↔ index 0).
 - A **Posted** JE renders the same table as plain text (no selects) — the JS above returns empty; just read `innerText` instead. **This difference is the tell for Posted vs Error.**
@@ -112,13 +172,40 @@ Key leaves for parts/service JE errors:
 - **Payment Receipts → Fixed Operations (6)** → Parts/Service Payment Methods by pay type. Columns: `Payment Method (Parts) · Sale Type (Fixed Ops) · GL Account`.
 
 ### Nav pitfalls (cost several turns)
+- **The section parents (`Variable Operations` / `Fixed Operations` / `Payment Receipts` / `Payroll`)
+  are NOT leaf nodes** — they're `div.ant-menu-submenu-title` inside an `li.ant-menu-submenu` and
+  they wrap child text, so a `children.length===0` leaf search returns **nothing** and you conclude
+  (wrongly) the item doesn't exist. Find them by exact `innerText` match on `li,div` and click the
+  title div (`Fixed Operations` ≈ x230,y481 at SCT). The *children* (`Others (2)`,
+  `Part & Accessories (6)`) ARE matchable — take the LAST match (`e[e.length-1]`) since the `li`
+  and inner `div` both match; the inner div gives the correct clickable center.
+- Right-panel mapping **cards** (`Fixed Operations Other`, `Online Parts Payments`, `Parts-Counter`)
+  ARE leaf nodes — click by exact leaf text, then re-read `body.innerText`. Clicking the same card
+  title again collapses it, which is handy for iterating several cards in one loop.
 - Left-nav items live **below the fold** and their coords shift as sections expand/collapse. Always `scrollIntoView({block:'center'})` the target, re-read `getBoundingClientRect()`, THEN `/mouse` click. Clicking a stale coordinate silently opens the *previously* selected section (you'll see e.g. "Receivables Mapping" when you asked for "Others").
 - Clicking the same parent twice toggles it shut. Re-read the nav text after each click.
-- Right-panel mapping cards are collapsed accordions — click the card title (`x>350`) to expand and reveal its table.
 
 ---
 
-## 5. Known root cause: department-scoped mapping gap
+## 5. Triage FIRST: not every Error JE is a mapping gap
+
+Before you go hunting mappings, split the error queue by **Balance** (header line on the detail page):
+
+| Balance | Meaning | Fix owner |
+|---|---|---|
+| **$0.00** + one GL cell reads `"Select"` | **Mapping gap** — Tekion built a balanced entry but couldn't resolve one account | Jay (config) |
+| **Non-zero** (Dr ≠ Cr) | **Malformed entry** — lines are missing, not accounts. No mapping change will fix it | Accounting must rebuild |
+
+Real example (SCT 8/24/2026) — 117 errors, 114 were the mapping gap, 2 were NOT:
+- `1686422` Warranty Credit Memo — Balance **−$236,238.16**: Dr `3001 A/P-TOYOTA` $261,581.49 vs only
+  $25,343.33 of credits across 15 `2211 - PDI` lines. Credit side truncated.
+- `1685915` Used vehicle purchase, stock CT27020 — Balance **−$26,660.00**: single line
+  Dr `2400 USD VEH INV - NON-CERT TOYOTA`, no offsetting credit at all.
+
+Call these out separately in the report. Saying "117 JEs, all the same mapping bug" when 2 aren't
+is exactly the kind of wrong root cause Joe rejects instantly.
+
+## 5b. Known root cause: department-scoped mapping gap
 
 **Symptom pattern seen at SCT 8/21/2026** — 10 Error JEs, all journal `32 - PARTS CASH SALES`,
 all Auto Posting, all same creator, from 5 sales orders × 2 JEs each (the sale + the deposit).
@@ -138,17 +225,42 @@ only half its mappings were built.
 Fix (only with explicit go-ahead): add the missing row via the mapping card's **Add** button, then
 re-open each errored JE and Submit.
 
-### OPEN ITEM — SCT 876 (as of 2026-08-21, diagnosed read-only, NOT fixed, awaiting Joe)
-`Parts Cash Holding Account` exists only for dept `05 - PARTS & ACCESSORIES (Parts)` → `2045 - CASH SALES`.
-No dept-`06 - Online Parts Sales (Parts)` row. Proposed fix:
-`Parts Cash Holding Account | 06 - Online Parts Sales (Parts) | 2045 - CASH SALES`, then re-submit the 10 errored JEs.
-Affected: journal 32 PARTS CASH SALES, SOs 331573 / 331575 / 331577 / 331579 / 331580 (sale + deposit each),
-all created by Tiffany Dao on 8/21/2026, ~$264 sale side + ~$158 deposit side.
-Reference JEs: errored `1685205` (sale, $88.77) / `1685203` (deposit, $51.24); working posted control `1685197` / `1685196` (wholesale, dept 05).
-Errored sale lines: `[BLANK] $51.24` · `4748 SLS-TOY PARTS ONLINE RETAIL -$46.58` · `6748 CST PRT ONLINE RTL-TOY $37.53` · `2410 PARTS INV-TOY EXCL-TIRES -$37.53` · `3140 ACCRD TAXES-SALES -$4.66`.
-Likely related to the 8/19/2026 SCT parts tax-code-setup migration that also dropped the ONLINE sale types
-(see `tekion-parts-tax-not-calculating-diagnosis`) — first online retail sales ran 8/21 and exposed both gaps.
-**Check whether this was ever applied before re-diagnosing.**
+### OPEN ITEM — SCT 876 — STILL NOT FIXED, and COMPOUNDING (re-verified 2026-08-24)
+
+`Parts Cash Holding Account` still exists ONLY for dept `05 - PARTS & ACCESSORIES (Parts)` → `2045 - CASH SALES`.
+No dept-`06 - Online Parts Sales (Parts)` row. Confirmed in *Fixed Operations → Others → Fixed Operations (Other)*.
+
+**Proposed fix (still un-applied, awaiting Joe's go):**
+`Parts Cash Holding Account | 06 - Online Parts Sales (Parts) | 2045 - CASH SALES`,
+then re-submit the errored JEs (the detail page has a **"Perform action and move to next Journal Entry"**
+button that chains them — you do NOT round-trip the list 114 times).
+
+**Growth curve — this is the headline number when re-reporting:**
+
+| Date checked | Error JEs | Sales orders | $ |
+|---|---|---|---|
+| 2026-08-21 | 10 | 5 | ~$422 |
+| 2026-08-24 | **114** (of 117 total in queue) | **57** | **$19,104.60** |
+
+By accounting date on 8/24: 8/21 = 30 · 8/22 = 50 · 8/23 = 22 · 8/24 = 12 (still generating at 7:35 AM).
+Creators: Tiffany Dao 57 · Alfonso Morataya 39 · David Camacho 18. All journal `32 - PARTS CASH SALES`,
+Reference Type `Parts Sales Order`.
+
+**Confirmed mapping evidence** (SCT, *Fixed Operations → Part & Accessories*): both the
+**Online Parts Payments** and **Parts-Counter** cards route `Retail/ONLINE RETAIL` → dept
+`06 - Online Parts Sales (Parts)` → `4748`, and `Wholesale/ONLINE WHOLESALE` → dept 06 → `4731`.
+So revenue resolves under dept 06 but the holding account has no dept-06 row → blank line.
+
+Reference JEs 8/24: errored sale `1685170` (SO 331575, $30.74) / deposit `1685169` ($17.74);
+errored `1686431`/`1686430` (SO 331922). Working posted control = `1686437` (SO 331924, a **counter**
+sale, dept 05) which shows `2045 - CASH SALES $8.98` in exactly the slot the errored ones leave blank.
+Errored sale lines pattern: `[BLANK] +deposit$` · `4748 −sale$` · `6748 +cost$` · `2410 −cost$` · `3140 −tax$`.
+Deposit JE pattern: `2045 - CASH SALES +$` · `[BLANK] −$`.
+
+Traces to the 8/19/2026 SCT parts tax-code-setup migration that also dropped the ONLINE sale types
+(see `tekion-parts-tax-not-calculating-diagnosis`).
+**Before re-diagnosing: check whether the dept-06 row was ever added — if not, LEAD with the growth
+number, not with a fresh walkthrough of the same evidence.**
 
 ---
 

@@ -7,6 +7,11 @@ triggers:
   - reopened invoice
   - reopen RO
   - close RO blocked
+  - need attention on RO
+  - ready for invoice stuck
+  - causes must not be blank
+  - cost center description is empty
+  - what is wrong with this RO
   - lyft stuck in pending
   - transportation pending RO
   - cannot remove part
@@ -272,3 +277,43 @@ and the two questions. Don't state a root cause without the error text.
   ~3s later, `/mouse` the card. If landing throws "No such ro exist"/"Something
   went wrong", just re-`/navigate` to the captured `/ro/repair-orders/<docId>/jobs`
   URL — transient SPA error.
+  **COUNTERPOINT (2026-08-24): the reverse also happens — try BOTH boxes.** On the
+  SCT RO list, typing 580200 in the GLOBAL "Search here..." + Enter did nothing
+  (page stayed on /ro-list), while the **page-level expandable "Search..."**
+  (root_expandableSearchField_expandableInput, ~x1025,y163) opened the omni-search
+  drawer and produced the "RO #580200 | Tag #3TMLB" card immediately. Recipe that
+  worked: /mouse the expandable input, tag it (e.setAttribute('data-jay','1')) to
+  dodge selector collisions with the global box, /type on input[data-jay='1'],
+  /press Enter, then /mouse the leaf element matching /RO #<num>/. Neither box is
+  reliably "the" one; if the first does nothing in ~6s, switch to the other rather
+  than debugging.
+
+### :9223 / notification-toast traps hit on this task (2026-08-24)
+
+- **ant-notification toasts STEAL your click coordinates.** Tekion pops
+  RO/parts notifications continuously. /mouse returns success and nothing opens
+  because document.elementFromPoint(x,y) is an ant-notification-notice-message
+  overlaying the button. Diagnose with document.elementFromPoint(x,y).outerHTML;
+  clear with document.querySelectorAll('.ant-notification').forEach(e=>e.remove())
+  **immediately before every /mouse**, not once per page. (Same class of bug as
+  the Pendo overlay, different element.)
+- **Worse: a toast click NAVIGATES YOU AWAY.** Clicking through a notification
+  jumped the SPA to /accounting/journalEntry/list and later
+  /accounting/glaccountmapping/list mid-diagnosis. If a follow-up /eval shows an
+  unexpected location.href, that's what happened — re-navigate to the RO URL,
+  don't assume the session broke or that another user is driving the browser.
+- **Guard /mouse against empty/off-screen coords.** A coord-finder that returns
+  '{}' then api("/mouse",{}) = **HTTP 404** (server requires numeric x/y), and a
+  freshly-navigated page can return **negative y** (e.g. y:-210) before layout
+  settles so the click lands nowhere. Always poll until the element exists AND
+  y>50, scrollIntoView({block:'center'}) first, then click.
+- **/eval with arrow functions + optional chaining can 500 the server.** Some
+  payloads using ?. or => returned HTTP 500 from :9223 itself. Rewrite in plain
+  ES5 (function(){}, explicit null checks) and it works. A 500 on /eval is usually
+  YOUR JS, not a dead browser — verify with a trivial
+  /eval {"js":"JSON.stringify(location.href)"} before declaring the instance broken.
+- **vision_analyze MIS-READ the cost-center block twice**, reporting the
+  "Payer - Cost Center Details" section as "collapsed / not visible" when the DOM
+  clearly had it expanded with populated rows. For dense Tekion tables trust the
+  **DOM text** (n.innerText plus each input's value/disabled flags); use vision
+  only for color/badge cues (the orange "Need Attention" icons) it can add.
