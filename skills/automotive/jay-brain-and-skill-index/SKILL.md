@@ -73,8 +73,12 @@ feed it clean, well-formed pages and USE THE RIGHT COMMANDS, not rebuild what it
      spans the last session line + the following `## Concepts / Reference` heading, the `patch` tool's
      fuzzy matching sometimes inserts a leading space on every new line (`- [[session-...]]` becomes
      ` - [[session-...]]`). This breaks nothing functionally but is inconsistent with the rest of the
-     file. ALWAYS `read_file` the inserted range afterward and check for a leading space; if present,
-     fix with `sed -i '<start>,<end>s/^ - /- /' /home/itadmin/brain/index.md` before committing.
+     file. PREVENT IT: make `old_string` the LAST SESSION LINE ONLY (a single `- [[session-...]]` line,
+     which is unique) and `new_string` that same line + the new line(s) — never let the match span the
+     blank line or the following `## Concepts / Reference` heading. Verified clean 2026-08-24 (3 lines
+     appended across two passes, zero indentation drift). If you did span the heading, `read_file` the
+     inserted range and fix any leading space with
+     `sed -i '<start>,<end>s/^ - /- /' /home/itadmin/brain/index.md` before committing.
   5. `git add -A` → `git commit -m "brain sync"` (separate calls).
   6. **RE-IMPORT + EMBED AGAIN** so the EDITED index.md page itself gets re-embedded:
      `gbrain import --no-embed` (reports "1 page imported") + `gbrain embed --stale` ("1 chunk").
