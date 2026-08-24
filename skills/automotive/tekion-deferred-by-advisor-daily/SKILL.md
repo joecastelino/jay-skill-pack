@@ -62,6 +62,12 @@ Note some ids resolve to non-advisor personas (e.g. BC `8c0d2da8…` = Dale Alex
 ## Reference run (BC / 1251, Mon 8/17/2026)
 46 declined lines · 20 ROs · $23,179.47 · 21 Critical. Michael Reyes #1 ($6,233).
 
+## Reference run (BC / 1251, Sat 8/22/2026)
+17 declined lines · 8 ROs · $12,984.56 · 5 Critical. Juan Ramirez #1 (9 lines / 4 ROs / $5,278.70),
+Houa Moua $4,635.63 (1 RO), Jacob Debussey $2,690.00, Dimetri Reynoso $380.23.
+Fri 8/21 was the trailing-7 peak at $44,347 / 51 lines. Dimetri Reynoso = BC advisor not in the
+8/19 roster list below — the BC writer set changes; don't hardcode it.
+
 ## Reference run (BC / 1251, Wed 8/19/2026)
 25 declined lines · 16 ROs · $21,658.61 · 6 Critical. Juan Ramirez #1 ($6,793.43).
 Trailing-7 peak was Fri 8/14 at $54,931.33 — daily volume swings hard, so a low day is
@@ -99,6 +105,16 @@ Then verify independently with `jay-gmail-draft-verification` — confirm labels
 Sent Mail = 0 hits, attachments byte-identical to source files, and the PNG is a real data-URI not a CID stub.
 
 ## Pitfalls
+- **"I don't see the draft" usually means it's STALE, not missing.** This report has no cron
+  (as of 8/2026) so it only exists for whatever day it was last hand-run. Gmail sorts Drafts by
+  creation date, so a days-old draft sits ~13 rows down under the menu-sales drafts and Joe
+  reads that as absent. Don't argue from the Gmail UI — prove it with raw IMAP (UID, `\Draft`
+  label only, 0 hits in Sent), then **immediately build a fresh one for the latest business day**
+  rather than just confirming the old one exists. Offer to trash the superseded draft.
+- **Un-cron'd one-off reports go stale silently.** If a report is built as a one-off, say so and
+  offer to wire the cron in the same turn. Proposed schedule for this one: daily 7:30 AM,
+  previous business day (index lags ~1 day), BC → draft to Ruben Cc Joe, delivered to the
+  BC/GM Slack thread `C0BR7FHMF17:1787111034.827789`. Sunday = 0 (store closed), skip or note it.
 - **Stale test drafts accumulate.** Each test run leaves a dated draft in `[Gmail]/Drafts`
   (e.g. "BC Deferred Work by Advisor - Monday 08/17/2026" UID 42447 from the 8/18 run).
   After verifying a new draft, list Drafts and offer Joe the cleanup of prior-day copies —
