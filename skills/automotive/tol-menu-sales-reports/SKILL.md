@@ -887,6 +887,30 @@ Sent-check via the SHORT subject stem = 4 hits, all old em-dash-era sends (06/30
 today = no leak; \Draft-flag follow-up skipped per the 8/17 note. Drafts stack tiny (4): 08/21,
 08/22, 08/23 hyphen-subject Opened drafts plus the perennial 08/02 em-dash one (UID 20).
 
+## (8/24 12:05PM, Opened) TEXTBOOK CLEAN RUN — 3rd consecutive genuine $0 day
+Zero exit-124s, zero corrections, CORRECT UID reported (no bogus-ID self-correction needed).
+Hand-off returned in 106s, draft 42629 (IMAP UID 69) correct FIRST TRY: multipart/mixed >
+related > alternative(text/plain+text/html) + image/png Content-ID=<scorecard> 43,903B +
+application/pdf 29,216B. No dedupe needed. All 3 verification asks returned FIRST try and
+FAST with "use raw IMAP, NOT the Gmail API" leading + parts-only part-listing wording:
+subject-list 24s, MIME part-listing 21s, Sent-check 24s.
+DATA: 83 opened ROs scanned, 0 menus / $0.00 — THIRD straight $0 day (8/23 noon, 8/23 EOD,
+8/24 noon). Verified genuine via the opcode sanity scan: 12 TEK ops present but ALL were
+numeric-suffix opcodes (TEK09030103 / TEK09040104 / TEK09050103 / TEK09070103), zero overlap
+with the 212 TEK<mileage><tier> menu set. Prefix histogram was the classic real-$0 shape
+(SUR 68, INV 68, FLO 68, TPS 64, MPV 58, CON 36, TXM 23, LOF 16). A multi-day $0 streak is
+NOT by itself evidence of a pipeline bug — run the sanity scan and report honestly.
+SANITY-SCAN PROBE GOTCHA (cost 2 wasted iterations): do NOT hand-roll the RO/jobs/operations
+traversal from guessed field names. The correct shapes are `ro["documentId"]`,
+`jobs["data"]["jobs"]`, `ops["data"]["roOperations"]` — a generic
+`out.get("data", out.get("content", []))` returns a dict and yields either a `TypeError:
+unhashable type: 'slice'` or an all-`HTTP***`-prefix histogram (silent false negative that
+looks like the API is broken). Reuse the script's own `O.fetch_ros(ms0, ms1)` helper (which
+also carries the 429 backoff) and copy `scan_ro`'s exact key path from
+`sed -n '250,300p' tol_menu_sales_api.py` before writing any probe.
+Drafts stack tiny (5): 08/21-08/24 hyphen-subject Opened drafts plus the perennial 08/02
+em-dash one (UID 20) — single copy, not a true duplicate, still flag-don't-delete.
+
 ## (8/23 8:05PM, Closed MTD) TEXTBOOK CLEAN RUN — zero exit-124s across all 4 calls
 Hand-off returned in 161s (no timeout), draft correct FIRST TRY, no dedupe needed. All 3
 verification asks returned FIRST try with "use raw IMAP, NOT the Gmail API" leading and the
