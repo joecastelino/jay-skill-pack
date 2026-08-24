@@ -1,6 +1,6 @@
 ---
 name: tekion-vi-stock-number-rules-fix
-description: Fix Tekion Vehicle Inventory Stock# Rules (Vehicle Inventory Setup > Stock# Rules) when a trade-in of a given Make generates a wrong/random stock number instead of the expected prefix (e.g. Mercedes-Benz trade-in not getting an "S..." stock#). Covers navigating to /vi/visettings, editing a rule's Make multi-select via the persistent browser, the modal-scroll gotcha, the two-level Save requirement, and true-remount verification. Verified live at SCT (dealer 876) 2026-08-17.
+description: Diagnose and fix Tekion Vehicle Inventory Stock# Rules (Vehicle Inventory Setup > Stock# Rules) when a vehicle gets a wrong/random stock number. Covers BOTH root causes — (1) a Make missing from a rule's Make multi-select so the wrong PREFIX is assigned, and (2) the rule matching for prefix but the NUMBER falling through to the global auto-increment counter. Includes the API-first diagnostic (OpenAPI vehicle-inventory timeline scan proving the fallback-counter signature), the subtype-coverage audit, /vi/visettings editing, the modal-scroll gotcha, the two-level Save requirement, and true-remount verification. Verified live at SCT (dealer 876) 2026-08-17 and 2026-08-24.
 triggers:
   - stock number wrong
   - wrong stock number
@@ -9,6 +9,9 @@ triggers:
   - trade-in stock number
   - stock number rule make missing
   - tekion stock sequence config
+  - should have been decoded as
+  - stock number decoded wrong
+  - random stock number
 ---
 
 # Tekion Vehicle Inventory Stock# Rules — Make-List Fix
@@ -21,7 +24,7 @@ Support (Balla Meghana / Shivam Yadav pattern) will correctly diagnose "the make
 is not added in the vehicle inventory setup" but their support agents can't touch
 dealership settings — only Jay/Joe can fix it directly.
 
-## Root cause pattern
+## Root cause pattern #1 — Make missing from the rule's Make list
 `/vi/visettings` → **Stock# Rules** tab has an ordered list of conditions
 (Stock Type | Stock Sub Type | Make combinations) each mapping to a stock-number
 pattern (e.g. `C210001`, `T210001`, `S5000`). The LAST rule is usually a broad
@@ -127,7 +130,160 @@ pencil → add Make → Save) which Jay executed directly. Confirmed missing fro
 levels, verified via full remount. Future Mercedes-Benz trade-ins at SCT now get
 proper S-prefixed stock numbers.
 
+## STEP ZERO — API first, browser second (added 2026-08-24)
+
+**Do NOT open the browser first, and do NOT go spelunking in Hermes session logs
+for prior context.** Both cost real time in the 2026-08-24 session. The OpenAPI
+answers "what did this VIN actually get?" in one call:
+
+```python
+import sys; sys.path.insert(0,"/home/itadmin/tekion-api")
+import tekion_client as tc
+cfg = tc.load_config(); did = cfg["dealers"]["st"]      # dealers dict: ar/bc/bt/st/sv/tl/vc
+out = tc.api_get(cfg, "/openapi/v4.0.0/vehicle-inventory", did,
+                 {"count": 5, "vin": "<VIN>"}, retries=1)
+# fields that matter: stockID, stockType, stockSubType, source.type,
+#                     vehicleSpecification.make/model/year, createdTime, modifiedTime
+```
+Loop the same call over all 7 dealer IDs when you don't know which store the unit
+landed in — it's ~2s total and beats asking.
+
+**`createdTime` vs `modifiedTime` tells you whether a human renumbered it.** On the
+2026-08-24 RAV4 the two were 13 seconds apart and never touched again, i.e. the
+stock number you're looking at IS the one the rule engine assigned — nobody fixed
+it by hand afterward.
+
+### Building the stock-ID timeline (the thing that proves root cause #2)
+
+`vehicle-inventory` caps at 100 rows/page and `page.from` is unreliable, so paginate
+by **recursive time-window bisection** on `modifiedStartTime`/`modifiedEndTime`,
+deduping on `id`, and query each status separately:
+
+```python
+def window(status, start, end, depth=0, acc=None):
+    acc = acc if acc is not None else []
+    out = tc.api_get(cfg, "/openapi/v4.0.0/vehicle-inventory", did,
+        {"count":100,"status":status,"modifiedStartTime":start,"modifiedEndTime":end}, retries=1)
+    total = out.get("meta",{}).get("total",0)
+    if total == 0: return acc
+    if total <= 100 or depth > 28 or end-start <= 1:
+        acc.extend(out.get("data",[])); return acc
+    mid = (start+end)//2
+    window(status,start,mid,depth+1,acc); window(status,mid,end,depth+1,acc)
+    return acc
+
+seen = {}
+for st in ("STOCKED_IN","SOLD","ON_HOLD","IN_TRANSIT"):
+    for v in window(st, start_ms, end_ms): seen[v["id"]] = v
+```
+Filter to `stockType=="USED"` and `createdTime >= start`, sort by createdTime, and
+print `date | stockID | stockSubType | source.type | make`. ~55 days of SCT used
+inventory = 374 rows, ~77s. **NEVER put SOLD in the same `status:IN` filter as the
+others** (same trap as the VI scraper — bare SOLD is a 48k archive that breaks
+pagination).
+
+## Root cause #2 — prefix is RIGHT, number falls through to the global counter
+
+Discovered 2026-08-24 at SCT. This is a DIFFERENT failure from the missing-Make
+case above and the 8/17 "Mercedes fix" did **not** address it.
+
+**Signature:** the stock ID carries the correct alpha prefix from the matched rule,
+but the numeric portion is nowhere near that rule's own sequence — instead it sits
+exactly inside the store's **bare-numeric new-vehicle auto-increment stream**.
+
+Worked example (SCT, dealer 876):
+
+| Date | VIN | Got | Rule's own series |
+|---|---|---|---|
+| 08/17 15:12 | WD4PE8CDXJP584435 (Mercedes Sprinter) | **S15042** | S84xx |
+| 08/24 12:19 | 5TDDSKFC8SS159289 (Sienna, Toyota trade, subtype *Used Vehicle Purchases*) | **CT15232** | NT29xx |
+
+Proof: SCT's bare-numeric NEW stock IDs ran 15034 (8/15) → 15051 (8/19) → 15196
+(8/20) → 15215 (8/22). **15042 and 15232 land dead inside that stream.** That's the
+fallback `AUTO_INCREMENTING_NUMBERS` counter, not any Stock# rule.
+
+Note the Sienna also got the wrong PREFIX (CT instead of NT for the
+*Used Vehicle Purchases* subtype) — so a single unit can exhibit both failures.
+
+**Diagnostic rule of thumb:** collect the store's bare-numeric stock IDs from the
+same timeline scan. If the numeric part of the bad stock ID interleaves with them
+chronologically, it's the fallback counter — stop looking at Make lists.
+
+## Subtype-coverage audit (the gap that feeds the fallback counter)
+
+Enumerate the stock subtypes actually IN USE from the timeline scan, then diff them
+against the rule conditions on screen. SCT rules as of 2026-08-24:
+
+```
+New  | Car                                  -> C210001
+New  | Suv | Truck/van                      -> T210001
+Used | Used Cpo | Toyota                    -> CT20000
+Used | Used Vehicle Purchases | Toyota      -> NT1000
+Used | <~73 other makes>                    -> S5000
+```
+Live subtypes found in the data with **no matching rule**: `Used Vehicle Wholesale`
+(+Toyota), `CPO- Gold`, `CPO- Silver`. Anything whose subtype has no rule row has
+nothing to match and drops to the fallback counter. Always run this diff before
+concluding "the Make list is fine, so the config is fine."
+
+**Second anomaly worth flagging to Joe:** SCT is running **two CT counters in
+parallel** — CT24xxx (CT24556, CT24558) and CT27xxx (CT27001 → CT27021) interleaved
+by the minute on 8/21. One of them is not coming from the CT20000 rule.
+
+## Reading stockRuleConfig from the API — and the dealer-context trap
+
+The full VI setup JSON (including `stockRuleConfig`) comes back on
+`GET /api/vi-setup/u/vi?langParam=en_US`. A bare in-page `fetch()` won't
+authenticate, so arm an XHR hook and let the SPA fire it, then force a refetch via
+`history.pushState` away and back (a full reload wipes the hook):
+
+```js
+// arm hook
+window.__cap=[];const O=XMLHttpRequest.prototype.open,S=XMLHttpRequest.prototype.send;
+XMLHttpRequest.prototype.open=function(m,u){this.__u=u;return O.apply(this,arguments)};
+XMLHttpRequest.prototype.send=function(b){this.addEventListener('load',()=>{
+  try{window.__cap.push({u:this.__u,r:this.responseText.slice(0,300000)})}catch(e){}});
+  return S.apply(this,arguments)};
+// force refetch
+history.pushState({},'','/home');window.dispatchEvent(new PopStateEvent('popstate'));
+// ...wait, then...
+history.pushState({},'','/vi/visettings');window.dispatchEvent(new PopStateEvent('popstate'));
+// read
+const h=(window.__cap||[]).filter(x=>x.u.includes('vi-setup/u/vi?lang'));
+JSON.parse(h[h.length-1].r).data.stockRuleConfig
+```
+
+**TRAP THAT BURNED A TURN:** the payload is for whatever dealer the browser is
+*currently* on, not the one you're investigating. On :9225 the context was TL (1092)
+while the ticket was SCT (876) — the returned `stockRuleConfig.dealerId` was `"1092"`
+with a single NEW-only condition, which looks alarmingly like "the used rules are
+missing." **Always assert `stockRuleConfig.dealerId` equals your target dealer
+before interpreting it.** Switch dealer through the UI pill first (setting
+`localStorage.currentActiveDealerId` does not work).
+
+`stockRuleConfig` shape:
+- `conditions[]` — each `{applicabilityRule:{STOCK_TYPE:[...],...}, stockRules:[{type,format,ruleValues}], ruleCounts:{startingValue,currentCount}, locked}`
+- `stockRuleTypeWeights` — the **priority weights** deciding which condition wins when
+  several match: `RANGE:12, TRANSFERRED:11, MFR_MODEL_CODE:10, SOURCE:9,
+  DEAL_VEHICLE_SOURCE:8, MAKE:7, YEAR:6, TRADE_OWNERSHIP_TYPE:5, MODEL:4,
+  STOCK_SUBTYPE:3, BODY_CLASS:2, STOCK_TYPE:1`. Useful when two rules both match.
+- `type:"AUTO_INCREMENTING_NUMBERS"` with `ruleCounts.currentCount` = the fallback
+  counter behind root cause #2.
+
+## STOP-and-ask discipline on this ticket type
+
+Per Joe's never-guess rule: if the API record **disagrees with what the user saw on
+their screen**, report both and ask — do not theorize. On 2026-08-24 the RAV4
+(2T3RWRFV1SW263674) came back as **CT27021**, i.e. already CT-prefixed, while Joe
+said "it should have been decoded as CT." Rather than invent a reconciliation, the
+right move was: state what the API shows, present the fallback-counter pattern found
+in the surrounding data as the real defect, and ask which stock number he actually
+saw. Stay read-only until he answers.
+
 ## Related skills
-- `persistent-browser-server` — :9223 API reference, `/mouse` for React-ignoring
-  elements, dealer-switch procedure
-- `tekion-sitemap` — general nav reference (add `/vi/visettings` there too)
+- `persistent-browser-server` — :9223/:9225 API reference, `/mouse` for React-ignoring
+  elements, dealer-switch procedure. **`/goto` does not exist — the endpoint is
+  `/navigate`** (a `/goto` POST returns HTTP 404 and looks like a dead server).
+- `tekion-vi-api-migration` — the OpenAPI vehicle-inventory two-query pattern and the
+  SOLD-status pagination trap reused by the timeline scan above
+- `tekion-sitemap` — general nav reference (`/vi/visettings` is listed there)

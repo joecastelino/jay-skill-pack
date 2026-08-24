@@ -1,6 +1,6 @@
 {
- "generated": "2026-08-24T13:15:03",
- "skill_count": 185,
+ "generated": "2026-08-24T13:30:17",
+ "skill_count": 187,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 133,
+   "times_used": 134,
    "last_used": "2026-08-24"
   },
   {
@@ -651,6 +651,14 @@
    "last_used": "2026-07-03"
   },
   {
+   "name": "tekion-vi-stock-number-rules-fix",
+   "path": "automotive/tekion-vi-stock-number-rules-fix",
+   "category": "automotive",
+   "description": "Diagnose and fix Tekion Vehicle Inventory Stock# Rules (Vehicle Inventory Setup > Stock# Rules) when a vehicle gets a wrong/random stock number. Covers BOTH root causes \u2014 (1) a Make missing from a rule's Make multi-select so the wrong PREFIX is assigned, and (2) the rule matching for prefix but the NUMBER falling through to the global auto-increment counter. Includes the API-first diagnostic (OpenAPI vehicle-inventory timeline scan proving the fallback-counter signature), the subtype-coverage audit, /vi/visettings editing, the modal-scroll gotcha, the two-level Save requirement, and true-remount verification. Verified live at SCT (dealer 876) 2026-08-17 and 2026-08-24.",
+   "times_used": 2,
+   "last_used": "2026-08-24"
+  },
+  {
    "name": "google-workspace",
    "path": "productivity/google-workspace",
    "category": "productivity",
@@ -775,14 +783,6 @@
    "path": "automotive/tekion-vendor-data-sharing-audit",
    "category": "automotive",
    "description": "Audit which third-party vendors/integrations (vAuto, HomeNet, VinSolutions, CDK, Carfax, Podium, OEM feeds, etc.) are receiving data feeds from Tekion, broken down by store. Use when asked \"what vendors get data feeds/integrations from AMG\", \"who are we sending inventory/CRM/recon feeds to\", or similar vendor-integration inventory questions.",
-   "times_used": 1,
-   "last_used": "2026-08-17"
-  },
-  {
-   "name": "tekion-vi-stock-number-rules-fix",
-   "path": "automotive/tekion-vi-stock-number-rules-fix",
-   "category": "automotive",
-   "description": "Fix Tekion Vehicle Inventory Stock# Rules (Vehicle Inventory Setup > Stock# Rules) when a trade-in of a given Make generates a wrong/random stock number instead of the expected prefix (e.g. Mercedes-Benz trade-in not getting an \"S...\" stock#). Covers navigating to /vi/visettings, editing a rule's Make multi-select via the persistent browser, the modal-scroll gotcha, the two-level Save requirement, and true-remount verification. Verified live at SCT (dealer 876) 2026-08-17.",
    "times_used": 1,
    "last_used": "2026-08-17"
   },
@@ -923,6 +923,14 @@
    "last_used": null
   },
   {
+   "name": "tekion-notification-settings-audit",
+   "path": "automotive/tekion-notification-settings-audit",
+   "category": "automotive",
+   "description": "Definitively answer \"where did notification X go / does notification Y exist / who gets notified when Z happens\" in Tekion. Dumps the COMPLETE list of user notification event types (all modules) from the internal notification-preference API instead of scrolling the giant Profile Settings table, then maps the request to the right config surface (per-user Profile Settings vs Service Settings vs Dispatch vs Scheduling vs Parts Settings). Load for any \"I can't find the setting that notifies ...\" ticket.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
    "name": "tekion-opcode-pricing-v2",
    "path": "automotive/tekion-opcode-pricing-v2",
    "category": "automotive",
@@ -951,6 +959,14 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-ro-job-paytype-triage",
+   "path": "automotive/tekion-ro-job-paytype-triage",
+   "category": "automotive",
+   "description": "Triage a bare \"RO <number> job <N> needs to be <pay type>\" ticket (or any bare-RO# request) from Joe. Covers the CRITICAL cross-store RO#-collision trap (RO numbers are NOT unique across the 7 AMG stores), the zero-quota OpenAPI symptom-verification pass that runs BEFORE any browser work, and where the pay-type change actually happens. Use for any ticket that names an RO number without naming a store.",
    "times_used": 0,
    "last_used": null
   },

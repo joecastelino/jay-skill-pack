@@ -93,6 +93,30 @@ The master switchboard for service/RO workflow behavior. Distilled from Tekion K
   successfully" toast. Verify with a TRUE remount (nav /home → back → re-read radios) —
   same-URL re-read is a false positive (SAVE-VERIFY TRAP).
 
+## Notification behavior is NOT centralized here (verified 2026-08-24)
+Only two notification-ish items exist on this page: **"Notify customer on invoice"**
+(General Setup) and the **customer-arrival** notifications (Service Communication Setup).
+Everything else lives elsewhere — see skill `tekion-notification-settings-audit` for the
+full 5-surface map. Most relevant here: **Parts Request** section →
+*"Auto submit Parts Fulfillment request for jobs when: Job is Created, Job is Saved,
+Tech is Assigned"* = the real "a job was added to the RO → tell Parts" trigger.
+
+Live section list (TL 1092, 2026-08-24 — more than the KB's 17): General Setup ·
+Opcode Mapping & Selection · Service Module Selection · Parts Request · Customer Pay ·
+Warranty · Internal Pay · Reminders · Tags · RO Flag · Hold · Booker Workflow ·
+Pre-Tech Finish · Pre-Job Completion · Pre-Invoice · Recommendation Addition Rules ·
+RO List KPI · Total Sales · Quotes · Role Configuration · Service Communication Setup ·
+Consumer Portal · Deferred Recommendation Rules · Follow up Recommendation Rules ·
+Recommendation Rules · Return RO · Job Clock Setup · Profit and Loss View Setup ·
+Reports · Credit Note Setup · Machine Learning · Opcode Pricing · Tax Settings.
+
+⚠ The page renders ~1,990 innerText lines (ALL sections in one scroll). Never read it
+linearly — grep the innerText array and slice around the hit index.
+
+⚠ Routing flake: on :9223 this URL repeatedly redirected to `/parts/tax-code-setup`
+even after a `/home` bounce, while loading fine on :9225. If a known-good URL keeps
+landing elsewhere, switch browser lanes instead of debugging the route.
+
 ## Pitfalls
 - Several behaviors are gated by **"when enabled by support"** (e.g. Select Default Service
   Advisor for jobs) — if a toggle is missing, it may need Tekion support to enable.

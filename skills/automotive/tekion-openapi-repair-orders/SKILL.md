@@ -31,6 +31,25 @@ Valid search fields confirmed at SCT: `documentNumber` ✔, `vin` ✔, `creation
 (BTW, epoch-ms strings) ✔. **`roNumber` returns 0 results** — it is not a field,
 even though the UI calls it the RO number. Use `documentNumber`.
 
+### ⚠️ RO NUMBERS ARE NOT UNIQUE ACROSS THE 7 STORES (verified 2026-08-24)
+Each store runs its own RO number sequence, so the SAME `documentNumber` can exist
+at multiple dealers. **RO 398422** returned a hit at **BOTH** ST/SCT (876 — a CLOSED
+2023 internal PDI) **AND** TL (1092 — an open warranty transaxle job created that
+morning). A `documentNumber` search is scoped by the `dealer_id` header, so a
+single-store lookup will happily return the WRONG store's RO with no warning.
+
+**When given a bare RO# with no store named, sweep all 7 dealers before acting:**
+```python
+for k,d in cfg["dealers"].items():          # ar bc bt st sv tl vc
+    out=post("/repair-orders:search", d,
+        {"filters":[{"field":"documentNumber","operator":"IN","values":[RO]}],"pageSize":5})
+    for r in ((out.get("data") or {}).get("results") or []):
+        print(k, d, r["documentNumber"], r["status"], r["documentId"], r["creationTime"])
+```
+Disambiguate on `status` + `creationTime` (a years-old CLOSED RO is rarely the one
+being discussed); if two hits are both plausible, ask rather than guess. Full
+triage workflow: skill `tekion-ro-job-paytype-triage`.
+
 Pagination is `meta.nextPageToken` → echo back as `paginationToken` (there is no
 `pageNumber`). Reference implementation: `~/tekion-reports/sct_menu_sales_api.py::fetch_ros`.
 
@@ -76,6 +95,23 @@ h = {"Authorization": f"Bearer {tok}", "app_id": cfg["app_id"],
 
 ## Nested RO resources (GET, same headers)
 - `/repair-orders/{rid}/jobs` → `data.jobs[]` — payType, status, concern text, job id
+
+### Reading job pay types (free, no browser) — for "job N should be W not I" tickets
+`data.jobs[]` gives the whole per-job pay-type picture in ONE call. `jobNumber` is a
+**string** ("1","2",…) and matches the numbered job list in the RO UI, so Joe's
+"job 1" maps directly. `payType` ∈ `CUSTOMER_PAY` / `WARRANTY` / `INTERNAL`
+(`subPayType` is usually null). Also free on each job: `status`, `hold`,
+`concern.text`, `causes[]`, `createdByUserId`, `modifiedByUserId`, `tags`.
+```python
+jobs=(get(f"/repair-orders/{rid}/jobs").get("data") or {}).get("jobs") or []
+for jb in jobs:
+    print(jb["jobNumber"], jb["payType"], jb["status"],
+          (jb.get("concern") or {}).get("text","")[:60])
+```
+**Always run this BEFORE opening a browser** — on 2026-08-24 it proved the reported
+"job 1 is Internal" was already WARRANTY, so no edit was needed at all. There is no
+OpenAPI WRITE path for payType (browser job-form radio only — see
+`tekion-ro-void-job-remove-parts`).
 - `/repair-orders/{rid}/jobs/{jid}/operations` → `data.roOperations[]` — **`opcode`, `opcodeDescription`, `labor.saleAmount` (CENTS: 8999 = $89.99), `labor.costAmount`**
 - `/repair-orders/{rid}/jobs/{jid}/operations/{oid}/parts` → `data.parts[]` — partNumber, quantities[], costAmount, saleAmount
 - `/repair-orders/{rid}/ro-vehicle` → vin, year/make/model, mileageIn/Out

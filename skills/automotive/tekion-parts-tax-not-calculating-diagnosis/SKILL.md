@@ -249,3 +249,86 @@ Note SV migrated 10/28/2025 — **the 8/19/2026 8:10–8:12 PM cutover hit 6 of 
 - Custom sale order types at SCT: `ONLINE RETAIL_RETAIL` (parent RETAIL, dept
   "06 - Online Parts Sales"), `ONLINE WHOLESALE_WHOLESALE` (parent WHOLESALE)
 - Exposure at detection: 6 orders / $250.10 / ~$25 tax
+
+---
+
+## INVERSE CASE: a FEE is being taxed when it shouldn't be (VC BATTFEE, 2026-08-24)
+
+Same new-Parts-Tax-Code-Setup engine, opposite symptom. A **fee** gets taxed because the parts
+tax grid maps component `FEES` → a tax code, and the fee's own pricing setup carries no tax
+config to override it.
+
+Diagnose via API (in-page fetch with `window.__H`, override `dealerId`/`tek-siteId`):
+```
+POST /api/service-module/u/fee/v3/search                 -> fee id by feeCode
+POST /api/service-module/u/fee/v3/details?locale=en_US   body {fees:[{feeCode,id}]}
+     -> data[0].pricingSetup.active[0].taxConfigs   <-- the ONLY thing the new engine reads
+GET  /api/parts-settings/u/tax-setup                     -> saleTypeTaxSetup[].taxCodeMappings (component FEES)
+```
+`data[0].configs[].overrideFlags` containing `EXCLUDE_TAX_CALCULATIONS` is **LEGACY** and is
+ignored once an order shows `extra.isNewTaxCodeSetupEnabled=["true"]`.
+
+VC (1891): tax-setup created 2026-08-19 8:10 PM PT maps FEES → "8.975% Tax" for RETAIL,
+INTERNAL and WHOLESALE. `BATTFEE` active `taxConfigs = []` — the only fee at the store with 0
+(SMOGTEST=1; WTAX/LOFDIS/RESTOCK/MISC/FEE=3). Alfa Romeo's `CABATT`/`BATTCORE` each carry 3
+`{taxRegimeType:SALES_TAX, taxable:false, payType:CUSTOMER_PAY|WARRANTY|INTERNAL}` rows —
+that's the correct shape.
+
+**UI TRAP — there is no "not taxable" control on the Edit Fee page.** The page shows a section
+`Taxes applicable on fee` → label `Sales Tax` → an **ant-select MULTISELECT whose options are
+PAY TYPES only**: `CP - Default customer pay`, `CVSC - Vehicle Service Contract`,
+`I - Default internal pay`, `W - Default warranty pay`. No taxable/non-taxable choice exists.
+Worse, WTAX (which HAS 3 `taxable:false` rows in its record) renders the same empty "Select" —
+so the screen **cannot distinguish 0 rows from 3 false rows**. Never tell Joe to "set it to not
+taxable"; there is no such field. Read `pricingSetup.active[0].taxConfigs` by API instead.
+
+### ⚠️ I gave Joe a wrong fix here — read this before proposing one (2026-08-24)
+
+I told Joe to "add 3 non-taxable rows on the fee's pricing setup." He replied *"I don't see the
+not taxable section, I only see the apply taxes on."* He was right; I had read the API record
+shape and assumed a matching UI existed. **Do not translate an API field into a UI instruction
+without opening the screen.**
+
+What the screens actually show:
+- `/core/fees/edit/<FEECODE>` → only the pay-type multiselect described above.
+- `/parts/tax-code-setup` ("Tax Setup for Parts") → grid of **sale types × components**
+  (Parts / Core Sale / Core Returns / **Fees** / Labour), rows Vendor/Retail/Wholesale/Internal
+  plus any custom sale types. **This is where the fee tax comes from.** Click `Edit` (top-right
+  of the grid, ~x1233,y219) to see every cell as a tax-code dropdown.
+
+Two candidate fixes, and **I could not confirm which is correct — don't guess between them**:
+1. Clear/blank the **Fees** cell in Parts Tax Setup. Simple, but it is **store-wide** — it
+   untaxes EVERY fee at that store, not just the one in question.
+2. Get the 3 `taxable:false` rows onto the individual fee (the WTAX/LOFDIS shape). Surgical and
+   correct, but **no UI path was found that writes them** — they may be migration- or
+   legacy-screen-written.
+
+Correct move when you hit this: present both options with that trade-off stated, and recommend a
+Tekion ticket phrased as *"under the new Parts Tax Code Setup, how do we mark an individual fee
+non-taxable when the Fees component is mapped to a tax code?"*, citing a working/non-working
+pair at the same store (VC 1891: WTAX exempt vs BATTFEE taxed). This is a NEVER-GUESS moment per
+Joe's standing rule — say where the wall is instead of inventing a plausible click-path.
+
+**Evidence scans that came back empty — don't repeat them.** BATTFEE was NOT found on any VC
+parts sale order (600+ scanned, incl. `searchText:'battery'` and `'000915105'`) nor on 200 ROs
+from `/tmp/vcros.json`. `partSaleDetails[].charges[]` and `assetCharges` were `[]` on every
+order; `taxSummary.subTotalFees` was `0` everywhere. Recent VC orders also show
+`taxSummary:{}` / `taxCodeGrid:[]` entirely on some CLOSED orders. So the fee's presence could
+NOT be confirmed from order payloads — the config comparison (BATTFEE vs sibling fees vs Alfa
+Romeo's CABATT/BATTCORE) was the only evidence that held up. Also: `searchText` + `siteId` filter
+combos intermittently 400 with `"Requested URI does not represent any resource"`.
+
+**Nav notes:** fee list `/core/fees` (VC = 26 fees), edit page `/core/fees/edit/<FEECODE>`,
+parts tax grid `/parts/tax-code-setup` (Edit button ~x1233,y219).
+If `/navigate` appears to land on `tekion.service-now.com`, the :9223 server is bound to the
+wrong TAB — `curl /pages` then `POST /pages/select {"index":N}`. Do NOT loop retrying navigates
+(see `persistent-browser-server` skill). After re-selecting a page, **re-verify
+`currentActiveDealerId`** — the bound tab may be a different store (this session it was BT/1249
+while the work was VC/1891).
+Dealer switcher shows only 6 rows; `scrollIntoView` the target row BEFORE reading coords —
+coords shift after scrolling (VC moved from y472 to y396) and a stale-coord click silently
+opens the wrong thing or nothing.
+
+**Safety:** opening the Parts Tax Setup grid in Edit mode is read-safe, but there is no
+`Cancel` text node to click reliably — navigate away instead, and tell Joe explicitly that you
+backed out without saving.

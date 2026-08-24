@@ -71,6 +71,14 @@ curl -s http://localhost:9223/health  # {"status":"ok"}
 | POST | `/mouse` | `{"x":1239,"y":319}` (opt `clicks`, `button`, `move:true`) | `{"success":true,"x":..,"y":..}` |
 | GET | `/url` | — | `{"url":"https://..."}` |
 | POST | `/console` | — | `{"messages":[...]}` |
+| GET | `/pages` | — | `{"count":4,"pages":[{"index":0,"url":"...","closed":false,"bound":true},...]}` |
+| POST | `/pages/select` | `{"index":1}` | `{"success":true,"selected":1,"url":"..."}` |
+| POST | `/pages/close` | `{"index":N}` | `{"success":true}` |
+
+**`/pages` is the first thing to check when the browser "won't navigate."** The server binds
+to ONE page (`"bound":true`); every other endpoint operates on that page only. Extra tabs
+accumulate silently (KB scrapes, target=_blank links) and the bound page can end up being a
+tab you don't care about.
 
 ## Python Client Pattern
 
@@ -380,6 +388,57 @@ read its bounding rect and `/mouse` the center. OTP boxes: `/mouse` box[0], then
 each digit. Wait for a NEW OTP email by envelope ID (>last seen), not by count.
 
 ## Pitfalls
+
+- **:9223 "hijacked" by the ServiceNow KB tab = WRONG BOUND PAGE. One-line fix: `/pages/select`
+  (root-caused 2026-08-24; supersedes the earlier "switch to :9225 or restart" advice).**
+  After KB work (`tekion-kb-search-scrape`), `POST /navigate` to `app.tekioncloud.com/...`
+  returns the requested URL in its response, but `/eval location.href` reports a
+  `tekion.service-now.com/sp/en?id=...` URL — often a *different* ServiceNow URL each time
+  (search results, then a KB article), which looks like the page is "wandering."
+  **Root cause:** the KB scraper opened extra tabs and the server's bound page is the
+  ServiceNow one. Navigations DO succeed — on a Tekion tab you aren't reading.
+  **Diagnose + fix (~2 seconds, no restart, no port switch):**
+  ```bash
+  curl -s localhost:9223/pages          # find the app.tekioncloud.com entry; note "bound":true
+  curl -s -X POST localhost:9223/pages/select -H 'Content-Type: application/json' -d '{"index":1}'
+  curl -s localhost:9223/url            # confirm it now reports the Tekion URL
+  ```
+  **Tells that distinguish this from a dead instance:** `/navigate` returns 200 with the right
+  URL (not chrome-error, not HTTP 500); `localStorage.currentActiveDealerId` reads a valid
+  dealer id; a screenshot shows a fully-rendered ServiceNow page rather than a blank/error one.
+  Intermittent "sometimes the navigate works" = you got lucky and the bound page happened to be
+  the Tekion tab. Cost of not knowing this: ~10 wasted turns of retry-navigate loops, plus
+  vision_analyze calls describing a KB search-results page while asking about a Tekion form.
+  **Also note the bound page can silently be a DIFFERENT DEALER** — after re-selecting, always
+  re-read `currentActiveDealerId` before trusting any store-scoped read (a `/pages/select` in
+  this session landed on BT/1249 while the work was for VC/1891).
+- **A `/navigate` that "succeeds" can leave `/eval` reading the PREVIOUS page's DOM.**
+  After navigating to a heavy Tekion RO page, `document.body.innerText` came back as 586
+  chars of the OLD `/vi/visettings` page — easy to misread as "the RO page is blank."
+  Never trust a single `sleep` + read. Poll until the DOM settles AND assert a
+  page-specific marker:
+  ```python
+  for i in range(8):
+      time.sleep(4)
+      print(api("/eval","POST",{"js":"JSON.stringify({u:location.href,l:document.body.innerText.length})"}))
+  ```
+  A loaded RO detail page is ~1,900+ chars and contains `RO# - <number>`; under ~700 chars
+  means it hasn't rendered yet.
+- **Dealer popover: rows below the fold (TL, VC) silently mis-click.** Coordinates read
+  from an earlier snapshot, or from a list rendered before scrolling, point at the wrong
+  row — `/mouse` returns success and `currentActiveDealerId` simply never changes. Always
+  `scrollIntoView({block:'center'})` the target row, **RE-READ** `getBoundingClientRect()`,
+  then `/mouse` the fresh center, then VERIFY the dealer id flipped:
+  ```js
+  const rows=[...document.querySelectorAll('[class*="root_dealerInfoItem_container"]')]
+              .filter(x=>x.offsetParent!==null);
+  const tl=rows.find(e=>e.innerText.includes('Toyota of Lancaster'));
+  tl.scrollIntoView({block:'center'});
+  const r=tl.getBoundingClientRect();   // fresh coords AFTER the scroll
+  ```
+  Allow ~9s after the click for the store context to reload. Note the popover query
+  `[class*="root_dealerInfoItem_container"]` returns `[]` entirely if the popover isn't
+  actually open — screenshot + `vision_analyze` to confirm it opened before debugging coords.
 
 - **`POST /navigate` returning HTTP 500 (not chrome-error) = same "instance is broken" verdict — bail to
   standalone headless immediately (verified 2026-08-22, SCT daily bin check).** New signature distinct from
