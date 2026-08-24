@@ -252,6 +252,22 @@ Note SV migrated 10/28/2025 — **the 8/19/2026 8:10–8:12 PM cutover hit 6 of 
 
 ---
 
+## "Tax Setup for Parts" is a HIDDEN page — direct URL only
+
+Verified at VC (1891) on 2026-08-24: `/parts/tax-code-setup` has **NO navigation entry anywhere**.
+- Nine-dot grid → Settings → Parts Settings group lists ONLY: Source Code, Price Codes, Price Breaks,
+  Parts Settings, Customized Price, Code Setup (=/parts/priority-codes), Manufacturers,
+  Return Reasons, Void Reasons, Default Parts Pricing, Adjustment Reasons, Core Management Setup,
+  Parts Login Settings. **No "Tax Setup".**
+- `/parts/parts-settings` (General Settings / Print settings / PDF Configuration / Label Configuration)
+  has no tax tab either — only an unrelated "Enable tax on Sublet" toggle.
+- `/parts/inventory`, `/parts/price-codes`, `/parts/default-part-pricing` — no tax link.
+
+**Reach it by typing the URL: `https://app.tekioncloud.com/parts/tax-code-setup`**
+(page title renders as "Tax Setup for Parts"; Edit button top-right ~x1233,y219).
+Grid = rows Vendor/Retail/Wholesale/Internal (+custom sale types) × columns
+Parts | Core Sale | Core Returns | **Fees** | Labour.
+
 ## INVERSE CASE: a FEE is being taxed when it shouldn't be (VC BATTFEE, 2026-08-24)
 
 Same new-Parts-Tax-Code-Setup engine, opposite symptom. A **fee** gets taxed because the parts

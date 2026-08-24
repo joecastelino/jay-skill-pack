@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-24T14:00:22",
+ "generated": "2026-08-24T14:15:45",
  "skill_count": 187,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 138,
+   "times_used": 139,
    "last_used": "2026-08-24"
   },
   {
@@ -39,7 +39,7 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 60,
+   "times_used": 61,
    "last_used": "2026-08-24"
   },
   {
@@ -119,7 +119,7 @@
    "path": "automotive/tekion-kb-search-scrape",
    "category": "automotive",
    "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 28,
+   "times_used": 29,
    "last_used": "2026-08-24"
   },
   {
@@ -203,20 +203,20 @@
    "last_used": "2026-08-07"
   },
   {
+   "name": "tekion-service-settings",
+   "path": "automotive/tekion-service-settings",
+   "category": "automotive",
+   "description": "Reference map of Tekion's Service Settings application (App Grid > Settings > Service Settings) \u2014 the master config for service/RO workflows: General Setup, Job Sequence, Flag Tech on, Round-Up rules, Default Service Advisor, RO/Job Flags, Holds, Parts Request, pay-type setups (Customer/Warranty/Internal/ Insurance), Reminders, Express Mode, Tags, RO KPI List, Quotes, Role Config, Consumer Portal, Approval Settings, Deferred Recommendation Rules, Job Clock Setup, P&L View Setup. Use when asked where/how a service workflow behavior is configured (e.g. \"why do tech flag hours auto-match bill time\", \"how is the recommendation opcode set\", \"where do return-RO / comeback tags come from\").",
+   "times_used": 14,
+   "last_used": "2026-08-24"
+  },
+  {
    "name": "tekion-included-service-parts-override",
    "path": "automotive/tekion-included-service-parts-override",
    "category": "automotive",
    "description": "Build a vehicle-scoped PARTS override row on a Tekion menu-included opcode via Service Menu Setups \u2192 Included Services \u2192 Edit Service \u2192 Overrides \u2192 Parts, driven by the persistent-browser :9223 HTTP endpoints (/eval, /click, /type, /press). Covers the exact DOM (react-select Make, ant-dropdown checkbox Model/Year multi-selects, Trim Details modal), the verified click-paths, and the costly pitfalls (wrong /eval key, navigate-away row wipe, coordinate drift, disabled trim input). Use when swapping/adding parts on an opcode that lives INSIDE a service menu (e.g. BGCVTF CVT fluid \u2192 E-TAF for Corollas).",
    "times_used": 13,
    "last_used": "2026-08-05"
-  },
-  {
-   "name": "tekion-service-settings",
-   "path": "automotive/tekion-service-settings",
-   "category": "automotive",
-   "description": "Reference map of Tekion's Service Settings application (App Grid > Settings > Service Settings) \u2014 the master config for service/RO workflows: General Setup, Job Sequence, Flag Tech on, Round-Up rules, Default Service Advisor, RO/Job Flags, Holds, Parts Request, pay-type setups (Customer/Warranty/Internal/ Insurance), Reminders, Express Mode, Tags, RO KPI List, Quotes, Role Config, Consumer Portal, Approval Settings, Deferred Recommendation Rules, Job Clock Setup, P&L View Setup. Use when asked where/how a service workflow behavior is configured (e.g. \"why do tech flag hours auto-match bill time\", \"how is the recommendation opcode set\", \"where do return-RO / comeback tags come from\").",
-   "times_used": 13,
-   "last_used": "2026-08-24"
   },
   {
    "name": "hermes-agent-provider-switch",
@@ -483,6 +483,14 @@
    "last_used": "2026-08-24"
   },
   {
+   "name": "tekion-vi-stock-number-rules-fix",
+   "path": "automotive/tekion-vi-stock-number-rules-fix",
+   "category": "automotive",
+   "description": "Diagnose and fix Tekion Vehicle Inventory Stock# Rules (Vehicle Inventory Setup > Stock# Rules) when a vehicle gets a wrong/random stock number. Covers BOTH root causes \u2014 (1) a Make missing from a rule's Make multi-select so the wrong PREFIX is assigned, and (2) the rule matching for prefix but the NUMBER falling through to the global auto-increment counter. Includes the API-first diagnostic (OpenAPI vehicle-inventory timeline scan proving the fallback-counter signature), the subtype-coverage audit, /vi/visettings editing, the modal-scroll gotcha, the two-level Save requirement, and true-remount verification. Verified live at SCT (dealer 876) 2026-08-17 and 2026-08-24.",
+   "times_used": 4,
+   "last_used": "2026-08-24"
+  },
+  {
    "name": "tol-alignment-by-advisor-report",
    "path": "automotive/tol-alignment-by-advisor-report",
    "category": "automotive",
@@ -539,6 +547,14 @@
    "last_used": "2026-07-12"
   },
   {
+   "name": "tekion-parts-appointments-opcode-scoping",
+   "path": "automotive/tekion-parts-appointments-opcode-scoping",
+   "category": "automotive",
+   "description": "Restrict Tekion Parts-on-Appointments (Parts RO Sales > Appointments queue) to a subset of opcodes \u2014 e.g. recalls only, per Glade at SCT. Covers the per-opcode \"Consider for Parts preparation on Appointment\" checkbox, Bulk Update, the limited Appointments-tab filters, and how to derive a store's recall keep-list from the opcode list. Load for any \"parts department should only see X appointments\" request.",
+   "times_used": 3,
+   "last_used": "2026-08-24"
+  },
+  {
    "name": "tekion-tech-flag-hours-pay",
    "path": "automotive/tekion-tech-flag-hours-pay",
    "category": "automotive",
@@ -553,14 +569,6 @@
    "description": "Swap a wrong factory part on a FACTORY \"TEK\"-prefixed Tekion opcode (e.g. TEK04020101 \"Cabin Air Filter Remove and Replace\") to the correct part, using the \"Replace Part Number\" action inside Opcode Management \u2192 Overrides \u2192 Parts \u2192 Modify System Parts. This is the fix-surface for FACTORY TEK opcodes used in a service menu (NOT custom/BG opcodes \u2014 those use tekion-included-service-parts-override). Covers the exact, painfully-learned order of operations (Identifier + Job BEFORE the part number), the 16th-row trick, the Replace-Part-Number modal, the validation-error trap, and the re-quote verification. Verified live at SCT (dealer 876) 2026-06-25: 87139-06030 \u2192 87139-YZZ81, quote $1,937.12 \u2192 $1,929.12. Use when Joe says a maintenance-menu line pulls the wrong factory part and the opcode starts with \"TEK\".",
    "times_used": 3,
    "last_used": "2026-07-20"
-  },
-  {
-   "name": "tekion-vi-stock-number-rules-fix",
-   "path": "automotive/tekion-vi-stock-number-rules-fix",
-   "category": "automotive",
-   "description": "Diagnose and fix Tekion Vehicle Inventory Stock# Rules (Vehicle Inventory Setup > Stock# Rules) when a vehicle gets a wrong/random stock number. Covers BOTH root causes \u2014 (1) a Make missing from a rule's Make multi-select so the wrong PREFIX is assigned, and (2) the rule matching for prefix but the NUMBER falling through to the global auto-increment counter. Includes the API-first diagnostic (OpenAPI vehicle-inventory timeline scan proving the fallback-counter signature), the subtype-coverage audit, /vi/visettings editing, the modal-scroll gotcha, the two-level Save requirement, and true-remount verification. Verified live at SCT (dealer 876) 2026-08-17 and 2026-08-24.",
-   "times_used": 3,
-   "last_used": "2026-08-24"
   },
   {
    "name": "gbrain-install",
@@ -625,14 +633,6 @@
    "description": "Audit a Tekion opcode for wrong labor hours / wrong labor rate across recent ROs (e.g. ToyotaCare TEK opcodes billing 0.8 instead of 0.5, or TEW vs W rate). Determines whether root cause is opcode config, advisor behavior, or post-creation edits. Read-only diagnosis workflow + open case log.",
    "times_used": 2,
    "last_used": "2026-08-05"
-  },
-  {
-   "name": "tekion-parts-appointments-opcode-scoping",
-   "path": "automotive/tekion-parts-appointments-opcode-scoping",
-   "category": "automotive",
-   "description": "Restrict Tekion Parts-on-Appointments (Parts RO Sales > Appointments queue) to a subset of opcodes \u2014 e.g. recalls only, per Glade at SCT. Covers the per-opcode \"Consider for Parts preparation on Appointment\" checkbox, Bulk Update, the limited Appointments-tab filters, and how to derive a store's recall keep-list from the opcode list. Load for any \"parts department should only see X appointments\" request.",
-   "times_used": 2,
-   "last_used": "2026-08-24"
   },
   {
    "name": "tekion-parts-menu-attach-rate-report",

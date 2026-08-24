@@ -168,6 +168,81 @@ instead of matching the catch-all — producing the wrong stock-number prefix.
 **Always verify this by reading the rule's Make chip list in the DOM before
 concluding anything else** — don't assume, confirm the make is truly absent.
 
+## READ THE CONFIG BY API FIRST — don't diagnose off the rendered list
+
+The rendered Stock# Rules list shows only `Stock Type | Sub Type | Make` chips and a
+sample stock #. The REAL config (including each rule's live counter) comes from the
+SPA's own fetch. Arm an XHR hook on :9225/:9223 then pushState away and back
+(`/home` → `/vi/visettings`), and read `vi-setup/u/vi?langParam=en_US`:
+
+```js
+// response.data.stockRuleConfig
+{ conditions: [ { applicabilityRule:{STOCK_TYPE,STOCK_SUBTYPE,MAKE,BODY_CLASS},
+                  stockRules:[{type:'LETTERS',ruleValues:{LETTERS:['CT']}},
+                              {type:'AUTO_INCREMENTING_NUMBERS',ruleValues:{...}}],
+                  ruleCounts:{startingValue:{AUTO_INCREMENTING_NUMBERS:'20000'},
+                              currentCount:4607} } ],
+  stockRuleTypeWeights:{STOCK_TYPE:1,BODY_CLASS:2,STOCK_SUBTYPE:3,MODEL:4,
+    TRADE_OWNERSHIP_TYPE:5,YEAR:6,MAKE:7,DEAL_VEHICLE_SOURCE:8,SOURCE:9,
+    MFR_MODEL_CODE:10,TRANSFERRED:11,RANGE:12} }
+```
+Also grab `response.data.typeSetting` — it lists every configured sub-type per stock
+type plus `vehicleSubTypeMandatory`.
+
+**Matching is WEIGHTED ATTRIBUTE SPECIFICITY, not row order.** The on-screen
+"Conditions Priority" column reflects `stockRuleTypeWeights`. A rule only applies if
+ALL of its `applicabilityRule` attributes match; more/heavier attributes win.
+
+**HOW TO VERIFY A RULE IS ACTUALLY FIRING (the critical check):**
+`startingValue + currentCount` = the next number that rule will issue. Compare it to
+live stock numbers from the OpenAPI vehicle-inventory pull. If they line up, the rule
+is firing. Example (SCT 2026-08-24, all five verified healthy):
+
+| Rule | start + currentCount | live stock# |
+|---|---|---|
+| C (New/Car) | 1 + 6887 → C26**6887** | C266842 ✅ |
+| T (New/SUV) | 1 + 11172 → T26**11172** | T2611157 ✅ |
+| CT (Used CPO/toyota) | 20000 + 4607 → CT**24607** | CT24558 ✅ |
+| NT (Used Purch/toyota) | 1000 + 1949 → NT**2949** | NT2946 ✅ |
+| S (73 makes) | 5000 + 3457 → S**8457** | S8456 ✅ |
+
+⚠️ **A STALE XHR CAPTURE WILL LIE TO YOU AND PRODUCE A FALSE ROOT CAUSE.** In this
+session an early capture returned much lower counts (CT 3161, NT 1481, S 2587) for the
+same dealer 876, which made every rule look like it had never fired — leading to a
+wrong "the rules never match, humans hand-type the prefix" diagnosis that had to be
+retracted to Joe. **Always re-arm `window.__cap=[]` fresh, force a real refetch, and
+take the LAST matching response — then sanity-check the derived next-number against
+live inventory before concluding anything.**
+
+## Second failure mode: SUB-TYPE NOT COVERED BY ANY RULE
+
+Every USED rule requires `STOCK_SUBTYPE` to match. Compare `typeSetting.vehicleTypes[]
+.subTypes[]` against the union of all `applicabilityRule.STOCK_SUBTYPE` values. Any
+sub-type in use but absent from every rule can NEVER match → falls through to the bare
+global auto-increment counter, and staff hand-type the prefix afterward.
+
+SCT case 2026-08-24: sub-types `CPO- Gold` and `CPO- Silver` were live (CT24156,
+CT24163, CT24198, CT24225, CT24395) but the CT rule listed only `Used CPO`. Joe added
+both to the CT rule's Sub Type multi-select; verified persisted via true remount:
+`STOCK_SUBTYPE: ["Used CPO","CPO- Gold","CPO- Silver"]`. Still-open gaps at SCT:
+`Used Vehicle Wholesale` + Toyota is in NO rule (rule 5 covers wholesale for the 73
+non-Toyota makes only), and `vehicleSubTypeMandatory` is `null` — if sub-type is blank
+at record-creation time no USED rule can match at all.
+
+**UNVERIFIED — stop and ask, do not assert:** whether Tekion re-evaluates the stock
+rule when sub-type is filled in AFTER creation, or stamps the number once and never
+revisits. This determines whether rule edits alone fix the problem or the sub-type
+must be mandatory at creation. Settle it with a controlled test, don't guess.
+
+**Tell-tale of a fallback number:** it sits in the bare-numeric series the store's
+un-ruled records use (SCT: 15034 8/15 → 15042 → 15051 → 15121 → 15155 → 15196 →
+15215 → 15232 8/24). `S15042` and `CT15232` are that counter with a prefix typed on.
+A parallel out-of-band series (SCT `CT27001`→`CT27021`, alongside healthy `CT24xxx`)
+is likewise NOT rule-issued — investigate its origin separately.
+
+**Before switching a dormant rule live, bump its starting value.** If a rule's derived
+next-number is BELOW stock numbers already in use, it will issue collisions.
+
 ## Nav path (via persistent browser :9223)
 1. Switch to the correct dealer FIRST (dealer pill top-right ~1130,32 → popover
    row list at x~1095, rows every ~42px starting y~178 for AR/AM/BC/BT/ST/SV/TL/VC).
