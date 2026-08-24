@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-24T13:46:21",
+ "generated": "2026-08-24T14:00:22",
  "skill_count": 187,
  "skills": [
   {
@@ -39,7 +39,7 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 59,
+   "times_used": 60,
    "last_used": "2026-08-24"
   },
   {
@@ -119,7 +119,7 @@
    "path": "automotive/tekion-kb-search-scrape",
    "category": "automotive",
    "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 27,
+   "times_used": 28,
    "last_used": "2026-08-24"
   },
   {
@@ -211,6 +211,14 @@
    "last_used": "2026-08-05"
   },
   {
+   "name": "tekion-service-settings",
+   "path": "automotive/tekion-service-settings",
+   "category": "automotive",
+   "description": "Reference map of Tekion's Service Settings application (App Grid > Settings > Service Settings) \u2014 the master config for service/RO workflows: General Setup, Job Sequence, Flag Tech on, Round-Up rules, Default Service Advisor, RO/Job Flags, Holds, Parts Request, pay-type setups (Customer/Warranty/Internal/ Insurance), Reminders, Express Mode, Tags, RO KPI List, Quotes, Role Config, Consumer Portal, Approval Settings, Deferred Recommendation Rules, Job Clock Setup, P&L View Setup. Use when asked where/how a service workflow behavior is configured (e.g. \"why do tech flag hours auto-match bill time\", \"how is the recommendation opcode set\", \"where do return-RO / comeback tags come from\").",
+   "times_used": 13,
+   "last_used": "2026-08-24"
+  },
+  {
    "name": "hermes-agent-provider-switch",
    "path": "automotive/hermes-agent-provider-switch",
    "category": "automotive",
@@ -233,14 +241,6 @@
    "description": "Tekion Parts Sales Orders (counter sales) + Parts RO Sales (parts on repair orders) + the full parts PRICING system (hierarchy, price codes, price breaks/formulas, matrices, defaults). Covers /parts/sales-order, P&A vs Fulfillment, cores, prepaid parts, core returns (CM credit memos), and the 5-tier pricing hierarchy where manual override is \"king of kings.\" Load for counter-sale, parts-on-RO, or parts-pricing questions.",
    "times_used": 12,
    "last_used": "2026-08-24"
-  },
-  {
-   "name": "tekion-service-settings",
-   "path": "automotive/tekion-service-settings",
-   "category": "automotive",
-   "description": "Reference map of Tekion's Service Settings application (App Grid > Settings > Service Settings) \u2014 the master config for service/RO workflows: General Setup, Job Sequence, Flag Tech on, Round-Up rules, Default Service Advisor, RO/Job Flags, Holds, Parts Request, pay-type setups (Customer/Warranty/Internal/ Insurance), Reminders, Express Mode, Tags, RO KPI List, Quotes, Role Config, Consumer Portal, Approval Settings, Deferred Recommendation Rules, Job Clock Setup, P&L View Setup. Use when asked where/how a service workflow behavior is configured (e.g. \"why do tech flag hours auto-match bill time\", \"how is the recommendation opcode set\", \"where do return-RO / comeback tags come from\").",
-   "times_used": 12,
-   "last_used": "2026-08-20"
   },
   {
    "name": "amg-wip-monthly-column-fill",
@@ -627,6 +627,14 @@
    "last_used": "2026-08-05"
   },
   {
+   "name": "tekion-parts-appointments-opcode-scoping",
+   "path": "automotive/tekion-parts-appointments-opcode-scoping",
+   "category": "automotive",
+   "description": "Restrict Tekion Parts-on-Appointments (Parts RO Sales > Appointments queue) to a subset of opcodes \u2014 e.g. recalls only, per Glade at SCT. Covers the per-opcode \"Consider for Parts preparation on Appointment\" checkbox, Bulk Update, the limited Appointments-tab filters, and how to derive a store's recall keep-list from the opcode list. Load for any \"parts department should only see X appointments\" request.",
+   "times_used": 2,
+   "last_used": "2026-08-24"
+  },
+  {
    "name": "tekion-parts-menu-attach-rate-report",
    "path": "automotive/tekion-parts-menu-attach-rate-report",
    "category": "automotive",
@@ -747,12 +755,12 @@
    "last_used": "2026-08-05"
   },
   {
-   "name": "tekion-parts-appointments-opcode-scoping",
-   "path": "automotive/tekion-parts-appointments-opcode-scoping",
+   "name": "tekion-notification-settings-audit",
+   "path": "automotive/tekion-notification-settings-audit",
    "category": "automotive",
-   "description": "Restrict Tekion Parts-on-Appointments (Parts RO Sales > Appointments queue) to a subset of opcodes \u2014 e.g. recalls only, per Glade at SCT. Covers the per-opcode \"Consider for Parts preparation on Appointment\" checkbox, Bulk Update, the limited Appointments-tab filters, and how to derive a store's recall keep-list from the opcode list. Load for any \"parts department should only see X appointments\" request.",
+   "description": "Definitively answer \"where did notification X go / does notification Y exist / who gets notified when Z happens\" in Tekion. Dumps the COMPLETE list of user notification event types (all modules) from the internal notification-preference API instead of scrolling the giant Profile Settings table, then maps the request to the right config surface (per-user Profile Settings vs Service Settings vs Dispatch vs Scheduling vs Parts Settings). Load for any \"I can't find the setting that notifies ...\" ticket.",
    "times_used": 1,
-   "last_used": "2026-07-20"
+   "last_used": "2026-08-24"
   },
   {
    "name": "tekion-parts-shipped-not-received-report",
@@ -927,14 +935,6 @@
    "path": "automotive/tekion-computer-use",
    "category": "automotive",
    "description": "Autonomous vision-guided browser automation for Tekion DMS. Uses the persistent Playwright browser server (port 9223) as the interaction layer and Claude Sonnet 4 (via OpenRouter) as the vision/decision-making brain. Claude sees page snapshots, decides what to click/type, and the agent executes via HTTP API calls.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tekion-notification-settings-audit",
-   "path": "automotive/tekion-notification-settings-audit",
-   "category": "automotive",
-   "description": "Definitively answer \"where did notification X go / does notification Y exist / who gets notified when Z happens\" in Tekion. Dumps the COMPLETE list of user notification event types (all modules) from the internal notification-preference API instead of scrolling the giant Profile Settings table, then maps the request to the right config surface (per-user Profile Settings vs Service Settings vs Dispatch vs Scheduling vs Parts Settings). Load for any \"I can't find the setting that notifies ...\" ticket.",
    "times_used": 0,
    "last_used": null
   },
