@@ -24,7 +24,140 @@ Support (Balla Meghana / Shivam Yadav pattern) will correctly diagnose "the make
 is not added in the vehicle inventory setup" but their support agents can't touch
 dealership settings — only Jay/Joe can fix it directly.
 
-## Root cause pattern #1 — Make missing from the rule's Make list
+## ⚡ STEP ZERO — read `stockRuleConfig` from the API, don't eyeball the UI
+
+The UI list only shows condition labels + a sample stock #. The **real** diagnostic
+data (attribute weights, per-rule counters, exact lowercase make lists, subtype
+lists) is in the settings payload. Get it via XHR hook on the persistent browser:
+
+```python
+# 1) arm the hook (guard with a flag so re-running doesn't double-wrap)
+hook = """(()=>{window.__cap=[];const O=XMLHttpRequest.prototype.open,S=XMLHttpRequest.prototype.send;
+if(!window.__hk){XMLHttpRequest.prototype.open=function(m,u){this.__u=u;return O.apply(this,arguments)};
+XMLHttpRequest.prototype.send=function(b){const s=this;this.addEventListener('load',()=>{try{
+  if(s.__u&&s.__u.indexOf('vi-setup')>-1)window.__cap.push({u:s.__u,r:s.responseText.slice(0,400000)})
+}catch(e){}});return S.apply(this,arguments)};window.__hk=1;}return 'ok'})()"""
+api("/eval","POST",{"js":hook})
+
+# 2) drive the SPA with pushState — NOT /navigate (see pitfall below)
+api("/eval","POST",{"js":"history.pushState({},'','/home');window.dispatchEvent(new PopStateEvent('popstate'));'ok'"}); sleep(3)
+api("/eval","POST",{"js":"history.pushState({},'','/vi/visettings');window.dispatchEvent(new PopStateEvent('popstate'));'ok'"}); sleep(8)
+
+# 3) read it — endpoint is /api/vi-setup/u/vi?langParam=en_US
+js = """(()=>{const h=(window.__cap||[]).filter(x=>x.u.indexOf('vi-setup/u/vi?lang')>-1);
+if(!h.length)return 'none';const j=JSON.parse(h[h.length-1].r);const d=j.data||j;
+return JSON.stringify({dealer:d.dealerId,rules:d.stockRuleConfig,types:d.typeSetting}).slice(0,16000)})()"""
+```
+
+**PITFALL — `/navigate` kills the hook.** A real page load wipes the injected
+override, so `window.__cap` comes back `[]` / `'none:[]'`. Only `history.pushState`
++ `PopStateEvent` keeps the hook alive. Cost a wasted round-trip.
+
+**PITFALL — verify `dealerId` INSIDE the response, not just localStorage.** The
+:9225 browser drifts dealers between turns. I pulled a `stockRuleConfig` that
+looked bizarre (one lone NEW auto-increment rule, no used rules at all) and nearly
+reported it as SCT's — it was **TL (1092)**. Different stores have wildly different
+rule sets. Always assert `d.dealerId == expected` before analyzing.
+
+## How rules actually resolve — WEIGHTED SPECIFICITY, not row order
+
+`stockRuleConfig.stockRuleTypeWeights` defines the resolution order. Observed at SCT:
+
+```
+STOCK_TYPE 1 · BODY_CLASS 2 · STOCK_SUBTYPE 3 · MODEL 4 · TRADE_OWNERSHIP_TYPE 5
+YEAR 6 · MAKE 7 · DEAL_VEHICLE_SOURCE 8 · SOURCE 9 · MFR_MODEL_CODE 10
+TRANSFERRED 11 · RANGE 12
+```
+
+The on-screen "Conditions Priority" column reflects this. A rule only fires when
+**every** attribute in its `applicabilityRule` matches. So a rule requiring
+`STOCK_TYPE + STOCK_SUBTYPE + MAKE` needs all three populated **at the moment the
+stock # is stamped** (record creation) — see the order-of-operations trap below.
+
+## TWO SEPARATE DEFECTS — wrong PREFIX vs wrong NUMBER
+
+Joe's phrasing ("it should have been decoded as CT", "they added the CT") maps to
+the second one. Diagnose which you have BEFORE editing anything:
+
+**Defect A — wrong/missing PREFIX.** A Make or Subtype is absent from the rule's
+multi-select, so the vehicle matches no rule. Fix = add the value (procedure below).
+
+**Defect B — the rule NEVER FIRED and a human typed the prefix by hand.** This is
+invisible in the UI and is the one that keeps recurring. **The tell: compare each
+rule's `ruleCounts.currentCount` against live stock numbers.**
+
+```
+SCT rule 3:  CT, startingValue 20000, currentCount 3161  -> would issue CT23161
+SCT live:    CT24558, CT27021                            -> nowhere near it
+SCT rule 4:  NT, startingValue 1000,  currentCount 1481  -> would issue NT2481
+SCT live:    NT2946                                      -> nowhere near it
+```
+
+Corroborate with the **bare-numeric global fallback stream** — when no rule matches,
+Tekion issues a plain incrementing number with no prefix. Sort recent inventory by
+`createdTime` and look for stock IDs sitting in one continuous numeric series:
+
+```
+15034 (8/15) · 15042 (8/17) · 15051 (8/19) · 15121 · 15155 · 15196 (8/20) · 15215 (8/22) · 15232 (8/24)
+```
+
+Any "prefixed" stock # whose digits fall inside that stream (`S15042`, `CT15232`)
+is a hand-typed prefix on a fallback number — proof the rule didn't fire. Pull the
+data via OpenAPI `/openapi/v4.0.0/vehicle-inventory` (time-bisect on
+`modifiedStartTime`/`modifiedEndTime`, filter `stockType == USED`, sort by
+`createdTime`) and print `stockID / stockSubType / source.type / make`.
+
+Bonus tell: two parallel counters for the same prefix (SCT had CT24xxx **and**
+CT27xxx interleaved by the minute on 8/21) — one of them isn't coming from a rule.
+
+## THE ORDER-OF-OPERATIONS ROOT CAUSE — `vehicleSubTypeMandatory`
+
+Read `typeSetting.vehicleSubTypeMandatory` from the same payload. At SCT it was
+**`null`** (the "Stock SubType is Mandatory" toggle on the Stock Type tab is OFF).
+
+Every used-vehicle rule requires `STOCK_SUBTYPE`. If subtype is blank when the
+record is created, **no used rule can match, no matter how many subtypes you add
+to the rule.** It falls to the global counter and staff type the prefix on after.
+
+So the correct fix ORDER is:
+1. Turn **"Stock SubType is Mandatory"** ON (Stock Type tab) — forces subtype at creation.
+2. THEN add the missing subtypes/makes to the rule.
+
+Reverse that order and the new values still match nothing.
+
+**KNOWN GAP — STOP AND ASK (never-guess rule).** I have NOT verified whether Tekion
+re-evaluates the stock rule when subtype is filled in *after* creation, or stamps
+once and never revisits. If it's stamp-once, mandatory-at-creation is the only thing
+that works. Confirm via a controlled test (create one used vehicle with subtype set
+at creation vs. one set after) or a Tekion ticket — do not assert either way.
+
+## CROSS-CHECK: every configured subtype must appear in some rule
+
+`typeSetting.vehicleTypes[].subTypes[]` lists what staff can actually pick. Diff it
+against the subtypes referenced across `stockRuleConfig.conditions[].applicabilityRule.STOCK_SUBTYPE`.
+Anything present in the first list and absent from the second is a **guaranteed
+permanent fallback**. At SCT (2026-08-24):
+
+| Subtype | In a rule? |
+|---|---|
+| Used Vehicle Purchases | ✅ NT rule |
+| Used Vehicle Wholesale | ⚠️ S rule only — 73 non-Toyota makes, **no Toyota** |
+| Used CPO | ✅ CT rule |
+| **CPO- Gold** | ❌ none |
+| **CPO- Silver** | ❌ none |
+
+Gold/Silver were live in production data (CT24156/24157/24163/24198/24201/24225/24395)
+and had matched nothing since the day they were created.
+
+## ⚠️ BEFORE ENABLING A DORMANT RULE — COUNTER COLLISION
+
+If a rule has never fired, its counter is far BELOW the numbers already in use.
+Turning it on makes it issue duplicates (SCT CT would start at CT23161 while
+CT24558/CT27021 already exist; NT would start at NT2481 vs live NT2946). **Bump
+`startingValue` / the sequence above the highest in-use number first.** Flag this
+to Joe as part of any "make the rule work" plan.
+
+## Root cause pattern
 `/vi/visettings` → **Stock# Rules** tab has an ordered list of conditions
 (Stock Type | Stock Sub Type | Make combinations) each mapping to a stock-number
 pattern (e.g. `C210001`, `T210001`, `S5000`). The LAST rule is usually a broad
@@ -119,7 +252,7 @@ to "Stock Type" on every fresh load), and re-read `document.body.innerText` for
 the target Make string. Only a match after this full remount+re-tab-click proves
 the fix persisted.
 
-## Example (verified 2026-08-17, SCT dealer 876)
+## Example (2026-08-17, SCT dealer 876) — ⚠️ THIS FIX WAS ONLY HALF THE PROBLEM
 Ray Khandan (SCT) reported a Mercedes-Benz trade-in (VIN WD4PE8CDXJP584435, deal
 267250) generated a random stock number instead of the expected "S..." prefix.
 Tekion support agent Shivam Yadav correctly diagnosed "the make Mercedes-Benz is
@@ -127,8 +260,35 @@ not added in the vehicle inventory setup" but had no edit access, and relayed
 manual instructions (9-dot → Vehicle Inventory Setup → Stock# Rules → last rule →
 pencil → add Make → Save) which Jay executed directly. Confirmed missing from the
 ~72-make catch-all rule (`S5000` pattern), added "Mercedes-benz", saved at both
-levels, verified via full remount. Future Mercedes-Benz trade-ins at SCT now get
-proper S-prefixed stock numbers.
+levels, verified via full remount.
+
+**CORRECTION (2026-08-24) — the numbering was never fixed.** That Mercedes got
+**S15042**, and 15042 sits inside SCT's bare global fallback stream
+(15034 → 15042 → 15051 → 15196 → 15215 → 15232). The "S" was hand-typed onto a
+fallback number; the S rule never fired. Adding the make only made the vehicle
+*eligible* for the rule — it did nothing about the rule not matching at stamp time
+(`vehicleSubTypeMandatory: null`). A week later Joe reported "same thing happened"
+on VIN 2T3RWRFV1SW263674, and a Sienna trade the same day got **CT15232** — same
+fallback stream, hand-typed prefix, and *wrong prefix too* (subtype was Used Vehicle
+Purchases → should have been NT, not CT).
+
+**LESSON: never close a stock# ticket on a prefix edit alone.** Always verify the
+rule's `ruleCounts.currentCount` actually advanced and that new stock numbers land
+in the rule's own series — not the global stream. A prefix that merely *looks* right
+on screen proves nothing about which mechanism produced it.
+
+## Joe-interaction notes
+- Joe's shorthand for defect B is **"they added the CT"** / "it should have been
+  decoded as CT" — he means a human typed the prefix, not that the rule mislabeled.
+  Take that literally; it's a precise diagnosis, not a vague complaint.
+- He challenged my initial row-order framing with **"but isn't this an order of
+  operations rule"** — he was right, and the answer is `stockRuleTypeWeights` +
+  the stamp-at-creation timing. Pull the weights before theorizing about priority.
+- He asks **"so what do you want me to fix"** — he wants a short, ordered, concrete
+  edit list (what field, what screen, what order), not an essay. Lead with the edits,
+  keep caveats short and clearly separated from the actionable part.
+- Stay read-only until he says go on live VI settings; state plainly that nothing
+  was changed.
 
 ## STEP ZERO — API first, browser second (added 2026-08-24)
 

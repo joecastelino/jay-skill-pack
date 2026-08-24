@@ -117,6 +117,31 @@ linearly — grep the innerText array and slice around the hit index.
 even after a `/home` bounce, while loading fine on :9225. If a known-good URL keeps
 landing elsewhere, switch browser lanes instead of debugging the route.
 
+## Tags section — RO/Job tags (verified BT 1249, ST 876, TL 1092 on 2026-08-24)
+- URL `/service/settings/ro-settings`, left-nav **Tags** (hash `#TAGS`). Two sub-tabs:
+  **Active Tags** / **Archived Tags**.
+- Table columns: Tag Type · Tag Name · Color · Text Color · Show in RO/PDF (two toggles:
+  RO and PDF) · Criteria · Add Manually · Archive. Last row is always a BLANK add-row.
+- **Tag Type dropdown values: `RO` · `Job` · `Recommendation`.** The Tag NAME list is
+  driven by Tag Type. Under **Job** the available names are:
+  PDI, Hold, Service Menu, **Add-on**, Due Bill, Recall, Recommendation,
+  Deferred Recommendation, Insurance, Internal Split, Warranty Split, Manual Flag Hrs,
+  Adjusted Flag Hrs, UVI, MPI, Return RO, Mobile Shop, Express Shop.
+- **"Add-on" is a JOB-type tag** — the label that appears on an RO/job line for work added
+  after check-in. It is NOT automatic: a row must exist here. If a store lost its "Add on"
+  tag, the row was deleted (check **Archived Tags** first — Unarchive is non-destructive).
+- AMG baseline 2026-08-24: BT / ST / TL each have only **3 active tags — MPI, PDI, UVI
+  (all Recommendation type)** and **Archived Tags = "No rows found."** No Add-on row exists
+  fleet-wide; it must be re-created, not un-archived.
+- Restore recipe: blank add-row → Tag Type = **Job** → Tag Name = **Add-on** → pick
+  Color/Text Color → toggle **RO** (and **PDF** if it should print) → Save.
+- Mechanics: the blank row's Tag Type select sits at ~x587 on the row; Tag Name at ~x800.
+  Options render in a portal — query `[class*="option"],[role="option"]` filtered by
+  `offsetParent`. Navigating away without Save discards cleanly (no confirm modal fires
+  from the Tags row builder). `#TAGS` hash anchor works but the page must be loaded from
+  `/home` first — a direct navigate to `/service/settings/ro-settings` on a cold tab can
+  silently land on an unrelated screen (`/parts/tax-code-setup`); assert `location.href`.
+
 ## Pitfalls
 - Several behaviors are gated by **"when enabled by support"** (e.g. Select Default Service
   Advisor for jobs) — if a toggle is missing, it may need Tekion support to enable.
