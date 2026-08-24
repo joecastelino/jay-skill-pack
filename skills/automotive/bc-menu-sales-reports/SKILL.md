@@ -959,6 +959,29 @@ exactly 1 MTD 8/23 draft, Sent count 0 for `BC 8/23` entirely (Stacey's auto-sen
 pipeline correctly produced nothing on a closed Sunday). Left the sibling Daily Closed 8/23
 draft (42597) untouched — different report type, not a duplicate.
 
+## 2026-08-24 noon Daily Closed run — textbook one-shot, 17th consecutive clean "N dollars" build
+4 menus, $365.72 labor / $208.14 parts = $573.86 (Erik Mercado 1 / $218.69, Dimetri
+Reynoso 1 / $146.58, Humberto Dominguez 1 / $108.44, Jacob Debussey 1 / $100.15 —
+four advisors, one menu each). 50 closed ROs → 4 carried TEK menu opcodes;
+`✓ all candidate ROs scanned`; vision-verified KPI band (crop 460px + 2x LANCZOS)
+matched JSON exactly. Pull ran via `terminal(background=true)` + a SINGLE
+`process(action="wait", timeout=180)`. Stacey's build: `execute_code` +
+`subprocess.run` argument list wrapped in `timeout 600` → returned cleanly in
+**111s**, no exit-124, no recovery probe, terse DONE line correct with
+`TOTAL=$573.86`, and her reported id (42630) MATCHED himalaya's. Her reply DID
+contain the recurring em-dash IMAP-search wrinkle ("Em-dash breaks IMAP search.
+Let me just grab the most [recent]") — that's a post-append *verification* step,
+not a rebuild, so no duplicate resulted; dedupe grep confirmed exactly 1 draft.
+Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe,
+Subject auto-decoded with em-dashes, inline PNG **byte-for-byte identical**
+(110,512 bytes), PDF **byte-for-byte identical** (53,199 bytes), all 7 figures
+present exactly once, `<b>$573.86</b>` bold, greeting + footer present, zero
+' dollars'/USD leftovers (checked after stripping the data URI), Daily-Closed
+Sent count 0, no stale prior 8/24 draft to clean up. The single `BC 8/24` Sent
+hit was Stacey's separate auto-sent Daily Opened report (14415).
+**Renderer output path reminder held**: `render_scorecard_bc.py` prints both
+absolute output paths (in `data/`, not `out/`) on stdout — read those.
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
