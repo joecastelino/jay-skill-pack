@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-24T08:30:09",
+ "generated": "2026-08-24T08:45:52",
  "skill_count": 183,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 129,
-   "last_used": "2026-08-21"
+   "times_used": 131,
+   "last_used": "2026-08-24"
   },
   {
    "name": "agent-to-agent-bridge",
@@ -31,8 +31,8 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 61,
-   "last_used": "2026-08-21"
+   "times_used": 62,
+   "last_used": "2026-08-24"
   },
   {
    "name": "tol-menu-sales-reports",
@@ -47,8 +47,8 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 54,
-   "last_used": "2026-08-21"
+   "times_used": 55,
+   "last_used": "2026-08-24"
   },
   {
    "name": "bt-tony-menu-rebuild",
@@ -111,8 +111,8 @@
    "path": "automotive/tekion-autonomous-login",
    "category": "automotive",
    "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
-   "times_used": 33,
-   "last_used": "2026-08-18"
+   "times_used": 34,
+   "last_used": "2026-08-24"
   },
   {
    "name": "tekion-scheduling",
@@ -187,20 +187,20 @@
    "last_used": "2026-08-21"
   },
   {
+   "name": "tekion-ro-close-blocked-triage",
+   "path": "automotive/tekion-ro-close-blocked-triage",
+   "category": "automotive",
+   "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
+   "times_used": 15,
+   "last_used": "2026-08-24"
+  },
+  {
    "name": "tekion-parts-autoorder-diagnosis",
    "path": "automotive/tekion-parts-autoorder-diagnosis",
    "category": "automotive",
    "description": "Diagnose why parts at a Tekion store stocked out / didn't auto-order (forcing local sourcing from Sunnyvale/Capitol/etc.). The CANONICAL parts-replenishment skill (supersedes tekion-parts-shortage-diagnosis). Works from RO numbers OR part numbers. Pulls live Stocking Details (Source Code, Stocking Status, Manual Order, BRP/BSL, Min/Max, On Hand/Order, Open Documents, Transactions ledger) per part, runs the day-supply demand calc, exposes the BSL Round-Down trap and the negative-on-hand backfill trap, and produces a per-part verdict + fix (Min Qty vs source-code BRP/BSL vs in-and-out receiving discipline). Use whenever Joe asks \"why aren't these parts auto ordering / why do we have shortages / why did we have to get parts locally / why is my shelf at 0 when Min is set.",
    "times_used": 14,
    "last_used": "2026-08-07"
-  },
-  {
-   "name": "tekion-ro-close-blocked-triage",
-   "path": "automotive/tekion-ro-close-blocked-triage",
-   "category": "automotive",
-   "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
-   "times_used": 14,
-   "last_used": "2026-07-31"
   },
   {
    "name": "tekion-included-service-parts-override",
@@ -563,6 +563,14 @@
    "last_used": "2026-08-05"
   },
   {
+   "name": "tekion-journal-entry-error-diagnosis",
+   "path": "automotive/tekion-journal-entry-error-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose Tekion Accounting Journal Entries stuck in ERROR status (auto-posting JEs that failed to post). Covers the JE list/detail URLs, reading GL posting lines out of the DOM, finding the blank/unmapped GL account, and tracing the root cause back to a missing row in GL Account Transaction Mapping. Use for \"look at journal entries\", \"JEs in error\", \"auto posting failed\", \"GL account blank on journal entry\".",
+   "times_used": 2,
+   "last_used": "2026-08-24"
+  },
+  {
    "name": "tekion-labor-rate-create",
    "path": "automotive/tekion-labor-rate-create",
    "category": "automotive",
@@ -705,14 +713,6 @@
    "description": "Replace a specific auto-populating part (e.g. a BG or WS transmission fluid) on Tekion opcodes and menu included-services with a GENERIC placeholder part (e.g. \"Transmission Fluid\") that has NO inventory/parts-master record, preserving exact pricing. Use when a menu/opcode estimates the wrong specific part for some vehicles and Parts should substitute the real part at RO time. Verified end-to-end at Blackstone Toyota (BT, dealer 1249) 2026-07-20 across 5 fluid lines.",
    "times_used": 1,
    "last_used": "2026-07-20"
-  },
-  {
-   "name": "tekion-journal-entry-error-diagnosis",
-   "path": "automotive/tekion-journal-entry-error-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose Tekion Accounting Journal Entries stuck in ERROR status (auto-posting JEs that failed to post). Covers the JE list/detail URLs, reading GL posting lines out of the DOM, finding the blank/unmapped GL account, and tracing the root cause back to a missing row in GL Account Transaction Mapping. Use for \"look at journal entries\", \"JEs in error\", \"auto posting failed\", \"GL account blank on journal entry\".",
-   "times_used": 1,
-   "last_used": "2026-08-21"
   },
   {
    "name": "tekion-labor-time-guide",

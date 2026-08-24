@@ -39,6 +39,21 @@ Source: Tekion "Jump Start" webinar, Parts Workflows & Pricing (Emily Shaw, CVA 
 
 **Core return (after closed):** filter Sell Status = Closed (or search SO#) → select part → **Create Return → action bar → Used Core Return** → return invoice starts with **`CM`** (credit memo) → cashiering refund (Cash/Check/Credit Card).
 
+### ⛔ You CANNOT reopen a closed Sales Order (verified via Tekion KB 2026-08-24)
+There is **no reopen and no void** for a closed SO — and none at all once payment has posted.
+KB sources: **KB0024729** ("Reopen a closed Sales Order"), **KB0022355** ("How to Reopen a sales Order"),
+**KB0025250** ("how to void a closed paid sales order"). All three say the same thing: not possible.
+
+The ONLY corrective paths:
+1. **Create Return** — Sales Order list → filter **Sell Status = Closed** (or clear filters and search the
+   SO#) → open the SO → select the part line(s) → **Create Return** → cashiering issues the refund. The
+   return document number is prefixed **`CM`** (credit memo).
+2. **Exchange** — return the original part(s) via Create Return, then write a NEW SO with the correct parts.
+
+If the goal is to fix accounting (not parts), don't chase the SO at all — correct it in Accounting with a
+Reversing/Adjusting Journal Entry against the SO number as the control.
+**Do NOT tell Joe to reopen it** — the option genuinely does not exist in Tekion.
+
 **Prepaid parts — CRITICAL:** a prepaid part **stays in inventory until you mark customer-received** (Bulk Actions → Mark as Received). Audit with the **Prepaid Report**.
 
 ## Parts on RO (Parts RO Sales) — the two tabs
