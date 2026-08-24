@@ -926,6 +926,39 @@ Stacey's auto-send pipeline correctly produced nothing on a closed Sunday).
 Explicit "the store was closed for Sunday, this is a genuine zero day not a data problem"
 sentence included in the body again per the zero-day note above.
 
+## 2026-08-23 6:16pm Closed MTD run — zero-activity Sunday, textbook one-shot, 16th consecutive clean "N dollars" build
+160 menus, $24,810.30 labor / $16,591.51 parts = $41,401.81 (Aug 1-23) — **identical to the
+8/22 MTD** because BC service was closed all Sunday: **0 closed ROs today → 0 new rows**, master
+stayed at 160. Advisors unchanged: Juan Ramirez 41 / $11,967.09, Houa Moua 32 / $7,017.61,
+Dimetri Reynoso 23 / $5,429.32, Humberto Dominguez 22 / $7,145.35, Michael Reyes 17 / $3,410.68,
+Jacob Debussey 12 / $2,331.45, Erik Mercado 9 / $3,237.75, Jeremia Navarro 4 / $862.56.
+Master asof was 2026-08-22 → default append (no seed/catch-up); `✓ all candidate ROs scanned`.
+Pull ran via `terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`,
+finished near-instantly (nothing to fan out). Master `_gross` sums matched the emitted report
+`totals` exactly.
+**Zero-day MTD nuance worth stating in the email**: unlike a zero-menu *Daily* report (where the
+whole scorecard renders the empty-table variant), a zero-activity day on the *MTD* report looks
+completely normal — full table, big totals — and is bit-identical in numbers to yesterday's
+draft. Ruben could reasonably read that as a stale/duplicate send. So put an explicit sentence in
+the summary: "the store was closed Sunday August 23, so no repair orders closed today and the
+month-to-date figures are unchanged from yesterday." Included this run.
+**Vision-check reminder confirmed**: full-page `vision_analyze` on the 1226x6083 PNG garbled the
+KPI tiles badly (returned "Menu Count: 624,610.30 / Labor $16,593.51 / Parts $41,401.81 /
+Total 160" — values shifted across labels and a digit invented). The documented crop-top-460px +
+2x-LANCZOS-upscale step then read all four tiles perfectly (OPCODE LABOR GROSS $24,810.30 /
+OPCODE PARTS GROSS $16,591.51 / TOTAL MENU GROSS $41,401.81 / MENUS SOLD 160). Never skip the
+crop step on MTD renders — the taller the page, the worse full-page OCR gets.
+Stacey's build: `execute_code` + `subprocess.run` argument list wrapped in `timeout 600` →
+returned cleanly in **103s**, no exit-124, no recovery probe, no self-correction text → no
+duplicate (pattern holds 8 runs straight). Her reported id (42599) MATCHED himalaya's.
+Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject auto-decoded
+with em-dashes, inline PNG **byte-for-byte identical** (1,292,926 bytes), PDF **byte-for-byte
+identical** (83,525 bytes), all 11 figures present exactly once, `<b>$41,401.81</b>` bold,
+greeting + footer present, zero ' dollars'/USD leftovers (checked after stripping the data URI),
+exactly 1 MTD 8/23 draft, Sent count 0 for `BC 8/23` entirely (Stacey's auto-send Daily Opened
+pipeline correctly produced nothing on a closed Sunday). Left the sibling Daily Closed 8/23
+draft (42597) untouched — different report type, not a duplicate.
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
