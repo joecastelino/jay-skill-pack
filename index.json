@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-24T14:31:05",
+ "generated": "2026-08-24T14:45:21",
  "skill_count": 187,
  "skills": [
   {
@@ -219,6 +219,14 @@
    "last_used": "2026-08-05"
   },
   {
+   "name": "tekion-parts-sales-orders",
+   "path": "automotive/tekion-parts-sales-orders",
+   "category": "automotive",
+   "description": "Tekion Parts Sales Orders (counter sales) + Parts RO Sales (parts on repair orders) + the full parts PRICING system (hierarchy, price codes, price breaks/formulas, matrices, defaults). Covers /parts/sales-order, P&A vs Fulfillment, cores, prepaid parts, core returns (CM credit memos), and the 5-tier pricing hierarchy where manual override is \"king of kings.\" Load for counter-sale, parts-on-RO, or parts-pricing questions.",
+   "times_used": 13,
+   "last_used": "2026-08-24"
+  },
+  {
    "name": "hermes-agent-provider-switch",
    "path": "automotive/hermes-agent-provider-switch",
    "category": "automotive",
@@ -233,14 +241,6 @@
    "description": "Build a \"parts sold\" report (e.g. tires) for any Tekion store and period with ACTUAL invoiced dollars, split RO vs Sales Order (counter), by counterperson, from the internal part transaction ledger (activity-log API) \u2014 zero OpenAPI quota. Use when Joe asks \"how many X did we sell\" for a parts category, or when the OpenAPI quota is exhausted and RO-level pulls are blocked.",
    "times_used": 12,
    "last_used": "2026-08-18"
-  },
-  {
-   "name": "tekion-parts-sales-orders",
-   "path": "automotive/tekion-parts-sales-orders",
-   "category": "automotive",
-   "description": "Tekion Parts Sales Orders (counter sales) + Parts RO Sales (parts on repair orders) + the full parts PRICING system (hierarchy, price codes, price breaks/formulas, matrices, defaults). Covers /parts/sales-order, P&A vs Fulfillment, cores, prepaid parts, core returns (CM credit memos), and the 5-tier pricing hierarchy where manual override is \"king of kings.\" Load for counter-sale, parts-on-RO, or parts-pricing questions.",
-   "times_used": 12,
-   "last_used": "2026-08-24"
   },
   {
    "name": "amg-wip-monthly-column-fill",
@@ -467,6 +467,14 @@
    "last_used": "2026-08-23"
   },
   {
+   "name": "tekion-journal-entry-error-diagnosis",
+   "path": "automotive/tekion-journal-entry-error-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose Tekion Accounting Journal Entries stuck in ERROR status (auto-posting JEs that failed to post). Covers the JE list/detail URLs, reading GL posting lines out of the DOM, finding the blank/unmapped GL account, and tracing the root cause back to a missing row in GL Account Transaction Mapping. Use for \"look at journal entries\", \"JEs in error\", \"auto posting failed\", \"GL account blank on journal entry\".",
+   "times_used": 4,
+   "last_used": "2026-08-24"
+  },
+  {
    "name": "tekion-ro-fee-waiver-investigation",
    "path": "automotive/tekion-ro-fee-waiver-investigation",
    "category": "automotive",
@@ -529,14 +537,6 @@
    "description": "Pull declined/deferred service data (recommendations customers didn't buy) for any Tekion store via the internal Deferred Services report API \u2014 service name, counts, dollar estimates, customer/vehicle/advisor detail. Zero OpenAPI quota; works when OVERALL_QUOTA is exhausted. Use for marketing campaign lists (Autumn) or lost-sales analysis.",
    "times_used": 3,
    "last_used": "2026-08-18"
-  },
-  {
-   "name": "tekion-journal-entry-error-diagnosis",
-   "path": "automotive/tekion-journal-entry-error-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose Tekion Accounting Journal Entries stuck in ERROR status (auto-posting JEs that failed to post). Covers the JE list/detail URLs, reading GL posting lines out of the DOM, finding the blank/unmapped GL account, and tracing the root cause back to a missing row in GL Account Transaction Mapping. Use for \"look at journal entries\", \"JEs in error\", \"auto posting failed\", \"GL account blank on journal entry\".",
-   "times_used": 3,
-   "last_used": "2026-08-24"
   },
   {
    "name": "tekion-menu-custom-price-row",
