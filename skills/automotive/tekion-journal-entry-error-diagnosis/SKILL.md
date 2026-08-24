@@ -264,6 +264,50 @@ number, not with a fresh walkthrough of the same evidence.**
 
 ---
 
+## 5c. VC (Volkswagen of Clovis, 1891) — SO 71581 case, 2026-08-24
+
+Second confirmed instance of the same class of defect, different store/slot:
+
+- Error queue = exactly **2 JEs**, both journal `32 - PARTS CASH SALES`, Reference Type
+  `Parts Sales Order`, Reference `71581-1`, created by Weston Truesdail 8/24 1:14 PM.
+  - `121568` sale, $216.64, Balance $0.00 → `[Select] +116.65 · 4764 SLS-P+A CNTR WHL −116.65 ·
+    5764 C/S +99.99 · 1445 INVENTORY −99.99`
+  - `121567` deposit, $116.65, Balance $0.00 → `1188 CASH SALES +116.65 · [Select] −116.65`
+- Blank slot in both = the **parts cash HOLDING/offset account**.
+- **Working control:** SO 71539 (Charge Customer, wholesale) JEs `121275` sale
+  `1188 CASH SALES +152.33 / 4764 −152.33 / 5764 / 1445` and `121274` deposit
+  `1304 RECEIVABLES-CUST-SP+A +152.33 / 1188 CASH SALES −152.33`. Same slot resolves to
+  **1188 - CASH SALES** there.
+- **Discriminator:** SO 71581 is the only recent VC counter sale paid by **Check**. Every posted
+  control (71504/71500/71495/71432/71539/71555/71522) is **Charge Customer**. Charge routes to AR
+  (1304) via *Payment Receipts → Fixed Operations → Parts Payment Methods*; Cash/Check/Card all map
+  to `1188 - CASH SALES` there — so on a Check sale the payment-method account and the holding
+  account are the same 1188, and the holding lookup comes back empty.
+- **Structural diff vs SCT:** VC's *Fixed Operations → Others* has **one** rule only
+  (`FIXED OPERATIONS SALES TAX`, 4 sales-tax rows). SCT has an additional `Fixed Operations (Other)`
+  rule that carries **Parts Cash Holding Account / Service Cash Holding Account**. VC has **no
+  Parts Cash Holding Account mapping at all**. ← most likely root cause, but NOT 100% proven
+  (unexplained: how 1188 resolved into that slot on the Charge JEs). Per NEVER-GUESS, flag the
+  residual uncertainty rather than asserting.
+- Correction path: SO is Closed+Paid → **cannot reopen or void** (see `tekion-parts-sales-orders`).
+  Fix the mapping, then reopen each Error JE and Submit.
+
+### VC nav notes (cost ~10 turns)
+- `/accounting/glaccountmapping/list` **randomly redirects** to whatever SPA route was last hot
+  (`/parts/tax-code-setup`, `/parts/parts-settings`, `/parts/inventory/part`, `/parts/default-part-pricing`).
+  Always loop the navigate up to 4–5× asserting `location.href` contains `glaccountmapping`.
+- **Deep-link by module instead of clicking the nav:**
+  `?module=FO_OTHERS`, `?module=PAYMENT_METHODS_FIXED_OPS`, `?module=FO_SERVICES`,
+  `?module=FO_WARRANTY_CREDIT`. Far more reliable than the accordion.
+- Left-nav leaf clicks at **x≈123 land on the label text and mis-fire**; click at **x≈300** (row
+  body) instead. Also collapse `Variable Operations` first so `Others` sits above the fold.
+- The mapping **cards** (`FIXED OPERATIONS SALES TAX`, `Parts Payment Methods`) are collapsed by
+  default — click the card title leaf to expand before reading `innerText`.
+- Sales Order list search: type into `input[placeholder='Ctrl + Shift + L']` + Enter. **Filters
+  block it** — click `Clear` (leaf at ≈396,181; `Reset` at ≈306,181 does NOT clear) first or you get
+  `0 Result(s)` on a real SO. Results are prefix-ish and the previous rows stay below, so read only
+  the first block after `Dep. Name`.
+
 ## 6. Reporting to Joe
 
 He wants: the count, the pattern (grouped by order/creator/journal — not 10 unrelated bullets), the

@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-24T14:15:45",
+ "generated": "2026-08-24T14:31:05",
  "skill_count": 187,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 139,
+   "times_used": 140,
    "last_used": "2026-08-24"
   },
   {
@@ -403,6 +403,14 @@
    "last_used": "2026-08-20"
   },
   {
+   "name": "tekion-parts-tax-not-calculating-diagnosis",
+   "path": "automotive/tekion-parts-tax-not-calculating-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose \"sales tax isn't calculating / tax is $0\" on Tekion Parts Sales Orders (counter sales), especially for CUSTOM sale order types like ONLINE RETAIL. Finds whether the store was migrated to the NEW Parts Tax Code Setup and whether a sale type is missing from the saved tax-code grid. Use when a Parts Manager reports missing tax on SOs.",
+   "times_used": 6,
+   "last_used": "2026-08-24"
+  },
+  {
    "name": "tekion-ro-text-keyword-scan",
    "path": "automotive/tekion-ro-text-keyword-scan",
    "category": "automotive",
@@ -427,10 +435,18 @@
    "last_used": "2026-07-01"
   },
   {
-   "name": "tekion-parts-tax-not-calculating-diagnosis",
-   "path": "automotive/tekion-parts-tax-not-calculating-diagnosis",
+   "name": "tekion-fee-not-showing-diagnosis",
+   "path": "automotive/tekion-fee-not-showing-diagnosis",
    "category": "automotive",
-   "description": "Diagnose \"sales tax isn't calculating / tax is $0\" on Tekion Parts Sales Orders (counter sales), especially for CUSTOM sale order types like ONLINE RETAIL. Finds whether the store was migrated to the NEW Parts Tax Code Setup and whether a sale type is missing from the saved tax-code grid. Use when a Parts Manager reports missing tax on SOs.",
+   "description": "Diagnose \"the store can't see / isn't getting charged fee X\" in Tekion \u2014 e.g. \"SCT isn't seeing fees 1TIRE 2TIRE 3TIRE 4TIRE\". Covers the Fee Management v3 API (list + per-fee detail), the ADD_TO_RO (\"Allow to Add at RO Level\") flag that controls whether a fee appears in the RO fee dropdown, opcode\u2192fee attachment, and how to prove whether a fee is actually landing on real ROs. Use for any Tekion fee visibility, fee-not-auto-applying, or fee-attach-rate question.",
+   "times_used": 5,
+   "last_used": "2026-08-24"
+  },
+  {
+   "name": "tekion-vi-stock-number-rules-fix",
+   "path": "automotive/tekion-vi-stock-number-rules-fix",
+   "category": "automotive",
+   "description": "Diagnose and fix Tekion Vehicle Inventory Stock# Rules (Vehicle Inventory Setup > Stock# Rules) when a vehicle gets a wrong/random stock number. Covers BOTH root causes \u2014 (1) a Make missing from a rule's Make multi-select so the wrong PREFIX is assigned, and (2) the rule matching for prefix but the NUMBER falling through to the global auto-increment counter. Includes the API-first diagnostic (OpenAPI vehicle-inventory timeline scan proving the fallback-counter signature), the subtype-coverage audit, /vi/visettings editing, the modal-scroll gotcha, the two-level Save requirement, and true-remount verification. Verified live at SCT (dealer 876) 2026-08-17 and 2026-08-24.",
    "times_used": 5,
    "last_used": "2026-08-24"
   },
@@ -449,14 +465,6 @@
    "description": "Build the \"work deferred/declined per DAY, broken down by service advisor\" report for any AMG Tekion store \u2014 advisor ranking + trailing-day trend + per-advisor RO-level detail pages (PNG/PDF/CSV). Zero OpenAPI quota.",
    "times_used": 4,
    "last_used": "2026-08-23"
-  },
-  {
-   "name": "tekion-fee-not-showing-diagnosis",
-   "path": "automotive/tekion-fee-not-showing-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose \"the store can't see / isn't getting charged fee X\" in Tekion \u2014 e.g. \"SCT isn't seeing fees 1TIRE 2TIRE 3TIRE 4TIRE\". Covers the Fee Management v3 API (list + per-fee detail), the ADD_TO_RO (\"Allow to Add at RO Level\") flag that controls whether a fee appears in the RO fee dropdown, opcode\u2192fee attachment, and how to prove whether a fee is actually landing on real ROs. Use for any Tekion fee visibility, fee-not-auto-applying, or fee-attach-rate question.",
-   "times_used": 4,
-   "last_used": "2026-08-24"
   },
   {
    "name": "tekion-ro-fee-waiver-investigation",
@@ -479,14 +487,6 @@
    "path": "automotive/tekion-ro-void-job-remove-parts",
    "category": "automotive",
    "description": "Remove parts from a Tekion RO and VOID the ticket, OR flip the job to INTERNAL pay and close at $0 (Joe's preferred cleanup). Void order - void JOB first, then RO-level void appears. Covers Return Part flow, deleting stuck Request Pending returns via the fulfillment row kebab Remove, the Void Job remove-parts gate, pay-type CP-to-I switch with Confirm PayType Change modal, and the Internal cost-center requirement. Verified live on SCT test RO 574398 (2026-07-31).",
-   "times_used": 4,
-   "last_used": "2026-08-24"
-  },
-  {
-   "name": "tekion-vi-stock-number-rules-fix",
-   "path": "automotive/tekion-vi-stock-number-rules-fix",
-   "category": "automotive",
-   "description": "Diagnose and fix Tekion Vehicle Inventory Stock# Rules (Vehicle Inventory Setup > Stock# Rules) when a vehicle gets a wrong/random stock number. Covers BOTH root causes \u2014 (1) a Make missing from a rule's Make multi-select so the wrong PREFIX is assigned, and (2) the rule matching for prefix but the NUMBER falling through to the global auto-increment counter. Includes the API-first diagnostic (OpenAPI vehicle-inventory timeline scan proving the fallback-counter signature), the subtype-coverage audit, /vi/visettings editing, the modal-scroll gotcha, the two-level Save requirement, and true-remount verification. Verified live at SCT (dealer 876) 2026-08-17 and 2026-08-24.",
    "times_used": 4,
    "last_used": "2026-08-24"
   },
