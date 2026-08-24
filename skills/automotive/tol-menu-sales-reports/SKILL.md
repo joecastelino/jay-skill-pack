@@ -869,6 +869,24 @@ only. Sent-check FIRST try (102s) = 4 hits, all old em-dash-era sends (06/30-07/
 rule (healthy RO count, plausible for a Sunday noon pull). Drafts stack tiny (4): 08/21, 08/22,
 08/23 hyphen-subject Opened drafts plus the perennial 08/02 em-dash one (UID 41547).
 
+## (8/23 8:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, genuine $0 day, TRUE dedupe
+Second genuine $0 day in a row (noon was also $0). EOD pull scanned **74 opened ROs**, 0 menus,
+$0.00 — healthy RO count for a Sunday, so a real zero per the $0-validation rule; rendered and
+drafted honestly. Hand-off returned in **134s** (no timeout), draft correct FIRST TRY with TRUE
+dedupe — she found and deleted the noon draft (UID 64) on her own before building. All 3
+verification asks returned FIRST try with "use raw IMAP, NOT the Gmail API" leading the ask:
+subject-list 85s, MIME part-listing 66s (parts-only wording per the 8/22-noon lesson), Sent-check
+50s. MIME clean: multipart/mixed > related > alternative(text/plain+text/html) + image/png
+Content-ID=<scorecard> 43,800B + application/pdf 29,217B.
+BOGUS-UID VARIANT recurred AGAIN (now near-universal): her save confirmation said "himalaya 42601
+(IMAP UID 67)" and the subject-list ALSO showed `67 | ...`, but the part-listing ask replied
+"UID 67 was wrong — correct IMAP UID is 42601" and listed the right MIME. The standing wording
+`UID N (subject "<exact>") ... if that UID is wrong, find it by that exact subject instead`
+self-heals this every time — keep it.
+Sent-check via the SHORT subject stem = 4 hits, all old em-dash-era sends (06/30-07/03), zero
+today = no leak; \Draft-flag follow-up skipped per the 8/17 note. Drafts stack tiny (4): 08/21,
+08/22, 08/23 hyphen-subject Opened drafts plus the perennial 08/02 em-dash one (UID 20).
+
 ## (8/21 8:05PM, Closed MTD) Clean one-shot, zero exit-124s; bogus-ID variant recurred again
 Hand-off returned in 157s (no timeout), draft correct FIRST TRY. All 3 verification asks
 returned FIRST try with "use raw IMAP, NOT the Gmail API" leading: subject-list 40s, MIME
