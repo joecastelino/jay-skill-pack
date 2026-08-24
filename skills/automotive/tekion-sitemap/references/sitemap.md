@@ -163,13 +163,18 @@ Harvest at scale: in-page concurrent worker (conc=10) looping partIds, batches o
 | JE detail (auto-posting) | `/accounting/journalEntry/transactionId/<txnId>/dealerId/<dealerId>/transactionType/AUTO_POSTING/edit` |
 | **GL Account Transaction Mapping** | ✅ **`/accounting/glaccountmapping/list`** (ALL LOWERCASE). Left-nav accordion: Variable Operations (New/Used Vehicles, F&I, Receivables, Payables) · Fixed Operations (Services, Part & Accessories, Purchase Orders, Warranty Credit, **Others**) · Payment Receipts (Variable Ops, Fixed Ops, Tekion Pay) · Payroll. Cash-holding accounts live under **Others → Fixed Operations (Other)**. |
 | Financial Statements | App Grid → Financial Statements (sidebar **FS**) |
-| Accounting Global Settings / Distribution Accounts | App Grid → search "account" → Settings group |
+| **Setup Fields (Cost Center Setup)** | ✅ **`/accounting/setupFields`** (camelCase, VERIFIED SCT 2026-08-24). Tabs: GL Accounts Setup / Journal Setup / **Cost Center Setup** (leaf at ≈582,158). Cost Center Setup has 4 categories in a 2×2 grid: **Parts Sale Order - Internal** (caret ≈112,260) · **Repair Order - Internal** (caret ≈**720,260**) · **Repair Order - CP Insurance/Warranty Split** (≈112,342) · **Repair Order - Warranty** (≈720,342). `+` icons at x≈610 / x≈1218 on each row. This is where RO-Internal cost centers (the "PDI", "Safecat 5450", "RENTALS 8160" names) are created/renamed. |
+| Distribution Accounts | ✅ `/accounting/distributionAccounts/list` |
+| Accounting Global Settings | App Grid → Settings tab → Accounting Settings group |
 
 ⚠ **Accounting dead-end URLs (all tested, all waste turns):**
 `/accounting/journal-entry`, `/accounting/journal-entries`, `/accounting/glam` → **silently redirect to chartOfAccounts/list** (looks successful — ALWAYS assert `location.href` after navigate).
 `/accounting/journal/list`, `/accounting/glAccountMapping` (camelCase) → blank page.
 `/accounting/accountSetup`, `/accounting/accountingSettings`, `/accounting/settings/glAccountMapping` → bounce to `/ro/quotes`.
 `/gl/journal-entry` → bounces to `/home`.
+`/accounting/setup-fields`, `/accounting/setupFields/costCenter`, `/accounting/costCenter/list`, `/accounting/cost-center/list`, `/accounting/costCenterSetup/list`, `/accounting/settings/costCenter`, `/accounting/gl-account-mapping` → **all silently land on chartOfAccounts/list**. Only `/accounting/setupFields` and `/accounting/glaccountmapping/list` work.
+
+**App Grid coords (verified 2026-08-24, 1280-wide viewport):** nine-dot launcher = **(30,31)**. Tabs Apps / Analytics / **Settings** / Store render at y≈145 — the "Settings" leaf is a `DIV` whose `textContent.trim()==='Settings'` with `children.length<=1` (a strict `children.length===0` filter finds NOTHING — that exact filter cost several turns). Under Settings → *Recently Used Settings*, **GL Account Mapping** tile ≈**(472,278)**. When leaf-text selectors come back `[]`, fall back to `/screenshot` + `vision_analyze` for coords — that's what unblocked it.
 
 Diagnosing JEs stuck in Error → skill **`tekion-journal-entry-error-diagnosis`**.
 
