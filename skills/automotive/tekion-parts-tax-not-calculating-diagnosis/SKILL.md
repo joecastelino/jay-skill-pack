@@ -11,6 +11,12 @@ A Parts Manager (e.g. Glade @ SCT) says "tax on sales orders isn't working / tax
 Classic signature: SOME sale types tax fine, one specific type (usually a CUSTOM sale order
 type like `ONLINE RETAIL`) shows $0 tax, and it started on a specific date.
 
+**Inverse symptom?** If the complaint is "a FEE is charging tax and shouldn't", use
+**`tekion-fee-charging-tax-diagnosis`**. Same migration, opposite direction: the fee's
+`pricingSetup.active[].taxConfigs` is empty so it falls through to the `FEES` component
+tax code in this very `saleTypeTaxSetup`. Legacy `EXCLUDE_TAX_CALCULATIONS` no longer
+suppresses tax under the new engine.
+
 ## Root cause #1 (the one that actually happened, SCT 2026-08-20)
 
 Tekion migrates stores onto a **new Parts Tax Code Setup** (feature flag
@@ -224,8 +230,14 @@ Note SV migrated 10/28/2025 — **the 8/19/2026 8:10–8:12 PM cutover hit 6 of 
    It surfaced `TAX_CODE_SETTINGS uiRoute:"/tax-code-settings"` and the feature flags
    `USE_NEW_TAX_CODES_SETUP`, `PARTS_TAX_CODE_ENABLED`,
    `PARTS_TAX_CODE_CUSTOMER_TAX_EXEMPT_ENABLED`. It does NOT contain API paths for these.
-6. **`page.from` pagination on order search works**, but `searchText:"<orderNo>"` is the
-   fast way to jump to a specific order and get its numeric `id`.
+6. **`page.from` pagination on order search is UNRELIABLE — verify it every time.**
+   With a `siteId` IN filter it is **silently IGNORED**: `from=0/20/40/100` all returned the
+   identical first 20 orderNos (VC, 2026-08-24), so a "scanned 600 orders" loop really
+   scanned the same 20 thirty times and reported a false `found 0`. Before trusting any
+   multi-page scan, print the first orderNo of pages 0/20/40 and confirm they differ.
+   If `from` is ignored, paginate by **`createdTime` time-window bisection** with an
+   id-dedupe set. `searchText:"<orderNo>"` remains the fast way to jump to one order and
+   get its numeric `id`.
 7. Dollar fields in `saleAmount` / `tax.saleTaxAmount` are **CENTS**. `taxSummary.subTotal`
    is **DOLLARS**. Both appear on the same object — do not mix them.
 

@@ -17,6 +17,13 @@ A store says a fee code is missing, can't be selected on an RO, or isn't being
 billed. Distinct from `tekion-ro-fee-waiver-investigation` (that one is
 "someone is deliberately zeroing a fee"). This one is **config + attach-rate**.
 
+**Wrong skill?** If the complaint is "fee X is *charging tax* / shouldn't be
+taxed", use **`tekion-fee-charging-tax-diagnosis`** instead — that's the new
+Parts Tax Code Setup leaving `pricingSetup.active[].taxConfigs` empty, and it has
+a one-call sweep that answers it. It also documents the
+`partTrade/u/sale/order/search` pagination trap (`page.from` is IGNORED — every
+page returns the same 20 rows, so multi-hundred-order scans silently lie).
+
 ## ⚠️ THE #1 TRAP — `/ro-fees` is NOT the whole story
 
 `GET /repair-orders/{roId}/ro-fees` returns **only RO-LEVEL fees**.
