@@ -153,6 +153,13 @@ Work dir: `/home/itadmin/tekion-reports`
      actual attachment size in bytes**, then cross-check it against
      `ls -la` on the PDF (150,092 B matched exactly) — a byte-exact match is
      the cheapest hard proof the real file went out.
+   - ✅ **Verified 2026-08-23: putting the explicit "WRITE AND RUN A PYTHON SCRIPT
+     using email.mime … do NOT use the himalaya `<#part>` syntax" instruction in
+     the ORIGINAL draft ask (not just as a rebuild retry) produced a correct
+     `MIME=REAL-multipart` on the first attempt** — no rebuild cycle needed, and
+     Stacey volunteered the byte counts unprompted (PDF 150,092 / PNG 883,652,
+     both matching `ls -la`). Make that instruction part of the standard draft
+     ask every run; it turns a 2-3 call recovery loop into one clean call.
    - On `MIME=MARKUP-ONLY`, recovery that landed correctly on the FIRST retry:
      tell her to **REBUILD FROM SCRATCH** (never edit/reuse the broken one) and
      explicitly instruct the transport — *"Build the message with a real MIME
