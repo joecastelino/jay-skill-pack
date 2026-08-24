@@ -290,6 +290,17 @@ BEFORE flagging it as a missed transfer:
   itself is benign, yet the stale companion negative (2418 = −2) was still sitting there
   uncorrected from prior runs. Report the recurrence count and the unresolved companion, not the
   increase.
+- **STATUS UPDATE 2026-08-23:** 2 diffs / 174 rows. **04500-1 RESUMED deepening −119→−120 after 3 flat
+  days** (7+ weeks open, standalone single-bin, `multipleBinNumbers: []`, 5005 IS its Primary — outside
+  transfer scope). 31532 flat −56 (**5th** flat day), 87139-42040 flat −12 (4th), 87139-YZZ09 flat −22
+  (day 16). **17801-F4010 recurrence #7** — 5006=2 (Primary) vs Total Inventory Qty=**0**, companion 2418
+  still −2, unmoved since 8/11 (13 days); again NO diff on 5006 itself, only the bin-vs-Total tell caught
+  it. 87139-YZZ93 5007 46→42 reconciled clean (42+30=72 ✓, Primary=5007). Negatives held at **26 for a 6th
+  consecutive day**; bin mix 5005=11 rows, 5007=7 and still owns 4 of the 6 deepest. Session state this
+  run: :9223 was on `/login` with a 24h-old storage-state → `login.py --force` (clean first try, LOGGED_IN)
+  → cookies added:5 → **22/22** keys length-verified → `/navigate /home` welcome:true on BC/1251 → dealer
+  pill x1130,y32 → SCT leaf x1074,y346 → 876. Whole restore ~90s, zero retries. The `data-jaybin` tagging +
+  "Search Bin Names"=500 filter selected all 7 bins first try with no scrolling.
 - **STATUS UPDATE 2026-08-22:** Quietest run to date — **ONE diff out of 174 rows**, and ALL FIVE tracked
   escalations flat again: 31532 −56 (4th flat day), 04500-1 −119 (3rd flat), 87139-42040 −12 (3rd flat),
   87139-YZZ09 −22 (day 15 flat), 17801-F4010 recurrence **#6** (5006=2 vs Total Inventory Qty=**0**,

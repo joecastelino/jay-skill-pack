@@ -887,6 +887,22 @@ Sent-check via the SHORT subject stem = 4 hits, all old em-dash-era sends (06/30
 today = no leak; \Draft-flag follow-up skipped per the 8/17 note. Drafts stack tiny (4): 08/21,
 08/22, 08/23 hyphen-subject Opened drafts plus the perennial 08/02 em-dash one (UID 20).
 
+## (8/23 8:05PM, Closed MTD) TEXTBOOK CLEAN RUN — zero exit-124s across all 4 calls
+Hand-off returned in 161s (no timeout), draft correct FIRST TRY, no dedupe needed. All 3
+verification asks returned FIRST try with "use raw IMAP, NOT the Gmail API" leading and the
+parts-only part-listing wording: subject-list 27s, MIME part-listing 37s, Sent-check 58s.
+MIME clean: multipart/mixed > related > alternative(text/plain+text/html) + image/png
+Content-ID=<scorecard> + application/pdf. BOGUS-UID VARIANT recurred (now essentially every
+run): save confirmation AND subject-list both said UID 68, part-listing replied "found at IMAP
+UID 42602, not UID 68" and listed correct MIME — the standing `UID N (subject "<exact>") ...
+if that UID is wrong, find it by that exact subject instead` wording self-heals it every time.
+Sent-check = 2 hits, both the old June 1-29 em-dash emails (token trap, item 5b), no leak.
+Drafts stack (hyphen stem) = 4: Aug 1-21, 1-22, 1-23 plus the perennial 08/02 em-dash one
+(UID 19) — no true dupes. DATA NOTE: Sunday close day — 29 closed ROs scanned, 0 prefilter
+hits, so MTD stayed flat at 28 rows / $7,101.35 (identical to 8/22). Zero-delta days are
+normal on Sundays; state it explicitly in the email body so Sean isn't confused by an
+unchanged total. Closed-append ran FOREGROUND in ~10s.
+
 ## (8/21 8:05PM, Closed MTD) Clean one-shot, zero exit-124s; bogus-ID variant recurred again
 Hand-off returned in 157s (no timeout), draft correct FIRST TRY. All 3 verification asks
 returned FIRST try with "use raw IMAP, NOT the Gmail API" leading: subject-list 40s, MIME
