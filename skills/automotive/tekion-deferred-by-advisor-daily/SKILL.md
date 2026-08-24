@@ -30,9 +30,17 @@ it is NOT a broken script. Re-capture headers BEFORE debugging anything else:
    Note `curl http://127.0.0.1:9223/status` does not exist and will HANG the terminal tool — use
    `/health`, `/url`, `/eval` from `execute_code` + urllib, never curl in a shell.
 2. Arm the XHR hook (override open/setRequestHeader/send, stash `{u,h}` for any `/api/` with >3 headers).
-3. **Click a refetch button on whatever page is already loaded** (Opcode List → `Reset`).
-   Passive polling and the `history.pushState` soft-nav both caught ZERO on an idle page (2026-08-20);
-   the button click captured in ~4s. Full detail in `tekion-declined-deferred-services-report`.
+3. **Trigger a refetch.** Two paths that work:
+   - **`history.pushState` soft-nav to `/ro/opcode/list` + `PopStateEvent`** — worked 2026-08-23,
+     caught 5 `/api/` calls in ~8s from an idle Parts page. (Contradicts the 2026-08-20 note that
+     soft-nav caught zero — try it FIRST, it's the cheapest.)
+   - If soft-nav catches nothing, click a real refetch button (Opcode List → `Reset`).
+   Any captured header set works — the auth headers are identical across `/api/` endpoints;
+   the script overwrites `dealerId`/`tek-siteId` per store anyway.
+   **Token extraction gotcha:** `tekion-api-token` is ~536 chars and the `/eval` endpoint
+   truncates long strings — pull it in 4000-char slices (`.slice(i,i+4000)`) and reassemble,
+   or `JSON.stringify(h)` will hand you a truncated `"eyJhbG...rQUw"` ellipsis form that silently
+   still 401s. Verify `len(token)` matches what `h['tekion-api-token'].length` reported.
 4. Merge over the old file, re-run the pull. Whole recovery ≈ 90s.
 
 ## CRITICAL: the index lags ~1 day
@@ -74,9 +82,18 @@ SCT → Kevin Stapp `kstapp@sctoyota.com`; TL → Sean Preston `spreston@tol-av.
 BT → Tony Garcia `agarcia@blackstonetoyota.com`.
 Subject pattern: `<STORE> Deferred Work by Advisor — <Weekday MM/DD/YYYY>`.
 Body = summary line (bold $ total / lines / ROs / Critical count) → advisor table with TOTAL row →
-note that the PDF has a page per advisor for follow-up calls. Scorecard PNG **inline as a base64
-data-URI** (Stacey's first build often omits it — demand it explicitly and verify), PDF + CSV attached,
-Joe's HTML signature.
+note that the PDF has a page per advisor for follow-up calls. Scorecard PNG **inline as a CID
+attachment** — `multipart/related` + `image/png` part with `Content-ID: <scorecard>` and
+`<img src="cid:scorecard">`. **NEVER a `data:` URI** — Gmail blocks those and the image renders
+broken (Joe reported exactly this on the 8/19 draft; the PNG bytes were perfect, the delivery
+mechanism was wrong). Spell the whole MIME tree out in the ask to Stacey and state explicitly
+"the string data:image must NOT appear in the HTML". Verify afterwards: `'data:image' in html`
+is False, `'cid:scorecard' in html` is True, and an `image/png` part has Content-ID set.
+Tell: correct CID body is ~3-4KB of HTML; a data-URI body is ~180KB.
+PDF + CSV attached, Joe's HTML signature.
+Note Stacey strips underscores out of the reply token line (`CIDPNG=y`, `INDRAFTS=y`) — that's
+her formatting, not a failed field. Also she labels the CSV `application/csv`, not `text/csv`
+— still byte-identical, don't flag it.
 DRAFT-ONLY asks: give Stacey a hard stop ("imap.append to Drafts ONLY, no send/SMTP/X-GM-RAW path").
 Then verify independently with `jay-gmail-draft-verification` — confirm labels are `\Draft` only,
 Sent Mail = 0 hits, attachments byte-identical to source files, and the PNG is a real data-URI not a CID stub.
