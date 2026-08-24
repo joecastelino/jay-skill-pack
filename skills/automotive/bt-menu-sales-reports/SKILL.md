@@ -190,4 +190,22 @@ the MTD total is still valid — **render and send normally**, and note the lag 
 final report so Joe knows the day contributed almost nothing. Also probe an adjacent day
 as a control before concluding anything.
 
+### (8/24 run, for Sun 8/23) ZERO closed ROs — confirmed close lag, NOT starvation
+Sunday 8/23 logged `closed/invoiced ROs today: 0`. The `_bt_probe_0824.py` 3-field probe
+(now saved alongside `_bt_probe_0823.py`) settled it instantly with an adjacent-day control:
+8/21 closedTime=150 / invoiced=180 / created=146 (normal), 8/22 closedTime=3 / invoiced=118
+/ created=125 (the known 8/22 lag), 8/23 **closedTime=0 / invoicedTime=34 / creationTime=35**
+— all HTTP 200. So the store simply hadn't run accounting close on Sunday's 34 invoiced ROs.
+Per the DECISION RULE this is a genuine lag: MTD total still valid, render + send normally.
+Confirms `closedTime=0` alone is NOT proof of starvation — always probe all three fields plus
+a control day BEFORE skipping the email. MTD stayed flat at 241 rows / $58,056.84 (same as
+8/22's run); state the zero-delta explicitly in the email body so Tony isn't confused by an
+unchanged total (same practice as the TOL Sunday note).
+CLEAN SEND: the .sh-wrapper + quoted-heredoc pattern with the DO-NOT-DOUBLE-SEND paragraph
+produced a one-attempt send in **47s** (zero SMTP errors, zero retries); the IMAP Sent-check
+returned in **26s** first try, 5 hits, exactly one carrying today's subject. NOTE: the 8/22
+duplicate pair (Aug 1-21, 06:03:56 + 06:04:46) did NOT appear in this Sent listing even
+though the skill predicted it would show forever — don't treat its absence (or presence) as
+signal either way; only two hits with TODAY's exact date range mean a fresh double-send.
+
 ## OVERALL_QUOTA reset behavior (observed 7/8–7/9 outage)\nNOT a fixed midnight reset. Behaves like a rolling ~24h+ bucket tied to when\nthe calls were burned; the 7/8 outage ran **29+ hours** with continuous 429s.\nRecovered capacity can be instantly re-drained by queued crons (11PM\ndealer-detail sync, 2AM VI pull), making it look continuously dead.\nIf dead >24h, escalate: ticket to Tekion asking the actual OVERALL_QUOTA\nlimit, reset schedule, and a raise — it's one org-wide bucket shared by all\n7 stores' pipelines and AMG has co-founder-level contact from the bin\nescalation. Never blind-retry; probe-gate everything.
