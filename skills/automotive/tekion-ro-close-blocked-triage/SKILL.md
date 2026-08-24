@@ -164,6 +164,75 @@ When the complaint is a stuck PART LINE (not a close block), diagnose in this or
    click-paths + the unsolved pending-return-processing gap in skill
    `tekion-ro-void-job-remove-parts`.
 
+## Step 3d — READY_FOR_INVOICE stuck on job-level "Need Attention" validation (verified SCT RO 580200, 2026-08-24)
+
+Third distinct failure mode, and the one the API is BLIND to. Symptom: `status:
+READY_FOR_INVOICE`, job `COMPLETED`, `CLOSED_TIME` stamped in `schedule[]`, but
+`/ro-invoices` returns **`data: {}`** (no invoice record) — the RO just sits
+unposted for days.
+
+**The API can tell you it's stuck but NEVER why.** `repair-orders:search`,
+`/jobs`, `/operations`, `/ro-fees`, `/ro-coupons` all return clean, valid-looking
+data. The blocking reasons are **UI-only validation strings** rendered in a
+"Need Attention" block on the job card. You MUST read the RO page DOM.
+
+**Where the answer lives** (`document.body.innerText` of
+`/ro/repair-orders/<docId>/jobs/<jobId>`): a literal `Need Attention` line
+followed by one string per blocker, e.g.
+```
+2
+Need Attention
+Causes must not be blank
+The cost center description is empty
+```
+The leading number = blocker count. Just slice innerText — no vision needed.
+
+Two seen on 580200 (Internal/house-account RO, opcode SAFECAT, $140):
+1. **"Causes must not be blank"** — Job has Concern + a Corrections story line
+   but an empty **Cause** field (tell: an `Add Cause` button still showing, and
+   `input[placeholder="Type Cause here"]` with `value:""`).
+2. **"The cost center description is empty"** — lives inside the **Manage Splits**
+   modal → *Payer – Cost Center Details* table. Row 1 had Cost Center
+   `We Owe / Due Bill - 3042`, 100%, Control/Control 2 **disabled**, and a
+   **live, empty, required Description** input. There was also a half-started
+   **second row** (Cost Center = `Select`, no %, no description).
+
+**Reading the cost-center table** (the innerText of the whole RO page does NOT
+include it until the modal is open):
+```js
+// after /mouse-clicking "Manage Splits"
+var hdr=[...document.querySelectorAll('*')].filter(function(e){
+  return e.offsetParent && e.children.length===0 &&
+         e.textContent.indexOf('Payer - Cost Center Details')>=0;})[0];
+var n=hdr; for(var i=0;i<6;i++) n=n.parentElement;   // 6 parents up = the block
+n.innerText;                                          // the table as text
+[...n.querySelectorAll('input,.ant-select')].filter(e=>e.offsetParent!==null)
+  .map(e=>({cls:e.className,v:e.value,dis:e.disabled}));  // which fields are required/empty
+```
+`ant-input-disabled` = nothing to fill (fine). A plain `ant-input` with `value:""`
+= the required-and-empty field Tekion is complaining about.
+
+### ⭐ The move that made the diagnosis credible: a CONTROL RO
+Don't just describe the broken RO — find a same-opcode RO that invoiced cleanly
+and diff it. Free via the opcode filter:
+```python
+post("/repair-orders:search", {"filters":[
+  {"field":"opcode","operator":"IN","values":["SAFECAT"]},
+  {"field":"creationTime","operator":"BTW","values":[str(lo),str(now)]}],
+  "pageSize":50})
+```
+Pick an `INVOICED` sibling, open its Manage Splits, compare. On 580512 (same
+opcode / $140 / Internal) the cost-center table had **one** row with
+Control/Control 2/**Description all disabled** and **zero** Need Attention flags.
+That contrast — live-empty Description + a stray blank second row vs. all-disabled
+single row — is what proves the finding instead of guessing.
+
+**Also check the cost center is the RIGHT bucket.** 580200 was a PDI unit but its
+cost center read `We Owe / Due Bill - 3042`, not PDI. That's a separate issue from
+the two validation errors and worth flagging — it would post the $140 to the wrong
+account even after the blockers clear. Per the never-guess rule: do NOT assert a
+"PDI - 4440" option exists in that dropdown unless you actually opened it.
+
 ## Step 4 — Advise (don't guess — per Joe's never-guess rule)
 
 Ask the store for:
