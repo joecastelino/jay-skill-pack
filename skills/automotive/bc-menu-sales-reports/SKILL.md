@@ -896,6 +896,36 @@ because the figures are zero. Also worth writing an explicit sentence like "No r
 orders were closed at the store today" into the summary so Ruben reads it as a genuine
 closed-store Sunday rather than a broken feed.
 
+## 2026-08-23 5pm Daily Closed run — second zero-menu Sunday, 15th consecutive clean "N dollars" build
+0 menus, $0.00 labor / $0.00 parts = $0.00. **0 closed ROs** again (same Sunday as the
+noon run — BC service closed all day; both runs of the day were legitimately zero).
+`✓ all candidate ROs scanned`; renderer emitted the "No menu sales recorded yet for this
+period." empty-table variant; vision-verified all four KPI tiles at $0.00 / 0. Pull ran
+via `terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`,
+finished near-instantly.
+**Renderer output path gotcha**: `render_scorecard_bc.py` writes the PNG/PDF into
+`data/`, NOT an `out/` dir — a chained `ls out/BC-...` returns exit 2. The script prints
+the two absolute output paths on stdout; just read those instead of guessing a directory.
+Stacey's build: `execute_code` + `subprocess.run` argument list wrapped in `timeout 600`
+→ returned cleanly in **240s** (slowest clean build so far, still well inside 600 —
+confirms `timeout 600` is the right ceiling, 170/180 would have manufactured an
+exit-124). Her reply DID contain self-correction text ("I'm missing the `<b>` tag around
+the total figure... I'll replace my draft") occurring AFTER an append (draft 42596 had
+already landed) — per the 8/19 lesson that predicts a duplicate, but she used a genuine
+REPLACE (delete + re-append) rather than a blind re-append, so the dedupe grep found only
+42597 + the expected stale noon draft, no duplicate. Refines the heuristic further:
+post-append self-correction risks a duplicate but doesn't guarantee one — she sometimes
+cleans up after herself. Always grep; never assume either way.
+Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
+auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (52,569 bytes), PDF
+**byte-for-byte identical** (39,492 bytes), `<b>$0.00</b>` bold exactly once, greeting +
+footer present, zero ' dollars'/USD leftovers (checked after stripping the data URI).
+Deleted the stale noon draft (42594) per the twice-daily cadence rule, kept 42597 →
+exactly 1 draft. Sent count 0 for `BC 8/23` entirely (not even a Daily Opened hit —
+Stacey's auto-send pipeline correctly produced nothing on a closed Sunday).
+Explicit "the store was closed for Sunday, this is a genuine zero day not a data problem"
+sentence included in the body again per the zero-day note above.
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
