@@ -358,6 +358,28 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   clears PNG*4/3 (131,174) with the usual heavy-signature headroom, PDF part +2.6% over
   PDF*4/3 (401,979) is the normal CRLF variance, RAW_SIZE ≈ html+pdf parts. Underscore-
   stripped keys again.
+  **Confirmed again 2026-08-23 (13th consecutive clean night) — THIRD flat-day, near-zero
+  close day, cleared by the note-20/22 recipe:** OPS probe 200 (same validated RO/job pair,
+  unchanged since 8/3); no same-day index existed pre-run (checked mtime first per the stale-
+  index trap). Index 3,091 closed ROs, 1,012 candidates, 0 failed, ~38 min (19:01→19:39).
+  Totals 290 alignments (259 ded + 31 bundled), 290 ROs, 16 advisors, top Cristian Gonzalez
+  (33) — **identical totals to BOTH 8/21 and 8/22** (three flat nights in a row). Cleared via
+  the standard recipe: window end advanced 1787468399999 → 1787554799999 (NOT a cached index),
+  id-set diff `new: 2, dropped: 0`, and per-day API closed counts 8/20=19, 8/21=24, 8/22=0,
+  **8/23=2** — a Sunday with only 2 ROs closed store-side, neither an alignment candidate, so
+  unchanged totals are correct. Note the index FILE SIZE grew slightly (425,567 → 425,823)
+  which is a cheap extra confirmation the index is fresh even when totals don't move. Also
+  note the leaderboard tightened further: Jaime Sanchez 31, Chris Mai 30, Artist Battle 30 —
+  Cristian's lead is now 2. Stacey's build clean on the FIRST ask (163s) with paths + on-disk
+  sizes baked in; her reply gave HTML part 132,033B and PDF part 301,487B (exact on-disk
+  match). Two-ask verify, short sleeps (15s then 10s), both first-try:
+  `DRAFTS_COUNT=1 | TO=kstapp@sctoyota.com | SENT_FOLDER_COUNT=0`, then
+  `RAW_SIZE=595,032 | text/plain=630 text/html=180,678 application/pdf=412,564` — HTML clears
+  PNG*4/3 (131,308) with heavy-signature headroom, PDF part +2.6% CRLF variance over
+  PDF*4/3 (401,983), RAW_SIZE ≈ html+pdf. Underscore-stripped keys again. Note her BUILD
+  confirmation reported the PDF part as the exact decoded file size (301,487) while the later
+  PARTS ask reported the encoded size (412,564) — per note 9/8 BOTH forms are valid passes;
+  the discrepancy between her two reports of the same part is not a duplicate signal.
   **Confirmed again 2026-08-16 (6th consecutive clean night, quota fully healthy):**
   pre-flight OPS probe (same validated RO/job pair) returned 200. Index built 2,364
   closed ROs, 771 candidates, 0 failed, ~30 min scan (19:01→19:31, no backoff
