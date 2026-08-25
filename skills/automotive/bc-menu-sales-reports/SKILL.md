@@ -1033,6 +1033,27 @@ figure>")` and `"CORRECTION" in clean`) whenever the ask contained a correction,
 better yet compose the figure list once, cleanly, before sending (same lesson as
 2026-08-22 noon).
 
+## 2026-08-25 noon Daily Closed run — textbook one-shot, 20th consecutive clean "N dollars" build
+2 menus, $452.68 labor / $178.74 parts = $631.42 (Houa Moua 1 / $544.96, Jeremia
+Navarro 1 / $86.46). 35 closed ROs → only 2 carried TEK menu opcodes;
+`✓ all candidate ROs scanned`; vision-verified KPI band (crop 460px + 2x LANCZOS)
+matched JSON exactly. Pull ran via `terminal(background=true)` + a SINGLE
+`process(action="wait", timeout=180)` and finished near-instantly. Stacey's build:
+`execute_code` + `subprocess.run` argument list wrapped in `timeout 600` → returned
+cleanly in **118s**, no exit-124, no recovery probe, terse DONE line correct with
+`TOTAL=$631.42`, and her reported id (42662) MATCHED himalaya's. No self-correction
+text in her reply → no duplicate (pattern holds). Verified via the stdlib-`email`
+parser: To=Restrada, Cc real None, From=Joe, Subject auto-decoded with em-dashes,
+inline PNG **byte-for-byte identical** (83,386 bytes), PDF **byte-for-byte
+identical** (50,635 bytes), all 7 figures present exactly once, `<b>$631.42</b>`
+bold, greeting + footer present, zero ' dollars'/USD leftovers (checked after
+stripping the data URI), exactly 1 draft, Daily-Closed Sent count 0, no stale prior
+8/25 draft to clean up. Also: no `BC 8/25` hit in Sent at all at noon — Stacey's
+auto-sent Daily Opened report hadn't fired yet at 12:26 PT.
+**Low-volume day note**: only 2 of 35 closed ROs carried menu opcodes (~6% attach,
+vs the more typical 10-20%). Low counts are normal Monday-morning-cutoff behavior
+for the noon run — the 5pm run picks up the rest of the day.
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.

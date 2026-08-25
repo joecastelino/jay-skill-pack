@@ -928,6 +928,32 @@ JOE as a possible menu-presentation/process issue at the store, but it is not a 
 Drafts stack tiny (5): 08/21-08/24 hyphen-subject Opened drafts + the perennial 08/02 em-dash one
 (UID 20).
 
+## (8/25 12:05PM, Opened) TEXTBOOK CLEAN RUN — 5th consecutive genuine $0 day
+Zero exit-124s across ALL 4 calls. Hand-off returned in 116s, draft correct FIRST TRY
+(multipart/related > alternative(text/plain+text/html) + image/png Content-ID=<scorecard>
++ application/pdf). No dedupe needed (0 existing drafts with today's exact subject).
+Verification asks all FIRST try with "use raw IMAP, NOT the Gmail API" leading + parts-only
+part-listing wording: subject-list 31s, MIME part-listing 51s, Sent-check 31s.
+BOGUS-UID VARIANT recurred: save confirmation said "Draft ID 42661 / IMAP UID 42661" but the
+subject-list showed UID 76; the part-listing ask replied "UID 76 not found. Found by subject
+at UID 42661 instead" and listed correct MIME. The standing `UID N (subject "<exact>") ...
+if that UID is wrong, find it by that exact subject instead` wording self-heals every time.
+Sent-check = 4 hits, all old em-dash-era sends (06/30-07/03), zero today = no leak.
+DATA: 105 opened ROs scanned, 0 menus / $0.00 — FIFTH straight $0 opened day (8/23 noon
+through 8/25 noon). Sanity scan over the first 60 ROs confirmed genuine: only 7 TEK ops, ALL
+numeric-suffix (TEK09030103 x3, TEK09050103 x2, TEK09010103, TEK09010105), ZERO menu-set
+hits; classic real-$0 prefix histogram (FLO 46, TPS/SUR/INV 45, MPV 44, TXM 32, UCD 31,
+CON 18, REC 12, LOF 10). ESCALATE: five straight $0 opened days + three zero-delta closed
+days on a store running 60-215 ROs/day is a store-side menu-presentation/process problem,
+not a pipeline bug — keep telling Joe explicitly each run until it changes.
+Drafts stack = 11 TOL total (08/21-08/25 Opened & Closed pairs + the perennial 08/02
+em-dash pair UIDs 19/20) — no true dupes.
+SANITY-SCAN PROBE RECIPE THAT WORKED (reuse verbatim): build `_probe_<date>.py` that does
+`import tol_menu_sales_api as O`, `O.fetch_ros(ms0, ms1)`, then per RO
+`O.call("GET", f"/repair-orders/{rid}/jobs")` -> `jobs["data"]["jobs"]` ->
+`O.call("GET", f"/repair-orders/{rid}/jobs/{j['id']}/operations")` -> `ops["data"]["roOperations"]`.
+Cap it at ~60 ROs (full 105 would exceed the execute_code 300s budget; 60 took 149s).
+
 ## (8/24 8:05PM, Closed MTD) Clean one-shot, zero exit-124s; ZERO-DELTA day
 Hand-off returned in 103s (no timeout), draft correct FIRST TRY, no dedupe needed. All 3
 verification asks returned FIRST try with "use raw IMAP, NOT the Gmail API" leading and the
