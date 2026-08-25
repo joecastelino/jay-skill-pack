@@ -1,6 +1,6 @@
 ---
 name: tekion-vi-stock-number-rules-fix
-description: Diagnose and fix Tekion Vehicle Inventory Stock# Rules (Vehicle Inventory Setup > Stock# Rules) when a vehicle gets a wrong/random stock number. Covers BOTH root causes — (1) a Make missing from a rule's Make multi-select so the wrong PREFIX is assigned, and (2) the rule matching for prefix but the NUMBER falling through to the global auto-increment counter. Includes the API-first diagnostic (OpenAPI vehicle-inventory timeline scan proving the fallback-counter signature), the subtype-coverage audit, /vi/visettings editing, the modal-scroll gotcha, the two-level Save requirement, and true-remount verification. Verified live at SCT (dealer 876) 2026-08-17 and 2026-08-24.
+description: Diagnose and fix Tekion Vehicle Inventory stock-number problems. ⚠️ ROOT CAUSE SETTLED 2026-08-25 — the stock # is stamped at VIN DECODE from the bare global auto-increment counter, before stockType/stockSubType exist, and is never re-evaluated. FOUR UI remedies were tested and FAILED (add Make, add SubTypes, vehicleSubTypeMandatory ON, reverse entry order) — this is a Tekion platform defect, NOT a dealership misconfiguration, so do not propose Stock# Rules edits. Real fix = OpenAPI PUT /vehicle-inventory/{id} (stockID is writable) driven by the detector sct_stock_audit.py. Also covers the Add-Vehicle DOM map (Stock# field id is <dealer>_PRODUCTION; SubType is a radio group; custom non-native Vehicle Type radios), the :9223 cron-pipeline browser-contention trap, CT27xxx = human quarantine tag at SCT, and the model-year-prefix / pre-VIN-factory-order false positives. Verified live at SCT (876).
 triggers:
   - stock number wrong
   - wrong stock number
@@ -134,11 +134,12 @@ So the correct fix ORDER is:
 
 Reverse that order and the new values still match nothing.
 
-**KNOWN GAP — STOP AND ASK (never-guess rule).** I have NOT verified whether Tekion
-re-evaluates the stock rule when subtype is filled in *after* creation, or stamps
-once and never revisits. If it's stamp-once, mandatory-at-creation is the only thing
-that works. Confirm via a controlled test (create one used vehicle with subtype set
-at creation vs. one set after) or a Tekion ticket — do not assert either way.
+**⛔ RESOLVED 2026-08-25 — ANSWERED, AND THE MANDATORY-SUBTYPE FIX IS DISPROVEN.**
+Tekion never re-evaluates the stock rule, because on the Add-Vehicle path it never
+evaluates it at all — the number is stamped at VIN DECODE. Turning
+`vehicleSubTypeMandatory` ON was tested live at SCT and did NOT fix it
+(Joe: "it still doesn't work"). Text retained only to document the dead end.
+See "2026-08-25 DEFINITIVE" below before acting on anything in this section.
 
 ## EXECUTING THE FIX — turning ON "Stock SubType is Mandatory" (done live 2026-08-25, SCT 876)
 
@@ -199,11 +200,12 @@ defaults here on load, which for once is the tab we want):
 Note the shape: it is an **object with `enable`**, NOT a bare boolean. Pre-fix this
 key was `null` entirely. Assert `dealer` matches your target in the same read.
 
-**KNOWN GAP — STOP AND ASK (never-guess rule).** I have NOT verified whether Tekion
-re-evaluates the stock rule when subtype is filled in *after* creation, or stamps
-once and never revisits. If it's stamp-once, mandatory-at-creation is the only thing
-that works. Confirm via a controlled test (create one used vehicle with subtype set
-at creation vs. one set after) or a Tekion ticket — do not assert either way.
+**⛔ RESOLVED 2026-08-25 — ANSWERED, AND THE MANDATORY-SUBTYPE FIX IS DISPROVEN.**
+Tekion never re-evaluates the stock rule, because on the Add-Vehicle path it never
+evaluates it at all — the number is stamped at VIN DECODE. Turning
+`vehicleSubTypeMandatory` ON was tested live at SCT and did NOT fix it
+(Joe: "it still doesn't work"). Text retained only to document the dead end.
+See "2026-08-25 DEFINITIVE" below before acting on anything in this section.
 
 ### 2026-08-25 LIVE REPRODUCTION — the rules are BYPASSED, not misconfigured
 
@@ -281,13 +283,36 @@ payload (`typeSetting.vehicleSubTypeMandatory.enable === true`), not the toggle 
   `876_YEAR`, `876_BODY_CLASS`, `876_SOURCE`, `876_MILEAGE`.
   ⚠️ **Stock # field id is `876_PRODUCTION`** — NOT `*_STOCK*`. A `/stock/i` scan
   over input ids/names finds it only by accident. Label "Stock #" sits at ~(827,815).
-- **⚠️ CONTRADICTS the stamp-at-init theory:** on a freshly opened
-  `/vi/vehicle/new`, `document.getElementById('876_PRODUCTION').value === ''`.
-  The Stock # is **blank at init**, so the number is NOT stamped when the form
-  mounts. Whatever assigns it happens later (on save, or on VIN decode). The
-  "stamped at init before Type/SubType exist" explanation is therefore **UNPROVEN**
-  — do not repeat it to Joe as established fact until the assignment moment is
-  actually observed.
+- **✅ STAMP POINT CONFIRMED = VIN DECODE (2026-08-25, Joe verified live).**
+  Two observations pin it: (a) on a freshly opened `/vi/vehicle/new`,
+  `document.getElementById('876_PRODUCTION').value === ''` — blank at mount, so
+  NOT stamped at init; (b) Joe pasted VIN `2T3W1RFV7RW336932` with nothing else
+  filled in and the Stock # **immediately populated as a bare `152xx`**, without
+  saving. Therefore the number is assigned **at VIN decode**, not at init and not
+  at save. Earlier "stamped at init" claims in this skill were WRONG — corrected.
+
+  This one fact explains every failed remedy:
+  | Remedy tried | Why it did nothing |
+  |---|---|
+  | Add Make to rule (8/17) | rule not consulted at decode — Type/SubType empty |
+  | Add CPO-Gold/Silver subtypes (8/24) | same |
+  | `vehicleSubTypeMandatory` ON (8/25) | enforces before **save**; stamp already happened at **decode** |
+
+  It also explains the intermittency (depends entirely on whether the operator set
+  Type/SubType before pasting the VIN) and the 8/21 cluster of nine (one person,
+  one habit, nine cars in a row).
+
+- **⛔ `vehicleSubTypeMandatory: true` is RULED OUT as a fix.** Joe tested after it
+  was enabled — still bare `152xx`. Left ON anyway (harmless, cleaner data entry).
+  Do not re-propose it.
+
+- **NEXT TEST (queued, unresolved at time of writing): reversed entry order.**
+  Select Used Vehicle + Used CPO **first**, then paste the VIN. If decode evaluates
+  rules against whatever is already populated, this should yield `CT245xx` and the
+  fix is purely procedural. If it still yields bare `152xx`, decode ignores the
+  rules entirely = genuine Tekion defect, file with the 12 CT27xxx VINs as the
+  reproduction set. Script: `/tmp/reverse_test.py` (waits for a free browser window,
+  never saves the draft).
 - Vehicle Type radios are custom divs `vi_cargoradio_label_container__*` /
   `vi_cargoradio_main_container__*` (New ~482,659 · Used ~622,659). No
   `input[type=radio]` exists. `/mouse` on the label container did NOT flip the
@@ -352,6 +377,114 @@ Turning it on makes it issue duplicates (SCT CT would start at CT23161 while
 CT24558/CT27021 already exist; NT would start at NT2481 vs live NT2946). **Bump
 `startingValue` / the sequence above the highest in-use number first.** Flag this
 to Joe as part of any "make the rule work" plan.
+
+## 🔴 2026-08-25 DEFINITIVE — STAMPED AT VIN DECODE. THE UI CANNOT FIX THIS.
+
+**Read this section FIRST. It supersedes every UI-side remedy above.**
+
+Observed directly on `/vi/vehicle/new` at SCT (876), draft never saved:
+
+| Step | Stock # |
+|---|---|
+| Form opens | `''` (blank) |
+| Select Stock Type = Used Vehicle | `''` |
+| (subtype attempted) | `''` |
+| Type VIN, before blur | `''` |
+| **Tab → VIN decode fires** | **`15256`** ← stamped HERE |
+| +6s / +12s / +18s | `15256` (never revised) |
+
+**The number is assigned at VIN decode, from the bare global auto-increment
+counter, and is never re-evaluated afterward.** At decode time stockType /
+stockSubType / bodyClass are not yet committed, so no Stock# rule can match.
+Everything downstream — picking Used, picking a subtype, saving — happens too late.
+
+### Four remedies TESTED AND FAILED — do not retry these
+1. **Add missing Make to the rule** (8/17, Mercedes-Benz) — vehicle still got `S15042`.
+2. **Add missing SubTypes to the CT rule** (8/24, CPO-Gold/Silver) — no change.
+3. **`vehicleSubTypeMandatory` = ON** (8/25) — Joe: *"it still doesn't work."*
+   It enforces subtype before **save**; the stamp already happened at **decode**.
+4. **Reverse the entry order** (Type+SubType before VIN) — Joe: *"no, that doesn't
+   work."* Confirms decode does not consult the rules even when the attributes ARE
+   present.
+
+**Conclusion: this is a Tekion platform defect, not a dealership misconfiguration.**
+Stop proposing Stock# Rules edits. File a ticket and automate the correction.
+
+### Each decode BURNS a counter value
+`15247` (Joe's abandoned draft) and `15256` (mine) were both consumed by drafts that
+were never saved. Harmless, but it explains gaps in the bare series — don't read a
+gap as a deleted/hidden vehicle.
+
+## Add Vehicle form — verified DOM reference (SCT 876)
+
+- **Nav:** 9-dot grid (30,31) → search "Vehicle Inventory" → result at (449,222) →
+  `/vi/vehicles` → **Add Vehicle** button (~1202,89) → `/vi/vehicle/new`.
+- **GUESSED URLS SILENTLY RENDER BLANK.** `/vi/inventory/add-vehicle`,
+  `/vi/addvehicle`, `/vi/inventory`, `/vi/inventory/list` all return 200 and echo
+  back from `location.href` while showing an empty content area.
+  Tell: `document.body.innerText.length` ≈ 106 (nav chrome only). Always nav via the module.
+- **Field ids are `<dealerId>_<FIELD>`:** `876_VIN`, `876_MAKE`, `876_MODEL`,
+  `876_YEAR`, `876_BODY_CLASS`, `876_TRIM`, `876_SOURCE`, `876_MILEAGE`.
+  ⚠️ **Stock # is `876_PRODUCTION`** — not `*_STOCK*`. A `/stock/i` id scan misses it.
+  ⚠️ Ids are dealer-prefixed, so a mid-script dealer drift makes every lookup return
+  `null` — assert `localStorage.currentActiveDealerId` before reading fields.
+- **Vehicle Type is NOT a real radio.** Custom divs
+  `vi_cargoradio_label_container__*` inside `vi_cargoradio_main_container__*`
+  (New ≈482,659 · Used ≈622,659). No `input[type=radio]` exists.
+  `/mouse` on the text label is a NO-OP. What works: climb to `main_container`,
+  dispatch the full chain `pointerdown,mousedown,pointerup,mouseup,click` as real
+  `MouseEvent`s, then `/mouse` the icon area (~25px ABOVE label center).
+  Verify via the Overview header flipping to `Stock Type: USED` — the vision check
+  on the radio glyph is unreliable.
+- **Stock SubType is a RADIO GROUP, not a dropdown** — renders only after Used
+  Vehicle is selected, inline at y≈764: `Used Vehicle Purchases` (502) ·
+  `Used Vehicle Wholesale` (690) · `Used CPO` (837) · `CPO- Gold` (941) ·
+  `CPO- Silver` (1049). These ARE `.ant-radio-input`, reachable via
+  `i.closest('label').innerText`. **`/mouse` alone did not check them** — all five
+  stayed `chk:false`. Needs the same synthetic MouseEvent chain. **Always re-read
+  `.checked` after clicking; a silent no-op here invalidates the whole test.**
+
+## ⚠️ BROWSER CONTENTION — :9223 is NOT exclusively yours
+`*/15 * * * * /home/itadmin/caliber-ops/scripts/cron-pipeline.sh` drives the SAME
+:9223 browser and runs **~7 of every 15 minutes**. Mid-test it navigates to `/home`
+and switches dealer (saw 876 → TL/1092 three times in one session), silently
+invalidating coordinates; element reads start returning `[]`/`None`.
+
+- Check first: `pgrep -f cron-pipeline.sh` and `stat -c '%y' /tmp/caliber-pipeline.lock`.
+- :9225 was **logged out**, and the persistent-browser server exposes **no**
+  `/cookies`, `/storage-state`, or `/state` endpoint — you cannot inject a session
+  from :9223 by copying `localStorage` alone (`t_token` etc. are there, but cookies
+  are not transferable this way).
+- **Working pattern:** write the ENTIRE interaction as one script that polls
+  `pgrep` until clear, then runs uninterrupted; launch via `terminal(background=true,
+  notify_on_complete=true)`. Piecemeal `/eval` calls across turns WILL get clobbered.
+
+## AUTOMATION — the actual fix (stockID is writable)
+
+- `PUT /vehicle-inventory/{vehicle-inventory-id}` — schema `UpdateVehicleInventory`
+  lists only `pricingDetails` in `properties` but `allOf`-inherits
+  `BaseVehicleInventory`, and the official example payload includes
+  `"stockID"`, `"stockType"`, `"stockSubType"`. Stock number IS writable.
+- `POST /vehicle-inventory` accepts the same on create.
+- Detector built: **`/home/itadmin/tekion-reports/sct_stock_audit.py`**
+  (read-only, `--days N`). Classifies `BARE_FALLBACK` / `HAND_TYPED_PREFIX` /
+  `WRONG_PREFIX` / `OK` against the rule table and prints the expected stock #.
+
+### Two false-positive traps in the detector (both cost a rebuild)
+1. **Prefix encodes MODEL YEAR, not a constant.** `C26`/`T26` are 2026; a 2027 unit
+   correctly gets `C27`/`T27` (`C276873`, `T2711003` were flagged wrongly). Derive
+   the prefix as letter + 2-digit model year from `vehicleSpecification.year`.
+2. **Pre-VIN factory orders are NOT defects.** NEW units whose "VIN" is a factory
+   allocation code (`TU36E187`, `TS35F010`, `TX40A828` — 8 chars, letter-heavy, not
+   17-char VINs) have no subtype/bodyClass and legitimately take the global counter.
+   Exclude `stockType==NEW` with a non-17-char VIN. 21 of 30 initial flags were these.
+
+True signal at SCT over 30 days was **3** units: `S15042`, `CT15232` (also wrong
+prefix — should be NT), `CT15230`. Note the audit independently re-flagged `S15042`,
+proving the 8/17 "fix" never actually corrected that vehicle.
+
+**Gate: no writes until the detector reproduces exactly the known-bad set and
+nothing else, on a run Joe has reviewed.**
 
 ## Root cause pattern
 `/vi/visettings` → **Stock# Rules** tab has an ordered list of conditions
@@ -465,277 +598,3 @@ Clicking the row's pencil opens an **"Edit Stock# Configuration"** modal with:
 - Below that: a big **Make** multi-select (`ant-select-selection--multiple`)
   containing potentially 70+ chips
 
-**GOTCHA 1 — modal renders taller than the viewport.** The Make field's actual
-search/typing input can be scrolled out of view even though the modal "looks"
-fully visible in a screenshot at the top. Don't trust it. Find the modal's
-scrollable ancestor and scroll it to bottom:
-```js
-document.querySelectorAll('.ant-select-selection--multiple') // returns 3 elements
-// index 0 = Stock Type value chip(s), index 1 = Stock Sub Type chips, index 2 = MAKE (70+ chips)
-const wrap = document.querySelector('.ant-modal-wrap.ant-modal-centered');
-wrap.scrollTop = wrap.scrollHeight;
-```
-Then re-read `.getBoundingClientRect()` on the index-2 select's
-`.ant-select-search__field` AFTER scrolling — coordinates before/after scroll differ.
-
-**GOTCHA 2 — easy to type into the WRONG field.** All three multi-selects have
-a `.ant-select-search__field` at the end of their chip row. If you click a
-coordinate before scrolling/re-measuring, you can land in the Stock Type or
-Stock Sub Type field instead of Make (cost one wasted round-trip in the verified
-session — "Mercedes" got typed into field[0] first). Always identify the Make
-field explicitly by array index (`document.querySelectorAll('.ant-select-selection--multiple')[2]`)
-or by chip count (Make has by far the most chips), not by screen position alone.
-
-**Typing + selecting:**
-```python
-api("/mouse", "POST", {"x": cx, "y": cy})   # click the Make field's search input (fresh coords post-scroll)
-for ch in "Mercedes":
-    api("/press", "POST", {"key": ch})      # one char at a time via /press, NOT /type (React autocomplete needs real keydown)
-    time.sleep(0.06)
-```
-Tekion's own Make data is lowercase-suffix style — the dropdown match came back
-as `"Mercedes-benz"` (not "Mercedes-Benz"). Find and click the matching dropdown
-option by exact innerText:
-```js
-document.querySelectorAll('.ant-select-dropdown, [class*="dropdown"]')
-  // filter offsetParent!==null && innerText.trim() === 'Mercedes-benz'
-```
-Click its rect center via `/mouse`. Verify it landed as a new chip in the
-Make field (index 2), not accidentally in index 0/1.
-
-## CRITICAL: TWO-LEVEL SAVE — both required or the change is lost
-1. **Modal's own Save button** — inside `.ant-modal-content`, look specifically
-   for the Save button whose parent IS the modal (there are ALSO page-level
-   Cancel/Save buttons behind the modal at different coords — don't confuse them;
-   query `document.querySelectorAll('.ant-modal-content')[0].querySelectorAll('button')`
-   to scope correctly). Clicking this closes the modal and shows the updated chip
-   list on the main Stock# Rules page.
-2. **Page-level Save button** (bottom-right of the Stock# Rules page, NOT inside
-   any modal) — you MUST also click this to actually persist to the backend.
-   Skipping this step leaves the change looking correct in the current DOM but
-   it is NOT saved server-side.
-
-## Verification — TRUE REMOUNT required (don't trust same-render DOM)
-Per the general Tekion save-verify trap (re-reading your own unsaved DOM after a
-same-page action can produce a false positive): navigate AWAY to `/home`, then
-back to `/vi/visettings`, **re-click the "Stock# Rules" tab** (page defaults back
-to "Stock Type" on every fresh load), and re-read `document.body.innerText` for
-the target Make string. Only a match after this full remount+re-tab-click proves
-the fix persisted.
-
-## Example (2026-08-17, SCT dealer 876) — ⚠️ THIS FIX WAS ONLY HALF THE PROBLEM
-Ray Khandan (SCT) reported a Mercedes-Benz trade-in (VIN WD4PE8CDXJP584435, deal
-267250) generated a random stock number instead of the expected "S..." prefix.
-Tekion support agent Shivam Yadav correctly diagnosed "the make Mercedes-Benz is
-not added in the vehicle inventory setup" but had no edit access, and relayed
-manual instructions (9-dot → Vehicle Inventory Setup → Stock# Rules → last rule →
-pencil → add Make → Save) which Jay executed directly. Confirmed missing from the
-~72-make catch-all rule (`S5000` pattern), added "Mercedes-benz", saved at both
-levels, verified via full remount.
-
-**CORRECTION (2026-08-24) — the numbering was never fixed.** That Mercedes got
-**S15042**, and 15042 sits inside SCT's bare global fallback stream
-(15034 → 15042 → 15051 → 15196 → 15215 → 15232). The "S" was hand-typed onto a
-fallback number; the S rule never fired. Adding the make only made the vehicle
-*eligible* for the rule — it did nothing about the rule not matching at stamp time
-(`vehicleSubTypeMandatory: null`). A week later Joe reported "same thing happened"
-on VIN 2T3RWRFV1SW263674, and a Sienna trade the same day got **CT15232** — same
-fallback stream, hand-typed prefix, and *wrong prefix too* (subtype was Used Vehicle
-Purchases → should have been NT, not CT).
-
-**LESSON: never close a stock# ticket on a prefix edit alone.** Always verify the
-rule's `ruleCounts.currentCount` actually advanced and that new stock numbers land
-in the rule's own series — not the global stream. A prefix that merely *looks* right
-on screen proves nothing about which mechanism produced it.
-
-## Joe-interaction notes
-- Joe's shorthand for defect B is **"they added the CT"** / "it should have been
-  decoded as CT" — he means a human typed the prefix, not that the rule mislabeled.
-  Take that literally; it's a precise diagnosis, not a vague complaint.
-- He challenged my initial row-order framing with **"but isn't this an order of
-  operations rule"** — he was right, and the answer is `stockRuleTypeWeights` +
-  the stamp-at-creation timing. Pull the weights before theorizing about priority.
-- He asks **"so what do you want me to fix"** — he wants a short, ordered, concrete
-  edit list (what field, what screen, what order), not an essay. Lead with the edits,
-  keep caveats short and clearly separated from the actionable part.
-- Stay read-only until he says go on live VI settings; state plainly that nothing
-  was changed.
-
-## Splitting the fix into "what I can do" vs "what only you can test"
-
-Joe responds well to a triage that separates the three buckets explicitly (he replied
-*"K, where do we stand?"* then *"so lets go with 1 and 2?"* — i.e. the numbered list
-is what he acts on):
-1. **What I can do now** — concrete, low-risk edits, with a time estimate
-2. **What I genuinely can't** — e.g. changing *when* Tekion stamps the number; say so
-   plainly rather than implying a workaround exists
-3. **What needs him** — a short physical test, with the branch outcomes pre-written
-   ("if it flips to CT24559 → procedural; if it stays 152xx → Tekion defect")
-
-**Ask for a REAL VIN he's adding anyway**, not a throwaway — a regenerate click burns
-a counter value. Reassure him an abandoned draft writes nothing (verified: query the
-VIN across all 7 dealers via `/openapi/v4.0.0/vehicle-inventory`, 0 hits fleet-wide).
-
-**Don't test the regenerate icon yourself.** It consumes a live sequence number on a
-production counter. That's a Joe click, and it's also the one unknown that decides
-procedural-fix vs Tekion-ticket — per the never-guess rule, ask rather than infer.
-
-## STEP ZERO — API first, browser second (added 2026-08-24)
-
-**Do NOT open the browser first, and do NOT go spelunking in Hermes session logs
-for prior context.** Both cost real time in the 2026-08-24 session. The OpenAPI
-answers "what did this VIN actually get?" in one call:
-
-```python
-import sys; sys.path.insert(0,"/home/itadmin/tekion-api")
-import tekion_client as tc
-cfg = tc.load_config(); did = cfg["dealers"]["st"]      # dealers dict: ar/bc/bt/st/sv/tl/vc
-out = tc.api_get(cfg, "/openapi/v4.0.0/vehicle-inventory", did,
-                 {"count": 5, "vin": "<VIN>"}, retries=1)
-# fields that matter: stockID, stockType, stockSubType, source.type,
-#                     vehicleSpecification.make/model/year, createdTime, modifiedTime
-```
-Loop the same call over all 7 dealer IDs when you don't know which store the unit
-landed in — it's ~2s total and beats asking.
-
-**`createdTime` vs `modifiedTime` tells you whether a human renumbered it.** On the
-2026-08-24 RAV4 the two were 13 seconds apart and never touched again, i.e. the
-stock number you're looking at IS the one the rule engine assigned — nobody fixed
-it by hand afterward.
-
-### Building the stock-ID timeline (the thing that proves root cause #2)
-
-`vehicle-inventory` caps at 100 rows/page and `page.from` is unreliable, so paginate
-by **recursive time-window bisection** on `modifiedStartTime`/`modifiedEndTime`,
-deduping on `id`, and query each status separately:
-
-```python
-def window(status, start, end, depth=0, acc=None):
-    acc = acc if acc is not None else []
-    out = tc.api_get(cfg, "/openapi/v4.0.0/vehicle-inventory", did,
-        {"count":100,"status":status,"modifiedStartTime":start,"modifiedEndTime":end}, retries=1)
-    total = out.get("meta",{}).get("total",0)
-    if total == 0: return acc
-    if total <= 100 or depth > 28 or end-start <= 1:
-        acc.extend(out.get("data",[])); return acc
-    mid = (start+end)//2
-    window(status,start,mid,depth+1,acc); window(status,mid,end,depth+1,acc)
-    return acc
-
-seen = {}
-for st in ("STOCKED_IN","SOLD","ON_HOLD","IN_TRANSIT"):
-    for v in window(st, start_ms, end_ms): seen[v["id"]] = v
-```
-Filter to `stockType=="USED"` and `createdTime >= start`, sort by createdTime, and
-print `date | stockID | stockSubType | source.type | make`. ~55 days of SCT used
-inventory = 374 rows, ~77s. **NEVER put SOLD in the same `status:IN` filter as the
-others** (same trap as the VI scraper — bare SOLD is a 48k archive that breaks
-pagination).
-
-## Root cause #2 — prefix is RIGHT, number falls through to the global counter
-
-Discovered 2026-08-24 at SCT. This is a DIFFERENT failure from the missing-Make
-case above and the 8/17 "Mercedes fix" did **not** address it.
-
-**Signature:** the stock ID carries the correct alpha prefix from the matched rule,
-but the numeric portion is nowhere near that rule's own sequence — instead it sits
-exactly inside the store's **bare-numeric new-vehicle auto-increment stream**.
-
-Worked example (SCT, dealer 876):
-
-| Date | VIN | Got | Rule's own series |
-|---|---|---|---|
-| 08/17 15:12 | WD4PE8CDXJP584435 (Mercedes Sprinter) | **S15042** | S84xx |
-| 08/24 12:19 | 5TDDSKFC8SS159289 (Sienna, Toyota trade, subtype *Used Vehicle Purchases*) | **CT15232** | NT29xx |
-
-Proof: SCT's bare-numeric NEW stock IDs ran 15034 (8/15) → 15051 (8/19) → 15196
-(8/20) → 15215 (8/22). **15042 and 15232 land dead inside that stream.** That's the
-fallback `AUTO_INCREMENTING_NUMBERS` counter, not any Stock# rule.
-
-Note the Sienna also got the wrong PREFIX (CT instead of NT for the
-*Used Vehicle Purchases* subtype) — so a single unit can exhibit both failures.
-
-**Diagnostic rule of thumb:** collect the store's bare-numeric stock IDs from the
-same timeline scan. If the numeric part of the bad stock ID interleaves with them
-chronologically, it's the fallback counter — stop looking at Make lists.
-
-## Subtype-coverage audit (the gap that feeds the fallback counter)
-
-Enumerate the stock subtypes actually IN USE from the timeline scan, then diff them
-against the rule conditions on screen. SCT rules as of 2026-08-24:
-
-```
-New  | Car                                  -> C210001
-New  | Suv | Truck/van                      -> T210001
-Used | Used Cpo | Toyota                    -> CT20000
-Used | Used Vehicle Purchases | Toyota      -> NT1000
-Used | <~73 other makes>                    -> S5000
-```
-Live subtypes found in the data with **no matching rule**: `Used Vehicle Wholesale`
-(+Toyota), `CPO- Gold`, `CPO- Silver`. Anything whose subtype has no rule row has
-nothing to match and drops to the fallback counter. Always run this diff before
-concluding "the Make list is fine, so the config is fine."
-
-**Second anomaly worth flagging to Joe:** SCT is running **two CT counters in
-parallel** — CT24xxx (CT24556, CT24558) and CT27xxx (CT27001 → CT27021) interleaved
-by the minute on 8/21. One of them is not coming from the CT20000 rule.
-**→ ANSWERED 2026-08-25: CT27xxx is a manual quarantine tag applied by SCT staff to
-mark units that got a broken stock number. Not a counter. See the RESOLVED note above.**
-
-## Reading stockRuleConfig from the API — and the dealer-context trap
-
-The full VI setup JSON (including `stockRuleConfig`) comes back on
-`GET /api/vi-setup/u/vi?langParam=en_US`. A bare in-page `fetch()` won't
-authenticate, so arm an XHR hook and let the SPA fire it, then force a refetch via
-`history.pushState` away and back (a full reload wipes the hook):
-
-```js
-// arm hook
-window.__cap=[];const O=XMLHttpRequest.prototype.open,S=XMLHttpRequest.prototype.send;
-XMLHttpRequest.prototype.open=function(m,u){this.__u=u;return O.apply(this,arguments)};
-XMLHttpRequest.prototype.send=function(b){this.addEventListener('load',()=>{
-  try{window.__cap.push({u:this.__u,r:this.responseText.slice(0,300000)})}catch(e){}});
-  return S.apply(this,arguments)};
-// force refetch
-history.pushState({},'','/home');window.dispatchEvent(new PopStateEvent('popstate'));
-// ...wait, then...
-history.pushState({},'','/vi/visettings');window.dispatchEvent(new PopStateEvent('popstate'));
-// read
-const h=(window.__cap||[]).filter(x=>x.u.includes('vi-setup/u/vi?lang'));
-JSON.parse(h[h.length-1].r).data.stockRuleConfig
-```
-
-**TRAP THAT BURNED A TURN:** the payload is for whatever dealer the browser is
-*currently* on, not the one you're investigating. On :9225 the context was TL (1092)
-while the ticket was SCT (876) — the returned `stockRuleConfig.dealerId` was `"1092"`
-with a single NEW-only condition, which looks alarmingly like "the used rules are
-missing." **Always assert `stockRuleConfig.dealerId` equals your target dealer
-before interpreting it.** Switch dealer through the UI pill first (setting
-`localStorage.currentActiveDealerId` does not work).
-
-`stockRuleConfig` shape:
-- `conditions[]` — each `{applicabilityRule:{STOCK_TYPE:[...],...}, stockRules:[{type,format,ruleValues}], ruleCounts:{startingValue,currentCount}, locked}`
-- `stockRuleTypeWeights` — the **priority weights** deciding which condition wins when
-  several match: `RANGE:12, TRANSFERRED:11, MFR_MODEL_CODE:10, SOURCE:9,
-  DEAL_VEHICLE_SOURCE:8, MAKE:7, YEAR:6, TRADE_OWNERSHIP_TYPE:5, MODEL:4,
-  STOCK_SUBTYPE:3, BODY_CLASS:2, STOCK_TYPE:1`. Useful when two rules both match.
-- `type:"AUTO_INCREMENTING_NUMBERS"` with `ruleCounts.currentCount` = the fallback
-  counter behind root cause #2.
-
-## STOP-and-ask discipline on this ticket type
-
-Per Joe's never-guess rule: if the API record **disagrees with what the user saw on
-their screen**, report both and ask — do not theorize. On 2026-08-24 the RAV4
-(2T3RWRFV1SW263674) came back as **CT27021**, i.e. already CT-prefixed, while Joe
-said "it should have been decoded as CT." Rather than invent a reconciliation, the
-right move was: state what the API shows, present the fallback-counter pattern found
-in the surrounding data as the real defect, and ask which stock number he actually
-saw. Stay read-only until he answers.
-
-## Related skills
-- `persistent-browser-server` — :9223/:9225 API reference, `/mouse` for React-ignoring
-  elements, dealer-switch procedure. **`/goto` does not exist — the endpoint is
-  `/navigate`** (a `/goto` POST returns HTTP 404 and looks like a dead server).
-- `tekion-vi-api-migration` — the OpenAPI vehicle-inventory two-query pattern and the
-  SOLD-status pagination trap reused by the timeline scan above
-- `tekion-sitemap` — general nav reference (`/vi/visettings` is listed there)
