@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-25T10:00:06",
+ "generated": "2026-08-25T10:15:29",
  "skill_count": 188,
  "skills": [
   {
@@ -371,6 +371,14 @@
    "last_used": "2026-08-18"
   },
   {
+   "name": "tekion-vi-stock-number-rules-fix",
+   "path": "automotive/tekion-vi-stock-number-rules-fix",
+   "category": "automotive",
+   "description": "Diagnose and fix Tekion Vehicle Inventory Stock# Rules (Vehicle Inventory Setup > Stock# Rules) when a vehicle gets a wrong/random stock number. Covers BOTH root causes \u2014 (1) a Make missing from a rule's Make multi-select so the wrong PREFIX is assigned, and (2) the rule matching for prefix but the NUMBER falling through to the global auto-increment counter. Includes the API-first diagnostic (OpenAPI vehicle-inventory timeline scan proving the fallback-counter signature), the subtype-coverage audit, /vi/visettings editing, the modal-scroll gotcha, the two-level Save requirement, and true-remount verification. Verified live at SCT (dealer 876) 2026-08-17 and 2026-08-24.",
+   "times_used": 7,
+   "last_used": "2026-08-25"
+  },
+  {
    "name": "sct-menu-sales-closed-mtd-scorecard",
    "path": "automotive/sct-menu-sales-closed-mtd-scorecard",
    "category": "automotive",
@@ -417,14 +425,6 @@
    "description": "Search Tekion repair orders for a keyword (e.g. \"calibration\", \"windshield\") across labor descriptions, job concern text, part names, fees, and notes, with a dollar figure on the matching line. Use for ROI/opportunity-sizing questions like \"how much calibration/windshield/etc business did we do in the last N months\". Covers the BT Collision Center / body shop department discovery and the critical \"Per Estimate\" lump-sum blind spot.",
    "times_used": 6,
    "last_used": "2026-08-18"
-  },
-  {
-   "name": "tekion-vi-stock-number-rules-fix",
-   "path": "automotive/tekion-vi-stock-number-rules-fix",
-   "category": "automotive",
-   "description": "Diagnose and fix Tekion Vehicle Inventory Stock# Rules (Vehicle Inventory Setup > Stock# Rules) when a vehicle gets a wrong/random stock number. Covers BOTH root causes \u2014 (1) a Make missing from a rule's Make multi-select so the wrong PREFIX is assigned, and (2) the rule matching for prefix but the NUMBER falling through to the global auto-increment counter. Includes the API-first diagnostic (OpenAPI vehicle-inventory timeline scan proving the fallback-counter signature), the subtype-coverage audit, /vi/visettings editing, the modal-scroll gotcha, the two-level Save requirement, and true-remount verification. Verified live at SCT (dealer 876) 2026-08-17 and 2026-08-24.",
-   "times_used": 6,
-   "last_used": "2026-08-25"
   },
   {
    "name": "bt-menu-sales-reports",
