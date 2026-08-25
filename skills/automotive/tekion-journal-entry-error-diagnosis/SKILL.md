@@ -13,6 +13,11 @@ triggers:
 
 # Tekion Journal Entry ERROR Diagnosis
 
+**Joe's shorthand:** "**3.0**" = Tekion (the DMS) — e.g. "I need a lot of 3.0 help today".
+"**GLAM**" = GL Account Transaction Mapping (`/accounting/glaccountmapping/list`).
+Joe applies GL config fixes himself and will say so mid-thread ("I fixed the glam") — **always
+re-verify the live mapping state before re-reporting a previously-diagnosed open item.**
+
 Joe's ask is usually **"look at Journal entries, don't change anything, tell me what's wrong."**
 This is a READ-ONLY diagnosis. Never click Submit / Save as Draft / Perform action and move to next
 unless he explicitly says to fix it.
@@ -225,15 +230,27 @@ only half its mappings were built.
 Fix (only with explicit go-ahead): add the missing row via the mapping card's **Add** button, then
 re-open each errored JE and Submit.
 
-### OPEN ITEM — SCT 876 — STILL NOT FIXED, and COMPOUNDING (re-verified 2026-08-24)
+### RESOLVED — SCT 876 — mapping fixed by Joe 2026-08-25 (was compounding 8/21→8/24)
 
-`Parts Cash Holding Account` still exists ONLY for dept `05 - PARTS & ACCESSORIES (Parts)` → `2045 - CASH SALES`.
-No dept-`06 - Online Parts Sales (Parts)` row. Confirmed in *Fixed Operations → Others → Fixed Operations (Other)*.
+**Joe added the row himself on 2026-08-25:**
+`Parts Cash Holding Account | 06 - Online Parts Sales (Parts) | 2045 - CASH SALES`
+(*Fixed Operations → Others → Fixed Operations (Other)*). New online-retail sales post clean from
+~8:20 AM 8/25. Last errors: SO 331926 (8:11) and 331930 (8:27, reworked as 331932).
 
-**Proposed fix (still un-applied, awaiting Joe's go):**
-`Parts Cash Holding Account | 06 - Online Parts Sales (Parts) | 2045 - CASH SALES`,
-then re-submit the errored JEs (the detail page has a **"Perform action and move to next Journal Entry"**
-button that chains them — you do NOT round-trip the list 114 times).
+**"I don't want a holding account, can I just use 2045?" — YES. Answer Joe accepted:**
+Tekion ALWAYS writes the two-JE pair (sale + deposit); there is **no toggle to suppress the deposit
+leg**. But pointing the holding mapping at the cash account *is* forgoing the holding account —
+the deposit JE becomes a **self-canceling wash** (`2045 +X / 2045 −X` = net $0) and nothing ever
+parks in a separate holding bucket. Structurally identical to how a normal counter sale already
+posts. Verified on SO **331932**: sale JE `1686453` = `2045 +24.88 / 4748 −22.62 / 6748 +17.40 /
+2410 −17.40 / 3140 −2.26`; deposit JE `1686452` = `2045 24.88 / 2045 −24.88`. Reversals
+(`1686454`/`1686455`, Chris) also clean.
+
+**CRITICAL: the mapping fix does NOT retroactively heal the backlog.** Each already-errored JE has
+the blank GL cell *saved on the record*. ~116 pre-fix JEs (57 SOs, $19.1K, 8/21–8/24) remained in
+the Error queue after the fix. Cleanup = open one, set the blank line to the cash account, Submit,
+then use **"Perform action and move to next Journal Entry"** to chain the rest (no list round-trips).
+Do the first pair, screenshot for Joe, then chain.
 
 **Growth curve — this is the headline number when re-reporting:**
 

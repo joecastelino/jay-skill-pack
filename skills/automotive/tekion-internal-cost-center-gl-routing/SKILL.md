@@ -150,6 +150,34 @@ moved before touching anything.
   it shows only cost centers valid for that pay type. Enumerate it by `/mouse`-clicking
   the `.ant-select` then reading visible `.ant-select-dropdown` innerText.
 
+## Joe's vocabulary + posture (2026-08-25)
+
+- **"the glam"** = **GL Account Mapping** (Accounting → GL Account Transaction
+  Mapping). When he says "I fixed the glam," he means the Services-Internal
+  mapping rows — verify them, don't re-derive from cost-center names.
+- He **dislikes holding/suspense accounts** and will propose skipping them
+  ("I DON'T WANT a holding account, I want to setup cash sales as the hold").
+  Correct response shape: say plainly whether it's mechanically possible (usually
+  yes), then give the structural objection with the *reason* (2045 is `CA – Cash`
+  → breaks Bank Rec; loses `VIN_LAST_6` per-unit tracking; control# still
+  mandatory so nothing is saved), then offer the clean alternative (if the credit
+  is already a SALE account, the debit belongs in expense/COS, not cash).
+  Don't just comply, and don't just refuse.
+- Close with the **known gap** (debit binding: cost-center record vs mapping row)
+  and ask **which side he wants moved — debit/hold or credit/sale** — before
+  touching anything.
+
+## Session / auth note
+
+`~/.hermes/shared/tekion-session.py` **does not exist** (it resolves under Jay's
+profile home). Use:
+```bash
+cd /home/itadmin/tekion-auth && \
+  /home/itadmin/.hermes/hermes-agent/venv/bin/python3.11 login.py --check
+```
+Bare `login.py` reuses a live session ("session ALIVE — reusing" → `REUSED`)
+rather than re-logging in — safe to call before accounting recon.
+
 ## Related skills
 - `tekion-sitemap` (Accounting URL table + App Grid coords)
 - `tekion-journal-entry-error-diagnosis` (when the JE actually errors)

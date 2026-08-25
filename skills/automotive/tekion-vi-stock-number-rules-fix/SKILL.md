@@ -131,6 +131,43 @@ once and never revisits. If it's stamp-once, mandatory-at-creation is the only t
 that works. Confirm via a controlled test (create one used vehicle with subtype set
 at creation vs. one set after) or a Tekion ticket — do not assert either way.
 
+### 2026-08-25 LIVE REPRODUCTION — the rules are BYPASSED, not misconfigured
+
+Joe ran an unsaved Add-Vehicle draft at SCT (876), VIN `2T3W1RFV7RW336932`,
+2024 Toyota RAV4 XLE, and screenshotted the form. On screen simultaneously:
+
+```
+Stock Type    = Used Vehicle        ✅
+Stock Subtype = Used CPO            ✅   (Certified Pre-Owned checked)
+Make          = Toyota              ✅
+Body Class    = SUV
+Stock #       = 15247               ❌   should have been CT24608
+```
+
+That is an **exact, complete match for CT rule #3** (`USED` + `Used CPO` + `toyota`)
+and it still produced a bare fallback number. `15247` is the next entry in SCT's
+bare global stream (…15215 8/22 · 15232 8/24 · **15247 8/25**).
+
+**Conclusion: the stock # is stamped ONCE at record init / VIN decode — before Stock
+Type and Sub Type are selected. At that instant no USED rule can match (all three
+require STOCK_SUBTYPE + MAKE), so it falls to the global counter. Selecting the
+subtype a second later does NOT re-trigger rule evaluation.** This is why adding
+`CPO- Gold` / `CPO- Silver` to the CT rule (done 8/25) changed nothing — the rule is
+never consulted regardless of its contents.
+
+**Corollary for triage:** a "the rule is missing X" edit can NEVER fix this class of
+ticket. Verify the *timing* before touching any multi-select.
+
+**Still untested (ask Joe to click it, don't assert):** the **refresh/regenerate icon
+next to the Stock # field** on the Add-Vehicle form. If clicking it with Type+Subtype+
+Make already populated flips the number into the rule's series, then stamp-once is
+confirmed and the remedy is procedural (`vehicleSubTypeMandatory` ON + train staff to
+hit refresh after setting subtype). If it stays in the bare stream, the rule genuinely
+fails to match and the match payload needs investigation.
+
+**Verifying an unsaved draft did no damage:** query the VIN across all 7 dealers via
+`/openapi/v4.0.0/vehicle-inventory` — 0 hits fleet-wide = nothing was written.
+
 ## CROSS-CHECK: every configured subtype must appear in some rule
 
 `typeSetting.vehicleTypes[].subTypes[]` lists what staff can actually pick. Diff it

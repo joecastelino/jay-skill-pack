@@ -238,6 +238,15 @@ the two validation errors and worth flagging — it would post the $140 to the w
 account even after the blockers clear. Per the never-guess rule: do NOT assert a
 "PDI - 4440" option exists in that dropdown unless you actually opened it.
 
+⚠ **"PDI 4440" conflates two different things** (clarified 2026-08-24/25). At SCT the
+*cost center* in the Manage Splits picklist is labeled **`PDI - 2211`** (2211 = the
+ASSET hold account, control `VIN_LAST_6`). **4440 SLS PRE-DEL SRV-TOY** is a **SALE**
+account and is the *GL mapping target* for `Service Type = PDI` under
+Fixed Operations → Services → Services-Internal — it is NOT a cost-center option.
+So "the RO is going to PDI, 4440" mixes the cost-center layer with the GL-mapping
+layer. Separate them explicitly in the answer. Full account table + mapping rows in
+skill **`tekion-internal-cost-center-gl-routing`**.
+
 ## Step 4 — Advise (don't guess — per Joe's never-guess rule)
 
 Ask the store for:

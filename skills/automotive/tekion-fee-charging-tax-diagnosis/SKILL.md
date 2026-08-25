@@ -109,13 +109,50 @@ it."** Offering "want me to go make the change now?" is the wrong close — offe
 to **verify after they save** instead. Never treat "I gave the fix and he didn't
 object" as approval.
 
-Fees (`/core/fees`) → the fee → **active Pricing Setup** → Tax section → add three rows:
+### ❌ RETRACTED 2026-08-25: there is NO UI that writes `taxConfigs` rows
+An earlier version of this skill said to go to Fees → the fee → active Pricing
+Setup → Tax section and add three SALES_TAX / not-taxable rows
+(ALL_CUSTOMER_PAY / ALL_WARRANTY_PAY / ALL_INTERNAL_PAY). **That control does not
+exist.** It was inferred from the API record shape and never verified on screen.
+Joe caught it: *"I don't see the not taxable section, I only see the apply taxes on."*
+He was right; the instruction was retracted.
 
-| Regime | Pay type | Sub pay type | Taxable |
-|---|---|---|---|
-| SALES_TAX | Customer Pay | ALL_CUSTOMER_PAY | **No** |
-| SALES_TAX | Warranty | ALL_WARRANTY_PAY | **No** |
-| SALES_TAX | Internal | ALL_INTERNAL_PAY | **No** |
+Verified on `/core/fees/edit/BATTFEE` at VC 1891 (screenshots):
+- The only tax control is **"Taxes applicable on fee" → Sales Tax**, a
+  **multi-select of PAY TYPES only**: `CP - Default customer pay`,
+  `CVSC - Vehicle Service Contract`, `I - Default internal pay`,
+  `W - Default warranty pay`. No taxable / non-taxable toggle anywhere.
+- **WTAX** — which HAS 3 `taxable:false` rows in the API — renders the
+  **identical empty "Select" box** on this same screen. So those rows are not
+  readable or writable from the fee UI at all. They likely came from an older UI
+  version or from the migration.
+- Tekion KB search returns nothing (`kb_search_scrape.py search "Parts Tax Code
+  Setup fee component"` → `results: []`).
+
+### The two real fix paths (neither is a clean per-fee UI edit)
+
+**Option 1 — the Parts Tax Setup grid (works, but store-wide blast radius).**
+The actual tax source is **Parts Settings → Tax Setup for Parts**.
+⚠️ **This page has NO menu entry** — it is not in the App Grid → Settings →
+Parts Settings group and it is not a tab on `/parts/parts-settings`. The only way
+in is to paste the URL:
+
+```
+https://app.tekioncloud.com/parts/tax-code-setup
+```
+
+(Confirm the store pill top-right first.) Grid **"Tax Components and Sale Types"**:
+rows Vendor / Retail / Wholesale / Internal × columns
+Parts | Core Sale | Core Returns | **Fees** | Labour. Clearing/zeroing the
+**Fees** cell untaxes **every** fee at that store (WTAX, smog, doc, restock…),
+not just the one complained about. Say this out loud before anyone edits it.
+
+**Option 2 — get the 3 `taxable:false` rows onto the fee (surgical, no known UI).**
+Correct outcome, but no discovered write path. Open avenues: a `PUT`/`POST` to
+`/api/service-module/u/fee/v3/...`, an older setup screen, or Tekion support.
+**Default recommendation: open a Tekion ticket** citing BATTFEE (0 rows) vs WTAX
+(3 rows) at the same dealer as the broken/working pair. Do not guess a config
+change with store-wide reach.
 
 **VERIFY BY API, NOT BY EYE.** Re-run the sweep and require `actTaxCfg: 3`.
 The tax-code dropdown on blank rows renders a *default* value that is not saved —
@@ -216,4 +253,13 @@ Complaint: *"Battfee is charging tax."*
 - Impact: $200 × 8.975% = **$17.95 of wrong tax per battery** since 8/19.
 - Fee had been modified by Joe (CONTROLLER) 71s before the complaint and *still*
   showed `taxConfigs: []` → the edit didn't take.
-- Fix = add the 3 non-taxable SALES_TAX rows; verify `actTaxCfg: 3` by API.
+- Fix = **not** a fee-screen edit (no such control). Real source is the Parts
+  Tax Setup grid's FEES column; surgical fix needs `taxConfigs` rows that no UI
+  writes → Tekion ticket. Verify any change with `actTaxCfg: 3` by API.
+
+## Hidden page cheat-sheet
+```
+/parts/tax-code-setup        Tax Setup for Parts  — NO MENU ENTRY, URL-only
+/core/fees                   Fees list
+/core/fees/edit/<CODE>       Edit Fee (pay-type multi-select only, no taxable toggle)
+```

@@ -15,14 +15,43 @@ triggers:
   - add on job notification
   - tekion notification preferences
   - profile settings notification settings
+  - add on tag missing repair order
+  - tekion ro tags
+  - tekion job tag
+  - where did the tag go tekion
 ---
 
 # Tekion — Notification Settings Audit ("where did notification X go?")
 
 Origin: Joe 2026-08-24, "Where did the 'add on' job notification settings go" —
-answer turned out to be **no such event exists** (never did, under that name). The
-value of this skill is proving existence/absence FAST and authoritatively instead of
-scrolling a ~920-line settings table or guessing.
+answer turned out to be **no such notification event exists** (never did, under that
+name). The value of this skill is proving existence/absence FAST and authoritatively
+instead of scrolling a ~920-line settings table or guessing.
+
+## ⚠ RESOLVED 2026-08-25 — "Add on" is a TAG, not a notification
+Joe clarified on the follow-up: *"no, I'm talking on the repair order. it used to have
+a tag of Add on."* **Read this before running the API dump below.**
+
+- **Add-on is a Job-type TAG** configured at Service Settings
+  `/service/settings/ro-settings` → left-nav **Tags**.
+- Tag Type dropdown = **RO / Job / Recommendation**. Job-type tag names available:
+  PDI · Hold · Service Menu · **Add-on** · Due Bill · Recall · Recommendation ·
+  Deferred Recommendation · Insurance · Internal Split · Warranty Split ·
+  Manual Flag Hrs · Adjusted Flag Hrs · UVI · MPI · Return RO · Mobile Shop · Express Shop.
+- Row columns: Tag Type · Tag Name · Color · Text Color · toggle **RO** · toggle **PDF**
+  (PDF = tag prints on the invoice). Bottom blank row = add. Separate **Archived Tags**
+  sub-tab.
+- **Live state verified BT 1249 / ST 876 / TL 1092:** each store has ONLY 3 tags, all
+  *Recommendation* type (MPI, PDI, UVI). Zero Job-type rows. Archived Tags EMPTY.
+  → The Add-on row was **deleted**, not archived — nothing to restore, it must be
+  re-created per store.
+- Recreate: Tags → blank bottom row → Tag Type=Job → Tag Name=Add-on → pick
+  Color/Text Color → toggle RO on (PDF only if it should print for the customer) → Save.
+  Ask Joe which stores + RO-only vs RO+PDF before saving; don't assume.
+
+**Triage rule:** when someone says a *thing on the repair order* disappeared, check
+**Tags** BEFORE Notification Settings. "Notification" in Joe's phrasing may mean any
+visual flag/badge on the RO, not a push/email preference.
 
 ## STEP ZERO — do not guess a location
 Per Joe's NEVER-GUESS rule: if you cannot find the named setting, say so plainly,
@@ -130,6 +159,11 @@ Notification behavior is spread across 5 screens. Check in this order:
    don't conflate the two when answering.
 5. **Customer-facing SOR/receipt notifications** — Parts Settings
    `/parts/parts-settings` → "Default settings for customer notification on SORs".
+6. **RO/Job/Recommendation TAGS (badges on the RO)** — Service Settings
+   `/service/settings/ro-settings` → left-nav **Tags** (+ **Archived Tags**).
+   This is where "Add-on", "Recall", "Due Bill", "Hold", "Service Menu" etc. live.
+   Not a notification at all — a visual flag on the job/RO. See the RESOLVED
+   section at the top of this skill.
 
 Whole-doc scan trick for any of these settings pages:
 ```js
