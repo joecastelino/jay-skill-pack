@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-25T13:45:55",
+ "generated": "2026-08-25T14:00:20",
  "skill_count": 190,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 146,
+   "times_used": 147,
    "last_used": "2026-08-25"
   },
   {
@@ -119,7 +119,7 @@
    "path": "automotive/tekion-kb-search-scrape",
    "category": "automotive",
    "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 33,
+   "times_used": 34,
    "last_used": "2026-08-25"
   },
   {
@@ -555,6 +555,14 @@
    "last_used": "2026-07-12"
   },
   {
+   "name": "tekion-notification-settings-audit",
+   "path": "automotive/tekion-notification-settings-audit",
+   "category": "automotive",
+   "description": "Definitively answer \"where did notification X go / does notification Y exist / who gets notified when Z happens\" in Tekion. Dumps the COMPLETE list of user notification event types (all modules) from the internal notification-preference API instead of scrolling the giant Profile Settings table, then maps the request to the right config surface (per-user Profile Settings vs Service Settings vs Dispatch vs Scheduling vs Parts Settings). Load for any \"I can't find the setting that notifies ...\" ticket.",
+   "times_used": 3,
+   "last_used": "2026-08-25"
+  },
+  {
    "name": "tekion-parts-appointments-opcode-scoping",
    "path": "automotive/tekion-parts-appointments-opcode-scoping",
    "category": "automotive",
@@ -641,14 +649,6 @@
    "description": "Produce a month-over-month (or any period-vs-period) SERVICE GROSS read across all 7 AMG stores from the live Tekion OpenAPI \u2014 who's winning, who's slipping, and whether it's a VOLUME story or a MARGIN story. Uses a throttle-safe sequential RO sample (labor GP + parts GP per RO) scaled by exact closed-RO counts, because the GL department-gross endpoint is still locked and a full penny-accurate fan-out trips the rate limit for hours. Use when Joe asks \"service gross month over month\", \"who's doing well / breaking numbers across the stores\", \"fleet service gross May vs June\", or any cross-store gross trend.",
    "times_used": 2,
    "last_used": "2026-08-13"
-  },
-  {
-   "name": "tekion-notification-settings-audit",
-   "path": "automotive/tekion-notification-settings-audit",
-   "category": "automotive",
-   "description": "Definitively answer \"where did notification X go / does notification Y exist / who gets notified when Z happens\" in Tekion. Dumps the COMPLETE list of user notification event types (all modules) from the internal notification-preference API instead of scrolling the giant Profile Settings table, then maps the request to the right config surface (per-user Profile Settings vs Service Settings vs Dispatch vs Scheduling vs Parts Settings). Load for any \"I can't find the setting that notifies ...\" ticket.",
-   "times_used": 2,
-   "last_used": "2026-08-25"
   },
   {
    "name": "tekion-opcode-labor-billing-audit",
