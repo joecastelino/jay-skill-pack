@@ -17,6 +17,11 @@ triggers:
   - cannot remove part
   - part stuck on RO
   - part return stuck
+  - cannot invoice this ticket
+  - we cant invoice
+  - invoice checkbox greyed out
+  - causes must not be empty
+  - storyline text must not be blank
 ---
 
 # Tekion "Cannot Close RO" Triage
@@ -247,6 +252,107 @@ So "the RO is going to PDI, 4440" mixes the cost-center layer with the GL-mappin
 layer. Separate them explicitly in the answer. Full account table + mapping rows in
 skill **`tekion-internal-cost-center-gl-routing`**.
 
+## Step 3e — "WE CAN'T INVOICE THIS TICKET" — the 60-second recipe (verified TL RO 398524, 2026-08-25)
+
+The most common shape of this ticket, and the fastest one to solve. **Do these
+four things in order and you have the whole answer in about a minute — do NOT
+start clicking around the RO first.**
+
+**Symptom shape:** `status: IN_PROGRESS`, `/ro-invoices` → `data: {}`, most jobs
+`COMPLETED` but **one** job still `IN_PROGRESS`, and the store just says "it won't
+invoice."
+
+### 1. Sweep all 7 dealers for the RO# (never assume the store)
+Joe/the store rarely names the store. TL RO **398524** ALSO existed at ST/876 as a
+CLOSED 2023 RO. Disambiguate on recent `modifiedTime` + `IN_PROGRESS`.
+
+### 2. `/jobs` immediately tells you WHICH job blocks
+```python
+for jb in jobs: print(jb["jobNumber"], jb["payType"], jb["status"])
+```
+On 398524: jobs 1,3,4,5,6,7,8 = INTERNAL/COMPLETED, **job 2 = CUSTOMER_PAY /
+IN_PROGRESS** ← that one job is the entire blocker. This is free and takes 2s.
+
+### 3. Read the job-list innerText for the per-job "Need Attention" strings
+Navigate `/ro/repair-orders/<rid>/jobs/<jid>` and slice
+`document.body.innerText`. The **job-list rail on the left renders every job's
+blocker count**, and the CURRENTLY-SELECTED job additionally renders its blocker
+TEXT inline right under its "Need Attention" line:
+```
+2.
+PORT2, CABIN - PORTFOLIO- PERFORM 2ND ...
+Recommendation
+In Progress
+CP
+0.70 ... $101.67
+1
+Need Attention
+Causes must not be empty          ← only shown for the SELECTED job
+```
+⚠ **To read a DIFFERENT job's blocker text you must navigate to that job's URL** —
+the other rows only show the count. Loop `/jobs/<jid>` per job id if you need them all.
+
+### 4. Click the header **Invoice** button → Payers Consolidated View = the proof
+`document.getElementById('invoice').click()` (id is literally `invoice`;
+`data-test-id="@tekion-repairOrders-roDetailsPage-roHeader-invoiceButton"`).
+It does NOT navigate — it opens the Payers panel appended to the SAME page (the
+URL never changes, so don't conclude the click failed). Then read checkbox state:
+```js
+[].slice.call(document.querySelectorAll('input[type=checkbox]')).map(function(e){
+  var r=(e.closest('.ant-checkbox')||e).getBoundingClientRect(); var l=e.closest('label');
+  return {y:Math.round(r.y), dis:e.disabled, chk:e.checked, txt:l?l.innerText:''};});
+```
+398524 result — **exactly the picture the store sees**:
+| Payer | Status | Invoice checkbox |
+|---|---|---|
+| 213124 PORTFOLIO | Open | `disabled:true` |
+| 1212810 AMERICA DOWD | Open | `disabled:true` |
+| 94227 Toyota of Lancaster (internal) | Ready for Invoice | `disabled:false, checked:true` |
+
+**Disabled Invoice checkbox on the payers whose job is IN_PROGRESS = the block.**
+(Contrast with Step 3b, where ALL controls incl. Print PDF/Resync were disabled on
+a payer whose job WAS complete → that's the desync bug. Here Print PDF is disabled
+too, but the cause is simply an incomplete job, not desync. Distinguish by job status.)
+
+### 5. The Warnings accordion in Payers View is COLLAPSED — click it
+`Warnings` (leaf element, ~x160,y208) collapses its contents. Before clicking, the
+innerText just reads `Warnings` and vision reports "warning triangle, content not
+visible." After a `/mouse` click it expands to the actual strings.
+**On 398524 those were `Cost Amount for the job is going to be zero` + `The cost
+center description is empty` — WARNINGS, NOT BLOCKERS.** Proof: the internal payer
+carrying them was already `Ready for Invoice` with an ENABLED checkbox. Do not
+report warnings as the root cause. The blocker is whatever the IN_PROGRESS job's
+Need Attention says.
+
+### 6. Diff against a control RO to predict the NEXT failure
+Same opcode filter trick as Step 3d. For 398524 (opcode `PORT2`, TL, last 5 days):
+- 398528 CLOSED → **0** Need Attention flags anywhere
+- 398620 READY_FOR_INVOICE → flagged **`Storyline text must not be blank`**
+
+That's how you learn TL's Pre-Invoice rules enforce **BOTH Cause AND Storyline** —
+so telling the store "just add the Cause" would have them back in 5 minutes when
+PORT2 then trips on the missing story line. **Always warn about the second rule.**
+
+### 7. What the fix actually is (advisor/tech, ~30s)
+Job 2 → **Add Cause** → type cause · expand the flagged op → **Add Story Line** →
+type what was performed · **Save** → **Mark as Complete** · header **Invoice** →
+the Open payers' checkboxes enable → **Invoice Selected Payer(s)**.
+
+**STOP HERE — do not type the cause/story yourself.** That text is the technician's
+diagnosis on a live customer RO; inventing it violates the never-guess rule and
+falsifies the repair record. Offer: "give me the wording and I'll enter it, save,
+mark complete and invoice in under a minute." Everything up to that point is
+read-only and Jay should do it all autonomously (per the automation mandate) —
+the ONLY handoff is the human-authored text.
+
+### Which op is at fault, when a job has several
+Compare `causes`/`corrections` per operation from `/operations`. On 398524 job 2:
+`CABIN` had `causes:"dirty"` + `corrections:"REPLACED CABIN AIR FILTER."` (it came
+in from an APPROVED recommendation, which populates both), while `PORT2` had
+`causes:null, corrections:null`. **The recommendation-sourced op is complete; the
+menu/base op is the empty one.** Job-level `causes` being null while an op has one
+is normal — don't read job-level alone.
+
 ## Step 4 — Advise (don't guess — per Joe's never-guess rule)
 
 Ask the store for:
@@ -326,3 +432,37 @@ and the two questions. Don't state a root cause without the error text.
   clearly had it expanded with populated rows. For dense Tekion tables trust the
   **DOM text** (n.innerText plus each input's value/disabled flags); use vision
   only for color/badge cues (the orange "Need Attention" icons) it can add.
+
+### :9223 traps hit on TL 398524 (2026-08-25) — screenshots, clicks, drift
+
+- **`/screenshot` on :9223 is a GET that returns JSON, not a PNG.** `curl -X POST
+  localhost:9223/screenshot` → `Cannot POST /screenshot`. Correct call is
+  `curl -s localhost:9223/screenshot -o /tmp/x.png` — but the body is
+  `{"screenshot":"<base64>"}`, so the file is **JSON text, and `vision_analyze`
+  rejects it with "Only real image files are supported."** Decode first:
+  ```python
+  d=json.load(open("/tmp/x.png")); open("/tmp/real.png","wb").write(base64.b64decode(d["screenshot"]))
+  ```
+  Endpoint list on this server: /click /console /cookies /eval /health /mouse
+  /navigate /pages /press /screenshot /snapshot /type /url.
+  ⚠ The `browser_vision` / `browser_*` MCP tools open a SEPARATE unauthenticated
+  context and return a BLANK page — never use them for :9223 work.
+- **`/mouse` uses viewport coordinates; the viewport is only 1280×720.** A
+  `getBoundingClientRect()` y of 892 or 1005 is BELOW the fold, and the click
+  silently lands on nothing (returns `success:true`). Either `scrollIntoView`
+  first, or **prefer `element.click()` via /eval** for buttons with a stable id —
+  `document.getElementById('invoice').click()` worked when the /mouse at the same
+  coords did nothing.
+- **Guard every coord-finder against `undefined`.** `filter(...)[0]` returning
+  undefined then `.scrollIntoView()`/`.parentElement` throws
+  `TypeError: Cannot read properties of undefined` and the whole /eval fails.
+  Return `{none:1}` and branch on it.
+- **Collapsible/virtualized sections mean "element not found" ≠ "not there".**
+  `Op2.` / `Mark as Complete` / `Type Cause here` all vanished from the DOM when
+  their section collapsed or the panel scrolled. Re-navigate to the job URL to
+  reset state rather than hunting.
+- **Dealer/page drift is aggressive on :9223.** Between two adjacent tool calls the
+  SPA landed on `/service/settings/ro-settings` and later `/ro/pdf-settings`
+  without any navigation from me (stray click-through / another session). ALWAYS
+  re-`/eval` `location.href` before trusting a DOM read, and re-navigate to the RO
+  URL if it moved.
