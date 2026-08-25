@@ -97,6 +97,59 @@ available in the standard PDF Configurator.** Options: (a) have the advisor type
 text into the Recommendation approval **Note** field instead — that DOES print;
 (b) open a Tekion enhancement request to surface Approval Workspace comments.
 
+## Recommendations And Inspection PDFs — the BEST place for approval notes
+
+There are three R&I documents in PDF Settings (all Published at TL):
+`Recommendations And Inspection - Warranty` / `- Customer` / `- Internal`.
+
+**None of them has an `Approval List` row** (that row exists only on Invoice - Warranty
+Pay and Invoice - Service Advisor). So Approval Workspace comments do not print here
+either. BUT all three have **`Recommendation Approval Details` → Configure Section = ON**,
+and — critically — **the R&I PDF prints EVERY approval event with its Note, while the
+invoice prints only ONE (the last).**
+
+Verified TL RO 398624, `Recommendations and Inspection - Warranty` ("Warranty Copy v4",
+3 pages) — page 2 carried the full approval audit trail:
+
+```
+Recommendation Approval Details
+  Sean Preston approved recommendations on behalf of Sean Preston.
+  Mode Of Communication In Person | Previous $0.00 | Revised $236.63
+  Date and Time Tue Aug 25, 2026 at 03:01 PM
+  Note  wARRANTY WORK APRROVAL
+  ---
+  Mode Of Communication In Person | Previous $236.63 | Revised $709.89
+  Date and Time Tue Aug 25, 2026 at 02:56 PM
+  Note  SEAN APPROVED FOR TESTING PURPOSE
+  ---
+  Mode Of Communication In Person | Previous $473.26 | Revised $709.89
+  Date and Time Tue Aug 25, 2026 at 01:06 PM
+  Note  SEAN P
+```
+
+**Recommendation: if a store wants approval notes on paper, print the
+`Recommendations and Inspection - Warranty` copy, not the invoice.** It gives the
+full chronological trail with dollar deltas (previous → revised estimate),
+mode of communication, timestamp, and the free-text Note for each approval.
+
+Body rows on the R&I - Warranty PDF (TL, all ON unless noted): Inspection Details ·
+RO External Notes (**OFF**) · Pending Recommendations (+Summary) · CA Recommendations
+(+Summary) · Jobs (Configure Section) · Jobs Recommendations Summary · Deferred
+Recommendations · Summary · Signature Placeholder · **Recommendation Approval Details
+(Configure Section)** · Inspection Media · BAR/EPA.
+The Customer and Internal variants expose the same recommendation/approval rows.
+
+### Gotcha: R&I PDFs render INLINE, not via a signed S3 URL
+Unlike the invoice copies, clicking `Recommendations and Inspection - Warranty` in
+**View RO PDF** does NOT fire `/api/exports/pdf-v3` + `presignedurls` — the XHR hook
+captures nothing (`window.__pu` stays `[]`). The document is rendered straight into
+the DOM. Just read it:
+```js
+const t = document.body.innerText.replace(/\n+/g,' | ');
+t.slice(t.indexOf('Warranty Copy v4'), t.indexOf('Warranty Copy v4')+3400)
+```
+No base64 slicing, no −27 font decode needed. Try this FIRST before the S3 route.
+
 ## Reading the actual generated PDF (the only real proof)
 
 Do NOT judge by the on-screen preview. Pull the real file:
