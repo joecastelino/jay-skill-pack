@@ -153,6 +153,18 @@ Keep that paragraph in every hand-off. The 8/22 duplicate pair (Aug 1-21, 06:03:
 and don't mistake it for a NEW duplicate; only two hits carrying TODAY'S exact date range
 indicate a fresh double-send.
 
+### (8/25 run, for Sat 8/24) DO-NOT-DOUBLE-SEND paragraph WORKED AS DESIGNED on a REAL SMTP failure
+First live case where the SMTP error was a GENUINE non-delivery (unlike 8/22). Stacey's first
+attempt raised "connection unexpectedly closed"; per the CRITICAL paragraph she did NOT blind
+re-send — she ran two IMAP Sent-Mail checks (noting herself that "subject has parens - might mess
+with IMAP search" and retrying broader), confirmed no Aug-25 message existed, THEN resent. Result:
+exactly ONE email in Sent (Message-ID <178766310350...>, 06:05:03 PDT). Verification returned 5
+hits, four prior sends (Jul 1-28, Jul 1-30, Aug 1-8, Aug 1-18) + today's exact match — the usual
+token-match trap. LESSON: the paragraph is doing real work in BOTH directions (blocked a false
+retry 8/23, permitted a correct retry 8/25); keep it verbatim. Also note the 8/22 duplicate pair
+did NOT appear in this listing again — its presence/absence remains non-signal.
+Hand-off ran 2m54s, verification 2m25s, zero timeouts with the .sh-wrapper + quoted-heredoc pattern.
+
 ### Verification ask wording that works first try
 Lead with `IMPORTANT: print the answer as plain text IN THIS REPLY` AND
 `Use himalaya / raw IMAP against "[Gmail]/Sent Mail" (NOT the Gmail API)` — the
