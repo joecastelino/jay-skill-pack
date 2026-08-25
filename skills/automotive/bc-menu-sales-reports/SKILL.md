@@ -982,6 +982,28 @@ hit was Stacey's separate auto-sent Daily Opened report (14415).
 **Renderer output path reminder held**: `render_scorecard_bc.py` prints both
 absolute output paths (in `data/`, not `out/`) on stdout — read those.
 
+## 2026-08-24 5pm Daily Closed run — textbook one-shot, 18th consecutive clean "N dollars" build
+8 menus, $1,217.85 labor / $641.99 parts = $1,859.84 (Humberto Dominguez 3 / $810.91,
+Jacob Debussey 2 / $206.18, Houa Moua 1 / $477.48, Erik Mercado 1 / $218.69, Dimetri
+Reynoso 1 / $146.58). 111 closed ROs → 8 carried TEK menu opcodes; `✓ all candidate ROs
+scanned`; vision-verified KPI band (crop 460px + 2x LANCZOS) matched JSON exactly. Pull
+ran via `terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
+Stacey's build: `execute_code` + `subprocess.run` argument list wrapped in `timeout 600`
+→ returned cleanly in **85s**, no exit-124, no recovery probe, terse DONE line correct
+with `TOTAL=$1,859.84`, and her reported id (42643) MATCHED himalaya's. No
+self-correction text in her reply → no duplicate (pattern holds). Verified via the
+stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject auto-decoded with
+em-dashes, inline PNG **byte-for-byte identical** (150,266 bytes), PDF **byte-for-byte
+identical** (54,325 bytes), all 8 figures present exactly once, `<b>$1,859.84</b>` bold,
+greeting + footer present, zero ' dollars'/USD leftovers (checked after stripping the
+data URI). Deleted the stale noon draft (42630) per the twice-daily cadence rule, kept
+42643 → exactly 1 draft. Daily-Closed Sent count 0 (both `BC 8/24` Sent hits were
+Stacey's separate auto-sent Daily Opened reports, 14415 + 14437).
+**Volume note**: 111 closed ROs today — the highest single-day closed-RO count logged in
+this skill (prior runs 13-83), yet only 8 carried menu opcodes. High closed-RO volume
+does NOT slow the pull materially since the prefilter keeps the fan-out tiny; the single
+180s `process wait` still sufficed.
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
