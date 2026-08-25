@@ -152,6 +152,58 @@ t.slice(t.indexOf('Warranty Copy v4'), t.indexOf('Warranty Copy v4')+3400)
 ```
 No base64 slicing, no −27 font decode needed. Try this FIRST before the S3 route.
 
+## PULLING APPROVAL WORKSPACE COMMENTS PROGRAMMATICALLY (SOLVED 2026-08-25, TL)
+
+This is how you actually retrieve an approver's free-text comment (e.g. "SEAN IS RAD!")
+since it does NOT print on any PDF.
+
+**Permission prerequisite:** the login needs **`All Request View Approval Workspace`**
+(+ `View All Requests <Department>`) — Roles → Permissions → Core → Approval Setup.
+Without it the workspace dropdown shows only `My Approvals | My Requests` and both read 0,
+because `My Approvals` = awaiting YOUR approval and `My Requests` = raised BY you. A record
+submitted AND self-approved by another user (Sean is both submitter and a Level-1 approver)
+appears in neither. With the permission a third option **`All Approvals`** appears in the
+dropdown at approximately (164, 274) after clicking the label at (176, 168).
+
+**Endpoint:** `POST /api/arcapproval/u/approval/search?locale=en_US`
+
+**AUTH TRAP:** a bare in-page `fetch` using `localStorage['t_token']` returns
+`500 {"message":"Token doesn't exist or is invalid"}` in every header variant. The axios
+interceptor injects ~17 headers. Capture them instead — hook `XMLHttpRequest.prototype.setRequestHeader`,
+trigger the app's own search (toggle the dropdown My Approvals → All Approvals), then replay:
+
+```js
+const SR=XMLHttpRequest.prototype.setRequestHeader;window.__hdr=null;
+XMLHttpRequest.prototype.setRequestHeader=function(k,v){
+  if(!this.__h)this.__h={};this.__h[k]=v;
+  if(/approval\/search/.test(this.__u||''))window.__hdr=this.__h;
+  return SR.apply(this,arguments)};
+```
+(Requires the `open` hook first to set `this.__u`.) Required headers include
+`tekion-api-token`, `roleId`, `userId`, `tenantname`, `dealerId`, `tek-siteId`,
+`applicationId: ARC_NA`, `productIds: ARC`.
+
+**Request body — send EMPTY filters to get everything** (the UI always injects a
+`status IN [PENDING]` filter, which hides COMPLETED records — that's why the tab reads 0):
+```json
+{"sort":[{"field":"createdTime","order":"DESC"}],"filters":[],"searchText":"",
+ "groupBy":[],"includeFields":[],"searchableFields":[],"excludeFields":[],
+ "pageInfo":{"start":0,"rows":50}}
+```
+
+**Response shape:** `data.count` + `data.hits[]`. Per hit:
+- `requestDisplayName` = `APPR0826-000012`, `requestName` = `Service - <RO#>`
+- `status` = COMPLETED / PENDING / WITHDRAWN / DRAFT
+- **`notes` is a SINGLE OBJECT, not a list** — `notes.note` holds the comment text.
+  Only the LATEST note survives here; there is no note history array in this payload.
+- `createdBy` = submitter uid, `approvalTaskResponses[0].approvers[].approverId` = who approved,
+  `.eligibleApprovers[]` = the rule's approver pool. Resolve uids via OpenAPI `GET /users/{id}`.
+- Times are epoch ms → convert to `America/Los_Angeles`.
+- DRAFT rows can carry `note: "Source: RECOMMENDATION 1"` — confirms these records originate
+  from RO recommendations even though they live in a separate service (`arcapproval`).
+
+Assemble the response out of the browser in ≤16,000-char `substr` slices (eval truncates ~20,000).
+
 ## Reading the actual generated PDF (the only real proof)
 
 Do NOT judge by the on-screen preview. Pull the real file:
