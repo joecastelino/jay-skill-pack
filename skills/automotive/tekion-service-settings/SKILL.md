@@ -218,8 +218,12 @@ Same lock applies to the rest of the row: `Tag Type` and `Tag Name` selects carr
 `aria-disabled="true"` and `Add Manually` is `ant-checkbox-wrapper-disabled`. Only
 **Color / Text Color / RO / PDF** stay live on a saved tag.
 
-**The only fix = Archive the tag and re-create it, setting Criteria BEFORE the first Save.**
-(Archive is non-destructive; the tag lands in the Archived Tags sub-tab.)
+**Fix depends on whether the tag name is still free** (see the Clovis section below — this
+is NOT always "archive and re-create"):
+- Tag is **active** and you want criteria on it → Archive it, then re-create from the blank
+  add-row setting Criteria BEFORE the first Save. (Archive is non-destructive.)
+- Tag is **already archived** → you CANNOT re-create it; the archived record reserves the
+  name. **Unarchive instead** — it comes back with Criteria CLEARED.
 
 ### Proof the blank add-row IS fully editable (do this to demo it)
 Corrects the earlier "Tag Type won't commit" note — it commits fine:
@@ -247,6 +251,81 @@ id `6a8ddcd7bd725a438565b5b1`) + **Recommendation** (`RECOMMENDATION`, JOB, id
 `...b5b2`). **Every one has `tagsFilter: []`** — i.e. no criteria was ever set at creation,
 which is exactly why all their funnels open empty. Note `Recommendation` in
 `tagTypeOptions` is `isDisabled:true` — you cannot create new Recommendation-type tags.
+
+### ARCHIVED tag = name is RESERVED; Unarchive CLEARS criteria (VC 1891, 2026-08-25)
+
+A second store presented the *opposite* shape of the same ticket, and the SCT playbook does
+not work there. **Check the Archived Tags sub-tab BEFORE assuming you must re-create.**
+
+At VW Clovis the Add-on Job tag was **archived**, and the archived copy carried a criteria
+filter of **all 17 Job Type / Pay Type values**. Consequences:
+
+1. **The archived record RESERVES the tag name.** Building a fresh Add-on from the blank
+   add-row is impossible — after filtering, the option renders `aria-disabled="true"`
+   (visible text still reads `Add-on`, so you must read the attribute, not the label). If
+   you press Enter anyway the select silently commits a DIFFERENT option (it grabbed
+   `Recall`) — always re-read the cell text after Enter to confirm what actually landed.
+2. **The Archived Tags row exposes ONLY an Unarchive button** (`data-test-id`
+   `*-UNARCHIVE-Button`). There is no delete, so the name can never be freed.
+3. **Unarchive restores the tag with Criteria EMPTY.** This is the whole trick: for a
+   "restore this tag but WITHOUT the criteria filter" request, Unarchive alone is the
+   complete fix. Confirm dialog = "<Tag> / Do you want to unarchive this tag?" → **Yes**.
+   Verified after: Archived tab empty, Add-on live on Active Tags, Criteria cell blank.
+
+Archived Tags table has only 4 columns (Tag Type · Tag Name · Criteria · Unarchive) — the
+`.rt-td` indices from the Active table do NOT apply.
+
+### Use `/click` with a `data-jay` tag — NOT `/mouse` coordinates
+`/mouse` on this page is unreliable: coordinates captured in one `execute_code` call are
+stale by the next (the grid re-renders and scrolls), and a stale click lands on the LEFT
+NAV and silently switches you to another section — I landed on "Pre-Tech Finish" and only
+caught it via screenshot. Both browser servers expose `POST /click {selector}`. Do this:
+
+```js
+// tag the element in /eval, then click it by attribute in a separate call
+[...document.querySelectorAll('button')]
+  .filter(e=>e.offsetParent && /UNARCHIVE/i.test(String(e.getAttribute('data-test-id'))))
+  .forEach((x,i)=>x.setAttribute('data-jay','un'+i));
+```
+- Section tabs are easiest as `/click {"selector":"text=\"Archived Tags\""}` — works for
+  `Tags`, `Active Tags`, `Archived Tags`, and the modal's `Yes`.
+- **Every row appears TWICE** (frozen pane + horizontally-scrolling pane), e.g. `un0` at
+  x≈365 and `un1` at x≈1137 for the same Add-on row. The first copy can be overlapped and
+  will fail `page.click` with a 10s timeout; **if `un0` times out, click `un1`.**
+
+### /eval payload + screenshot handling (both servers)
+- Body key is **`js`**, not `expression` (`{"error":"js is required"}`).
+- Long JS breaks inline curl quoting. Write the payload to a file and use
+  `--data-binary @/tmp/_js.json`:
+  ```python
+  json.dump({"js":js},open('/tmp/_js.json','w'))
+  terminal("curl -s -m 40 %s/eval -H 'Content-Type: application/json' --data-binary @/tmp/_js.json"%B)
+  ```
+- `/screenshot` returns **JSON with a base64 `screenshot` field**, not a PNG. Decode before
+  `vision_analyze` or you get garbage:
+  ```python
+  d=json.loads(open(p,'rb').read()); open(p2,'wb').write(base64.b64decode(d['screenshot']))
+  ```
+- **Verify the Criteria column with vision, not the DOM.** Frozen-vs-scrolling pane offsets
+  made `.rt-td` index 3 read the color input instead of Criteria; a screenshot answered it
+  immediately.
+- In-page `fetch('/api/service-module/u/tags/search')` returns **500 "Token doesn't exist or
+  is invalid"** — the app's axios interceptor adds auth a bare fetch can't replicate, so
+  there is no cheap server-side confirmation of `tagsFilter`. Say so rather than implying
+  you verified the backend.
+
+### The Caliber Ops cron will steal :9223 mid-task
+`~/caliber-ops/scripts/tekion-scraper.ts` drives :9223 and **switches dealers underneath
+you** — it yanked an in-progress Clovis session to another store. If the dealer context
+flips unexpectedly, `pgrep` for the scraper before debugging anything else. Recovery: move
+to **:9225** and inject the session (no OTP needed):
+
+```python
+ss=json.load(open('/home/itadmin/caliber-ops/scripts/.tekion-storage-state.json'))
+# POST ss['cookies'] to :9225 /cookies, then navigate to app.tekioncloud.com and
+# replay ss['origins'][0]['localStorage'] entries via /eval, then reload.
+```
+Lands on BC 1251 by default — switch dealers through the UI pill afterward.
 
 ## Pitfalls
 - Several behaviors are gated by **"when enabled by support"** (e.g. Select Default Service

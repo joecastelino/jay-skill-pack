@@ -1,6 +1,6 @@
 {
- "generated": "2026-08-25T13:00:34",
- "skill_count": 189,
+ "generated": "2026-08-25T13:15:02",
+ "skill_count": 190,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -927,6 +927,14 @@
    "path": "automotive/slack-store-thread-cron-retarget",
    "category": "automotive",
    "description": "Retarget an AMG store's Hermes cron report deliveries to a new Slack thread when Joe says \"can this thread be <store> reports only?\", and sweep the whole fleet for dead channel_not_found cron deliveries.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-approval-notes-on-ro-pdf",
+   "path": "automotive/tekion-approval-notes-on-ro-pdf",
+   "category": "automotive",
+   "description": "How to get RO approval information / approval notes (additional warranty hours approvals, warranty job approvals, recommendation approvals) to print on a Tekion RO / invoice PDF. Covers the prerequisite Service Settings + support ticket, the PDF Configurator toggle, and where the live UI differs from the KB article. Use when Joe or a store asks \"how do I get the approval notes on the RO PDF\" or \"approvals aren't printing on the warranty invoice\".",
    "times_used": 0,
    "last_used": null
   },
