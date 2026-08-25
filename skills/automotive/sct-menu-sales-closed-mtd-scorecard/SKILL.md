@@ -203,6 +203,19 @@ Work dir: `/home/itadmin/tekion-reports`
      ```
      Rule of thumb: always phrase Sent-folder verifies with a short ASCII-only
      subject fragment (`Closed MTD`) rather than the full em-dashed subject.
+   - ⚠️ **Verified 2026-08-24: THREE consecutive `ask-agent stacey` calls returned
+     empty output (exit 0) — the draft ask, the send ask, and the first verify ask.**
+     Long multi-line asks appear to be what stalls her. The fix that restored
+     responsiveness immediately: **shorten the ask drastically.** A terse
+     `"READ-ONLY. Last 5 Sent messages, newest first: TS | TO | SUBJ. One line
+     each."` returned a clean formatted list first try, and a one-line Drafts
+     probe (`"Any draft created today whose subject mentions 'Closed MTD'?
+     Reply: DRAFT=<id and subject, or NONE>"`) surfaced the draft ID. Then the
+     send-by-explicit-ID ask (draft ID + the WRITE-AND-RUN-A-PYTHON-SCRIPT
+     email.mime/smtplib instruction, ~6 lines) worked first try and returned
+     `SENT=18:12 | BYTES=152087` — byte-exact vs `ls -la`. **Sequence to use when
+     asks go silent: terse Sent list → terse Drafts probe → send by draft ID.**
+     Don't keep re-issuing the long ask; it just burns 150s timeouts.
    - ⚠️ **A literal `SENT=<HH:MM>` reply from the send ask can be FALSE.**
      Verified 2026-08-21: the send instruction for draft 42577 returned a crisp
      `SENT=18:05`, but an unfiltered Sent listing showed the newest message was
