@@ -1004,6 +1004,35 @@ this skill (prior runs 13-83), yet only 8 carried menu opcodes. High closed-RO v
 does NOT slow the pull materially since the prefilter keeps the fan-out tiny; the single
 180s `process wait` still sufficed.
 
+## 2026-08-24 6:15pm Closed MTD run — textbook one-shot, 19th consecutive clean "N dollars" build
+169 menus, $26,066.55 labor / $17,286.14 parts = $43,352.69 (Aug 1-24). Advisors:
+Juan Ramirez 41 / $11,967.09, Houa Moua 33 / $7,495.09, Humberto Dominguez 25 /
+$7,956.26, Dimetri Reynoso 24 / $5,575.90, Michael Reyes 18 / $3,501.72, Jacob
+Debussey 14 / $2,537.63, Erik Mercado 10 / $3,456.44, Jeremia Navarro 4 / $862.56.
+Master asof was 2026-08-23 → default append (no seed/catch-up); 114 closed ROs → 9
+carried TEK menu opcodes → master 169 rows; `✓ all candidate ROs scanned`. Pull ran
+via `terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
+Vision KPI band (crop 460px + 2x LANCZOS) matched JSON exactly; master `_gross` sums
+matched the emitted report `totals` exactly. Stacey's build: `execute_code` +
+`subprocess.run` argument list wrapped in `timeout 600` → returned cleanly in **117s**,
+no exit-124, no recovery probe, terse DONE line correct with `TOTAL=43,352.69`, and her
+reported id (42645) MATCHED himalaya's. No self-correction text → no duplicate.
+Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
+auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (1,361,214 bytes),
+PDF **byte-for-byte identical** (84,993 bytes), all 11 figures present exactly once,
+`<b>$43,352.69</b>` bold, greeting + footer present, zero ' dollars'/USD leftovers
+(checked after stripping the data URI), exactly 1 MTD 8/24 draft, MTD Sent count 0
+(both `BC 8/24` Sent hits were Stacey's separate auto-sent Daily Opened reports,
+14415 + 14437). Left the sibling Daily Closed 8/24 draft (42643) untouched.
+**Authoring self-correction is survivable but avoidable**: my ask-agent message
+contained a mid-message "CORRECTION - use these exact figures" line after mistyping
+one labor figure (26,066.30 → 26,066.55). Stacey handled it correctly — the wrong
+figure appeared 0 times and the literal word "CORRECTION" did not leak into the body
+— but ALWAYS add both to the post-build verification greps (`clean.count("<wrong
+figure>")` and `"CORRECTION" in clean`) whenever the ask contained a correction, and
+better yet compose the figure list once, cleanly, before sending (same lesson as
+2026-08-22 noon).
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
