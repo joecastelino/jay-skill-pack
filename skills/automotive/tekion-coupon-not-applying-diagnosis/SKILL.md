@@ -142,13 +142,67 @@ expires) · **Applied On** covers the right side (Labor / Parts / Labor & Parts)
 `LB10` passed all of these AND explicitly listed `CABIN` in Include Services → so the
 coupon was innocent and the opcode was guilty.
 
-## Step 4 — The fix
+## Step 4 — The fix (and how to batch it reliably)
 
 `/ro/opcode/edit/<CODE>` → **Default** tab → Labor Rate Configuration → check
 **Discount Eligible** on the row for the job's pay type → **Update**.
 One checkbox. It is a live production pricing-config change and it is GLOBAL to that
-opcode — **get Joe's explicit go before flipping it**, then verify by re-reading
-`eligibleForPromotions` via the API (not by re-reading your own unsaved DOM).
+opcode — **get Joe's explicit go before flipping it**, then verify by re-reading the
+flag via the API (not by re-reading your own unsaved DOM).
+
+### Working batch loop (15 opcodes at TL, 2026-08-25, 100% success)
+
+Per opcode: `/navigate` → poll `document.body.innerText.length > 1200` → strip Pendo →
+`scrollIntoView` the "Labor Rate Configuration" text node → locate row → `/mouse` the
+checkbox → assert DOM `[override,discount] === [true,true]` → `/mouse` Update →
+**poll the API until the flag reads `true`** (10 × 1.3s).
+
+```js
+// row + checkbox coords. Page renders DUPLICATE nested matches — take rows[rows.length-1]
+// (innermost/real). Checkbox is cbs[1]; cbs[0] is Allow Override.
+const rows=[...document.querySelectorAll('tr,[class*="row"]')].filter(r=>
+  r.innerText && /Customer P/.test(r.innerText) &&
+  r.querySelectorAll('input[type=checkbox]').length===2 && r.offsetParent!==null);
+const r=rows[rows.length-1], cbs=[...r.querySelectorAll('input[type=checkbox]')];
+const rc=cbs[1].getBoundingClientRect();   // -> /mouse {x:cx, y:cy}
+```
+Checkbox lands at x≈1062, Update button at x≈1211 — but **recompute per page**, the y
+shifts with the Parts section height. `/mouse` on the raw `<input>` center works; no
+label-click or synthetic event needed.
+
+### CRITICAL: never trust the toast, verify by API
+
+Toasts are unreliable here in BOTH directions:
+- **False negative:** `BATT` and `BELT` returned no toast in my scraper → I logged
+  `NO_TOAST` and the API confirmed still-`false`. But when I redid `BATT` manually the
+  screenshot showed the success toast plainly — my selector just missed it (the toast
+  container class varies, and it auto-dismisses in ~3s).
+- Toasts also **stack and persist** across navigations, so a stale
+  "Opcode 'X' updated successfully" from the previous opcode can make the *current*
+  one look saved.
+
+So the loop's success condition must be the API read, not the toast. Poll
+`/v2` → `laborRateConfigs` → CUSTOMER_PAY → `DISCOUNT_ELIGIBLE.enabled === true`.
+Save latency is 1–3s. Also re-check `modifiedTime` — a fresh epoch (today) is
+corroboration that the write actually landed.
+
+### Pitfall: `window.__helper` does NOT survive `/navigate`
+
+I stashed the flag-reader as `window.__flag` once, then navigated per opcode — the
+function was gone and every `/eval` threw **HTTP 500** (which reads like a server
+error, not a wiped global). Inline the whole header-building + fetch IIFE into each
+verification call, or re-install it after every navigation.
+
+### Pitfall: DOM may already be true before you click
+
+`BATT`/`BELT` showed `discount:false` in one pass and `ALREADY_TRUE` in the retry
+(the earlier save had in fact landed). Always branch on the current DOM state and
+return `ALREADY_TRUE` rather than clicking — clicking a true box **unchecks** it.
+Cross-check `ALREADY_TRUE` against the API before reporting it as fixed.
+
+Only the **Customer Pay** row needs flipping for a CP coupon. Leave Internal and
+Warranty `false` — that's correct (you don't coupon a warranty claim). Confirmed
+end state at TL: CP `true`, INT `false`, WAR `false` on all 15.
 
 ## Step 5 — The store-wide audit (do it, don't just offer it)
 

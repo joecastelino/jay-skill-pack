@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-25T10:30:41",
+ "generated": "2026-08-25T10:45:22",
  "skill_count": 188,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 142,
+   "times_used": 143,
    "last_used": "2026-08-25"
   },
   {
@@ -31,7 +31,7 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 68,
+   "times_used": 69,
    "last_used": "2026-08-25"
   },
   {
@@ -119,7 +119,7 @@
    "path": "automotive/tekion-kb-search-scrape",
    "category": "automotive",
    "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 30,
+   "times_used": 31,
    "last_used": "2026-08-25"
   },
   {
@@ -139,20 +139,20 @@
    "last_used": "2026-07-15"
   },
   {
+   "name": "tekion-opcode-api",
+   "path": "automotive/tekion-opcode-api",
+   "category": "automotive",
+   "description": "Read, audit, and VERIFY Tekion opcode override rows directly from the backend REST API using the session's own auth token. This is the AUTHORITATIVE source of truth \u2014 the override UI grid frequently renders wrong/empty even when rows exist in the backend. Use to get the true committed row count before a batch, detect incomplete (part-less) rows, and confirm persistence after saving.",
+   "times_used": 24,
+   "last_used": "2026-08-25"
+  },
+  {
    "name": "sct-backcounter-ro-sales-countsheet",
    "path": "automotive/sct-backcounter-ro-sales-countsheet",
    "category": "automotive",
    "description": "Build Joe's daily SCT Back Counter Bin Check count sheet \u2014 cross-reference a day's RO part sales (Tekion OpenAPI) against parts that stock in a back-counter bin (5000 section) and render a Tekion-bin-check-style sheet with Primary Bin and Back Counter Bin write-in Count boxes, emailed via Stacey. Use when Joe asks to \"verify counts daily\", \"which back counter parts sold today\", or re-run the back-counter check for a date. KEY DESIGN INSIGHT (Joe corrected me 2026-07-04): a bin-snapshot DIFF can NEVER catch a back-counter pull \u2014 Tekion only relieves the PRIMARY bin (2420), so the 5000s bin doesn't move when the sale posts. Detection must be sales-driven: today's RO parts INTERSECT back-counter roster.",
    "times_used": 23,
    "last_used": "2026-07-25"
-  },
-  {
-   "name": "tekion-opcode-api",
-   "path": "automotive/tekion-opcode-api",
-   "category": "automotive",
-   "description": "Read, audit, and VERIFY Tekion opcode override rows directly from the backend REST API using the session's own auth token. This is the AUTHORITATIVE source of truth \u2014 the override UI grid frequently renders wrong/empty even when rows exist in the backend. Use to get the true committed row count before a batch, detect incomplete (part-less) rows, and confirm persistence after saving.",
-   "times_used": 23,
-   "last_used": "2026-08-25"
   },
   {
    "name": "tekion-vi-api-migration",
@@ -515,6 +515,14 @@
    "last_used": "2026-06-29"
   },
   {
+   "name": "tekion-coupon-management",
+   "path": "automotive/tekion-coupon-management",
+   "category": "automotive",
+   "description": "Create/edit service discount coupons in Tekion's Coupon Management app (e.g. tire promos like Bridgestone B3G1, $-off or %-off labor/parts coupons). Covers the real URLs, form mechanics (old antd calendar, react-select GL account), toggle defaults, GL split conventions, and verification. Verified live at SCT 2026-08-02.",
+   "times_used": 3,
+   "last_used": "2026-08-25"
+  },
+  {
    "name": "tekion-customer-email-change-investigation",
    "path": "automotive/tekion-customer-email-change-investigation",
    "category": "automotive",
@@ -609,14 +617,6 @@
    "description": "Investigate REAL Tekion OpenAPI quota/429 usage per dealer using the APC portal's Transaction Dashboard (ground truth, not assumptions) \u2014 find which store/endpoint is burning quota, when Joe says \"don't assume, go check the APC portal\". Also covers what Plan Details and Usage Dashboard actually show (and don't).",
    "times_used": 2,
    "last_used": "2026-08-05"
-  },
-  {
-   "name": "tekion-coupon-management",
-   "path": "automotive/tekion-coupon-management",
-   "category": "automotive",
-   "description": "Create/edit service discount coupons in Tekion's Coupon Management app (e.g. tire promos like Bridgestone B3G1, $-off or %-off labor/parts coupons). Covers the real URLs, form mechanics (old antd calendar, react-select GL account), toggle defaults, GL split conventions, and verification. Verified live at SCT 2026-08-02.",
-   "times_used": 2,
-   "last_used": "2026-08-25"
   },
   {
    "name": "tekion-labor-rate-create",
