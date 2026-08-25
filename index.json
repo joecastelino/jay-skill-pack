@@ -1,6 +1,6 @@
 {
- "generated": "2026-08-25T11:15:29",
- "skill_count": 188,
+ "generated": "2026-08-25T11:30:06",
+ "skill_count": 189,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -975,6 +975,14 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-ro-payer-split-sunbit",
+   "path": "automotive/tekion-ro-payer-split-sunbit",
+   "category": "automotive",
+   "description": "Add a second payer (Sunbit / third-party financier, insurance, another customer) to a Tekion repair-order JOB and split the dollars to them. Covers the \"I added the payer but it stays at $0.00 / 0%\" trap, the exact Manage Splits click path, and the Tekion global-hotkey trap that hijacks the browser mid-flow. Use for any \"split job X to <payer>\" or \"can't get the Sunbit split to work\" ticket.",
    "times_used": 0,
    "last_used": null
   },

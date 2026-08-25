@@ -20,6 +20,9 @@ triggers:
   - round up hours
   - pre-invoice rule
   - return ro comeback tag
+  - job tag filters
+  - cant edit job tags
+  - tag criteria filter
   - deferred recommendation rules
   - job clock setup
   - express mode setup
@@ -141,6 +144,65 @@ landing elsewhere, switch browser lanes instead of debugging the route.
   from the Tags row builder). `#TAGS` hash anchor works but the page must be loaded from
   `/home` first — a direct navigate to `/service/settings/ro-settings` on a cold tab can
   silently land on an unrelated screen (`/parts/tax-code-setup`); assert `location.href`.
+
+### Tags table — DOM mechanics that actually work (hard-won 2026-08-25, SCT 876)
+
+The Tags grid is a **ReactTable**, and the page contains ~120 `.rt-table`s. Nothing else
+below works until you anchor on the right one:
+
+```js
+const crit=[...document.querySelectorAll('.rt-resizable-header-content')]
+            .find(e=>e.textContent.trim()==='Criteria');
+let tbl=crit; while(tbl && !String(tbl.className||'').split(' ').includes('rt-table')) tbl=tbl.parentElement;
+const rows=[...tbl.querySelectorAll('.rt-tbody .rt-tr')];   // last row = blank add-row
+const cells=[...row.querySelectorAll('.rt-td')];            // 0 drag,1 Type,2 Name,3 Color,
+                                                            // 4 TextColor,5 RO/PDF,6 Criteria,
+                                                            // 7 AddManually,8 Archive
+```
+
+Five traps, each of which cost turns:
+
+1. **Header text is NOT reachable by TreeWalker / leaf-`innerText` scans.** Searching for a
+   leaf element whose text is `"Tag Type"` returns `[]`. The label lives in
+   `.rt-resizable-header-content` — query that class directly.
+2. **The table scrolls HORIZONTALLY** (`scrollWidth` 1200 vs `clientWidth` 772). Criteria /
+   Add Manually / Archive sit **off-screen right** and `/mouse` will click empty space.
+   Walk up from `tbl` to the first ancestor with `scrollWidth>clientWidth+5` and set
+   `scrollLeft=scrollWidth` BEFORE reading coords. Re-read `getBoundingClientRect()` after.
+3. **Read react-select option lists off the React fiber instead of opening the dropdown:**
+   walk `cell[Object.keys(cell).find(k=>k.startsWith('__reactFiber$'))]` down `.child/.sibling`
+   until `memoizedProps.options` is an array of `{label,...}`. This returned
+   `["RO","Job","Recommendation"]` for Tag Type instantly, with no click and no portal race.
+4. **Portal options render duplicates at NEGATIVE y.** `[class*=option]` returns rows from
+   OTHER collapsed sections at `y≈-2800`. Always filter
+   `e.offsetParent && e.getBoundingClientRect().y>0` or you'll `/mouse` off-canvas.
+5. **`/eval` returns HTTP 500 whenever the JS throws** — a missing element mid-expression
+   looks identical to "the browser broke." Guard every helper with an early
+   `if(!crit) return 'NOCRIT';` and return sentinel strings, never let it throw.
+
+### The page RESETS between turns
+On :9223 the bound page reverted to a previously-open RO detail URL between nearly every
+`execute_code` call. Symptom: `/eval` reads a *fully valid* DOM that belongs to the wrong
+screen, and `browser_vision`/screenshot describes an unrelated page ("Pay Type Split By
+Payers"). **Do the whole Tags interaction inside ONE `execute_code` call:**
+`navigate /service/settings/ro-settings` → sleep 10 → `/mouse` the `Tags` `.ant-tabs-tab`
+(find its live center; ~x233 but y MOVES) → sleep 5-6 → then act. Re-navigating at the top of
+every call is cheap insurance; assuming continuity is not.
+
+### What is and isn't editable on a Tag row (verified SCT 876, 2026-08-25)
+- **Saved rows are LOCKED**: `Tag Type` and `Tag Name` selects carry `aria-disabled="true"`,
+  and the `Add Manually` checkbox is `ant-checkbox-wrapper-disabled`. Only Color / Text Color
+  and the RO / PDF checkboxes stay live. **There is no in-place edit of an existing tag's
+  type/name/criteria — it's archive + re-create.** Say that to Joe before touching anything.
+- **The Criteria funnel opens an EMPTY popover.** Clicking `.icon-filter` in cell[6] mounts
+  `.ant-popover.root_filterDialogSection_overlay__*` whose `.ant-popover-inner-content` has
+  `innerHTML.length === 0` — on every row, saved or blank, polled 10× over 7s. Nothing renders
+  to edit. This IS the "I can't edit job tag filters" symptom; do not chase it as a click bug.
+- **Selecting a Tag Type on the blank add-row did not commit** via `/mouse` on the portal
+  option (row still read `Select`), nor via `/type` + Enter into the react-select input.
+  Unresolved — flag it rather than claiming the row was built.
+- AMG baseline holds: **no Job-type tag exists at SCT/BT/TL**, so there are no job-tag
+  criteria to edit in the first place. Lead with that finding.
 
 ## Pitfalls
 - Several behaviors are gated by **"when enabled by support"** (e.g. Select Default Service
