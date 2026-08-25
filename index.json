@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-25T11:00:05",
+ "generated": "2026-08-25T11:15:29",
  "skill_count": 188,
  "skills": [
   {
@@ -467,6 +467,14 @@
    "last_used": "2026-07-14"
   },
   {
+   "name": "tekion-coupon-management",
+   "path": "automotive/tekion-coupon-management",
+   "category": "automotive",
+   "description": "Create/edit service discount coupons in Tekion's Coupon Management app (e.g. tire promos like Bridgestone B3G1, $-off or %-off labor/parts coupons). Covers the real URLs, form mechanics (old antd calendar, react-select GL account), toggle defaults, GL split conventions, and verification. Verified live at SCT 2026-08-02.",
+   "times_used": 4,
+   "last_used": "2026-08-25"
+  },
+  {
    "name": "tekion-journal-entry-error-diagnosis",
    "path": "automotive/tekion-journal-entry-error-diagnosis",
    "category": "automotive",
@@ -513,14 +521,6 @@
    "description": "Log into Tekion DMS via browser, switch dealerships, navigate to Opcode Management, search for opcodes, and edit opcode details. Covers OTP retrieval via IMAP, session persistence, dealer switching pitfalls, and search quirks.",
    "times_used": 3,
    "last_used": "2026-06-29"
-  },
-  {
-   "name": "tekion-coupon-management",
-   "path": "automotive/tekion-coupon-management",
-   "category": "automotive",
-   "description": "Create/edit service discount coupons in Tekion's Coupon Management app (e.g. tire promos like Bridgestone B3G1, $-off or %-off labor/parts coupons). Covers the real URLs, form mechanics (old antd calendar, react-select GL account), toggle defaults, GL split conventions, and verification. Verified live at SCT 2026-08-02.",
-   "times_used": 3,
-   "last_used": "2026-08-25"
   },
   {
    "name": "tekion-customer-email-change-investigation",
@@ -619,6 +619,14 @@
    "last_used": "2026-08-05"
   },
   {
+   "name": "tekion-coupon-not-applying-diagnosis",
+   "path": "automotive/tekion-coupon-not-applying-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose \"failed to apply coupon\" / \"the coupon won't attach to job N\" on a Tekion repair order. The #1 root cause is NOT the coupon \u2014 it is the OPCODE's \"Discount Eligible\" checkbox being unchecked. Covers the full evidence-first triage, the API field mapping that proves it without clicking anything, and how to audit a whole store for un-couponable opcodes.",
+   "times_used": 2,
+   "last_used": "2026-08-25"
+  },
+  {
    "name": "tekion-labor-rate-create",
    "path": "automotive/tekion-labor-rate-create",
    "category": "automotive",
@@ -713,14 +721,6 @@
    "description": "Pull the ToyotaCare (TAC) billed-hours number from Tekion's Advisor Performance report (Reports module) for SCT or any store, using Joe's saved TAC/ToyotaCare filter \u2014 and roll it out to the other 6 AMG stores. Use when Joe asks for ToyotaCare / TAC billed hours, or is building his monthly SCT fixed-ops sheet (\"first number, Toyota Care\").",
    "times_used": 1,
    "last_used": "2026-08-03"
-  },
-  {
-   "name": "tekion-coupon-not-applying-diagnosis",
-   "path": "automotive/tekion-coupon-not-applying-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose \"failed to apply coupon\" / \"the coupon won't attach to job N\" on a Tekion repair order. The #1 root cause is NOT the coupon \u2014 it is the OPCODE's \"Discount Eligible\" checkbox being unchecked. Covers the full evidence-first triage, the API field mapping that proves it without clicking anything, and how to audit a whole store for un-couponable opcodes.",
-   "times_used": 1,
-   "last_used": "2026-08-25"
   },
   {
    "name": "tekion-fee-charging-tax-diagnosis",
