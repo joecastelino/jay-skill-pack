@@ -290,6 +290,20 @@ BEFORE flagging it as a missed transfer:
   itself is benign, yet the stale companion negative (2418 = −2) was still sitting there
   uncorrected from prior runs. Report the recurrence count and the unresolved companion, not the
   increase.
+- **STATUS UPDATE 2026-08-24:** 2 diffs / 174 rows and **ALL FIVE tracked escalations FLAT** — 31532 −56
+  (6th flat day), 04500-1 −120 (flat after 8/23's resume), 87139-42040 −12 (5th flat), 87139-YZZ09 −22
+  (day 17). **17801-F4010 recurrence #8** — 5006=2 (Primary) vs Total Inventory Qty=**0**, companion 2418
+  still −2, unmoved 14 days since 8/11; AGAIN no diff on 5006, only the bin-vs-Total tell caught it (2nd
+  consecutive silent-diff catch — this part MUST be opened every run regardless of diff). Both diffs benign:
+  08887-02919 FC GREASE 5006 3→4 restock (5006 IS Primary, sole bin, Total 4 ✓); 87139-YZZ93 5007 42→34
+  reconciled clean (34+30=64 ✓, Primary=5007). Negatives held at **26 for a 7th consecutive day**; bin mix
+  5005=11 rows, 5007=7 and still owns 4 of the 6 deepest. Session state: :9223 alive/authenticated but
+  parked on VC/1891 `/parts/sales-order` — NO login.py needed, just `/navigate /home` → dealer pill
+  x1130,y32 → SCT leaf x1095,y287 → 876 (~25s). **NEW PITFALL: the checkbox-tagging `/eval` can return
+  HTTP 500 if it uses a broad `document.querySelectorAll('*')` + spread/arrow-heavy payload** — rewrite it
+  as a plain `function(){}` with a NARROW selector
+  (`[class*="binNodeLabel"],[class*="customCheckBoxTreeNodeDiv"] span/div`) and it succeeds instantly. 7/7
+  bins tagged+clicked first try, no scrolling.
 - **STATUS UPDATE 2026-08-23:** 2 diffs / 174 rows. **04500-1 RESUMED deepening −119→−120 after 3 flat
   days** (7+ weeks open, standalone single-bin, `multipleBinNumbers: []`, 5005 IS its Primary — outside
   transfer scope). 31532 flat −56 (**5th** flat day), 87139-42040 flat −12 (4th), 87139-YZZ09 flat −22

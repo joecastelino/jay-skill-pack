@@ -928,6 +928,24 @@ JOE as a possible menu-presentation/process issue at the store, but it is not a 
 Drafts stack tiny (5): 08/21-08/24 hyphen-subject Opened drafts + the perennial 08/02 em-dash one
 (UID 20).
 
+## (8/24 8:05PM, Closed MTD) Clean one-shot, zero exit-124s; ZERO-DELTA day
+Hand-off returned in 103s (no timeout), draft correct FIRST TRY, no dedupe needed. All 3
+verification asks returned FIRST try with "use raw IMAP, NOT the Gmail API" leading and the
+parts-only part-listing wording: subject-list 29s, MIME part-listing 166s, Sent-check 185s
+(both slow but no 124). MIME clean: multipart/mixed > related > alternative(text/plain +
+text/html) + image/png Content-ID=<scorecard> + application/pdf.
+BOGUS-UID VARIANT recurred yet again: save confirmation AND subject-list both said UID 74,
+part-listing replied "UID 74 was wrong — found it at UID 42648" and listed correct MIME.
+Sent-check = 6 hits, ALL old em-dash-era sends (06/29-07/03), zero today = no leak.
+Drafts stack (hyphen stem) = 5: Aug 1-21, 1-22, 1-23, 1-24 + the perennial 08/02 em-dash
+one (UID 19) — no true dupes.
+DATA: 215 closed ROs scanned (busy day), 0 prefilter hits, so MTD stayed FLAT at 28 rows /
+$7,101.35 — identical to 8/22 and 8/23. That's now THREE consecutive zero-delta closed days
+alongside FOUR consecutive $0 opened days (8/23 noon through 8/24 EOD) — the combination is
+worth flagging to Joe as a probable store-side menu-presentation/process problem, not a
+pipeline bug (RO counts are healthy and the opcode sanity scan came back clean 8/24 noon).
+Closed-append ran FOREGROUND in ~15s.
+
 ## (8/23 8:05PM, Closed MTD) TEXTBOOK CLEAN RUN — zero exit-124s across all 4 calls
 Hand-off returned in 161s (no timeout), draft correct FIRST TRY, no dedupe needed. All 3
 verification asks returned FIRST try with "use raw IMAP, NOT the Gmail API" leading and the
