@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-25T14:15:03",
+ "generated": "2026-08-25T14:30:25",
  "skill_count": 190,
  "skills": [
   {
@@ -31,7 +31,7 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 70,
+   "times_used": 71,
    "last_used": "2026-08-25"
   },
   {
@@ -187,20 +187,20 @@
    "last_used": "2026-07-12"
   },
   {
+   "name": "tekion-ro-close-blocked-triage",
+   "path": "automotive/tekion-ro-close-blocked-triage",
+   "category": "automotive",
+   "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
+   "times_used": 16,
+   "last_used": "2026-08-25"
+  },
+  {
    "name": "tekion-opcode-default-pricing",
    "path": "automotive/tekion-opcode-default-pricing",
    "category": "automotive",
    "description": "Set Default-tab labor pricing and add parts to a Tekion opcode in the opcodeManagementV2 UI. Covers reaching the edit page, the V2 flat-form layout, setting the dollar rate via the Customer/Manufacturer spinbuttons, adding parts via react-select (bare-number-first search), and the incremental Save Draft pattern that the browser tool requires. This is the SIMPLE common case \u2014 for vehicle/part override rows use tekion-opcode-overrides.",
    "times_used": 15,
    "last_used": "2026-08-21"
-  },
-  {
-   "name": "tekion-ro-close-blocked-triage",
-   "path": "automotive/tekion-ro-close-blocked-triage",
-   "category": "automotive",
-   "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
-   "times_used": 15,
-   "last_used": "2026-08-24"
   },
   {
    "name": "tekion-parts-autoorder-diagnosis",
@@ -627,6 +627,14 @@
    "last_used": "2026-08-05"
   },
   {
+   "name": "tekion-approval-notes-on-ro-pdf",
+   "path": "automotive/tekion-approval-notes-on-ro-pdf",
+   "category": "automotive",
+   "description": "How to get RO approval information / approval notes (additional warranty hours approvals, warranty job approvals, recommendation approvals) to print on a Tekion RO / invoice PDF. Covers the prerequisite Service Settings + support ticket, the PDF Configurator toggle, and where the live UI differs from the KB article. Use when Joe or a store asks \"how do I get the approval notes on the RO PDF\" or \"approvals aren't printing on the warranty invoice\".",
+   "times_used": 2,
+   "last_used": "2026-08-25"
+  },
+  {
    "name": "tekion-coupon-not-applying-diagnosis",
    "path": "automotive/tekion-coupon-not-applying-diagnosis",
    "category": "automotive",
@@ -737,14 +745,6 @@
    "description": "Pull the ToyotaCare (TAC) billed-hours number from Tekion's Advisor Performance report (Reports module) for SCT or any store, using Joe's saved TAC/ToyotaCare filter \u2014 and roll it out to the other 6 AMG stores. Use when Joe asks for ToyotaCare / TAC billed hours, or is building his monthly SCT fixed-ops sheet (\"first number, Toyota Care\").",
    "times_used": 1,
    "last_used": "2026-08-03"
-  },
-  {
-   "name": "tekion-approval-notes-on-ro-pdf",
-   "path": "automotive/tekion-approval-notes-on-ro-pdf",
-   "category": "automotive",
-   "description": "How to get RO approval information / approval notes (additional warranty hours approvals, warranty job approvals, recommendation approvals) to print on a Tekion RO / invoice PDF. Covers the prerequisite Service Settings + support ticket, the PDF Configurator toggle, and where the live UI differs from the KB article. Use when Joe or a store asks \"how do I get the approval notes on the RO PDF\" or \"approvals aren't printing on the warranty invoice\".",
-   "times_used": 1,
-   "last_used": "2026-08-25"
   },
   {
    "name": "tekion-fee-charging-tax-diagnosis",

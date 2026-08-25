@@ -210,6 +210,53 @@ The ones people usually mean when they ask about job/parts notifications:
 things that carry that word are `THREAD_ITEM_ADDED` (General) and
 `PRINTER_INSTALLED` ("Printer Addition Success") — neither is service-related.
 
+## ⚠ APPROVAL WORKSPACE notifications (verified TL 1092, 2026-08-25)
+Joe: "how do I turn on approval workspace notifications so the approver gets a text/email?"
+
+**The events (module Core → group "Approval Management"):**
+| eventType | title | channels available |
+|---|---|---|
+| `APPROVAL_REQUEST_RECEIVED_FOR_APPROVAL` | REQUEST RECEIVED FOR APPROVAL ← **the approver's ping** | EMAIL, WEB, MOBILE, TEXT |
+| `APPROVAL_REQUEST_SENT_FOR_APPROVAL` | REQUEST SENT FOR APPROVAL (submitter confirm) | all 4 |
+| `APPROVAL_REQUEST_SENT_GOT_{APPROVED,REJECTED,RETURNED,WITHDRAWN}` | submitter outcome | all 4 |
+Fleet default = `{WEB:true, MOBILE:true, TEXT:false, EMAIL:false}` → **that's why nobody
+gets texts/emails out of the box.**
+
+**THE BIG GOTCHA — preferences are STRICTLY PER-USER, self-service only.**
+An admin flipping their own toggles does NOTHING for anyone else. Proven:
+- `GET /api/notificationServiceV2/u/user/preference/<dealerId>` **ignores** a spoofed
+  `userId` header and a `?userId=` query param — the returned rows always carry the
+  caller's own userId. There is no `.../user/<id>/preference/...` route (404).
+- No dealer/admin-level override endpoint exists: `/u/dealer/<id>/preference`,
+  `/u/admin/preference/<id>`, `/u/user/preference/default/<id>` all 404
+  `unexpected.error`.
+- **User Mimicking is NOT a dealer tool** — KB0011016 says it's an internal ARC app for
+  Tekion employees only (requires a Tech Motors Pod 0 login + @tekion email). Do not
+  tell Joe to mimic a user.
+→ **Answer: each approver must open their own Profile Settings → Notification Settings
+→ search "approval" → toggle Text/Email on `REQUEST RECEIVED FOR APPROVAL` → Save.**
+On Save, a multi-dealer user gets an "Apply changes to" modal: *All dealerships*
+(incl. overrides) vs *Dealerships without Override*.
+
+**Reminders are a RULE setting, not a user setting** — Approval Setup
+(`/core/approval-setup`) → business process → rule → *Additional Options* →
+**Reminders** (interval min/hrs) + **Request Expiry**. That's the nag for an approver
+sitting on a request (KB0021229).
+
+**PERMISSION WALL hit 2026-08-25:** clicking a business-process row on
+`/core/approval-setup` silently does nothing for Joe's System Administrator role.
+The API says why: `GET /api/arcapproval/u/approval-setup/<id>` → 400
+`TDA156 "User does not have permission to View Rules!"`. Needed perms (KB0021229):
+**Approval Setup View · Approval Setup Edit · View All Rules \<Department\> ·
+Edit All Rules \<Department\>** at Roles → Permissions → Core → Approval Setup.
+Until that's granted you CANNOT verify who is actually listed as an approver on a
+rule. Say so — don't guess that the user is on the rule.
+Related: Approval Workspace `/core/approval-workspace` (+ `/settings` → Auto
+Delegation / Self Approvals, store-wide). "All Approvals" in the left dropdown needs
+the **All Request View Approval Workspace** permission (KB0021275).
+KB refs: KB0021275 (workspace overview) · KB0021229 (add rule) · KB0021414 (statuses) ·
+KB0021347/21549 (auto-delegation) · KB0021348 (self-approvals) · KB0014652 (notif tab).
+
 ## Mapping a request to the right config surface
 Notification behavior is spread across 5 screens. Check in this order:
 
@@ -296,6 +343,24 @@ the innerText array and slice around the hit index.
   `.ant-popover-inner-content` leaf-walk, not a normal selector.
 - `dealerId` in the returned rows is `"0"` (tenant-level default) even though the URL
   path carries the real dealer id — don't read row `dealerId` as the store.
+- **Capturing `window.__H` (real axios headers) is fragile.** The hook must be armed
+  AFTER the SPA route has loaded and BEFORE the triggering click; a full `/navigate`
+  wipes it. Reliable recipe: navigate → sleep 3 → arm hook → sleep 6 → click a
+  refresh/reload icon on the page → read `window.__x[0].h`. Hooking `fetch` alone
+  misses these (they're XHR); hooking both is safest. Captured headers only work for
+  the dealer you captured them under — reusing them against another `dealerId` in the
+  URL returns 500 `"Token doesn't exist or is invalid"`.
+- **User Setup (`/core/user-setup`) search:** the row search input is hidden until you
+  click the magnifier (~x1065,y164); it's `input[placeholder="Search..."]`. Tag it with
+  a `data-jay` attr, fill via the :9223 `/type` endpoint (native value-setter alone
+  doesn't commit), then dispatch a REAL `keydown+keypress+keyup` Enter — the server
+  won't filter without Enter. There is no `/key` endpoint on the :9223 server.
+  Underlying API: `POST /api/userservice/u/v2/userandroles` with
+  `{sort,filters,searchText,pageInfo:{start,rows}}` → returns full user records
+  (email, phone, roles, MFA, active) — faster than driving the grid.
+- Clicking a user row opens `/core/user-setup/edit/<userUuid>` (User Details: Login Id,
+  Phone Number, roles, MFA). The row kebab (~x1232) only offers Force Logout /
+  Deactivate / Edit Login Id — **no way to edit another user's notification prefs.**
 
 ## Related skills
 `tekion-service-settings` (section map) · `tekion-sitemap` (URLs) ·
