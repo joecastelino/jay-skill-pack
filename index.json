@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-25T12:00:45",
+ "generated": "2026-08-25T12:15:25",
  "skill_count": 189,
  "skills": [
   {
@@ -291,6 +291,14 @@
    "last_used": "2026-08-11"
   },
   {
+   "name": "tekion-vi-stock-number-rules-fix",
+   "path": "automotive/tekion-vi-stock-number-rules-fix",
+   "category": "automotive",
+   "description": "Diagnose and fix Tekion Vehicle Inventory stock-number problems. \u26a0\ufe0f ROOT CAUSE SETTLED 2026-08-25 \u2014 the stock # is stamped at VIN DECODE from the bare global auto-increment counter, before stockType/stockSubType exist, and is never re-evaluated. FOUR UI remedies were tested and FAILED (add Make, add SubTypes, vehicleSubTypeMandatory ON, reverse entry order) \u2014 this is a Tekion platform defect, NOT a dealership misconfiguration, so do not propose Stock# Rules edits. Real fix = OpenAPI PUT /vehicle-inventory/{id} (stockID is writable) driven by the detector sct_stock_audit.py. Also covers the Add-Vehicle DOM map (Stock# field id is <dealer>_PRODUCTION; SubType is a radio group; custom non-native Vehicle Type radios), the :9223 cron-pipeline browser-contention trap, CT27xxx = human quarantine tag at SCT, and the model-year-prefix / pre-VIN-factory-order false positives. Verified live at SCT (876).",
+   "times_used": 9,
+   "last_used": "2026-08-25"
+  },
+  {
    "name": "tekion-writer-handoff-report",
    "path": "automotive/tekion-writer-handoff-report",
    "category": "automotive",
@@ -329,14 +337,6 @@
    "description": "Reference for the AMG project to replace Tekion's native Lyft transportation/ride-fee integration with Uber. Load when asked about Uber API integration, swapping Lyft for Uber in Tekion, or prepping for Uber engineering team talks.",
    "times_used": 8,
    "last_used": "2026-08-18"
-  },
-  {
-   "name": "tekion-vi-stock-number-rules-fix",
-   "path": "automotive/tekion-vi-stock-number-rules-fix",
-   "category": "automotive",
-   "description": "Diagnose and fix Tekion Vehicle Inventory stock-number problems. \u26a0\ufe0f ROOT CAUSE SETTLED 2026-08-25 \u2014 the stock # is stamped at VIN DECODE from the bare global auto-increment counter, before stockType/stockSubType exist, and is never re-evaluated. FOUR UI remedies were tested and FAILED (add Make, add SubTypes, vehicleSubTypeMandatory ON, reverse entry order) \u2014 this is a Tekion platform defect, NOT a dealership misconfiguration, so do not propose Stock# Rules edits. Real fix = OpenAPI PUT /vehicle-inventory/{id} (stockID is writable) driven by the detector sct_stock_audit.py. Also covers the Add-Vehicle DOM map (Stock# field id is <dealer>_PRODUCTION; SubType is a radio group; custom non-native Vehicle Type radios), the :9223 cron-pipeline browser-contention trap, CT27xxx = human quarantine tag at SCT, and the model-year-prefix / pre-VIN-factory-order false positives. Verified live at SCT (876).",
-   "times_used": 8,
-   "last_used": "2026-08-25"
   },
   {
    "name": "tekion-apc-docs-scraper",
