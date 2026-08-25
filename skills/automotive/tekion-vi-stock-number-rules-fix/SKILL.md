@@ -110,6 +110,15 @@ data via OpenAPI `/openapi/v4.0.0/vehicle-inventory` (time-bisect on
 Bonus tell: two parallel counters for the same prefix (SCT had CT24xxx **and**
 CT27xxx interleaved by the minute on 8/21) — one of them isn't coming from a rule.
 
+⚠️ **RESOLVED 2026-08-25 — CT27xxx at SCT is a HUMAN QUARANTINE TAG, not a counter.**
+Joe: *"27 came in from a manual input, just so we can identify which VINs were broken."*
+Staff renumber a broken unit into the CT27xxx band to mark it. **Consequence for triage:
+the bare-numeric stream UNDER-COUNTS the damage.** Most affected units never sit in the
+bare series long enough to be seen — they get hand-moved into the tag band. To size the
+real blast radius you must count `CT27xxx` (tagged) **+** still-bare `15xxx` (untagged).
+Before treating any out-of-band series as a mystery second counter, **ASK — a store may
+have a manual convention you can't infer from the data.**
+
 ## THE ORDER-OF-OPERATIONS ROOT CAUSE — `vehicleSubTypeMandatory`
 
 Read `typeSetting.vehicleSubTypeMandatory` from the same payload. At SCT it was
@@ -124,6 +133,71 @@ So the correct fix ORDER is:
 2. THEN add the missing subtypes/makes to the rule.
 
 Reverse that order and the new values still match nothing.
+
+**KNOWN GAP — STOP AND ASK (never-guess rule).** I have NOT verified whether Tekion
+re-evaluates the stock rule when subtype is filled in *after* creation, or stamps
+once and never revisits. If it's stamp-once, mandatory-at-creation is the only thing
+that works. Confirm via a controlled test (create one used vehicle with subtype set
+at creation vs. one set after) or a Tekion ticket — do not assert either way.
+
+## EXECUTING THE FIX — turning ON "Stock SubType is Mandatory" (done live 2026-08-25, SCT 876)
+
+Verified click-path and the traps hit along the way:
+
+```python
+# 0) ALWAYS check where the browser actually is first — it drifts between sessions
+#    :9223 was sitting on BC (1251) while the ticket was SCT (876).
+curl -s :9223/eval -d '{"js":"JSON.stringify({url:location.href,dealer:localStorage.currentActiveDealerId})"}'
+```
+
+**TRAP 1 — a Tekion announcement modal silently eats the dealer-pill click.**
+A *"Welcome to Service 3.0 🚀"* modal (buttons: `Knowledge Base` / `Got It!`) was
+overlaying /home. `/mouse` on the dealer pill returned success and did nothing;
+the popover query came back `[]` twice with no error. **A `[]` popover result after
+clicking the pill means something is covering it — screenshot before re-trying.**
+Dismiss by finding the childless element whose innerText matches `/^Got It!?$/i`
+and clicking its rect center, then also strip Pendo:
+```js
+document.querySelectorAll('[id*=pendo],[class*=pendo]').forEach(e=>e.remove());
+```
+
+**TRAP 2 — `/screenshot` on the persistent browser returns JSON, not a PNG.**
+`curl -o shot.png` yields `JSON text data` and `vision_analyze` rejects it with
+*"Only real image files are supported."* Decode first:
+```python
+import json, base64
+open('/tmp/real.png','wb').write(base64.b64decode(json.load(open('/tmp/shot.json'))['screenshot']))
+```
+
+**Dealer switch** (after modal cleared): `/mouse` (1120,31) → rows are
+`[class*="root_dealerInfoItem_container"]`, filter `offsetParent!==null`, 8 rows at
+x≈1095 starting y=157, 42px pitch (AR/AM/BC/BT/**ST y=325**/SV/TL/VC). Verify
+`localStorage.currentActiveDealerId === '876'` AND header innerText says the store.
+
+**The toggle itself** — `/vi/visettings` → **Stock Type** tab (x139,y158; page always
+defaults here on load, which for once is the tab we want):
+- Label `Stock SubType is Mandatory` at x88,y232
+- Its `.ant-switch` is at **x564,y229** — locate it by matching switch `y` against the
+  label's `y` (±20px), NOT by index. There are 4+ switches on this page (New Vehicle,
+  Used Vehicle, etc.) and index order is not stable.
+- Click center ≈ (578,240) → re-read `aria-checked`, expect `true` + class
+  `ant-switch ant-switch-checked`
+- **Page-level Save** at (1211,687), `ant-btn root_button_primaryButton__*`
+  (only ONE Save button on this tab — no modal, so unlike the Stock# Rules edit this
+  is a single-level save, not two-level)
+- Toast fires immediately: `"Success / Settings saved successfully"` (poll ~0.7s
+  intervals; it appeared at the first poll)
+
+**VERIFY THREE WAYS — the toggle's own state is the weakest evidence:**
+1. Success toast within ~3s (no toast = save failed, re-submit)
+2. True remount: `/navigate` to `/home`, back to `/vi/visettings`, re-read `aria-checked`
+3. **Server payload — the only real proof.** Arm the XHR hook, pushState `/home` →
+   `/vi/visettings`, read `vi-setup/u/vi?lang`:
+```json
+{"dealer":"876","subTypeMandatory":{"enable":true,"value":null,"registered":false,"locked":false}}
+```
+Note the shape: it is an **object with `enable`**, NOT a bare boolean. Pre-fix this
+key was `null` entirely. Assert `dealer` matches your target in the same read.
 
 **KNOWN GAP — STOP AND ASK (never-guess rule).** I have NOT verified whether Tekion
 re-evaluates the stock rule when subtype is filled in *after* creation, or stamps
@@ -157,6 +231,24 @@ never consulted regardless of its contents.
 
 **Corollary for triage:** a "the rule is missing X" edit can NEVER fix this class of
 ticket. Verify the *timing* before touching any multi-select.
+
+### THE STRONGEST SINGLE PIECE OF EVIDENCE — the same-day twin
+
+The cleanest proof this is a race and not config is **two identical vehicles on the
+same day getting different treatment**. SCT 8/22: one NEW Toyota Sienna got bare
+`15215` (11:17) while another NEW Toyota Sienna got correct `T2611163` (11:48) —
+31 minutes apart, same make/model/stock type, same rule. Config cannot produce a
+different result for identical inputs; a timing race can. **Hunt for a twin pair in
+the timeline scan — it converts "I think it's a race" into proof, and it's the
+single most persuasive line in a Tekion ticket.**
+
+⚠️ **ACCURACY DISCIPLINE — get the bare-vs-prefixed classification right.**
+While briefing Walter I described `15215` as bare *and* separately implied nearby
+`15230/15232` were the same untagged class; in fact `CT15230` and `CT15232` already
+carry hand-typed prefixes, i.e. they are *tagged* records, not raw fallback ones.
+The distinction matters because it changes the counts you quote. **When quoting the
+bare stream, filter strictly on `^\d{5}$` (no alpha prefix at all) and list the
+hand-prefixed ones separately** — don't blend them into one number.
 
 **Still untested (ask Joe to click it, don't assert):** the **refresh/regenerate icon
 next to the Stock # field** on the Add-Vehicle form. If clicking it with Type+Subtype+
@@ -402,6 +494,25 @@ on screen proves nothing about which mechanism produced it.
 - Stay read-only until he says go on live VI settings; state plainly that nothing
   was changed.
 
+## Splitting the fix into "what I can do" vs "what only you can test"
+
+Joe responds well to a triage that separates the three buckets explicitly (he replied
+*"K, where do we stand?"* then *"so lets go with 1 and 2?"* — i.e. the numbered list
+is what he acts on):
+1. **What I can do now** — concrete, low-risk edits, with a time estimate
+2. **What I genuinely can't** — e.g. changing *when* Tekion stamps the number; say so
+   plainly rather than implying a workaround exists
+3. **What needs him** — a short physical test, with the branch outcomes pre-written
+   ("if it flips to CT24559 → procedural; if it stays 152xx → Tekion defect")
+
+**Ask for a REAL VIN he's adding anyway**, not a throwaway — a regenerate click burns
+a counter value. Reassure him an abandoned draft writes nothing (verified: query the
+VIN across all 7 dealers via `/openapi/v4.0.0/vehicle-inventory`, 0 hits fleet-wide).
+
+**Don't test the regenerate icon yourself.** It consumes a live sequence number on a
+production counter. That's a Joe click, and it's also the one unknown that decides
+procedural-fix vs Tekion-ticket — per the never-guess rule, ask rather than infer.
+
 ## STEP ZERO — API first, browser second (added 2026-08-24)
 
 **Do NOT open the browser first, and do NOT go spelunking in Hermes session logs
@@ -501,6 +612,8 @@ concluding "the Make list is fine, so the config is fine."
 **Second anomaly worth flagging to Joe:** SCT is running **two CT counters in
 parallel** — CT24xxx (CT24556, CT24558) and CT27xxx (CT27001 → CT27021) interleaved
 by the minute on 8/21. One of them is not coming from the CT20000 rule.
+**→ ANSWERED 2026-08-25: CT27xxx is a manual quarantine tag applied by SCT staff to
+mark units that got a broken stock number. Not a counter. See the RESOLVED note above.**
 
 ## Reading stockRuleConfig from the API — and the dealer-context trap
 
