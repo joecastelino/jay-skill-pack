@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-25T15:15:03",
+ "generated": "2026-08-25T15:30:25",
  "skill_count": 190,
  "skills": [
   {
@@ -107,20 +107,20 @@
    "last_used": "2026-08-17"
   },
   {
+   "name": "tekion-kb-search-scrape",
+   "path": "automotive/tekion-kb-search-scrape",
+   "category": "automotive",
+   "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
+   "times_used": 35,
+   "last_used": "2026-08-25"
+  },
+  {
    "name": "bc-menu-sales-reports",
    "path": "automotive/bc-menu-sales-reports",
    "category": "automotive",
    "description": "Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards \u2014 Daily Closed (2x/day) and Closed Month-To-Date (1x/day) \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben Estrada (Restrada@blackstonegm.com). This is the GM-store sibling of the SCT/Kevin pipeline (sct-menu-sales-api-scorecard). Use for any \"BC menu report\", \"Blackstone Chevy/Cadillac menu sales\", or Ruben report request.",
    "times_used": 34,
    "last_used": "2026-08-18"
-  },
-  {
-   "name": "tekion-kb-search-scrape",
-   "path": "automotive/tekion-kb-search-scrape",
-   "category": "automotive",
-   "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 34,
-   "last_used": "2026-08-25"
   },
   {
    "name": "tekion-scheduling",
@@ -483,6 +483,14 @@
    "last_used": "2026-08-24"
   },
   {
+   "name": "tekion-notification-settings-audit",
+   "path": "automotive/tekion-notification-settings-audit",
+   "category": "automotive",
+   "description": "Definitively answer \"where did notification X go / does notification Y exist / who gets notified when Z happens\" in Tekion. Dumps the COMPLETE list of user notification event types (all modules) from the internal notification-preference API instead of scrolling the giant Profile Settings table, then maps the request to the right config surface (per-user Profile Settings vs Service Settings vs Dispatch vs Scheduling vs Parts Settings). Load for any \"I can't find the setting that notifies ...\" ticket.",
+   "times_used": 4,
+   "last_used": "2026-08-25"
+  },
+  {
    "name": "tekion-ro-fee-waiver-investigation",
    "path": "automotive/tekion-ro-fee-waiver-investigation",
    "category": "automotive",
@@ -553,14 +561,6 @@
    "description": "Set a vehicle-scoped CUSTOM package price and labor hours on a Tekion Service Menu by adding a new vehicle row (e.g. \"2014 Camry 90K VNM = 2.4 hrs / $469.88\"). Use when Joe wants a specific vehicle's menu package price/hours changed without touching other vehicles or tiers. Verified SCT 90K menu 2026-07-03.",
    "times_used": 3,
    "last_used": "2026-07-12"
-  },
-  {
-   "name": "tekion-notification-settings-audit",
-   "path": "automotive/tekion-notification-settings-audit",
-   "category": "automotive",
-   "description": "Definitively answer \"where did notification X go / does notification Y exist / who gets notified when Z happens\" in Tekion. Dumps the COMPLETE list of user notification event types (all modules) from the internal notification-preference API instead of scrolling the giant Profile Settings table, then maps the request to the right config surface (per-user Profile Settings vs Service Settings vs Dispatch vs Scheduling vs Parts Settings). Load for any \"I can't find the setting that notifies ...\" ticket.",
-   "times_used": 3,
-   "last_used": "2026-08-25"
   },
   {
    "name": "tekion-parts-appointments-opcode-scoping",

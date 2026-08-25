@@ -60,9 +60,73 @@ This matches the KB: *"The approval information will display on the warranty inv
 Approval List on Service Advisor):
 - **SCT 876** — flow OFF / WP OFF / SA OFF
 - **VC 1891** — flow OFF / WP OFF / SA OFF
-- **TL 1092** — flow **OFF** / WP **ON** ✅ / SA OFF  ← PDF side already done, workflow toggle is the blocker
+- **TL 1092** — flow **ON** ✅ / WP **ON** ✅ / SA **ON** ✅  (all three set by Jay 2026-08-25 at Joe's request; SA copy republished 3:12 PM)
 
 Recommendation Approval Details = ON everywhere.
+
+## CRITICAL: two different "approvals" — do not confuse them (verified TL 2026-08-25)
+
+Tekion has **two unrelated approval systems**. Only ONE of them prints its comment.
+
+| | **Approval Workspace** (`/core/approval-workspace`) | **RO Recommendation Approval** |
+|---|---|---|
+| What it is | Rules-engine sign-off: APPR0826-0000NN records, business process = Service, submitter, approvers by level | Advisor recording that the *customer* approved recommended work |
+| Where the comment is typed | Approver's comment box when they Approve (e.g. "SEAN IS RAD!") | RO → Recommendations → approve on behalf of customer → **Note** field |
+| PDF Body row | **Approval List** | **Recommendation Approval Details** |
+| Does the comment print? | ❌ **NO** — only `Total Approval Request : N` prints | ✅ **YES** — prints as `Note<text>` |
+
+**Verified on TL RO 398624** (Warranty Pay v2 PDF, all 3 layers ON, 2 completed
+Approval Workspace records incl. one with comment "SEAN IS RAD!"):
+
+```
+ApprovalListTotalApprovalRequest:0
+...
+RecommendationApprovalDetails Sean Preston approved recommendations on behalf of Sean Preston.
+ModeOfCommunication InPerson  PreviousEstimate $0.00  RevisedEstimate $236.63
+DateandTime Tue Aug 25, 2026 at 03:01 PM
+Note wARRANTY WORK APRROVAL          <-- the ONLY note that prints
+```
+
+So: the **Approval List** section is a *counter*, not a notes section, and it read
+**0** even though Approval Workspace showed completed records — because
+Approval-Workspace approvals are a different object than the RO-level
+`RO Bulk Action → Approval → Additional Hours` requests that Approval List counts.
+
+**If someone wants an approver's comment (like "SEAN IS RAD!") on the PDF: it is not
+available in the standard PDF Configurator.** Options: (a) have the advisor type the
+text into the Recommendation approval **Note** field instead — that DOES print;
+(b) open a Tekion enhancement request to surface Approval Workspace comments.
+
+## Reading the actual generated PDF (the only real proof)
+
+Do NOT judge by the on-screen preview. Pull the real file:
+
+1. On the RO, install a `window.open` + XHR hook, then RO kebab →
+   **Invoice Pdf Preview** (accounting copy) or **View RO PDF** → click the
+   specific doc row (e.g. `Invoice - Warranty Pay - 1355955 - …`). The signed S3
+   URL lands in your hook (`/api/exports/pdf-v3` then `/api/media-v3/u/v2/presignedurls`).
+2. **curl of that S3 URL from the host FAILS** — Tekion masks the AWS key as
+   `AKIART...Z5S6`. Have the BROWSER fetch it and base64 it into a global:
+   ```js
+   const r=await fetch(url); const by=new Uint8Array(await r.arrayBuffer());
+   let s=''; for(let i=0;i<by.length;i++) s+=String.fromCharCode(by[i]);
+   window.__wb=btoa(s);
+   ```
+3. Pull it out in ≤16000-char slices with `substr` (NOT `slice` — slice drops a
+   char at some offsets and corrupts the base64 length):
+   ```bash
+   for off in $(seq 0 16000 $LEN); do curl -s -X POST localhost:9223/eval \
+     -H 'Content-Type: application/json' -d "{\"js\":\"window.__wb.substr($off,16000)\"}" \
+     | python3 -c "import sys,json;sys.stdout.write(json.load(sys.stdin)['result'])" >> wb.txt; done
+   ```
+4. **Tekion PDFs use a subset font with a −27 char offset**, so normal text
+   extraction returns garbage and `pdftotext`/`pymupdf` are unavailable/broken here.
+   Decompress the content streams, pull `(...)` string literals, then **add 27 to
+   every char code**. Working extractor: `/tmp/pdftxt2.py` + the +27 shift, or:
+   ```python
+   ''.join(chr(ord(c)+27) if 1<=ord(c)<200 else ' ' for c in raw)
+   ```
+   Then strip `;` and spaces to get readable (if unspaced) text.
 
 ## Triage order when someone says "approvals aren't on my RO PDF"
 1. Read `Enable RO Approval flow` in Service Settings → General Setup. **OFF = stop here**,
@@ -99,6 +163,31 @@ the same path and the status flips Requested → Approved/Rejected. **The note/c
 here is what prints as the approval note.**
 Recommendation approvals: tech adds warranty recommendation → Submit → advisor/tech
 "Request for Approval" → approver goes RO kebab → RO Bulk Action → expand → note → Approve/Reject.
+
+## Making the changes (hard-won 2026-08-25, TL)
+
+### Service Settings toggle — it SILENTLY fails the first time
+Flipping `Enable RO Approval flow` + Submit returned **no error, no toast**, and a
+true remount showed it back **OFF**. A second identical attempt saved fine
+(`POST /api/service-module/u/settings/service-settings` → 200). **Always verify with a
+nav-away-and-back remount, and be prepared to repeat the flip.** Do not trust the
+absence of an error. Also: polling for a "toast" catches the Tekion **notification
+bell** feed (recommendation P&A alerts) — that is NOT a save confirmation. Confirm by
+re-reading the switch after remount, not by toast text.
+
+### PDF Configurator — use native .click(), not /mouse
+`/mouse` at the switch's own `getBoundingClientRect()` center **silently no-ops**:
+`document.elementFromPoint(x,y)` resolves to
+`DIV.root_helperText_exportText…` — a transparent header overlay sits above the row.
+Use `row.querySelector('.ant-switch').click()` instead. Same for `Configure Section`
+(`row.querySelector('button').click()`).
+
+### Publishing
+`Save And Publish` opens a **confirm dialog** ("Publish / Do you want to publish the
+PDF? / No Yes") — click the LAST visible `Yes` button. Success =
+`POST /api/servicesettings/u/pdfconfigurator` → **200** with the dealerId echoed.
+Verify in the PDF list: the row's *Updated By* / *Last Updated* changes to you + now,
+Status stays `Published`.
 
 ## :9223 automation notes (hard-won)
 - `/eval` payload key is **`js`**, not `expression`.
