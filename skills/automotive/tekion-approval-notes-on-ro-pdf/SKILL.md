@@ -70,10 +70,12 @@ Tekion has **two unrelated approval systems**. Only ONE of them prints its comme
 
 | | **Approval Workspace** (`/core/approval-workspace`) | **RO Recommendation Approval** |
 |---|---|---|
+| Module | **`arcapproval`** (Core) — rules engine from Approval Setup | `service-module` |
 | What it is | Rules-engine sign-off: APPR0826-0000NN records, business process = Service, submitter, approvers by level | Advisor recording that the *customer* approved recommended work |
-| Where the comment is typed | Approver's comment box when they Approve (e.g. "SEAN IS RAD!") | RO → Recommendations → approve on behalf of customer → **Note** field |
-| PDF Body row | **Approval List** | **Recommendation Approval Details** |
+| Where the comment is typed | Approver's "Please add your comment" box when they Approve (e.g. "SEAN IS RAD!") | RO → Recommendations → approve on behalf of customer → **Note** field |
+| PDF Body row | **Approval List** (fed by `service-module` OTHER_LABOR_HOURS requests, *not* by arcapproval) | **Recommendation Approval Details** |
 | Does the comment print? | ❌ **NO** — only `Total Approval Request : N` prints | ✅ **YES** — prints as `Note<text>` |
+| How to get the comment out | **Export → Excel/CSV** (KB0021342) — needs `All Request View Approval Workspace` | prints on invoice + R&I PDFs |
 
 **Verified on TL RO 398624** (Warranty Pay v2 PDF, all 3 layers ON, 2 completed
 Approval Workspace records incl. one with comment "SEAN IS RAD!"):
@@ -265,6 +267,111 @@ Status stays `Published`.
   `[class*="root_dealerInfoItem_container"]` row (AR 178 / AM 220 / BC 262 / BT 304 /
   ST 346 / SV 388 / TL 430 / VC 472 at 1095 x). Verify `localStorage.currentActiveDealerId`.
 - KB SSO bootstrap: `/navigate` to `https://app.tekioncloud.com/core/knowledge-base/search`.
+
+## Approval Workspace (`arcapproval`) — finding an approver's comment
+
+### READ THE KB FIRST (lesson learned the hard way 2026-08-25)
+Joe pulled me up with *"have you read all the approval workflow documents on knowledge
+base?"* after I'd spent many turns reverse-engineering the DOM and API. **Read these
+BEFORE touching the browser** — they answer the architecture questions directly:
+
+| KB | Title | Why it matters |
+|---|---|---|
+| **KB0021275** | Core Apps - About Approval Workspace | Data model + **the permission gate**; only documented outputs are on-screen + Export |
+| **KB0021414** | FAQ on approval statuses | Pending / Completed / Declined / Withdrawn / Returned / Void / Expired |
+| **KB0021342** | HOW TO: Export Approvals and Requests | **Export → My Approvals / My Requests / All Requests → Excel or CSV** |
+| **KB0021217** | Core Settings - About Approval Setup | Rule setup, permissions |
+| **KB0021413** | Approval Management Scenarios in the Service Department | 6 service scenarios (coupon, fee, cost center, labor rate, credit limit, pay type). **Note: keep "Request Expiry" OFF for Service** |
+| **KB0021352** | Approval Management - Landing Page | Index of every related article |
+
+**Nowhere in that set is there any path from Approval Workspace to an RO/invoice PDF.**
+Its only documented outputs are the on-screen panel and the Excel/CSV export. Treat
+"print the approver's comment on the RO PDF" as **not supported** until proven otherwise.
+
+### Why the approval list looks EMPTY to you but full to someone else
+`My Approvals (N)` counts only requests **awaiting your action**; `My Requests (N)` only
+ones **you raised**. Someone else's completed approvals are in NEITHER — so an admin can
+see `(0)` while the submitter/approver sees `(9)`.
+
+The third option **All Approvals** only appears with the right permission. Per KB0021275
++ KB0021342, at **Roles → Permissions → Core → Approval Setup**:
+- `All Request View Approval Workspace`
+- `View All Requests <Department>` (e.g. Service)
+
+Without them the dropdown shows only `My Approvals | My Requests`.
+
+**Confirm WHO you are before concluding data is missing** — decode the session token:
+```js
+JSON.parse(atob(localStorage['t_token'].split('.')[1].replace(/-/g,'+').replace(/_/g,'/')))
+```
+then resolve the uid via OpenAPI `GET /users/{id}` → `userNameDetails.completeNames`.
+(2026-08-25 the :9223 session was **Joe Castelino / System Administrator / CONTROLLER**,
+which is exactly why Sean Preston's APPR records were invisible.)
+
+### The endpoint
+`POST /api/arcapproval/u/approval/search?locale=en_US`
+```json
+{"searchText":"","filters":[],"page":{"from":0,"size":25},"tab":"ALL_APPROVALS"}
+```
+`tab` ∈ `MY_APPROVALS` | `MY_REQUESTS` | `ALL_APPROVALS`.
+**A bare in-page `fetch()` gets `500 "Token doesn't exist or is invalid"`** — the app's
+axios interceptor adds auth that can't be replicated by hand (same trap as
+`/api/service-module/u/opcode/search`). Copying `t_token` into `authorization` /
+`Bearer` / `t_token` headers all fail. **Drive the app's own UI instead**, or use the
+documented **Export** button.
+
+### Endpoint discovery when your XHR hook returns []
+If the call fired before you armed the hook, the hook stays empty and looks like nothing
+happened. Use the **performance resource timeline** instead — it retains everything:
+```js
+[...new Set(performance.getEntriesByType('resource').map(r=>r.name)
+  .filter(u=>/approval|workspace/i.test(u)))]
+```
+That is how `/api/arcapproval/u/approval/search` was found. Generalise the regex to any
+feature you're reverse-engineering. Do this BEFORE building elaborate hooks.
+
+## Creating a real approval request (feeds `Approval List`, NOT Approval Workspace)
+
+Path: RO kebab → **RO Bulk Action** → **Approval** → Request Type (**"Additional Hours"**
+is the ONLY option) → expand the job caret → **expand the OPERATION row too** → click the
+operation's select cell → a row builder appears with columns:
+**Note/Comment | Clock Tag | Hours | Timestamp | Comment By | Status/Actions**
+
+Clock Tag options: `Other Hour`, `Regular Hour`, `Diagnostic Hour`, `Additional Hour`, `Z Time`.
+
+Endpoint: `POST /api/service-module/u/approval-service/request/bulk`
+```json
+{"addedRequests":[{"requestType":"OTHER_LABOR_HOURS","metaData":{
+  "operationId":"...","roId":"...","jobId":"...",
+  "comment":"...","timeInMillis":5400000,
+  "clockReason":"ADDITIONAL_TIME","instanceType":"OtherLaborHours"}}],
+ "voidedRequests":[],"updatedRequests":[]}
+```
+Response 200 → `approvalStatus: "REQUESTED"`, plus an `approvalId`.
+
+**PITFALL — `400 TAF123 err.invalid.metadata.time.in.millis`:** typing into the Hours
+field via the `/type` endpoint sets the DOM value but React never commits it, so
+`timeInMillis` is missing on submit. Force a commit before Save:
+```js
+h.focus(); h.dispatchEvent(new Event('input',{bubbles:true}));
+h.blur();  h.dispatchEvent(new Event('change',{bubbles:true}));
+```
+Value reads back normalised (`1.5` → `1.50`); 1.5 hrs → `timeInMillis: 5400000`.
+
+**Verified result:** a request at status `REQUESTED` still printed
+`Approval List — Total Approval Request: 0` on a freshly generated Warranty Pay **v3**
+PDF. So the section likely counts only completed/approved requests —
+**UNVERIFIED**, the test request was never approved.
+
+## Process lessons (Joe corrected me twice this session)
+1. **KB before reverse-engineering.** I DOM-spelunked for many turns on something
+   KB0021275 states plainly. Search the KB first, then verify live.
+2. **Answer the question actually asked.** Joe wanted the specific comment
+   *"SEAN IS RAD!"* located; I kept steering to my own approve-the-test-request
+   experiment until he said *"no, I'd rather you find sean is rad"*. When the user
+   names a concrete target, chase THAT, don't substitute a tidier experiment.
+3. **Check identity before declaring data missing.** `(0)` vs `(9)` was a permissions/
+   persona artifact, not absent data.
 
 ## Cross-references
 `tekion-service-settings`, `tekion-kb-search-scrape`, `tekion-sitemap`.
