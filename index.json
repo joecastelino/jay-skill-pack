@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-25T11:45:38",
+ "generated": "2026-08-25T12:00:45",
  "skill_count": 189,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 145,
+   "times_used": 146,
    "last_used": "2026-08-25"
   },
   {
@@ -331,6 +331,14 @@
    "last_used": "2026-08-18"
   },
   {
+   "name": "tekion-vi-stock-number-rules-fix",
+   "path": "automotive/tekion-vi-stock-number-rules-fix",
+   "category": "automotive",
+   "description": "Diagnose and fix Tekion Vehicle Inventory stock-number problems. \u26a0\ufe0f ROOT CAUSE SETTLED 2026-08-25 \u2014 the stock # is stamped at VIN DECODE from the bare global auto-increment counter, before stockType/stockSubType exist, and is never re-evaluated. FOUR UI remedies were tested and FAILED (add Make, add SubTypes, vehicleSubTypeMandatory ON, reverse entry order) \u2014 this is a Tekion platform defect, NOT a dealership misconfiguration, so do not propose Stock# Rules edits. Real fix = OpenAPI PUT /vehicle-inventory/{id} (stockID is writable) driven by the detector sct_stock_audit.py. Also covers the Add-Vehicle DOM map (Stock# field id is <dealer>_PRODUCTION; SubType is a radio group; custom non-native Vehicle Type radios), the :9223 cron-pipeline browser-contention trap, CT27xxx = human quarantine tag at SCT, and the model-year-prefix / pre-VIN-factory-order false positives. Verified live at SCT (876).",
+   "times_used": 8,
+   "last_used": "2026-08-25"
+  },
+  {
    "name": "tekion-apc-docs-scraper",
    "path": "automotive/tekion-apc-docs-scraper",
    "category": "automotive",
@@ -369,14 +377,6 @@
    "description": "Extract and analyze the FULL part list for a Tekion Source Code (e.g. SCT Source 103 \"GENERAL STOCK 2-3\") to make stocking recommendations \u2014 which parts to activate, BRP/BSL review, negative-on-hand cleanup, mis-coded fast-movers, and capital-tied-up review. Use when Joe asks to \"scrub a source code\", \"review stocking levels per part\", \"should I activate more parts\", \"what's mis-coded\", or \"pull all the parts in source code X\".",
    "times_used": 7,
    "last_used": "2026-08-18"
-  },
-  {
-   "name": "tekion-vi-stock-number-rules-fix",
-   "path": "automotive/tekion-vi-stock-number-rules-fix",
-   "category": "automotive",
-   "description": "Diagnose and fix Tekion Vehicle Inventory stock-number problems. \u26a0\ufe0f ROOT CAUSE SETTLED 2026-08-25 \u2014 the stock # is stamped at VIN DECODE from the bare global auto-increment counter, before stockType/stockSubType exist, and is never re-evaluated. FOUR UI remedies were tested and FAILED (add Make, add SubTypes, vehicleSubTypeMandatory ON, reverse entry order) \u2014 this is a Tekion platform defect, NOT a dealership misconfiguration, so do not propose Stock# Rules edits. Real fix = OpenAPI PUT /vehicle-inventory/{id} (stockID is writable) driven by the detector sct_stock_audit.py. Also covers the Add-Vehicle DOM map (Stock# field id is <dealer>_PRODUCTION; SubType is a radio group; custom non-native Vehicle Type radios), the :9223 cron-pipeline browser-contention trap, CT27xxx = human quarantine tag at SCT, and the model-year-prefix / pre-VIN-factory-order false positives. Verified live at SCT (876).",
-   "times_used": 7,
-   "last_used": "2026-08-25"
   },
   {
    "name": "sct-menu-sales-closed-mtd-scorecard",
@@ -675,6 +675,14 @@
    "last_used": "2026-06-29"
   },
   {
+   "name": "tekion-ro-job-paytype-triage",
+   "path": "automotive/tekion-ro-job-paytype-triage",
+   "category": "automotive",
+   "description": "Triage a bare \"RO <number> job <N> needs to be <pay type>\" ticket (or any bare-RO# request) from Joe. Covers the CRITICAL cross-store RO#-collision trap (RO numbers are NOT unique across the 7 AMG stores), the zero-quota OpenAPI symptom-verification pass that runs BEFORE any browser work, and where the pay-type change actually happens. Use for any ticket that names an RO number without naming a store.",
+   "times_used": 2,
+   "last_used": "2026-08-25"
+  },
+  {
    "name": "tekion-vehicle-override-row-builder",
    "path": "automotive/tekion-vehicle-override-row-builder",
    "category": "automotive",
@@ -787,12 +795,12 @@
    "last_used": "2026-08-05"
   },
   {
-   "name": "tekion-ro-job-paytype-triage",
-   "path": "automotive/tekion-ro-job-paytype-triage",
+   "name": "tekion-ro-payer-split-sunbit",
+   "path": "automotive/tekion-ro-payer-split-sunbit",
    "category": "automotive",
-   "description": "Triage a bare \"RO <number> job <N> needs to be <pay type>\" ticket (or any bare-RO# request) from Joe. Covers the CRITICAL cross-store RO#-collision trap (RO numbers are NOT unique across the 7 AMG stores), the zero-quota OpenAPI symptom-verification pass that runs BEFORE any browser work, and where the pay-type change actually happens. Use for any ticket that names an RO number without naming a store.",
+   "description": "Add a second payer (Sunbit / third-party financier, insurance, another customer) to a Tekion repair-order JOB and split the dollars to them. Covers the \"I added the payer but it stays at $0.00 / 0%\" trap, the exact Manage Splits click path, and the Tekion global-hotkey trap that hijacks the browser mid-flow. Use for any \"split job X to <payer>\" or \"can't get the Sunbit split to work\" ticket.",
    "times_used": 1,
-   "last_used": "2026-08-24"
+   "last_used": "2026-08-25"
   },
   {
    "name": "tekion-tech-clock-time-by-opcode",
@@ -975,14 +983,6 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tekion-ro-payer-split-sunbit",
-   "path": "automotive/tekion-ro-payer-split-sunbit",
-   "category": "automotive",
-   "description": "Add a second payer (Sunbit / third-party financier, insurance, another customer) to a Tekion repair-order JOB and split the dollars to them. Covers the \"I added the payer but it stays at $0.00 / 0%\" trap, the exact Manage Splits click path, and the Tekion global-hotkey trap that hijacks the browser mid-flow. Use for any \"split job X to <payer>\" or \"can't get the Sunbit split to work\" ticket.",
    "times_used": 0,
    "last_used": null
   },

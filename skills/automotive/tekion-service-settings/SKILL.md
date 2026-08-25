@@ -189,20 +189,64 @@ Payers"). **Do the whole Tags interaction inside ONE `execute_code` call:**
 (find its live center; ~x233 but y MOVES) → sleep 5-6 → then act. Re-navigating at the top of
 every call is cheap insurance; assuming continuity is not.
 
-### What is and isn't editable on a Tag row (verified SCT 876, 2026-08-25)
-- **Saved rows are LOCKED**: `Tag Type` and `Tag Name` selects carry `aria-disabled="true"`,
-  and the `Add Manually` checkbox is `ant-checkbox-wrapper-disabled`. Only Color / Text Color
-  and the RO / PDF checkboxes stay live. **There is no in-place edit of an existing tag's
-  type/name/criteria — it's archive + re-create.** Say that to Joe before touching anything.
-- **The Criteria funnel opens an EMPTY popover.** Clicking `.icon-filter` in cell[6] mounts
-  `.ant-popover.root_filterDialogSection_overlay__*` whose `.ant-popover-inner-content` has
-  `innerHTML.length === 0` — on every row, saved or blank, polled 10× over 7s. Nothing renders
-  to edit. This IS the "I can't edit job tag filters" symptom; do not chase it as a click bug.
-- **Selecting a Tag Type on the blank add-row did not commit** via `/mouse` on the portal
-  option (row still read `Select`), nor via `/type` + Enter into the react-select input.
-  Unresolved — flag it rather than claiming the row was built.
-- AMG baseline holds: **no Job-type tag exists at SCT/BT/TL**, so there are no job-tag
-  criteria to edit in the first place. Lead with that finding.
+### ROOT CAUSE: "why aren't my job tag filters editable?" (SOLVED SCT 876, 2026-08-25)
+
+**Criteria is a CREATE-TIME-ONLY field. Tekion permanently locks it the moment the tag is
+saved.** This is by design in the app bundle, not a bug, not a permission, not a click issue.
+
+Proof — from `serviceSettings.<hash>.chunk.js`, the `TAG_FILTER_TRIGGER` ("Criteria") column
+config `setMapCellPropsToComponentProps`:
+
+```js
+var t = tget(e,'original.tagsFilter',EMPTY_ARRAY),   // the saved criteria
+    r = tget(e,'original.isTagSaved',false);
+...
+function(selectedFilters, isTagSaved){
+  return isEmpty(selectedFilters)
+      ? { disableFilterTrigger: isTagSaved }   // saved + NO criteria  -> funnel is DEAD
+      : { isReadOnly:          isTagSaved };   // saved + HAS criteria -> view-only, no Apply
+}(t, r)
+```
+
+So for any row with `isTagSaved:true`:
+- **no criteria saved** → `disableFilterTrigger` → the funnel still renders and still gets a
+  click, but the popover mounts with `.ant-popover-inner-content` `innerHTML.length === 0`.
+  **The empty white box IS the disabled state.** Don't chase it as a render/click bug.
+- **criteria saved** → `isReadOnly` → rows render but are greyed with no Apply.
+
+Same lock applies to the rest of the row: `Tag Type` and `Tag Name` selects carry
+`aria-disabled="true"` and `Add Manually` is `ant-checkbox-wrapper-disabled`. Only
+**Color / Text Color / RO / PDF** stay live on a saved tag.
+
+**The only fix = Archive the tag and re-create it, setting Criteria BEFORE the first Save.**
+(Archive is non-destructive; the tag lands in the Archived Tags sub-tab.)
+
+### Proof the blank add-row IS fully editable (do this to demo it)
+Corrects the earlier "Tag Type won't commit" note — it commits fine:
+1. Scroll the table **LEFT** (`scrollLeft=0`) → blank row cell[1] center ≈ (599, 562).
+2. `/mouse` it → portal options render at ≈(598,605) RO / (598,636) Job / (598,667)
+   Recommendation. `/mouse` **Job**. Cell now reads `option Job, selected.`
+3. Scroll the table **RIGHT** (`scrollLeft=scrollWidth`) → blank row funnel ≈ (950, 562).
+4. `/mouse` it → popover `innerHTML.length` jumps **0 → 7,449**, text =
+   `Select / Select / Select / Add Filter / Reset / Apply`. Fully live.
+5. Navigating to `/home` discards cleanly — no confirm modal, nothing written.
+
+**Job-tag filter fields available** (from the live `fields.renderOptions.filterTypes`):
+`Technician` (ASYNC_MULTI_SELECT) · `Job Type / Pay Type` (MULTI_SELECT) · `Department`
+(MULTI_SELECT) · `Service Type` (MULTI_SELECT). The Job Type / Pay Type option list is
+PDI, Recall, Return RO, Service Menu, Due Bill, MPI, Voided, RO Hold, Job Hold, CP Split,
+W Split, I Split, Sublet, UVI, CP, W, I.
+
+Read the whole thing without clicking anything: pull `additional` off the Criteria cell's
+React fiber — `cell[__reactFiber$].memoizedProps.additional` gives `allTags[]` (every tag with
+`id`, `assetType`, `tagsFilter`, `isTagSaved`, colors) plus `tagTypeOptions`.
+
+### AMG baseline (SCT 876, re-verified 2026-08-25 — supersedes the 2026-08-24 3-tag note)
+5 active tags: UVI / MPI / PDI (RECOMMENDATION) + **Add-on** (`ADD_ON_REPAIR`, JOB,
+id `6a8ddcd7bd725a438565b5b1`) + **Recommendation** (`RECOMMENDATION`, JOB, id
+`...b5b2`). **Every one has `tagsFilter: []`** — i.e. no criteria was ever set at creation,
+which is exactly why all their funnels open empty. Note `Recommendation` in
+`tagTypeOptions` is `isDisabled:true` — you cannot create new Recommendation-type tags.
 
 ## Pitfalls
 - Several behaviors are gated by **"when enabled by support"** (e.g. Select Default Service
