@@ -8,6 +8,10 @@ description: >
   (per-user Profile Settings vs Service Settings vs Dispatch vs Scheduling vs Parts
   Settings). Load for any "I can't find the setting that notifies ..." ticket.
 triggers:
+  - approval workspace notification
+  - approver not getting notified tekion
+  - turn on approval notifications email text
+  - approval setup reminders tekion
   - notification setting missing tekion
   - where did the notification setting go
   - who gets notified when
@@ -52,6 +56,56 @@ a tag of Add on."* **Read this before running the API dump below.**
 **Triage rule:** when someone says a *thing on the repair order* disappeared, check
 **Tags** BEFORE Notification Settings. "Notification" in Joe's phrasing may mean any
 visual flag/badge on the RO, not a push/email preference.
+
+## ⚠ RESOLVED 2026-08-25 — "Approval Workspace notifications" (turn ON a channel)
+Joe: *"how do I turn on approval workspace notifications? so the approver gets a text
+message, email or alert when there is an approval that needs to be approved."*
+This is the **turn-it-ON** variant of this skill (vs. the prove-absence variant above).
+
+**Answer:** Profile Settings → Notification Settings → module **Core** → group
+**Approval Management**. Six events, all with WEB/MOBILE/TEXT/EMAIL available:
+
+| eventType | Title | Who it hits | Default state (TL 1092, Joe's user) |
+|---|---|---|---|
+| `APPROVAL_REQUEST_RECEIVED_FOR_APPROVAL` | REQUEST RECEIVED FOR APPROVAL | **the APPROVER** ← the one people want | WEB ✅ MOBILE ✅ **TEXT ❌ EMAIL ❌** |
+| `APPROVAL_REQUEST_SENT_FOR_APPROVAL` | REQUEST SENT FOR APPROVAL | submitter | WEB ✅ MOBILE ✅ TEXT ❌ EMAIL ❌ |
+| `APPROVAL_REQUEST_SENT_GOT_APPROVED` | REQUEST SENT GOT APPROVED | submitter | WEB ✅ MOBILE ✅ TEXT ❌ EMAIL ❌ |
+| `APPROVAL_REQUEST_SENT_GOT_REJECTED` | REQUEST SENT GOT REJECTED | submitter | WEB ✅ MOBILE ✅ TEXT ❌ EMAIL ❌ |
+| `APPROVAL_REQUEST_SENT_GOT_RETURNED` | REQUEST SENT GOT RETURNED | submitter | **all four ❌** |
+| `APPROVAL_REQUEST_SENT_GOT_WITHDRAWN` | REQUEST SENT GOT WITHDRAWN | submitter | WEB ✅ MOBILE ✅ TEXT ❌ EMAIL ❌ |
+
+**Root cause of "nobody gets notified": TEXT and EMAIL ship OFF.** Only the in-app
+bell (WEB) and ARC mobile push are on out of the box. Adjacent hits the search also
+surfaces: `EMPLOYEE_TIME_APPROVAL_STATUS` (Accounting→Payroll, EMAIL available/off,
+Mobile+Text Unavailable), `ROLE_PERMISSION_APPROVAL` (General, WEB only),
+`RECAP_APPROVAL_STATUS` / `TRADEIN_APPROVAL_STATUS` / `CUSTOMER_APPROVAL_STATUS`
+(Sales, WEB only), `CUSTOMER_APPROVED_RECOMMENDATION` +
+`RECOMMENDATION_APPROVED_BY_SERVICE_ADVISOR` (Service, WEB/MOBILE only),
+`RECOMMENDATION_APPROVED` = "P&A Approved" (Parts, WEB only).
+
+**Two things to tell the asker (both are the real gotchas):**
+1. **It is a PER-USER preference, not a store setting.** Flipping your own toggles does
+   nothing for anyone else. Each approver must set their own — or an admin must
+   **Mimic** that user (KB0011016) to set it for them. TEXT needs a valid mobile number
+   on the employee record. **NEVER edit another employee's record without Joe's explicit
+   OK** (standing hard rule).
+2. **Reminders/nagging are NOT a user preference** — they live on the RULE:
+   `/core/approval-setup` → business process → rule → **Additional Options →
+   Reminders** (interval min/hrs) and **Request Expiry**. Approval requests themselves
+   only exist if a rule matches (Approval Setup, per business process + department).
+   TL 1092 as of 2026-08-25: business processes = *Deal recap* (Sales, 0 rules) and
+   *Service* (Service, 2 rules).
+
+**Save behavior (multi-store users):** Save pops an **"Apply changes to"** modal —
+*All dealerships* (global, INCLUDING existing per-dealer overrides) vs *Dealerships
+without Override* (global, EXCLUDING them). For a fleet-wide fix pick All dealerships.
+`Actions` dropdown does bulk Turn On/Off Web·Email·Mobile·Text over the filtered view;
+`Reset All Overrides` reverts everything to the global default.
+
+KB refs: KB0021275 (About Approval Workspace) · KB0021229 (Add a rule in Approval
+Setup — incl. Reminders/Expiry) · KB0014652 (Profile Settings→Notification Settings
+field-by-field) · KB0010959 (how to update user notification settings) ·
+KB0021347/KB0021549 (auto-delegation) · KB0021348 (self-approvals).
 
 ## STEP ZERO — do not guess a location
 Per Joe's NEVER-GUESS rule: if you cannot find the named setting, say so plainly,
@@ -108,6 +162,29 @@ per-dealer override of the default.
 
 Modules present: Accounting · Analytics · Core · Email · General · Internal · Parts ·
 Sales · Service. (Payroll/TEKPayroll render as sub-groups under Accounting.)
+Row count varies by store/role: 156 at BT 1249, **176 at TL 1092**.
+
+### FASTER than the API dump when you already know the keyword: the in-page search
+The Notification Settings tab has its own **magnifier search** that collapses the
+~15,000px-tall table down to just the matching groups — ideal for a screenshot Joe can
+actually read. Verified 2026-08-25:
+
+```python
+post('/mouse', {'x':951,'y':209})          # magnifier, right of the View By filter
+ev("""(function(){const el=[...document.querySelectorAll('input')].find(e=>e.placeholder==='Search');
+ const s=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set;
+ el.focus(); s.call(el,'approval'); el.dispatchEvent(new Event('input',{bubbles:true}));
+ el.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',keyCode:13,bubbles:true}));
+ return 'typed'})()""")                     # native value-setter + synthetic Enter
+# then bring the group into the viewport before screenshotting:
+ev("""(function(){const e=[...document.querySelectorAll('*')].find(e=>e.children.length===0
+ && /Approval Management/i.test((e.textContent||'').trim())); if(e)e.scrollIntoView({block:'center'});
+ return 'ok'})()""")
+```
+Read the filtered result from `document.body.innerText` (group headers + row titles),
+then use `/screenshot` + `vision_analyze` to read the **toggle states** — the toggles
+are styled divs, so on/off does NOT appear in innerText. Cross-check the vision read
+against the API dump's `preference` object; they agreed exactly in the approval case.
 
 ### Service + Parts events that actually exist (BT 1249, 2026-08-24)
 The ones people usually mean when they ask about job/parts notifications:
@@ -173,7 +250,36 @@ l.forEach((x,i)=>{if(/notif|notify|alert/i.test(x))console.log(i,x)});
 `/service/settings/ro-settings` is ~1,990 lines — never read it linearly, always grep
 the innerText array and slice around the hit index.
 
-## Pitfalls (all hit live 2026-08-24)
+## Pitfalls (all hit live 2026-08-24 / 2026-08-25)
+- **The `:9223 /eval` param is `js`, NOT `expression`.** Sending `{"expression":...}`
+  returns `{"error":"js is required"}` — easy to misread as "the browser is broken."
+  Cost a turn 2026-08-25.
+- **`/screenshot` returns JSON, not a PNG.** `curl -o x.png /screenshot` writes
+  `{"screenshot":"<base64>"}` and `vision_analyze` rejects it with *"Only real image
+  files are supported"*. Always
+  `base64.b64decode(json.load(open(f))["screenshot"])` → real .png first.
+  Also: `browser_vision` opens a SEPARATE unauthenticated context (returns a blank
+  page) — never use the `browser_*` tools against the :9223 session.
+- **Clicking the "Notification Settings" tab can BOUNCE you off `/userProfile`.**
+  Observed: clicked (530,155), and a later `location.href` read
+  `…/ro/repair-order/6a8df…` — the click landed on a stale prior page and the XHR
+  hook array came back `undefined` (`Cannot read properties of undefined`). Fix:
+  `/navigate` to `https://app.tekioncloud.com/userProfile`, `sleep 9`, **assert
+  `location.href` is /userProfile**, THEN arm the hook, THEN click. Re-assert the URL
+  after the click before reading `window.__x`.
+- **The `/userProfile` page renders My Profile AND Notification Settings in the same
+  DOM** — `document.body.innerText` shows "Personal / Employment / Email Signature"
+  even when the Notification tab is active. Don't conclude the tab didn't open from
+  innerText alone; check for the "Notification Type: / Notified On: / View By:" filter
+  strings further down, or screenshot it.
+- **Approval Setup business-process rows are NOT clickable by any method I found.**
+  `/mouse` on the row text (127,301), synthetic MouseEvent on the `.rt-tr`, and pendo
+  removal all returned success with zero navigation — the page stayed on
+  `/core/approval-setup`. (An RO toast — "Repair Order - 150869: Fulfilment Request" —
+  popped instead, i.e. the click went somewhere else entirely.) Don't burn turns on it;
+  the list view already gives business process / department / last modified / rule
+  count, and KB0021229 documents the rule editor. Revisit with a fresh page load +
+  `/pages` bound-tab check if drill-in is actually required.
 - **:9223 can be parked on the ServiceNow KB** (`tekion.service-now.com`) from a prior
   task → `localStorage` has no `t_token` and reads look logged-out. Navigate to
   `app.tekioncloud.com/home` first and re-verify `t_token` + `currentActiveDealerId`.

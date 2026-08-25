@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-25T13:15:02",
+ "generated": "2026-08-25T13:30:21",
  "skill_count": 190,
  "skills": [
   {
@@ -39,7 +39,7 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 64,
+   "times_used": 65,
    "last_used": "2026-08-25"
   },
   {
@@ -83,6 +83,14 @@
    "last_used": "2026-08-21"
   },
   {
+   "name": "tekion-autonomous-login",
+   "path": "automotive/tekion-autonomous-login",
+   "category": "automotive",
+   "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
+   "times_used": 36,
+   "last_used": "2026-08-25"
+  },
+  {
    "name": "bc-gm-menu-build",
    "path": "automotive/bc-gm-menu-build",
    "category": "automotive",
@@ -97,14 +105,6 @@
    "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
    "times_used": 35,
    "last_used": "2026-08-17"
-  },
-  {
-   "name": "tekion-autonomous-login",
-   "path": "automotive/tekion-autonomous-login",
-   "category": "automotive",
-   "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
-   "times_used": 35,
-   "last_used": "2026-08-24"
   },
   {
    "name": "bc-menu-sales-reports",
@@ -171,20 +171,20 @@
    "last_used": "2026-08-20"
   },
   {
+   "name": "tekion-service-settings",
+   "path": "automotive/tekion-service-settings",
+   "category": "automotive",
+   "description": "Reference map of Tekion's Service Settings application (App Grid > Settings > Service Settings) \u2014 the master config for service/RO workflows: General Setup, Job Sequence, Flag Tech on, Round-Up rules, Default Service Advisor, RO/Job Flags, Holds, Parts Request, pay-type setups (Customer/Warranty/Internal/ Insurance), Reminders, Express Mode, Tags, RO KPI List, Quotes, Role Config, Consumer Portal, Approval Settings, Deferred Recommendation Rules, Job Clock Setup, P&L View Setup. Use when asked where/how a service workflow behavior is configured (e.g. \"why do tech flag hours auto-match bill time\", \"how is the recommendation opcode set\", \"where do return-RO / comeback tags come from\").",
+   "times_used": 18,
+   "last_used": "2026-08-25"
+  },
+  {
    "name": "tekion-opcode-overrides",
    "path": "automotive/tekion-opcode-overrides",
    "category": "automotive",
    "description": "Add vehicle/part override rows to a Tekion opcode (Overrides tab) using the verified browser-tool cascading react-select method. This is the batch workflow used for cabin-filter part overrides (RACF etc.) \u2014 Make/Model/Year/ Trim/Part per row, driven by the __buildRow() helper toolkit. Covers the real-click trim rule, the Save Changes confirmation modal, and mandatory reload+API verification. The most complex Tekion workflow we run.",
    "times_used": 17,
    "last_used": "2026-07-12"
-  },
-  {
-   "name": "tekion-service-settings",
-   "path": "automotive/tekion-service-settings",
-   "category": "automotive",
-   "description": "Reference map of Tekion's Service Settings application (App Grid > Settings > Service Settings) \u2014 the master config for service/RO workflows: General Setup, Job Sequence, Flag Tech on, Round-Up rules, Default Service Advisor, RO/Job Flags, Holds, Parts Request, pay-type setups (Customer/Warranty/Internal/ Insurance), Reminders, Express Mode, Tags, RO KPI List, Quotes, Role Config, Consumer Portal, Approval Settings, Deferred Recommendation Rules, Job Clock Setup, P&L View Setup. Use when asked where/how a service workflow behavior is configured (e.g. \"why do tech flag hours auto-match bill time\", \"how is the recommendation opcode set\", \"where do return-RO / comeback tags come from\").",
-   "times_used": 17,
-   "last_used": "2026-08-25"
   },
   {
    "name": "tekion-opcode-default-pricing",

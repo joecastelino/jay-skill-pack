@@ -11,10 +11,17 @@ SCT (876) and VC (1891) 2026-08-25.
 
 ## The 3 layers — all must be true
 
-### 1. Approvers must exist (Tekion support ticket — you cannot self-serve)
-Email **support@tekion.com** with the **login ID(s)** of the users who should be able to
-approve additional warranty time / add warranty jobs. **This must be done BEFORE
-enabling the approval settings.** No API/UI path exists to designate approvers.
+### 1. Approvers / approval rules must exist
+KB0010837 says email **support@tekion.com** with the **login ID(s)** of the approvers.
+**That KB is stale** — on the current build there is a self-serve
+**Approval Setup** app at **`https://app.tekioncloud.com/core/approval-setup`**
+(App Grid → Settings → Approval Setup). It lists Business Processes:
+`Deal recap` (Sales) and **`Service`** (Service), each with a rule count.
+Build the Service approval rules there; only fall back to a support ticket if the
+Service business process is missing.
+
+TL (1092) baseline 2026-08-25: Service business process = **2 rules**, last modified
+that day (Joe built them). Deal recap = 0 rules.
 
 ### 2. Turn the approval workflow on
 Service Settings → **General Setup** → toggle **"Enable RO Approval flow"**.
@@ -49,8 +56,23 @@ Toggle **Approval List** ON → **Generate Preview** → **Save And Publish**.
 
 This matches the KB: *"The approval information will display on the warranty invoice PDFs."*
 
-**AMG baseline 2026-08-25:** Approval List = **OFF** on both Warranty Pay and Service
-Advisor at SCT and VC. Recommendation Approval Details = ON everywhere.
+**AMG baseline 2026-08-25** (`Enable RO Approval flow` / Approval List on Warranty Pay /
+Approval List on Service Advisor):
+- **SCT 876** — flow OFF / WP OFF / SA OFF
+- **VC 1891** — flow OFF / WP OFF / SA OFF
+- **TL 1092** — flow **OFF** / WP **ON** ✅ / SA OFF  ← PDF side already done, workflow toggle is the blocker
+
+Recommendation Approval Details = ON everywhere.
+
+## Triage order when someone says "approvals aren't on my RO PDF"
+1. Read `Enable RO Approval flow` in Service Settings → General Setup. **OFF = stop here**,
+   nothing is being recorded so the section prints empty no matter what.
+2. Read `Approval List` on the PDF the store actually prints. Warranty jobs → *Invoice -
+   Warranty Pay*. Confirm the RO's job pay types first via
+   `GET /repair-orders/{rid}/jobs` → `payType` (free, no browser) — if the jobs are
+   CUSTOMER_PAY there is no Approval List row on that PDF at all.
+3. Only then check that an approval was actually requested/approved on the RO
+   (RO kebab → RO Bulk Action → Approval) — no approval record = empty section.
 
 ## KB vs live — the discrepancy (don't chase it)
 KB0010837 says: *"PDF Settings → click 'Configure Section' within the Jobs section of the
