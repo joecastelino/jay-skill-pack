@@ -380,6 +380,36 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   confirmation reported the PDF part as the exact decoded file size (301,487) while the later
   PARTS ask reported the encoded size (412,564) — per note 9/8 BOTH forms are valid passes;
   the discrepancy between her two reports of the same part is not a duplicate signal.
+  **Confirmed again 2026-08-24 (14th consecutive clean night) — VOLUME RESUMED + a NEW
+  "TO=<person name>" verify false alarm:** OPS probe 200 (same validated RO/job pair,
+  unchanged since 8/3); no same-day index existed pre-run. Index 3,320 closed ROs (up 229
+  from 8/23's 3,091 — the three-day flat spell ended, Monday catch-up posting), 1,079
+  candidates, 0 failed, ~35 min (19:01→19:36). Window end advanced 1787554799999 →
+  1787641199999 and index file grew 425,823 → 458,053 B — both fresh-index confirmations.
+  317 alignments (285 dedicated + 32 bundled), 317 ROs, 16 advisors. **Leaderboard is now a
+  THREE-WAY TIE at #1** — Jaime Sanchez, Chris Mai, Cristian Gonzalez all 33 (Cristian's
+  long-running solo #1 finally gone; Artist Battle 30 close behind). When the top spot is
+  tied, phrase the email summary as "a three-way tie between X, Y and Z with N each" rather
+  than arbitrarily picking one — Joe's report reads as a ranking. Stacey's build clean on
+  the FIRST ask (81s) with paths + on-disk sizes baked in; her reply gave HTML part 176,347B
+  >= PNG*4/3=129,751B and PDF part 427,654B (+1.3% over PDF*4/3=422,100 — normal CRLF
+  variance).
+  **NEW TRAP — the subject-anchored verify can answer `TO=<a PERSON NAME>` (the From/account
+  identity), not the recipient address:** tonight's clean verify returned
+  `DRAFTSCOUNT=1 | TO=Joe Castelino | SENTFOLDER_COUNT=0`. "Joe Castelino" is the mailbox
+  OWNER, not the To: header — it directly contradicted the build confirmation's
+  `TO=kstapp@sctoyota.com`. Do NOT rebuild or panic-dedupe on this. Tiebreaker = one
+  ultra-terse read-only ask for the RAW HEADER: "print its raw To: header line exactly as
+  stored. Reply ONE line: TO_HEADER=<exact To: header value>" → came back
+  `TO_HEADER=kstapp@sctoyota.com`. Lesson: when the verify's TO field looks like a human
+  name rather than an email address, she's read the account/From identity; ask for
+  `TO_HEADER` explicitly. (Same family as the note-15 un-anchored garble and note-17 UID
+  instability — her field labels are not trustworthy, the raw header is.)
+  Also note: her first Drafts search MISSED the draft entirely and she self-corrected —
+  "himalaya uses ISO dates (2026-08-24) not text dates (Aug 24)". A zero/miss on a
+  dated-today search that she then retries is a search-syntax artifact, not a missing
+  draft; let her self-correct before re-asking. Short sleeps sufficed throughout (15s
+  then 10s), no timeouts at all this run.
   **Confirmed again 2026-08-16 (6th consecutive clean night, quota fully healthy):**
   pre-flight OPS probe (same validated RO/job pair) returned 200. Index built 2,364
   closed ROs, 771 candidates, 0 failed, ~30 min scan (19:01→19:31, no backoff
