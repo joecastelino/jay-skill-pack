@@ -22,7 +22,36 @@ Headers from `/tmp/tekion_rec_headers.json` (see `tekion-declined-deferred-servi
 passive XHR-hook re-capture). Store switch = swap `dealerId` + `tek-siteId: -1_<id>` only.
 $ are **CENTS** → /100. Offset pagination is fine at day granularity (<10K rows).
 
-### STEP ZERO: the header file WILL be 401-stale between runs
+### STEP ZERO-A: FASTEST 401 fix — read the token straight out of localStorage (verified 2026-08-25)
+**Skip the XHR hook entirely.** The only header that actually expires is `tekion-api-token`;
+everything else in `/tmp/tekion_rec_headers.json` is static. Pull the live token from the
+authenticated `:9223` browser and merge it in — ~10 seconds, no hook, no SPA driving:
+
+```python
+tok = "".join(ev(f"(localStorage.t_token||'').slice({i},{i+200})") for i in range(0,536,200))
+h = json.load(open("/tmp/tekion_rec_headers.json"))
+h["tekion-api-token"] = tok
+json.dump(h, open("/tmp/tekion_rec_headers.json","w"), indent=1)
+```
+`t_token` is ~536 chars and `/eval` truncates long strings — slice it in 200-char chunks and
+verify `len(tok)` matches what `localStorage.t_token.length` reported.
+
+**TRAP that costs a wasted cycle:** do NOT also overwrite `userId`/`roleId` from localStorage.
+`localStorage.__user_id` is the **email string** (`"jcastelino@scvolkswagen.com"`) and
+`currentActiveRoleId` is a *different* role id than the one the recommendation endpoint wants.
+Writing those in produces a fresh 401 that looks like the token pull failed. Keep the static values:
+`userId`/`original-userid` = `8cc203af-a87e-4fd7-8090-745a0ffa2339`,
+`roleId` = `656e21e547e83861236c5e0c`. Also note the token works regardless of which dealer
+`:9223` is currently sitting on (it was on TL/1092 while pulling BC/1251 data fine) — the script
+sets `dealerId`/`tek-siteId` itself, so **no dealer switch is needed** for this report.
+
+**Check `/pages` FIRST if `/eval` behaves oddly.** On 2026-08-25 `:9223` had 4 tabs (a ServiceNow
+KB tab + two `/login?redirectTo=` orphans); the bound page was a valid authenticated Tekion coupon
+page, so the token read worked — but a hook armed via `/eval` got **wiped by a `history.pushState`
+soft-nav** (`typeof window.__cap === 'undefined'` afterward) and `window.dispatchEvent(new Event('focus'))`
+captured **zero** calls. That's the tell to abandon hooking and just read `t_token`.
+
+### STEP ZERO-B (legacy XHR-hook path): the header file WILL be 401-stale between runs
 Symptom: `deferred_by_advisor_daily.py` prints `retry 1..5 HTTP Error 401` then
 `RuntimeError: failed`. This is expected any time the Tekion session has refreshed —
 it is NOT a broken script. Re-capture headers BEFORE debugging anything else:
@@ -103,6 +132,12 @@ her formatting, not a failed field. Also she labels the CSV `application/csv`, n
 DRAFT-ONLY asks: give Stacey a hard stop ("imap.append to Drafts ONLY, no send/SMTP/X-GM-RAW path").
 Then verify independently with `jay-gmail-draft-verification` — confirm labels are `\Draft` only,
 Sent Mail = 0 hits, attachments byte-identical to source files, and the PNG is a real data-URI not a CID stub.
+
+## Cron (LIVE as of 2026-08-25)
+Job `d0bfeeef5851` — **"BC Deferred Work by Advisor — 6AM draft to Ruben"**, `0 6 * * *`,
+runs for **yesterday** (index lag), draft-only to Ruben Cc Joe, delivers to the BC/GM Slack
+thread. Sundays return 0 → job reports `[SILENT]` and creates no email.
+Joe asked for 6 AM (he's up by 4) — not the 7:30 AM originally proposed below.
 
 ## Pitfalls
 - **"I don't see the draft" usually means it's STALE, not missing.** This report has no cron

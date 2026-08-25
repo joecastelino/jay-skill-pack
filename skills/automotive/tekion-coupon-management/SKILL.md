@@ -23,6 +23,24 @@ All work via the :9223 persistent browser (load `tekion-sitemap` + `persistent-b
 - **Edit** = `/core/coupons/edit/<base64(couponCode)>` — e.g. FLUID → `RkxVSUQ=`. Direct nav works; also clicking the coupon-code cell in the list opens it.
 - Permissions: Coupon Management Edit + View (KB0025143).
 
+> **"Failed to apply coupon" on an RO? → load `tekion-coupon-not-applying-diagnosis`.**
+> The coupon is usually INNOCENT. The blocker is the OPCODE's **Discount Eligible**
+> checkbox (Opcode Management → Default → Labor Rate Configuration), which maps to
+> `priceDetails[].eligibleForPromotions` in the opcode search API — readable in
+> seconds without clicking anything. Verified TL 2026-08-25 (`CABIN` = false while
+> `ROTATE` = true).
+
+## Reading an existing coupon fast
+Edit URL = `/core/coupons/edit/<base64(couponCode)>` (`LB10` → `TEIxMA==`). Dump the
+whole config in one `/eval`:
+```js
+(()=>{const i=[];document.querySelectorAll('input').forEach(e=>{if(e.offsetParent)i.push([e.id||e.placeholder,e.value])});
+const s=[...document.querySelectorAll('.ant-switch')].map(x=>[x.parentElement.innerText.slice(0,55),x.className.includes('ant-switch-checked')]);
+return JSON.stringify({i,s,txt:document.body.innerText.slice(document.body.innerText.indexOf('Edit Coupon'))});})()
+```
+Gives coupon code/description/dates/value, every toggle state, and the Include
+Services → Opcodes scope in one shot. Blank Expiry Date = never expires.
+
 ## KB anchors
 - **KB0025143** — create-a-coupon field list.
 - **KB0026638** — coupon eligibility is **gated at the OPCODE level** ("Coupon Eligible" toggle in Opcode Management). If a valid active coupon won't attach to a job, check the opcode first. Also documents coupon Split (Customer Discount % vs Dealer Absorb %) and the not-applying checklist: Active? opcode in Applicable Opcodes? date range? usage limit?
