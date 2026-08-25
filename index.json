@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-25T13:30:21",
+ "generated": "2026-08-25T13:45:55",
  "skill_count": 190,
  "skills": [
   {
@@ -31,7 +31,7 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 69,
+   "times_used": 70,
    "last_used": "2026-08-25"
   },
   {
@@ -39,7 +39,7 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 65,
+   "times_used": 66,
    "last_used": "2026-08-25"
   },
   {
@@ -87,7 +87,7 @@
    "path": "automotive/tekion-autonomous-login",
    "category": "automotive",
    "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
-   "times_used": 36,
+   "times_used": 37,
    "last_used": "2026-08-25"
   },
   {
@@ -119,7 +119,7 @@
    "path": "automotive/tekion-kb-search-scrape",
    "category": "automotive",
    "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 31,
+   "times_used": 33,
    "last_used": "2026-08-25"
   },
   {
@@ -163,20 +163,20 @@
    "last_used": "2026-07-12"
   },
   {
+   "name": "tekion-service-settings",
+   "path": "automotive/tekion-service-settings",
+   "category": "automotive",
+   "description": "Reference map of Tekion's Service Settings application (App Grid > Settings > Service Settings) \u2014 the master config for service/RO workflows: General Setup, Job Sequence, Flag Tech on, Round-Up rules, Default Service Advisor, RO/Job Flags, Holds, Parts Request, pay-type setups (Customer/Warranty/Internal/ Insurance), Reminders, Express Mode, Tags, RO KPI List, Quotes, Role Config, Consumer Portal, Approval Settings, Deferred Recommendation Rules, Job Clock Setup, P&L View Setup. Use when asked where/how a service workflow behavior is configured (e.g. \"why do tech flag hours auto-match bill time\", \"how is the recommendation opcode set\", \"where do return-RO / comeback tags come from\").",
+   "times_used": 20,
+   "last_used": "2026-08-25"
+  },
+  {
    "name": "tekion-declined-deferred-services-report",
    "path": "automotive/tekion-declined-deferred-services-report",
    "category": "automotive",
    "description": "Pull declined/deferred services (recommendations customers said no to) for any/all AMG Tekion stores via the internal recommendation/search reporting API. Powers \"most declined service\", declined-services marketing lists (with customer phone/email), and deferred-dollars opportunity reports. Zero OpenAPI quota.",
    "times_used": 19,
    "last_used": "2026-08-20"
-  },
-  {
-   "name": "tekion-service-settings",
-   "path": "automotive/tekion-service-settings",
-   "category": "automotive",
-   "description": "Reference map of Tekion's Service Settings application (App Grid > Settings > Service Settings) \u2014 the master config for service/RO workflows: General Setup, Job Sequence, Flag Tech on, Round-Up rules, Default Service Advisor, RO/Job Flags, Holds, Parts Request, pay-type setups (Customer/Warranty/Internal/ Insurance), Reminders, Express Mode, Tags, RO KPI List, Quotes, Role Config, Consumer Portal, Approval Settings, Deferred Recommendation Rules, Job Clock Setup, P&L View Setup. Use when asked where/how a service workflow behavior is configured (e.g. \"why do tech flag hours auto-match bill time\", \"how is the recommendation opcode set\", \"where do return-RO / comeback tags come from\").",
-   "times_used": 18,
-   "last_used": "2026-08-25"
   },
   {
    "name": "tekion-opcode-overrides",
@@ -643,6 +643,14 @@
    "last_used": "2026-08-13"
   },
   {
+   "name": "tekion-notification-settings-audit",
+   "path": "automotive/tekion-notification-settings-audit",
+   "category": "automotive",
+   "description": "Definitively answer \"where did notification X go / does notification Y exist / who gets notified when Z happens\" in Tekion. Dumps the COMPLETE list of user notification event types (all modules) from the internal notification-preference API instead of scrolling the giant Profile Settings table, then maps the request to the right config surface (per-user Profile Settings vs Service Settings vs Dispatch vs Scheduling vs Parts Settings). Load for any \"I can't find the setting that notifies ...\" ticket.",
+   "times_used": 2,
+   "last_used": "2026-08-25"
+  },
+  {
    "name": "tekion-opcode-labor-billing-audit",
    "path": "automotive/tekion-opcode-labor-billing-audit",
    "category": "automotive",
@@ -731,6 +739,14 @@
    "last_used": "2026-08-03"
   },
   {
+   "name": "tekion-approval-notes-on-ro-pdf",
+   "path": "automotive/tekion-approval-notes-on-ro-pdf",
+   "category": "automotive",
+   "description": "How to get RO approval information / approval notes (additional warranty hours approvals, warranty job approvals, recommendation approvals) to print on a Tekion RO / invoice PDF. Covers the prerequisite Service Settings + support ticket, the PDF Configurator toggle, and where the live UI differs from the KB article. Use when Joe or a store asks \"how do I get the approval notes on the RO PDF\" or \"approvals aren't printing on the warranty invoice\".",
+   "times_used": 1,
+   "last_used": "2026-08-25"
+  },
+  {
    "name": "tekion-fee-charging-tax-diagnosis",
    "path": "automotive/tekion-fee-charging-tax-diagnosis",
    "category": "automotive",
@@ -769,14 +785,6 @@
    "description": "Look up or bulk-pull Tekion's Labor Time Guide (OEM warranty labor-time data) for any store/vehicle. Covers the nav path, the underlying API (VIN or Make/Year/Model search), pagination, and the critical fact that THERE IS NO DOWNLOAD/EXPORT BUTTON in the UI \u2014 it's a live per-vehicle OEM feed, not a static file. Use when Joe asks to \"download the labor time guide\", \"get OEM labor times\", or look up warranty hours/parts/failure codes for a repair.",
    "times_used": 1,
    "last_used": "2026-08-05"
-  },
-  {
-   "name": "tekion-notification-settings-audit",
-   "path": "automotive/tekion-notification-settings-audit",
-   "category": "automotive",
-   "description": "Definitively answer \"where did notification X go / does notification Y exist / who gets notified when Z happens\" in Tekion. Dumps the COMPLETE list of user notification event types (all modules) from the internal notification-preference API instead of scrolling the giant Profile Settings table, then maps the request to the right config surface (per-user Profile Settings vs Service Settings vs Dispatch vs Scheduling vs Parts Settings). Load for any \"I can't find the setting that notifies ...\" ticket.",
-   "times_used": 1,
-   "last_used": "2026-08-24"
   },
   {
    "name": "tekion-parts-shipped-not-received-report",
@@ -927,14 +935,6 @@
    "path": "automotive/slack-store-thread-cron-retarget",
    "category": "automotive",
    "description": "Retarget an AMG store's Hermes cron report deliveries to a new Slack thread when Joe says \"can this thread be <store> reports only?\", and sweep the whole fleet for dead channel_not_found cron deliveries.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tekion-approval-notes-on-ro-pdf",
-   "path": "automotive/tekion-approval-notes-on-ro-pdf",
-   "category": "automotive",
-   "description": "How to get RO approval information / approval notes (additional warranty hours approvals, warranty job approvals, recommendation approvals) to print on a Tekion RO / invoice PDF. Covers the prerequisite Service Settings + support ticket, the PDF Configurator toggle, and where the live UI differs from the KB article. Use when Joe or a store asks \"how do I get the approval notes on the RO PDF\" or \"approvals aren't printing on the warranty invoice\".",
    "times_used": 0,
    "last_used": null
   },
