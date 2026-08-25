@@ -70,6 +70,30 @@ everything needed. **The field mapping is the unlock:**
 There is one `priceDetails[]` entry per `payType` (CUSTOMER_PAY / WARRANTY / INTERNAL).
 **Check the row matching the JOB's pay type.**
 
+### ⚠️ TWO DATA MODELS COEXIST — read both or you will report a false negative
+
+Tekion is migrating opcodes off legacy `priceDetails[]` onto a new
+`laborRateConfigs[]` shape. **Saving an opcode in the current UI migrates it** — after
+the save, `priceDetails` comes back **`[]` (empty)** and the real flag lives in
+`laborRateConfigs[]`. So an audit that only reads `priceDetails` reports
+`eligibleForPromotions: null` on a freshly-FIXED opcode and it looks *still broken*.
+This bit me 2026-08-25: Joe had already checked the box on `CABIN` and `AIRFILTER`
+minutes earlier and my first pass still called them false.
+
+New shape (`GET /api/service-module/u/opcode/<CODE>/v2` → `data.laborRateConfigs[]`):
+```js
+const row = d.laborRateConfigs.find(x =>
+  (x.parameters||[]).some(p => p.parameter==='SUB_PAY_TYPE'
+                            && (p.values||[]).includes('ALL_CUSTOMER_PAY')));
+const de  = row.values.find(f => f.field==='DISCOUNT_ELIGIBLE').value.enabled;  // <- flag
+// siblings in values[]: LABOR_RATE {id,type,value}, ALLOW_OVERRIDE {enabled},
+//                       TAX_CONFIG {taxConfigs:[{taxRegimeType,taxable}]}
+```
+Rule: **if `priceDetails.length === 0`, fall through to `laborRateConfigs`.**
+`search` only ever returns `priceDetails`, so migrated opcodes must be fanned out to
+`/v2` individually. Cheap: filter the search results to the `priceDetails`-empty ones
+first (at TL that was 3 of 981 ACTIVE), then fan out only those.
+
 ```js
 // in :9223 /eval, awaited, stash to window.__y then read it back
 const H={"Accept":"application/json, text/plain, */*","applicationId":"ARC_NA","clientId":"web",
@@ -126,13 +150,47 @@ One checkbox. It is a live production pricing-config change and it is GLOBAL to 
 opcode — **get Joe's explicit go before flipping it**, then verify by re-reading
 `eligibleForPromotions` via the API (not by re-reading your own unsaved DOM).
 
-## Step 5 — Offer the store-wide audit
+## Step 5 — The store-wide audit (do it, don't just offer it)
 
-`eligibleForPromotions:false` is rarely a one-off. Offer to loop every ACTIVE opcode
-at the store through the search endpoint (300ms pacing, ~50/page via
-`pageInfo.rows` + `nextPageToken` cursor) and hand Joe the full list of opcodes that
-can never take a coupon. At TL, `WIPER` (vs the `10OFFWIPER` coupon) and `4ALIGN`
-were already broken the same way — flagging that proactively is the value-add.
+`eligibleForPromotions:false` is never a one-off. Full-store sweep, ~7s:
+
+```js
+// in :9223 /eval — paginate the search cursor, stash to window.__aud
+let tok=null, all={};
+while(true){
+  const b={pageInfo:{start:0,rows:50},searchText:"",sort:[{order:"DESC",field:"createdTime"}],
+           filters:[],nextPageToken:tok,searchFields:["OPCODE","DESCRIPTION"]};
+  const j=await (await fetch(URL,{method:'POST',credentials:'include',headers:H,
+                                  body:JSON.stringify(b)})).json();
+  const d=j.data||{}, hits=d.hits||[];
+  hits.forEach(h=>{const cp=(h.priceDetails||[]).find(p=>p.payType==='CUSTOMER_PAY');
+    all[h.opcode]={s:h.status,t:h.opcodeType,npd:(h.priceDetails||[]).length,
+                   promo:cp?cp.eligibleForPromotions:null};});
+  tok=d.nextPageToken; if(!tok||!hits.length) break;
+  await new Promise(r=>setTimeout(r,110));
+}
+```
+`nextPageToken` is the ONLY working cursor (`pageInfo.start` does not advance).
+Dedupe by `h.opcode`, not `h.id` — same opcode can surface twice.
+Then split: `npd>0 && promo===false` = broken on legacy model;
+`npd===0` = migrated, fan out to `/v2` (see Step 2).
+
+**TL/1092 baseline 2026-08-25:** 1,710 opcodes total, 981 ACTIVE, **93 ACTIVE with
+Customer Pay Discount Eligible OFF**. Group them for Joe by business impact, not
+alphabetically — he only cares about the ones a coupon would realistically hit:
+
+| Bucket | n | Examples |
+|---|---|---|
+| Revenue services (real coupon targets) | 19 | 4ALIGN, BALANCE, WIPER, TIRE3, TIRE4, FLAT, BATT, RBRAKE, BELT, ATFX, BFX, FUELINJ, HVAC, DETAIL, SMOG, MAJORP/V, INTERV, 4X4SERVC |
+| Value packages | 23 | every `*KV` (10KV…120KV) |
+| Prepaid maintenance | 23 | all `TAC*`, all `TSC*`, UVAC, BUY3 |
+| Diag / inspection | 8 | ENGDIAG, MECDIAG, TRANSDIAG, HVACDIAG, BRAKEINSP, CHECK, ALIGN, TPS |
+| Admin / internal (leave alone) | 20 | MISC, REC, RECALL, SUBLET, RENT*, PDI, QC, UVI, MPVI, DUE, LYFT, BODY, LOTD, PARTSHOLD, SAFECAT |
+
+Diag/inspect and admin codes being false is arguably CORRECT (you don't discount a
+recall or a sublet). Say so — don't hand Joe a 93-line "everything is broken" list.
+There is no bulk toggle in the UI; each is `/ro/opcode/edit/<CODE>` → Default →
+Discount Eligible → Update.
 
 ---
 
@@ -159,3 +217,13 @@ were already broken the same way — flagging that proactively is the value-add.
   `meta.count:1` — useless for reading which coupons are on an RO. Don't chase it.
 - `/repair-orders/{rid}/ro-customers` 404s; the customer link is
   `/ro-customers/{customerId}` (id comes from `primaryCustomer.id` on the search result).
+- **Verify a fix by API, and check the right model.** After Joe (or you) checks the box,
+  re-read `/v2` and look at `laborRateConfigs`, not `priceDetails` — the save migrates
+  the record and `priceDetails` goes empty. `modifiedTime` (epoch ms) + `lastModifiedBy`
+  on `/v2` confirm who touched it and when, which is how I proved Joe's own edit had
+  landed 20 min before I looked.
+- Internal `/api/rosearchservice/u/repairorder/search` 500s with hand-built headers
+  (axios interceptor auth). Use the public OpenAPI for RO lookup (Step 1); only opcode
+  endpoints replay cleanly from in-page `fetch`.
+- OpenAPI tokens expire mid-session → sudden 401 on a call that worked minutes ago.
+  Re-`get_token()` rather than assuming a scope problem.

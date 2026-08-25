@@ -260,6 +260,73 @@ fails to match and the match payload needs investigation.
 **Verifying an unsaved draft did no damage:** query the VIN across all 7 dealers via
 `/openapi/v4.0.0/vehicle-inventory` — 0 hits fleet-wide = nothing was written.
 
+## 2026-08-25 — SubType-Mandatory turned ON at SCT + Add-Vehicle form facts
+
+`vehicleSubTypeMandatory` flipped to `{enable:true}` at SCT (876). Procedure that
+worked: `/vi/visettings` → **Stock Type** tab (leftmost, ~139,158) → label
+"Stock SubType is Mandatory" at y≈232 with its `.ant-switch` at x≈564 same row →
+click switch center (578,240) → **page-level Save** (single primary btn ~1211,687) →
+toast "Settings saved successfully". Verify by remount AND by the `vi-setup/u/vi`
+payload (`typeSetting.vehicleSubTypeMandatory.enable === true`), not the toggle alone.
+
+### Add Vehicle form — verified DOM facts
+- **Correct nav:** 9-dot grid (30,31) → search "Vehicle Inventory" → click the
+  result at (449,222) → `/vi/vehicles` → **"Add Vehicle"** button top-right
+  (~1202,89) → lands on **`/vi/vehicle/new`**.
+- **GUESSED URLS ARE DEAD ENDS.** `/vi/inventory/add-vehicle`, `/vi/addvehicle`,
+  `/vi/inventory`, `/vi/inventory/list` all render a BLANK content area while
+  returning HTTP 200 and echoing the URL back from `location.href`. `innerText`
+  length ~106 (just chrome/nav) is the tell. Always go through the VI module.
+- **Field IDs are `<dealerId>_<FIELD>`:** `876_VIN`, `876_MAKE`, `876_MODEL`,
+  `876_YEAR`, `876_BODY_CLASS`, `876_SOURCE`, `876_MILEAGE`.
+  ⚠️ **Stock # field id is `876_PRODUCTION`** — NOT `*_STOCK*`. A `/stock/i` scan
+  over input ids/names finds it only by accident. Label "Stock #" sits at ~(827,815).
+- **⚠️ CONTRADICTS the stamp-at-init theory:** on a freshly opened
+  `/vi/vehicle/new`, `document.getElementById('876_PRODUCTION').value === ''`.
+  The Stock # is **blank at init**, so the number is NOT stamped when the form
+  mounts. Whatever assigns it happens later (on save, or on VIN decode). The
+  "stamped at init before Type/SubType exist" explanation is therefore **UNPROVEN**
+  — do not repeat it to Joe as established fact until the assignment moment is
+  actually observed.
+- Vehicle Type radios are custom divs `vi_cargoradio_label_container__*` /
+  `vi_cargoradio_main_container__*` (New ~482,659 · Used ~622,659). No
+  `input[type=radio]` exists. `/mouse` on the label container did NOT flip the
+  selection in testing (vision confirmed New Vehicle still selected) — the real
+  hit target is still unidentified. **No Stock SubType dropdown renders until
+  Used Vehicle is actually selected**, so failing this click blocks the whole test.
+
+### ⚠️ BROWSER CONTENTION — :9223 is NOT exclusively yours
+`crontab`: `*/15 * * * * /home/itadmin/caliber-ops/scripts/cron-pipeline.sh` drives
+the **same** :9223 browser. Mid-test it will navigate to `/home` and switch dealers
+(saw 876 → TL/1092 twice inside one session), silently invalidating coordinates and
+returning `None` from element reads. Symptoms: `location.href` suddenly `/home`,
+queries returning `[]` for elements that existed a second earlier.
+**Before any multi-step :9223 form work:** `pgrep -fa cron-pipeline`, check
+`ls -la /tmp/caliber-pipeline.lock` mtime, and either wait for a fresh 15-min window
+or run the entire interaction as ONE uninterrupted script. Better: use :9225.
+
+## AUTOMATION PATH — `stockID` IS WRITABLE VIA OpenAPI
+
+The durable fix is not making the UI rule fire — it's correcting/assigning the
+number programmatically. Confirmed in the specs:
+
+- `PUT /vehicle-inventory/{vehicle-inventory-id}` (spec file
+  `vehicle-inventory__update-a-vehicle.json`). Schema `UpdateVehicleInventory`
+  declares only `pricingDetails` in `properties` but `allOf`-inherits
+  `BaseVehicleInventory`, and **the official request example includes
+  `"stockID": "10N1223"`, `"stockSubType"`, `"stockType"`** — so stock number is
+  a writable field.
+- `POST /vehicle-inventory` (`create-vehicles`) likewise accepts `stockID` /
+  `stockType` / `stockSubType` on create.
+
+Design: OpenAPI-only watcher (no browser) that polls recent inventory, flags any
+`stockID` matching the bare-fallback pattern, derives the correct prefix from
+`stockType`+`stockSubType`+`make` using the same rule table, and PUTs the right
+number. Removes the human ordering dependency entirely. **Requires Joe's explicit
+go before any live write** — and confirm write scope is actually granted (the pilot
+app version has historically 403'd endpoints that exist in the specs). Test against
+sandbox `api-sandbox.tekioncloud.com` dealer `techmotors_4_0` first.
+
 ## CROSS-CHECK: every configured subtype must appear in some rule
 
 `typeSetting.vehicleTypes[].subTypes[]` lists what staff can actually pick. Diff it
