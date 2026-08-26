@@ -28,6 +28,29 @@ the new payer. Zeroing Alfredo → SUNBIT instantly flipped to `1,299.50 / 100.0
 
 If a manager says "I added Sunbit and it won't split," this is almost certainly it.
 
+## READING an existing split (added 2026-08-26)
+
+This skill is the WRITE side. If the question is "was this already split / did the
+customer get charged the deductible," read first — don't touch anything:
+
+- **The OpenAPI cannot see a payer split.** `/jobs` reports `payType:
+  CUSTOMER_PAY` with **`subPayType: null`** even when a CVSC/third-party split is
+  live; `/ro-fees` shows nothing; the job list shows each job at its FULL amount.
+- **Free tells that a split exists**: RO search `tags` contain `PAY_TYPE: CVSC`
+  and `PAY_TYPE: SPLIT_CUSTOMER_PAY_SPLIT`; and `/ro-invoices` carries a
+  `payType: CUSTOMER_PAY` + **`subPayType: CVSC`** line separate from the plain
+  `subPayType: CUSTOMER_PAY` line.
+- **Ground truth = the job detail page**, no modal needed. Slice
+  `document.body.innerText` between `"Pay Split By Payer"` and
+  `"Collapse All Operations"` to get the payer rows, amounts, percentages — plus
+  a **Contract Information** panel (Contract No. / Company / Deductible / Expiry)
+  when the payer is a service contract.
+- The CP payer row is labelled **`Deductible`** on VSC jobs. That field is native
+  and contract-bound — see `tekion-vsc-deductible-vs-fee-code` before anyone
+  builds a fee code for a deductible or hardware overage.
+- Loop EVERY covered job. One deductible per claim is normal: the deductible
+  lands on one job and sibling covered jobs correctly show `$0.00 / 0 %`.
+
 ## Step 0 — locate the RO and the right JOB (zero quota, no browser)
 
 Use `tekion-ro-job-paytype-triage` Step 1 to sweep all 7 dealers for the RO number

@@ -1,6 +1,6 @@
 {
- "generated": "2026-08-26T08:00:07",
- "skill_count": 191,
+ "generated": "2026-08-26T08:15:06",
+ "skill_count": 192,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -1007,6 +1007,14 @@
    "path": "automotive/tekion-technician-queue-dispatch",
    "category": "automotive",
    "description": "Explains Tekion's Technician Queue / Claim Work auto-dispatch behavior \u2014 why a tech gets pulled out of the queue when an advisor opens/reopens an RO, and what settings can change that behavior. Use when diagnosing \"why did my tech get grabbed out of queue\" or \"can we stop a tech from being pulled on RO reopen\" questions.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-vsc-deductible-vs-fee-code",
+   "path": "automotive/tekion-vsc-deductible-vs-fee-code",
+   "category": "automotive",
+   "description": "Answer \"we need a deductible fee code\" / \"how do we bill the customer's deductible or hardware overage\" on a Tekion RO covered by a service contract (Fidelity, CVSC, extended warranty). The deductible is a NATIVE field in the pay-type split grid, not a fee \u2014 this skill proves whether it already got collected and explains why a fee code is the wrong fix. Also covers the trap that the OpenAPI CANNOT see the deductible.",
    "times_used": 0,
    "last_used": null
   },

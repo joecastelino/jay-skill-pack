@@ -24,6 +24,14 @@ a one-call sweep that answers it. It also documents the
 `partTrade/u/sale/order/search` pagination trap (`page.from` is IGNORED — every
 page returns the same 20 rows, so multi-hundred-order scans silently lie).
 
+**Also wrong skill?** If someone wants a **NEW fee code created for a service-
+contract deductible or hardware overage** (CVSC / Fidelity / extended warranty),
+STOP — use **`tekion-vsc-deductible-vs-fee-code`**. The deductible is a native
+field in the job's Pay Type Split grid, bound to the contract record; a fee code
+breaks claim reconciliation. It is usually already being collected on the covered
+job while a $0.00 "CUSTOMER TO PAY DEDUCTABLE" placeholder job makes it look
+like it isn't.
+
 ## ⚠️ THE #1 TRAP — `/ro-fees` is NOT the whole story
 
 `GET /repair-orders/{roId}/ro-fees` returns **only RO-LEVEL fees**.
