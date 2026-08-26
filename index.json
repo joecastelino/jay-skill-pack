@@ -1,6 +1,6 @@
 {
- "generated": "2026-08-26T12:45:03",
- "skill_count": 196,
+ "generated": "2026-08-26T13:00:54",
+ "skill_count": 197,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -107,20 +107,20 @@
    "last_used": "2026-08-18"
   },
   {
+   "name": "bc-menu-sales-reports",
+   "path": "automotive/bc-menu-sales-reports",
+   "category": "automotive",
+   "description": "Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards \u2014 Daily Closed (2x/day) and Closed Month-To-Date (1x/day) \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben Estrada (Restrada@blackstonegm.com). This is the GM-store sibling of the SCT/Kevin pipeline (sct-menu-sales-api-scorecard). Use for any \"BC menu report\", \"Blackstone Chevy/Cadillac menu sales\", or Ruben report request.",
+   "times_used": 35,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "sct-alignment-by-advisor-report",
    "path": "automotive/sct-alignment-by-advisor-report",
    "category": "automotive",
    "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
    "times_used": 35,
    "last_used": "2026-08-17"
-  },
-  {
-   "name": "bc-menu-sales-reports",
-   "path": "automotive/bc-menu-sales-reports",
-   "category": "automotive",
-   "description": "Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards \u2014 Daily Closed (2x/day) and Closed Month-To-Date (1x/day) \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben Estrada (Restrada@blackstonegm.com). This is the GM-store sibling of the SCT/Kevin pipeline (sct-menu-sales-api-scorecard). Use for any \"BC menu report\", \"Blackstone Chevy/Cadillac menu sales\", or Ruben report request.",
-   "times_used": 34,
-   "last_used": "2026-08-18"
   },
   {
    "name": "tekion-opcode-api",
@@ -275,6 +275,14 @@
    "last_used": "2026-08-03"
   },
   {
+   "name": "tekion-opcode-create",
+   "path": "automotive/tekion-opcode-create",
+   "category": "automotive",
+   "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
+   "times_used": 10,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "tekion-vi-stock-number-rules-fix",
    "path": "automotive/tekion-vi-stock-number-rules-fix",
    "category": "automotive",
@@ -303,14 +311,6 @@
    "path": "automotive/jay-gmail-draft-verification",
    "category": "automotive",
    "description": "Independently verify a Gmail draft/send that Stacey (email-agent) reports she created \u2014 confirm it's actually in Drafts/Sent with correct recipients, body, and attachments, without trusting her self-report alone. Use whenever Joe asks to \"chase\" or double-check an email Jay routed through Stacey, or when Jay's own Gmail-dependent flow (himalaya/Google API) throws auth errors.",
-   "times_used": 9,
-   "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-opcode-create",
-   "path": "automotive/tekion-opcode-create",
-   "category": "automotive",
-   "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
    "times_used": 9,
    "last_used": "2026-08-26"
   },
@@ -379,6 +379,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-internal-cost-center-gl-routing",
+   "path": "automotive/tekion-internal-cost-center-gl-routing",
+   "category": "automotive",
+   "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
+   "times_used": 7,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "tekion-source-code-parts-scrub",
    "path": "automotive/tekion-source-code-parts-scrub",
    "category": "automotive",
@@ -423,14 +431,6 @@
    "path": "automotive/tekion-deferred-by-advisor-daily",
    "category": "automotive",
    "description": "Build the \"work deferred/declined per DAY, broken down by service advisor\" report for any AMG Tekion store \u2014 advisor ranking + trailing-day trend + per-advisor RO-level detail pages (PNG/PDF/CSV). Zero OpenAPI quota.",
-   "times_used": 6,
-   "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-internal-cost-center-gl-routing",
-   "path": "automotive/tekion-internal-cost-center-gl-routing",
-   "category": "automotive",
-   "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
    "times_used": 6,
    "last_used": "2026-08-26"
   },
@@ -779,6 +779,14 @@
    "last_used": "2026-08-03"
   },
   {
+   "name": "slack-store-thread-cron-retarget",
+   "path": "automotive/slack-store-thread-cron-retarget",
+   "category": "automotive",
+   "description": "Retarget an AMG store's Hermes cron report deliveries to a new Slack thread when Joe says \"can this thread be <store> reports only?\", and sweep the whole fleet for dead channel_not_found cron deliveries.",
+   "times_used": 1,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "tekion-department-opcode-census",
    "path": "automotive/tekion-department-opcode-census",
    "category": "automotive",
@@ -979,10 +987,10 @@
    "last_used": null
   },
   {
-   "name": "slack-store-thread-cron-retarget",
-   "path": "automotive/slack-store-thread-cron-retarget",
+   "name": "tekion-appointment-source-audit",
+   "path": "automotive/tekion-appointment-source-audit",
    "category": "automotive",
-   "description": "Retarget an AMG store's Hermes cron report deliveries to a new Slack thread when Joe says \"can this thread be <store> reports only?\", and sweep the whole fleet for dead channel_not_found cron deliveries.",
+   "description": "Answer \"why do appointments from vendor X show as Integration / can we relabel the appointment source\" and audit appointment volume by source (BDC, Consumer, Walk-in, Integration/Open API, AI) per store. Covers Tekion's fixed appointmentSource\u2192category enum, the internal /api/scheduling/u/appointment/search aggregation API, and how to identify which vendor is behind an Integration bucket.",
    "times_used": 0,
    "last_used": null
   },
