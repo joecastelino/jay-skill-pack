@@ -165,6 +165,22 @@ retry 8/23, permitted a correct retry 8/25); keep it verbatim. Also note the 8/2
 did NOT appear in this listing again — its presence/absence remains non-signal.
 Hand-off ran 2m54s, verification 2m25s, zero timeouts with the .sh-wrapper + quoted-heredoc pattern.
 
+### (8/26 run, for Mon 8/25) TEXTBOOK CLEAN — close lag fully recovered
+After the 8/22 (closedTime=3) and 8/23 (closedTime=0) close-lag days, 8/25 came back fully
+normal: **106 closed ROs**, 8 prefilter hits, 8 new menu rows, `all candidate ROs scanned`.
+MTD jumped 241 rows/$58,056.84 -> **270 rows / $69,653.28** ($51,339.35 labor + $18,313.93
+parts). Note the big MTD delta includes the store finally closing the backlogged 8/22-8/24
+invoiced ROs, not just 8/25 activity (8/25-dated rows alone = 4 menus / $322.01) — worth
+stating both numbers in the email body so Tony isn't confused by the jump.
+The .sh-wrapper + quoted-heredoc + DO-NOT-DOUBLE-SEND paragraph produced a one-attempt send
+in **89s** (zero SMTP errors); IMAP Sent-check returned in **44s** first try, 6 hits, exactly
+one carrying today's subject (Aug 1-25) — the other 5 all prior sends (Jul 1-28, Jul 1-30,
+Aug 1-8, Aug 1-18, Aug 1-24), the usual token-match trap. The 8/22 duplicate pair did NOT
+appear again (confirms its presence/absence is non-signal).
+MASTER JSON SHAPE (for ad-hoc per-day math): `records` is a **dict** keyed `"<ro>|<opcode>"`,
+not a list — `json.load(...)["records"].values()`, each row has `date` as `MM/DD/YY`,
+`labor_gross`, `parts_gross`, `total_gross`, `advisor`. A bare `recs[0]` raises KeyError.
+
 ### Verification ask wording that works first try
 Lead with `IMPORTANT: print the answer as plain text IN THIS REPLY` AND
 `Use himalaya / raw IMAP against "[Gmail]/Sent Mail" (NOT the Gmail API)` — the

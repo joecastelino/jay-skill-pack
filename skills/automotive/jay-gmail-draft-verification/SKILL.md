@@ -260,6 +260,58 @@ NOTE: target folder is a POSITIONAL arg, not `-t`/`--target` (that errors
 Drafts after to confirm only the intended one remains before telling Joe it's
 ready for review.
 
+## Stacey's self-reported UID is frequently a SEQUENCE NUMBER (verified 2026-08-26)
+She reported `DRAFT_UID=80`; the real IMAP UID was **42675**. Don't treat a suspiciously low
+number as evidence of a phantom draft (see the phantom-42420 section above) — resolve it yourself.
+The raw fetch response shows both, and the distinction is explicit:
+```python
+t, d = M.uid('fetch', '42675', '(X-GM-LABELS FLAGS)')
+# b'80 (X-GM-LABELS () UID 42675 FLAGS (\\Draft))'
+#   ^^ sequence number          ^^^^^ the real UID
+```
+Always find the draft by CONTENT, never by her reported id:
+```python
+M.select('"[Gmail]/Drafts"', readonly=True)
+t, d = M.uid('search', 'CHARSET', 'UTF-8', 'X-GM-RAW', '"subject:\\"%s\\""' % SUBJ)
+uids = d[0].split()      # the authoritative UID(s)
+```
+`CHARSET','UTF-8'` must precede `X-GM-RAW` or Gmail returns `BAD Could not parse command`.
+Note `X-GM-LABELS ()` being EMPTY on a draft is normal — `FLAGS (\Draft)` is the ground truth
+for draft status; an empty label set is not a red flag.
+
+Sweep four folders in one pass so "where did it go" is answered in a single step —
+Drafts (should be 1), Sent Mail (must be 0), All Mail (1, the same message), Trash (0):
+```python
+for f in ["[Gmail]/Drafts","[Gmail]/Sent Mail","[Gmail]/All Mail","[Gmail]/Trash"]:
+    M.select(f'"{f}"', readonly=True); ...
+```
+
+## Verifying an inline-CID report email — one-pass checklist
+Walking the MIME tree once yields every check the deferred/menu report asks for. Collect
+attachment payloads into a dict keyed by filename, then byte-compare against your local sources:
+```python
+attach = {}
+for p in msg.walk():
+    if p.get_content_maintype() == 'multipart': continue
+    payload = p.get_payload(decode=True) or b''
+    print(p.get_content_type(), len(payload), p.get('Content-ID'),
+          p.get_content_disposition(), p.get_filename())
+    if p.get_content_type() == 'text/html': html = payload.decode('utf-8','replace')
+    attach[p.get_filename() or p.get_content_type()] = payload
+
+assert 'data:image' not in html and 'cid:scorecard' in html
+assert len(html) < 10_000          # CID body ~2-4KB; ~180KB means a data: URI slipped in
+for ext in ('png','pdf','csv'):
+    local = open(f'{base}.{ext}','rb').read()
+    print(ext, [k for k,v in attach.items() if v == local])   # must be non-empty
+```
+A correct tree prints exactly: `multipart/mixed → multipart/related → multipart/alternative →
+text/plain, text/html, image/png (cid=<scorecard>, disp=inline), application/pdf (attachment),
+text/csv (attachment)`. Stacey labels the CSV `text/csv` or `application/csv` — both fine.
+Also strip tags from the HTML (`re.sub(r'<[^>]+>',' ',html)`) and assert the greeting, the
+headline total, and any required caveat text are literally present — a structurally perfect
+draft can still be missing a requested sentence.
+
 ## Pitfalls
 - **A "missing" draft may just be Joe trashing it himself** (2026-08-18) — when
   Joe says "I don't see it in Drafts," don't assume Stacey's bridge call failed

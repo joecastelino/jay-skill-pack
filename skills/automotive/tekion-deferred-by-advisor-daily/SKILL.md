@@ -22,6 +22,44 @@ Headers from `/tmp/tekion_rec_headers.json` (see `tekion-declined-deferred-servi
 passive XHR-hook re-capture). Store switch = swap `dealerId` + `tek-siteId: -1_<id>` only.
 $ are **CENTS** → /100. Offset pagination is fine at day granularity (<10K rows).
 
+### STEP ZERO-0: TRY THIS FIRST — token from the canonical session file (verified 2026-08-26)
+**Cheapest and most reliable 401 fix. Beats STEP ZERO-A because it does not require `:9223` to be
+logged in at all.** `login.py` maintains the canonical session file, and its `t_token` is a full
+untruncated 536-char string on disk — no `/eval` slicing, no SPA driving, no browser dependency:
+
+```python
+import json, shutil
+sess = json.load(open("/home/itadmin/caliber-ops/scripts/.tekion-session.json"))
+hp = "/tmp/tekion_rec_headers.json"
+shutil.copy(hp, hp + ".bak")            # keep a rollback
+h = json.load(open(hp))
+h["tekion-api-token"] = sess["t_token"] # ONLY this key
+json.dump(h, open(hp, "w"), indent=1)
+```
+Same TRAP as ZERO-A applies: change **only** `tekion-api-token`. Leave `userId`/`original-userid`
+= `8cc203af-a87e-4fd7-8090-745a0ffa2339`, `roleId` = `656e21e547e83861236c5e0c`,
+`tenantname` = `americanmotorscorporation` untouched; the script sets `dealerId`/`tek-siteId` itself
+(the stale file may show a *different* store's dealerId, e.g. 876/SCT — harmless, don't "fix" it).
+
+Sanity-check both tokens by decoding the JWT `exp` before merging — the session file's token is
+often FRESHER than the header file's, which is exactly why the pull was 401ing:
+```python
+import base64, json, time
+def exp(t):
+    b = t.split(".")[1]; b += "=" * (-len(b) % 4)
+    return json.loads(base64.urlsafe_b64decode(b))["exp"] - time.time()   # seconds of headroom
+```
+Refresh the session file first if needed: `$VPY /home/itadmin/tekion-auth/login.py` (prints
+`REUSED` if already alive — ~0.4s, no OTP). `VPY=/home/itadmin/.hermes/hermes-agent/venv/bin/python3.11`.
+
+**When ZERO-A is unavailable (hit 2026-08-26):** `:9223` can be *healthy* (`/health` = ok) yet
+fully **logged out** — `/pages` showed a single tab on `https://app.tekioncloud.com/login?redirectTo=...`
+and `localStorage.t_token.length` returned **0**, with `t_apmAutnToken` also empty and only
+`persist:primary` (71 B, `LoginReducer:{}`) left. There is no token to read, so ZERO-A and the
+ZERO-B hook are both dead ends. Do NOT start an OTP re-login for this report — the session file
+was valid the whole time (token exp ~29 days out). Total recovery via ZERO-0: ~30s, zero OTP.
+Order of attack: **ZERO-0 → ZERO-A → ZERO-B (hook)**.
+
 ### STEP ZERO-A: FASTEST 401 fix — read the token straight out of localStorage (verified 2026-08-25)
 **Skip the XHR hook entirely.** The only header that actually expires is `tekion-api-token`;
 everything else in `/tmp/tekion_rec_headers.json` is static. Pull the live token from the
@@ -88,6 +126,14 @@ Name at `userNameDetails.completeNames[DISPLAY_NAME]`. Write new ids back to `ad
 Note some ids resolve to non-advisor personas (e.g. BC `8c0d2da8…` = Dale Alexander, INVENTORY_MANAGER)
 — they still carry deferred lines as RO primary advisor; keep them but don't assume they're writers.
 
+## Reference run (BC / 1251, Tue 8/25/2026)
+36 declined lines · 11 ROs · $20,443.83 · **29 Critical (81% — unusually high vs 9/43 on Mon 8/24)**.
+Dale Alexander #1 with 75% of the dollars ($15,368.31 / 24 lines / 4 ROs) — the non-advisor
+INVENTORY_MANAGER persona topping the ranking, led by RO 101427 (2007 Nissan Frontier, rear diff
+seal + axle shaft, Critical, ~$6K). Then Jacob Debussey $3,614.22, Michael Reyes $1,322.09,
+Erik Mercado $139.21. Only 4 advisors and 11 ROs — lowest weekday RO count in the trailing 7,
+but a legitimate day, not a pull shortfall. Draft UID 42675. PDF = 5 pages (summary + 4 advisor).
+
 ## Reference run (BC / 1251, Mon 8/24/2026)
 43 declined lines · 22 ROs · $35,836.63 · 9 Critical. Jacob Debussey #1 ($13,731.77 / 2 lines / 2 ROs)
 — driven by a single RO 101776 (2016 Corvette, differential carrier assembly, $12,234.84). Then
@@ -148,7 +194,18 @@ thread. Sundays return 0 → job reports `[SILENT]` and creates no email.
 Joe asked for 6 AM (he's up by 4) — not the 7:30 AM originally proposed below.
 
 ## Pitfalls
-is STALE, not missing.** (Pre-cron history; since
+- **Stacey's reported `DRAFT_UID` is often a SEQUENCE NUMBER, not the IMAP UID** (2026-08-26):
+  she reported `DRAFT_UID=80` for a draft whose real UID was **42675**. The raw fetch response
+  makes it obvious: `b'80 (X-GM-LABELS () UID 42675 FLAGS (\Draft))'` — the leading `80` is the
+  sequence number, `UID 42675` is the truth. Never quote her number to Joe; always resolve the
+  real UID yourself via `X-GM-RAW` subject search and report that. Her other self-report tokens
+  (CID_PNG, HTML_BYTES, IN_DRAFTS) have been accurate. Also expect her to mangle underscores in
+  token names (`DATAURIIN_HTML`) — formatting only, not a failed field.
+- **Report `Critical` from the JSON, not the renderer.** Count `severity == "CRITICAL"` across
+  every advisor's `detail` array (keys are `advisor`/`lines`/`ros`/`amt`/`detail`, and
+  `advisorId` — NOT `name`/`amount`/`total`; guessing key names yields a row of `None`s).
+  Cross-check against the PDF page-1 "FLAGGED CRITICAL" tile — they must match (29 = 29).
+- **A draft Joe "can't find" in Gmail is usually STALE, not missing.** (Pre-cron history; since
   2026-08-25 job `d0bfeeef5851` produces one every 6 AM, so a missing draft now means the CRON
   failed — check its log/delivery before hand-running.) Gmail sorts Drafts by
   creation date, so a days-old draft sits ~13 rows down under the menu-sales drafts and Joe
