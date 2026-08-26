@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-26T14:30:30",
+ "generated": "2026-08-26T14:45:44",
  "skill_count": 198,
  "skills": [
   {
@@ -31,7 +31,7 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 79,
+   "times_used": 81,
    "last_used": "2026-08-26"
   },
   {
@@ -39,7 +39,7 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 70,
+   "times_used": 72,
    "last_used": "2026-08-26"
   },
   {
@@ -163,20 +163,20 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-declined-deferred-services-report",
+   "path": "automotive/tekion-declined-deferred-services-report",
+   "category": "automotive",
+   "description": "Pull declined/deferred services (recommendations customers said no to) for any/all AMG Tekion stores via the internal recommendation/search reporting API. Powers \"most declined service\", declined-services marketing lists (with customer phone/email), and deferred-dollars opportunity reports. Zero OpenAPI quota.",
+   "times_used": 22,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "tekion-vi-api-migration",
    "path": "automotive/tekion-vi-api-migration",
    "category": "automotive",
    "description": "Migrate the Vehicle Inventory (\"The Goods\") browser scraper to the Tekion OpenAPI (vehicle-inventory:search) producing per-store JSON that byte-matches the legacy schema. Covers field mapping, the SOLD-pending rule, Pacific-tz dates, rate-limit discipline, and the Don coordination/cutover handoff.",
    "times_used": 22,
    "last_used": "2026-07-12"
-  },
-  {
-   "name": "tekion-declined-deferred-services-report",
-   "path": "automotive/tekion-declined-deferred-services-report",
-   "category": "automotive",
-   "description": "Pull declined/deferred services (recommendations customers said no to) for any/all AMG Tekion stores via the internal recommendation/search reporting API. Powers \"most declined service\", declined-services marketing lists (with customer phone/email), and deferred-dollars opportunity reports. Zero OpenAPI quota.",
-   "times_used": 20,
-   "last_used": "2026-08-26"
   },
   {
    "name": "tekion-ro-close-blocked-triage",
@@ -201,6 +201,14 @@
    "description": "Set Default-tab labor pricing and add parts to a Tekion opcode in the opcodeManagementV2 UI. Covers reaching the edit page, the V2 flat-form layout, setting the dollar rate via the Customer/Manufacturer spinbuttons, adding parts via react-select (bare-number-first search), and the incremental Save Draft pattern that the browser tool requires. This is the SIMPLE common case \u2014 for vehicle/part override rows use tekion-opcode-overrides.",
    "times_used": 15,
    "last_used": "2026-08-21"
+  },
+  {
+   "name": "tekion-part-sales-ledger-report",
+   "path": "automotive/tekion-part-sales-ledger-report",
+   "category": "automotive",
+   "description": "Build a \"parts sold\" report (e.g. tires) for any Tekion store and period with ACTUAL invoiced dollars, split RO vs Sales Order (counter), by counterperson, from the internal part transaction ledger (activity-log API) \u2014 zero OpenAPI quota. Use when Joe asks \"how many X did we sell\" for a parts category, or when the OpenAPI quota is exhausted and RO-level pulls are blocked.",
+   "times_used": 14,
+   "last_used": "2026-08-26"
   },
   {
    "name": "tekion-parts-autoorder-diagnosis",
@@ -231,14 +239,6 @@
    "path": "automotive/hermes-agent-provider-switch",
    "category": "automotive",
    "description": "Diagnose why an AMG agent (Walter II, Don, Ralph, Stacey, etc.) is dead/unresponsive on an LLM-billing error, and switch it from OpenRouter to the ChatGPT-Team Codex OAuth provider. Use when an agent boots but can't reply, an ask-agent ping returns an HTTP 402 (out of credits) or 400 (unsupported model), or OpenRouter credits are exhausted. Covers the read_file API-key-masking landmine and how to discover the account's valid Codex model names.",
-   "times_used": 12,
-   "last_used": "2026-08-18"
-  },
-  {
-   "name": "tekion-part-sales-ledger-report",
-   "path": "automotive/tekion-part-sales-ledger-report",
-   "category": "automotive",
-   "description": "Build a \"parts sold\" report (e.g. tires) for any Tekion store and period with ACTUAL invoiced dollars, split RO vs Sales Order (counter), by counterperson, from the internal part transaction ledger (activity-log API) \u2014 zero OpenAPI quota. Use when Joe asks \"how many X did we sell\" for a parts category, or when the OpenAPI quota is exhausted and RO-level pulls are blocked.",
    "times_used": 12,
    "last_used": "2026-08-18"
   },
@@ -595,6 +595,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-generic-placeholder-part-swap",
+   "path": "automotive/tekion-generic-placeholder-part-swap",
+   "category": "automotive",
+   "description": "Replace a specific auto-populating part (e.g. a BG or WS transmission fluid) on Tekion opcodes and menu included-services with a GENERIC placeholder part (e.g. \"Transmission Fluid\") that has NO inventory/parts-master record, preserving exact pricing. Use when a menu/opcode estimates the wrong specific part for some vehicles and Parts should substitute the real part at RO time. Verified end-to-end at Blackstone Toyota (BT, dealer 1249) 2026-07-20 across 5 fluid lines.",
+   "times_used": 3,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "tekion-menu-custom-price-row",
    "path": "automotive/tekion-menu-custom-price-row",
    "category": "automotive",
@@ -835,14 +843,6 @@
    "last_used": "2026-07-30"
   },
   {
-   "name": "tekion-generic-placeholder-part-swap",
-   "path": "automotive/tekion-generic-placeholder-part-swap",
-   "category": "automotive",
-   "description": "Replace a specific auto-populating part (e.g. a BG or WS transmission fluid) on Tekion opcodes and menu included-services with a GENERIC placeholder part (e.g. \"Transmission Fluid\") that has NO inventory/parts-master record, preserving exact pricing. Use when a menu/opcode estimates the wrong specific part for some vehicles and Parts should substitute the real part at RO time. Verified end-to-end at Blackstone Toyota (BT, dealer 1249) 2026-07-20 across 5 fluid lines.",
-   "times_used": 1,
-   "last_used": "2026-07-20"
-  },
-  {
    "name": "tekion-labor-time-guide",
    "path": "automotive/tekion-labor-time-guide",
    "category": "automotive",
@@ -873,6 +873,14 @@
    "description": "Audit, diagnose, and repair the Tekion scraper pipeline including OTP fetching, session reuse, lock starvation, and Puppeteer navigation timeouts.",
    "times_used": 1,
    "last_used": "2026-08-05"
+  },
+  {
+   "name": "tekion-recommendation-part-not-found-diagnosis",
+   "path": "automotive/tekion-recommendation-part-not-found-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose \"Parts can only hit Create for the part number when we have N in stock\" / \"the part won't populate on a recommendation\" in Tekion. Root-causes the empty part line on an MPI recommendation or estimate back to a free-text placeholder part on the opcode plus the OEM-description search trap. Verified TL (dealer 1092) RO 398792 cabin filter, 2026-08-26.",
+   "times_used": 1,
+   "last_used": "2026-08-26"
   },
   {
    "name": "tekion-tech-clock-time-by-opcode",
@@ -1047,14 +1055,6 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tekion-recommendation-part-not-found-diagnosis",
-   "path": "automotive/tekion-recommendation-part-not-found-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose \"Parts can only hit Create for the part number when we have N in stock\" / \"the part won't populate on a recommendation\" in Tekion. Root-causes the empty part line on an MPI recommendation or estimate back to a free-text placeholder part on the opcode plus the OEM-description search trap. Verified TL (dealer 1092) RO 398792 cabin filter, 2026-08-26.",
    "times_used": 0,
    "last_used": null
   },
