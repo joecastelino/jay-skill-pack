@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-26T13:15:21",
+ "generated": "2026-08-26T13:30:29",
  "skill_count": 197,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 152,
+   "times_used": 153,
    "last_used": "2026-08-26"
   },
   {
@@ -67,6 +67,14 @@
    "last_used": "2026-08-18"
   },
   {
+   "name": "tekion-autonomous-login",
+   "path": "automotive/tekion-autonomous-login",
+   "category": "automotive",
+   "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
+   "times_used": 40,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "tekion-ghost-bin-negative-onhand",
    "path": "automotive/tekion-ghost-bin-negative-onhand",
    "category": "automotive",
@@ -81,14 +89,6 @@
    "description": "Diagnose a Tekion Service Menu pricing problem (e.g. \"a rotation is charging $449.45\") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLODE the menu into individual opcodes using the \"Add Menu Services as separate operations\" setting to find which opcode carries the bad price and its labor-rate method (Fixed vs Service Catalog Pro Dynamic Pricing). Use when Joe flags a wrong/inflated price on a maintenance menu line for a specific RO/vehicle.",
    "times_used": 40,
    "last_used": "2026-08-21"
-  },
-  {
-   "name": "tekion-autonomous-login",
-   "path": "automotive/tekion-autonomous-login",
-   "category": "automotive",
-   "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
-   "times_used": 39,
-   "last_used": "2026-08-26"
   },
   {
    "name": "tekion-kb-search-scrape",
@@ -331,6 +331,14 @@
    "last_used": "2026-07-15"
   },
   {
+   "name": "tekion-internal-cost-center-gl-routing",
+   "path": "automotive/tekion-internal-cost-center-gl-routing",
+   "category": "automotive",
+   "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
+   "times_used": 8,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "tekion-menu-missing-services-diagnosis",
    "path": "automotive/tekion-menu-missing-services-diagnosis",
    "category": "automotive",
@@ -375,14 +383,6 @@
    "path": "automotive/tekion-fee-not-showing-diagnosis",
    "category": "automotive",
    "description": "Diagnose \"the store can't see / isn't getting charged fee X\" in Tekion \u2014 e.g. \"SCT isn't seeing fees 1TIRE 2TIRE 3TIRE 4TIRE\". Covers the Fee Management v3 API (list + per-fee detail), the ADD_TO_RO (\"Allow to Add at RO Level\") flag that controls whether a fee appears in the RO fee dropdown, opcode\u2192fee attachment, and how to prove whether a fee is actually landing on real ROs. Use for any Tekion fee visibility, fee-not-auto-applying, or fee-attach-rate question.",
-   "times_used": 7,
-   "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-internal-cost-center-gl-routing",
-   "path": "automotive/tekion-internal-cost-center-gl-routing",
-   "category": "automotive",
-   "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
    "times_used": 7,
    "last_used": "2026-08-26"
   },
