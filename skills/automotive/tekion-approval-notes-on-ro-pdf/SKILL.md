@@ -499,5 +499,53 @@ PDF. So the section likely counts only completed/approved requests —
 3. **Check identity before declaring data missing.** `(0)` vs `(9)` was a permissions/
    persona artifact, not absent data.
 
+## Getting the comment ONTO the RO — write-path probe (2026-08-26, TL 398624)
+
+Question: "get the approval comment onto the RO — internal note, RO note, RO media, somewhere."
+
+### Public OpenAPI cannot write ANY RO note. Verified, not assumed.
+- `GET /repair-orders/{id}/internal-notes` → **200** (works, returns `[]` on this RO).
+- `POST /repair-orders/{id}/internal-notes` → **404** with `{}` AND with a bogus body.
+  404 (not 403/400) = **the method does not exist**. Read-only endpoint.
+- `GET /external-notes`, `/ro-external-notes`, `/notes` → all **404**.
+- No `*extern*` spec file exists in the 270-endpoint spec dump. There is **no public
+  external-notes endpoint at all**, read or write.
+- Grepping all specs for POST/PUT/PATCH + note/comment returns only **crm-leads**
+  (`create-lead-notes`, `update-lead-note`) and deals/customer — **nothing on repair-orders.**
+
+So any note-writing automation MUST use an internal `/api/service-module/...` endpoint
+driven from an authenticated browser, exactly like `arcapproval/u/approval/search`.
+
+### App-version bump DID land (2026-08-26)
+Endpoints that were 403 `"app version 0.0.0-pilot-2.0.0 does not support this API"`
+now return 200 at TL: **`/recommendations`**, **`/ro-warranty-claims`**,
+**`/internal-notes`** (GET). Re-probe others before assuming a block.
+
+### The comment is NOT anywhere in the public RO tree
+Brute-forced **49 endpoints** on RO 398624 — root, `/internal-notes`, `/recommendations`,
+`/pricing`, `/ro-invoices`, `/ro-fees`, `/ro-coupons`, `/ro-vehicle`, all 7 jobs +
+`/job-fees` + `/job-sublets`, every operation + `/parts`, and every recommendation's
+`/operations`. `"SEAN IS RAD"` appears in **none**. Only `arcapproval` has it.
+
+### Ranked target surfaces
+| Surface | Prints on PDF? | Write path | Status |
+|---|---|---|---|
+| **Recommendation approval `Note`** | ✅ YES — R&I Warranty prints the FULL chronological trail w/ $ deltas | advisor types it at approval time | **works today, zero build** — process fix |
+| **RO External Notes** | ✅ row exists on R&I PDFs (`RO External Notes`, **OFF** at TL) | internal endpoint, undiscovered | needs browser recon |
+| **RO Internal Note** | ❌ no Body row found on any PDF | internal endpoint, undiscovered | UI-visible only |
+| **RO media** | `Inspection Media` row exists | unknown | unverified |
+| VI media API | ❌ wrong object | `POST /vehicle-inventory/{id}/media` | **NOT the RO** — vehicle-inventory photos, URL-reference model |
+
+`notes.mediaIds` on the arcapproval note object implies approval attachments live in
+arcapproval, not on the RO.
+
+### Recon command when the browser frees up
+```js
+[...new Set(performance.getEntriesByType('resource').map(r=>r.name)
+  .filter(u=>/note/i.test(u)))]
+```
+Type an RO note in the UI first, then read the timeline — same technique that found
+`/api/arcapproval/u/approval/search`.
+
 ## Cross-references
 `tekion-service-settings`, `tekion-kb-search-scrape`, `tekion-sitemap`.
