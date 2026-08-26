@@ -1117,6 +1117,29 @@ MTD Sent count 0 (the single `BC 8/25` Sent hit was Stacey's separate auto-sent
 Daily Opened report, 14517). Left the sibling Daily Closed 8/25 draft (42669)
 untouched — different report type, not a duplicate.
 
+## 2026-08-26 noon Daily Closed run — textbook one-shot, 23rd consecutive clean "N dollars" build
+7 menus, $640.84 labor / $490.65 parts = $1,131.49 (Jacob Debussey 4 / $352.46,
+Humberto Dominguez 3 / $779.03 — only two advisors on the board). 40 closed ROs → 7
+carried TEK menu opcodes; `✓ all candidate ROs scanned`; vision-verified KPI band
+(crop 460px + 2x LANCZOS) matched JSON exactly. Pull ran via
+`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
+Stacey's build: `execute_code` + `subprocess.run` argument list wrapped in
+`timeout 600` → returned cleanly in **59s** (fastest Daily build logged), no
+exit-124, no recovery probe, no self-correction text → no duplicate (pattern
+holds). Terse DONE line correct with `TOTAL=$1,131.49` and her reported id (42696)
+MATCHED himalaya's. Verified via the stdlib-`email` parser: To=Restrada, Cc real
+None, From=Joe, Subject auto-decoded with em-dashes, inline PNG **byte-for-byte
+identical** (118,981 bytes), PDF **byte-for-byte identical** (53,406 bytes), all 5
+figures present exactly once, `<b>$1,131.49</b>` bold, greeting + footer present,
+zero ' dollars'/USD leftovers (checked after stripping the data URI), and per the
+8/25 5pm `$037.72` lesson explicitly checked the leading-digit-stripped variants
+($131.49, $1.49): both zero. Exactly 1 draft, Daily-Closed Sent count 0 (the single
+`BC 8/26` Sent hit was Stacey's separate auto-sent Daily Opened report, 14573). No
+stale prior 8/26 draft to clean up (noon run = first of the day). The explicit
+"dollar sign goes before the FIRST digit including the thousands comma, verify the
+char after the $ is the digit 1" instruction is now standard on every ask where the
+total exceeds 1,000 — 2nd consecutive run with zero regex corruption since adding it.
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.

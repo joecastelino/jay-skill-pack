@@ -973,6 +973,25 @@ A bare `set(json.load(...))` raises `TypeError: unhashable type: 'dict'`.
 Drafts stack tiny (6): 08/21-08/25 hyphen-subject Opened drafts + the perennial 08/02 em-dash
 one (UID 20).
 
+## (8/26 12:05PM, Opened) TEXTBOOK CLEAN RUN — $0 streak BROKEN at 6 days
+Hand-off returned in 189s (no exit-124), draft correct FIRST TRY, no dedupe needed (0 prior
+drafts with today's exact subject). All 3 verification asks returned FIRST try and FAST with
+"use raw IMAP, NOT the Gmail API" leading + parts-only part-listing wording: subject-list 25s,
+MIME part-listing 36s, Sent-check 37s. MIME clean: multipart/mixed > related >
+alternative(text/plain+text/html) + image/png Content-ID=<scorecard> + application/pdf.
+BOGUS-UID VARIANT recurred mildly: save confirmation said "Draft ID 42695", subject-list said
+UID 82; part-listing resolved it by subject and reported UID 42695 with correct MIME. Standing
+`UID N (subject "<exact>") ... if that UID is wrong, find it by that exact subject instead`
+wording self-heals it again. Sent-check = 4 hits, all old em-dash-era sends (06/30-07/03),
+zero today = no leak.
+DATA: 103 opened ROs scanned, **1 menu / $114.48** ($55.52 labor + $58.96 parts), advisor
+Gustavo Alatorre, RO 398771, TEK50000BNM on a 2025 Camry. This ENDS the six-consecutive-$0
+opened-day streak (8/23 noon - 8/25 EOD) — good news to report to Joe alongside the standing
+escalation. Note the JSON's `totals.parts_price` ($130.43) differs from `parts_gross` ($58.96);
+the scorecard/KPI + email use PARTS GROSS — use gross, not price.
+Drafts stack = 13 TOL total (08/21-08/26 Opened & Closed pairs + the perennial 08/02 em-dash
+pair UIDs 19/20) — no true dupes.
+
 ## (8/25 8:05PM, Closed MTD) TEXTBOOK CLEAN RUN — zero exit-124s, CORRECT UID, 4th zero-delta day
 Hand-off returned in 76s (no timeout), draft UID 42674 correct FIRST TRY, and the reported UID
 was CORRECT (part-listing found it directly — no bogus-ID self-correction needed). All 3

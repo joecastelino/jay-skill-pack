@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-26T12:15:02",
+ "generated": "2026-08-26T12:30:40",
  "skill_count": 196,
  "skills": [
   {
@@ -307,6 +307,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-opcode-create",
+   "path": "automotive/tekion-opcode-create",
+   "category": "automotive",
+   "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
+   "times_used": 9,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "tekion-roles-permissions",
    "path": "automotive/tekion-roles-permissions",
    "category": "automotive",
@@ -371,14 +379,6 @@
    "last_used": "2026-08-26"
   },
   {
-   "name": "tekion-opcode-create",
-   "path": "automotive/tekion-opcode-create",
-   "category": "automotive",
-   "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
-   "times_used": 7,
-   "last_used": "2026-08-18"
-  },
-  {
    "name": "tekion-source-code-parts-scrub",
    "path": "automotive/tekion-source-code-parts-scrub",
    "category": "automotive",
@@ -423,6 +423,14 @@
    "path": "automotive/tekion-deferred-by-advisor-daily",
    "category": "automotive",
    "description": "Build the \"work deferred/declined per DAY, broken down by service advisor\" report for any AMG Tekion store \u2014 advisor ranking + trailing-day trend + per-advisor RO-level detail pages (PNG/PDF/CSV). Zero OpenAPI quota.",
+   "times_used": 6,
+   "last_used": "2026-08-26"
+  },
+  {
+   "name": "tekion-internal-cost-center-gl-routing",
+   "path": "automotive/tekion-internal-cost-center-gl-routing",
+   "category": "automotive",
+   "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
    "times_used": 6,
    "last_used": "2026-08-26"
   },
@@ -497,14 +505,6 @@
    "description": "Fix an AMG Hermes agent that is silent on Slack because its SLACK_BOT_TOKEN/SLACK_APP_TOKEN are missing or wrong in the profile .env \u2014 including recovering LOST tokens from old session transcripts without asking Joe to regenerate them at api.slack.com. Use when an agent's service is running but it never answers Slack messages (Autumn case, 2026-07-14).",
    "times_used": 4,
    "last_used": "2026-07-14"
-  },
-  {
-   "name": "tekion-internal-cost-center-gl-routing",
-   "path": "automotive/tekion-internal-cost-center-gl-routing",
-   "category": "automotive",
-   "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
-   "times_used": 4,
-   "last_used": "2026-08-26"
   },
   {
    "name": "tekion-journal-entry-error-diagnosis",
@@ -675,6 +675,14 @@
    "last_used": "2026-08-05"
   },
   {
+   "name": "tekion-department-opcode-buildout",
+   "path": "automotive/tekion-department-opcode-buildout",
+   "category": "automotive",
+   "description": "Derive the complete opcode list a Tekion department (UCD/Used Car, PDI, Express, Body Shop) actually uses over a period, split it into already-correctly-tagged vs shared-with-other-departments, and produce a build sheet of new department-scoped opcodes so ONE Service-Type GL mapping row captures all of that department's internal spend.",
+   "times_used": 2,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "tekion-labor-rate-create",
    "path": "automotive/tekion-labor-rate-create",
    "category": "automotive",
@@ -769,14 +777,6 @@
    "description": "Pull the ToyotaCare (TAC) billed-hours number from Tekion's Advisor Performance report (Reports module) for SCT or any store, using Joe's saved TAC/ToyotaCare filter \u2014 and roll it out to the other 6 AMG stores. Use when Joe asks for ToyotaCare / TAC billed hours, or is building his monthly SCT fixed-ops sheet (\"first number, Toyota Care\").",
    "times_used": 1,
    "last_used": "2026-08-03"
-  },
-  {
-   "name": "tekion-department-opcode-buildout",
-   "path": "automotive/tekion-department-opcode-buildout",
-   "category": "automotive",
-   "description": "Derive the complete opcode list a Tekion department (UCD/Used Car, PDI, Express, Body Shop) actually uses over a period, split it into already-correctly-tagged vs shared-with-other-departments, and produce a build sheet of new department-scoped opcodes so ONE Service-Type GL mapping row captures all of that department's internal spend.",
-   "times_used": 1,
-   "last_used": "2026-08-26"
   },
   {
    "name": "tekion-department-opcode-census",
