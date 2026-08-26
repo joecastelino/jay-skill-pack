@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-26T13:45:03",
+ "generated": "2026-08-26T14:00:22",
  "skill_count": 197,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 153,
+   "times_used": 154,
    "last_used": "2026-08-26"
   },
   {
@@ -59,20 +59,20 @@
    "last_used": "2026-08-18"
   },
   {
+   "name": "tekion-autonomous-login",
+   "path": "automotive/tekion-autonomous-login",
+   "category": "automotive",
+   "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
+   "times_used": 41,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "sct-menu-sales-api-scorecard",
    "path": "automotive/sct-menu-sales-api-scorecard",
    "category": "automotive",
    "description": "Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters to the frozen 316 TEK* maintenance opcodes, resolves advisor names via the persistent browser session on :9223, renders a light-format PNG+PDF scorecard, vision-verifies, and emails. Use for the daily Menu Sales Opened Performance Report cron.",
    "times_used": 40,
    "last_used": "2026-08-18"
-  },
-  {
-   "name": "tekion-autonomous-login",
-   "path": "automotive/tekion-autonomous-login",
-   "category": "automotive",
-   "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
-   "times_used": 40,
-   "last_used": "2026-08-26"
   },
   {
    "name": "tekion-ghost-bin-negative-onhand",
@@ -251,6 +251,14 @@
    "last_used": "2026-08-03"
   },
   {
+   "name": "tekion-opcode-create",
+   "path": "automotive/tekion-opcode-create",
+   "category": "automotive",
+   "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
+   "times_used": 11,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "tekion-parts-appointments-recalls-only",
    "path": "automotive/tekion-parts-appointments-recalls-only",
    "category": "automotive",
@@ -273,14 +281,6 @@
    "description": "Pull Tekion Standard Reports from the REPORTS module (/core/reports) via the :9223 authenticated browser \u2014 especially the fixed-ops performance suite (Advisor Performance, Tech Performance / proficiency = assigned-billed vs attendance hours). Covers the filter funnel (Flag Date range, Make filter), Group By, and Export. Use when Joe wants advisor/tech performance numbers, or ANY report that is NOT a custom Report Builder report.",
    "times_used": 11,
    "last_used": "2026-08-03"
-  },
-  {
-   "name": "tekion-opcode-create",
-   "path": "automotive/tekion-opcode-create",
-   "category": "automotive",
-   "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
-   "times_used": 10,
-   "last_used": "2026-08-26"
   },
   {
    "name": "tekion-vi-stock-number-rules-fix",
@@ -315,6 +315,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-internal-cost-center-gl-routing",
+   "path": "automotive/tekion-internal-cost-center-gl-routing",
+   "category": "automotive",
+   "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
+   "times_used": 9,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "tekion-roles-permissions",
    "path": "automotive/tekion-roles-permissions",
    "category": "automotive",
@@ -329,14 +337,6 @@
    "description": "Build a Tekion \"repair orders that closed under a DIFFERENT service writer than they were opened/created with\" report for any AMG store from the LIVE OpenAPI. Produces RO#, dollar total, opened-by writer, closed-by writer, date opened, date closed. Use when Joe asks for a service-writer handoff / reassignment audit (\"ROs that started with one writer and ended with another\", \"who opened vs who closed\", writer-change report).",
    "times_used": 9,
    "last_used": "2026-07-15"
-  },
-  {
-   "name": "tekion-internal-cost-center-gl-routing",
-   "path": "automotive/tekion-internal-cost-center-gl-routing",
-   "category": "automotive",
-   "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
-   "times_used": 8,
-   "last_used": "2026-08-26"
   },
   {
    "name": "tekion-menu-missing-services-diagnosis",
@@ -587,6 +587,14 @@
    "last_used": "2026-08-18"
   },
   {
+   "name": "tekion-department-opcode-buildout",
+   "path": "automotive/tekion-department-opcode-buildout",
+   "category": "automotive",
+   "description": "Derive the complete opcode list a Tekion department (UCD/Used Car, PDI, Express, Body Shop) actually uses over a period, split it into already-correctly-tagged vs shared-with-other-departments, and produce a build sheet of new department-scoped opcodes so ONE Service-Type GL mapping row captures all of that department's internal spend.",
+   "times_used": 3,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "tekion-menu-custom-price-row",
    "path": "automotive/tekion-menu-custom-price-row",
    "category": "automotive",
@@ -673,14 +681,6 @@
    "description": "Investigate REAL Tekion OpenAPI quota/429 usage per dealer using the APC portal's Transaction Dashboard (ground truth, not assumptions) \u2014 find which store/endpoint is burning quota, when Joe says \"don't assume, go check the APC portal\". Also covers what Plan Details and Usage Dashboard actually show (and don't).",
    "times_used": 2,
    "last_used": "2026-08-05"
-  },
-  {
-   "name": "tekion-department-opcode-buildout",
-   "path": "automotive/tekion-department-opcode-buildout",
-   "category": "automotive",
-   "description": "Derive the complete opcode list a Tekion department (UCD/Used Car, PDI, Express, Body Shop) actually uses over a period, split it into already-correctly-tagged vs shared-with-other-departments, and produce a build sheet of new department-scoped opcodes so ONE Service-Type GL mapping row captures all of that department's internal spend.",
-   "times_used": 2,
-   "last_used": "2026-08-26"
   },
   {
    "name": "tekion-labor-rate-create",
