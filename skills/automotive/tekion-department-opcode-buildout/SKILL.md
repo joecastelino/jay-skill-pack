@@ -191,6 +191,60 @@ show the committed field table → get confirmation → next. Never trust the po
 see `tekion-opcode-create` for the XHR-hook read-back recipe and the list-page bounce
 required between consecutive detail loads.
 
+**If the XHR hook is unavailable, verify with a hard `navigate` to
+`/ro/opcode/edit/<CODE>` and read the rendered form** (a bare in-page `fetch` to
+`/api/service-module/u/opcode/search` returns HTTP 500 — the axios interceptor supplies
+auth that a raw fetch can't). Fresh-load readback selectors:
+
+| Read | Selector |
+|---|---|
+| opcode / display / description | `input[placeholder="Type Here"]` |
+| all dropdown values in order | `[class*=singleValue], [class*=selection-item]` |
+| labor rate prices | `input[placeholder="Enter price"]` |
+| labor times | `input[placeholder="0"]` |
+
+Expected `singleValue` sequence for a correct UCD op (BC): `Individual Service · Location ·
+In · Maintenance · Used Car Department · tech/generic · I - Default internal pay ·
+CP - Defau… · CP - Defau… · Fixed Price · Internal P… · Internal P… · Fixed Price · each ·
+Used Car INV 240`. Row pay-type cells render **truncated** — match on prefix, never exact text.
+
+### The verified per-opcode standard (BC 1251 UCD — pin this before building #1)
+
+| Field | Value |
+|---|---|
+| Opcode Type | Individual Service *(form default)* |
+| Category | Maintenance |
+| Service Type | **Used Car Department** (`62e806c31e9d980006b3e8ef`) |
+| Skill | **tech/generic** (`625505ea77490b000771f95a`) — *form default, verify only* |
+| Default Pay Type | `I - Default internal pay` — **form defaults to CP, must be changed** |
+| Rate row 1 | Internal Pay / All / Fixed Price / internal $ |
+| Rate row 2 | `CP - Default customer pay` / All / Fixed Price / customer $ |
+| Internal Default Cost Center | **Used Car INV 240** (`6286a14ce21b8400071cad0f`) @ 100%, override ON |
+
+Pull the **source opcode's live record** before each clone (`ALIGN` → `UCALIGN`,
+`4ALIGN` → `UC4ALIGN`) and copy its real labor hours + prices rather than trusting the
+build sheet — the sheet is an estimate, the live record is truth.
+
+Minor divergence to be aware of: source `4ALIGN`'s CP rate row uses the **parent**
+`Customer Pay` node (ALL_CUSTOMER_PAY), while the clones use the **leaf**
+`CP - Default customer pay`. Harmless and self-consistent across the new set, but pick one
+convention deliberately and stay on it.
+
+### ⚠️ Verify `currentActiveDealerId` before EVERY write, not just at session start
+
+`:9223` drifts between turns (cron jobs, other agents, other sessions). BC 1251 drifted to
+TL 1092 repeatedly. Creating an opcode at the wrong store is a real, silent failure mode —
+assert the id immediately before clicking `Create`, not just when you opened the form.
+
+### ⚠️ Budget the wall-clock honestly
+
+Opcode #1 and #2 each took far longer than expected and Joe asked *"why is it taking you so
+long this time?"* Two causes, both avoidable and both now documented in
+`tekion-opcode-create`: (a) the 15-min pipeline cron stealing the browser — **pause it up
+front**, and (b) choosing to write a headless script instead of hand-building — **don't**.
+A clean hand-build of one opcode is roughly 10 minutes. If it's running long, stop and check
+which of those two is happening rather than pushing harder.
+
 ## Pitfalls
 
 - **Don't propose retagging a shared opcode.** It silently reroutes the other

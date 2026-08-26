@@ -231,33 +231,133 @@ duplicate = the "Perform Tire Rotation (2)" clutter problem Joe hates. Default t
 reuse+reprice an existing cousin (flag the à-la-carte blast radius) and only create new when
 the service content genuinely differs (e.g. BALANCE lacked rotation → ROTATEBAL justified).
 
-## Create-form mechanics verified at BC 1251 (2026-08-26, UCALIGN)
+## Create-form mechanics verified at BC 1251 (UCALIGN 2026-08-26, **re-verified + CORRECTED** UC4ALIGN same day)
 
 Page: `/ro/opcode/add` → commits to `/ro/opcode/edit/<OPCODE>`.
+Form is **~2900px tall in a 720px viewport**, inside an **inner scroll container**.
+Almost every failure below traces back to those two facts.
 
-- **Default Pay Type** is an **ant-v5 tree-select**, not a react-select. Options render as
-  `.ant-v5-select-tree-treenode`; click the inner `.ant-v5-select-tree-title`, not the node
-  wrapper (clicking the wrapper no-ops). Leaf label is `I - Default internal pay` /
-  `CP - Default customer pay` under parent `Internal Pay` / `Customer Pay`.
-- **Labor Rate Configuration** table: `Add` button at ~`1202,294`. New row appears at the TOP
-  (y≈372) and pushes existing rows down — always re-locate rows by y, never cache them.
-  - Pay Type cell = same tree-select. Customer Type cell = multi-select (`All / Individual /
-    Business`) — pick **All**, then `Escape` to close (it stays open otherwise).
-  - Labor Rate cell = react-select at td index 3 (`[class*=tuc-react-select]`), options
-    `Labor Price Guide / Hourly Price / Fixed Price`.
-  - Price input `placeholder="Enter price"` appears only after Fixed/Hourly is chosen.
-- **PRICE INPUT DOUBLE-ENTRY TRAP**: the `/type` endpoint AND a subsequent click+`/press`
-  both write. Typing "80" twice yields `8080` with no visible error. Use ONE method
-  (click the input, then `/press` per character) and **always read `input.value` back**
-  before moving on.
-- **Internal Default Cost Center** block has no Add button — it ships with one blank row.
-  Click its `Select` (~`261,541` when scrolled to the block), type to filter, click the
-  option. Split auto-fills `100`. `Allow Override` defaults ON.
-- **Skill** is mandatory (`Skill*`). Defaults to `tech/generic`. It's a react-select whose
-  `singleValue` div carries the current text — locate by `innerText` match, not by label.
-- Verify commit by arming an XHR hook then `history.pushState` away and back; the reload
-  fires `GET /api/service-module/u/opcode/<OPCODE>/v2` which returns the full committed
-  record. Do NOT trust the post-save DOM.
+### 🔴 THE #1 TIME SINK — there are MULTIPLE "Add" buttons; most are not yours
+
+An earlier version of this skill said *"Labor Rate Configuration `Add` button at ~`1202,294`"*.
+**That coordinate is unreliable and the naive "first button whose text is Add" is often the
+WRONG button** — on `/ro/opcode/add` another `Add` opens the **Identifier** dropdown
+(options: Department / Sites / Engine Litre / Engine Cylinder / Aspiration / …).
+Clicking it appears to work, then you spend rounds filling a section that isn't the rate grid.
+Tell-tale: the dropdown you get lists vehicle attributes instead of pay types.
+
+**Resolve the Add button RELATIVE TO ITS SECTION HEADER, in page coords:**
+```js
+(()=>{const vis=e=>e.offsetParent!==null;
+ const h=[...document.querySelectorAll('*')].filter(vis).filter(e=>e.children.length===0)
+   .find(e=>/Labor Rate Configuration/i.test((e.innerText||'').trim()));
+ const hy=h.getBoundingClientRect().top+window.scrollY;      // BC: 769
+ return [...document.querySelectorAll('button')].filter(vis)
+   .filter(e=>/^Add$/i.test((e.innerText||'').trim()))
+   .map(e=>{const r=e.getBoundingClientRect();
+            return {pageY:Math.round(r.top+window.scrollY), x:Math.round(r.x+r.width/2)};})
+   .filter(a=>Math.abs(a.pageY-hy)<260);})()                 // BC hit: pageY 757, x 1202
+```
+Then `scrollIntoView({block:'center'})` that exact button and **re-read its rect** before clicking.
+
+### 🔴 Scrolling: `window.scrollTo` DOES NOTHING — use `element.scrollIntoView()`
+
+`window.scrollY` stays `0` no matter what; the form scrolls an inner div. Consequences:
+- `window.scrollTo(0, N)` is a silent no-op.
+- Any control/option whose `y` is **> ~700 is off-viewport and `/mouse` clicks miss it**
+  (they land on whatever is at that screen coord, or nothing). `elementFromPoint` also
+  can't reach it.
+- Dropdown options routinely render below the fold (Category "Maintenance" first reported
+  at `y=742`; after `scrollIntoView` it became `y=640` and clicked fine).
+
+**Rule: for every control AND every option — `scrollIntoView({block:'center'})`, then
+RE-READ the bounding rect, then click. Coordinates go stale after every scroll and after
+every selection** (picking a value re-flows the row; I had to re-read row coords between
+Pay Type → Customer Type → Labor Rate).
+
+### 🔴 Clicking an option can hit the WRONG element with identical text
+
+`I - Default internal pay` appears BOTH as the Default Pay Type field's `singleValue`
+(`ant-v5-select-selection-item`, y≈89) and as the open tree's leaf
+(`ant-v5-select-tree-title`, y≈415). A generic "find visible element whose innerText ===
+option" grabs the field, clicks it, and the menu never closes — looks like the option is
+disabled. Scope the search:
+
+```js
+// tree-selects (pay type): the leaf is the element with class select-tree-title
+.filter(e=>/select-tree-title/.test(e.className))
+// react-selects (category / service type / labor rate / cost center):
+.filter(e=>/-option/.test(e.className))
+// or require an ancestor menu: e.closest('[class*=-menu],[class*=select-dropdown]')
+```
+Also **assert the menu actually CLOSED** after picking; if it's still open the pick didn't commit.
+
+### Field-by-field (BC 1251)
+
+| Field | Widget | Notes |
+|---|---|---|
+| Opcode / Display / Description | plain `input[placeholder="Type Here"]` | tag in visual order (top→bottom, left→right); index 3 is a different field, don't fill it |
+| Opcode Type | react-select | already defaults to **Individual Service** |
+| Category | react-select | type-filter works; option list is long → scrollIntoView |
+| Service Type | react-select | literal matching (see section above) |
+| Skill | react-select | mandatory, defaults **`tech/generic`** — verify rather than set blindly |
+| Labor times | `input[placeholder="0"]` ×2 (Customer, Manufacturer) | both at same y (~1594 page coords) |
+| Default Pay Type | **ant-v5 tree-select** | click `.ant-v5-select-tree-title` leaf, not the treenode wrapper. **Defaults to `CP - Default customer pay`** — must be changed for internal ops |
+| Labor Rate rows | see below | |
+| Internal Default Cost Center | react-select, ships with one blank row (no Add) | **must type-filter** — the list is long and the target isn't rendered until filtered. Input id was `#rc_select_2`; `/type` into it, then click the `-option`. Split auto-fills `100`, Allow Override defaults ON |
+
+### Labor Rate Configuration rows
+
+- **New rows insert ABOVE existing rows.** After adding row 2, the blank row is on TOP
+  (y≈491) and the completed row 1 drops to y≈533. Never cache row coords; identify the
+  blank row as the one whose cells still read `Select`.
+- Row layout: **Pay Type** x≈273 · **Customer Type** x≈455 (midpoint — it uses a widget
+  class the generic control scan misses, so target geometrically) · **Labor Rate** x≈638.
+- Pay Type cell = tree-select (same leaf-click rule).
+- Customer Type = multi-select `All / Individual / Business` → pick **All** (renders as
+  "All, Indi…"); close by clicking neutral space (`950,250`).
+- Labor Rate options: `Labor Price Guide / Hourly Price / Fixed Price`.
+- Price `input[placeholder="Enter price"]` **only exists after Fixed/Hourly is chosen**, and
+  is briefly `disabled` right after — poll `is_enabled()` before typing.
+- Both row checkboxes (**Allow Override**, **Discount Eligible**) default CHECKED — matches
+  the 4ALIGN/ALIGN convention; verify rather than clicking them.
+- **Always read every price back**; identify rows by `y`, not by index.
+
+### Commit + verification
+
+`Create` at ~`1211,688` → URL flips to `/ro/opcode/edit/<OPCODE>`. **No reliable toast on
+create** (a toast scan returns clock/notification chrome like `"1:33 PM | 99+ | 70"`).
+
+Verify by **hard `navigate` to `/ro/opcode/edit/<OPCODE>`** and re-reading the form —
+a genuine remount, and it proves persistence. (A bare in-page `fetch` to
+`/api/service-module/u/opcode/search` **500s** — "Token doesn't exist or is invalid" —
+because the app's axios interceptor adds auth a plain fetch can't replicate. Use the XHR-hook
+recipe or just reload the page.)
+
+### :9223 endpoints that DON'T exist (all 404 — cost several dead calls)
+
+`/key`, `/keyboard`, `/screenshot` as **POST**. Real set used here: `/navigate`, `/eval`,
+`/type {selector,text}`, `/mouse {action,x,y}`, `/press`, and `/screenshot` as **GET**
+returning `{"screenshot":"<base64>"}`.
+
+**`/eval` intermittently returns a payload with no `result` key** (transient). Wrap it:
+```python
+def ev(js, tries=3):
+    for _ in range(tries):
+        r = json.loads(call("eval", {"js": js}))
+        if "result" in r: return r["result"]
+        time.sleep(1)
+    raise RuntimeError(str(r))
+```
+
+### ⚠️ Don't rewrite this as a headless Playwright script "to save time"
+
+I tried mid-task: build a generic `bc_ucd_opcode_create.py` so opcodes #3–26 would be fast.
+It burned ~25 iterations on tree-selects, row-shift, disabled inputs and stale coords — and
+still failed, because it was clicking the wrong `Add` button the whole time. Joe's standing
+rule applies: *"You've spent 8 hours trying to save us 40 mins of work."*
+**Hand-build on `:9223` until the click path is boring, THEN script it.** The abandoned
+attempt is at `~/tekion-reports/bc_ucd_opcode_create.py` if it's ever worth resuming.
 
 ## EDITING an opcode you just created (skill/field change) — BC 1251, 2026-08-26
 
@@ -312,6 +412,39 @@ for op in ops:
 Also note the hook must be re-armed after any hard reload, and `/opcode/skills` +
 `/opcode/serviceTypes` responses get captured on the way in — free id→name maps, use them
 instead of hardcoding ids.
+
+## 🔴 PAUSE THE CALIBER PIPELINE CRON BEFORE ANY MULTI-MINUTE :9223 FORM SESSION
+
+`cron-pipeline.sh` runs **every 15 minutes** and drives the SAME `:9223` browser. Building an
+opcode takes longer than 15 minutes, so it WILL navigate your half-filled form away mid-build.
+This happened three times in one session (form → `/dse-v2/appointments/scheduler/day`, then
+→ `/dse-v2/appointments/list`, where subsequent `/type` calls went into a LIVE appointments
+screen instead of the form). Nothing was saved, but each hit cost a full rebuild.
+
+**Before starting:**
+```bash
+crontab -l > /tmp/crontab.backup.$(date +%s)     # ALWAYS back up first
+crontab -l > /tmp/cron_orig.txt
+pgrep -af cron-pipeline                          # wait out any in-flight run
+```
+Comment the line with a marker, write to a temp file, install it. **Note two traps:**
+1. `crontab -l | sed ... | crontab -` is forbidden (a sed error installs an EMPTY crontab).
+   Edit in Python and install from a file.
+2. `crontab <file>` rejects a file with **no trailing newline** ("new crontab file is missing
+   newline before EOF, can't install") — always `.rstrip("\n") + "\n"`.
+
+```python
+orig = open("/tmp/cron_orig.txt").read()
+paused = "\n".join(("#JAYPAUSE "+l) if ("cron-pipeline" in l and not l.startswith("#")) else l
+                   for l in orig.split("\n")).rstrip("\n") + "\n"
+open("/tmp/cron_paused.txt","w").write(paused)
+# terminal: crontab /tmp/cron_paused.txt && crontab -l | grep -c JAYPAUSE
+```
+Wait for any running instance to exit (`pgrep -f cron-pipeline`) before touching the form.
+**Restore immediately when done** and verify `grep -c JAYPAUSE` returns `0`.
+
+A pipeline run already in flight can take several minutes (it pages through hundreds of
+orders per store), so check `pgrep` rather than assuming the pause took effect instantly.
 
 ## Pitfalls / notes
 - Opcodes are **store-specific** — create only at the store(s) needed (Joe-confirmed);
