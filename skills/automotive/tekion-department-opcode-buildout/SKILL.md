@@ -122,6 +122,32 @@ Parts is a SEPARATE table:
 
 ---
 
+## Step 4b — ALWAYS search for existing department-prefixed opcodes first
+
+Before proposing a clone list, sweep the opcode catalog for opcodes that already
+carry the department prefix (`searchText:"UC"` / `"UCD"`, `searchFields:["OPCODE"]`,
+paginate the cursor). Stores build these ad-hoc and then stop using them.
+
+At BC, `UCRECALL` ("USED CAR DEPARTMENT-INSPECT FOR ANY OPEN RECALLS") already
+existed tagged to Used Car Department — but was used **zero** times in 90 days.
+Proposing to "build" it would have been wrong; the real finding is that writers
+aren't using an opcode that already exists.
+
+**⚠️ DEALER DRIFT ON :9223 — verify before every catalog search.** The persistent
+browser's `currentActiveDealerId` changes between turns (cron jobs, other sessions).
+A `UC*` sweep run while the browser sat on TL (1092) returned TL's UCD family
+(UCDAIR/UCDDETAIL/UCDKEY/UCDOIL/UCDRECALL/UCDSMOG/UCDWIPERS) — a completely
+different store's opcodes, with a different Used Car Department service-type id
+(`61f45b8e…` at TL vs `62e806c3…` at BC). Either assert the dealer id first, or
+**hard-code `dealerId` + `tek-siteId: -1_<dealer>` in the header bundle** rather
+than reading them from localStorage:
+```js
+"dealerId":"1251", "tek-siteId":"-1_1251"   // don't trust localStorage
+```
+Cross-store peeking IS useful once you know you're doing it — TL's combined
+`UCDAIR` (cabin + engine air filter, one opcode) is a better pattern than two
+separate ops, and worth offering as an alternative.
+
 ## Pitfalls
 
 - **Don't propose retagging a shared opcode.** It silently reroutes the other

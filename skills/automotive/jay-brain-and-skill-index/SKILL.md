@@ -399,6 +399,19 @@ if you need a specific historical count:
    with hub→page `gbrain link index projects/session-<ts> --link-type references`, append to index.md
    `## Sessions`, `git add -A` / `git commit -m "brain sync"` (separate calls), re-import + `embed --stale`,
    then re-check `orphans` for latecomers.
+2b. **ORPHANS CAN APPEAR ON A PASS THAT IMPORTED NOTHING — always run `orphans` every pass, never
+   gate it on the import counts (learned 2026-08-26 10:00 cron).** Sequence seen: pass 1 imported 1
+   page/1 chunk → 1 orphan (session-20260826_085328) → linked + index.md + commit. Pass 2's re-import
+   reported **0 pages imported / 0 chunks / 0 stale** — which reads like "done" — yet `orphans` then
+   returned **2**: a latecomer session (`session-20260826_100035_ebab3a`) AND a SKILL page
+   (`skills/tekion-department-opcode-buildout`, written earlier by the auto-backfill and already in the
+   DB, just never edge-linked). So "0 imported" only means no page CONTENT changed; it says nothing about
+   missing edges. Clear mixed orphan sets per-hub in one pass: `gbrain link index projects/session-<ts>
+   --link-type references` for the session, `gbrain link skills-index skills/<name> --link-type references`
+   for the skill page (skill pages do NOT go in index.md's `## Sessions` list — only sessions do).
+   Then commit + re-import (index.md re-chunked: "1 page imported / 25 chunks") + `embed --stale`
+   (1 chunk) → orphans 0/1314, then one CONFIRMING pass (0 imported / 0 stale / 0 orphans / clean tree)
+   before `[SILENT]`. Total: 3 rounds, ~2 min.
 3. **Do NOT append a new per-run section to this SKILL.** SKILL.md has a hard 100,000-char limit and
    these logs blew past it (skill_manage patch rejected 2026-08-18 at 101,895 chars). Only record a run
    here if it revealed something GENUINELY NEW (a new failure mode, a flag change, a different fix).
