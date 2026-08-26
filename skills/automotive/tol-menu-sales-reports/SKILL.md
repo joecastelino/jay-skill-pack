@@ -973,6 +973,21 @@ A bare `set(json.load(...))` raises `TypeError: unhashable type: 'dict'`.
 Drafts stack tiny (6): 08/21-08/25 hyphen-subject Opened drafts + the perennial 08/02 em-dash
 one (UID 20).
 
+## (8/25 8:05PM, Closed MTD) TEXTBOOK CLEAN RUN — zero exit-124s, CORRECT UID, 4th zero-delta day
+Hand-off returned in 76s (no timeout), draft UID 42674 correct FIRST TRY, and the reported UID
+was CORRECT (part-listing found it directly — no bogus-ID self-correction needed). All 3
+verification asks returned FIRST try with "use raw IMAP, NOT the Gmail API" leading + parts-only
+part-listing wording: subject-list 53s, part-listing 41s, Sent-check 38s. MIME clean:
+multipart/mixed > related > alternative(text/plain+text/html) + image/png Content-ID=<scorecard>
+99,724B + application/pdf 78,381B. No dedupe needed (0 prior drafts with today's exact subject).
+Sent-check = 2 hits, both the old June 1-29 em-dash emails (token trap, item 5b) — no leak.
+DATA: 93 closed ROs scanned, 0 prefilter hits, MTD FLAT at 28 rows / $7,101.35 — identical to
+8/22, 8/23, 8/24. That is FOUR consecutive zero-delta closed days on top of SIX consecutive $0
+opened days (8/23 noon - 8/25 EOD). Keep escalating to Joe as a store-side menu-presentation
+problem; pipeline is healthy (RO counts 93-215/day, opcode sanity scans clean).
+Closed-append ran FOREGROUND in ~10s. Drafts stack (hyphen stem) = 6: Aug 1-21 through 1-25 +
+the perennial 08/02 em-dash one (UID 41546) — no true dupes.
+
 ## (8/24 8:05PM, Closed MTD) Clean one-shot, zero exit-124s; ZERO-DELTA day
 Hand-off returned in 103s (no timeout), draft correct FIRST TRY, no dedupe needed. All 3
 verification asks returned FIRST try with "use raw IMAP, NOT the Gmail API" leading and the
