@@ -133,6 +133,50 @@ Services-Internal mapping rows. The cost center controls only which control numb
 
 Kebab menu offers only **Edit / Deactivate** — there is no delete.
 
+The **Add** dialog (icon-add-circle at ≈1203,260 on the section header) is identical:
+title = the section name ("Repair Order - Internal"), fields = Cost Center Name* ·
+Enable Control · Enable Control 2, buttons Cancel/Add. **No Department field, no GL
+field.** Confirmed at BC 2026-08-26. So "set the account on the cost center" is not a
+thing Tekion supports — the cost center is a control-number label only.
+
+Likewise the **Service Settings → Internal Pay** Cost Center/Split grid has just two
+columns (Cost Center · Split) — no Department column, so there is exactly ONE store-wide
+default cost center, not one per department.
+
+## DEPARTMENTS exist — but they are NOT a cost-center or Services-mapping dimension
+
+Joe will (correctly) push back if you say "there is no department." There IS one:
+**Setup Fields → GL Accounts Setup → Department** (leaf ≈250,260). BC (1251) list:
+```
+U - UCD (Service)          P - PDI (Service)        F - Parts (Parts) [Default]
+A - New Vehicle (Vehicle Sales) [Default]           E - Body Shop (Service)
+B - Used Vehicle (Vehicle Sales)                    D - Service (Service) [Default]
+X - Express Service (Service)                       O - Accounting Office (Business Office) [Default]
+```
+Row kebab (≈x601) → **Edit** → modal fields = **Code · Label · Department Type ·
+Set as Default**. NO GL account field. So a Department is a tag, not a router.
+
+Where Department IS usable as a mapping dimension: **Others → Fixed Operations Other**
+(cols: item · **Department** · GL Account; e.g. `Other supplies | D - Service | 61D`,
+`Other supplies | F - Parts | 61F`). The Department react-select there lists all 9 depts
+incl. `U - UCD (Service)` — proof the dimension exists app-wide.
+
+Where Department is NOT available: **Services → Service - Internal at BC** — that table
+is Pay Type · Service Type · GL Account only, and the "Create GL Account Mapping Rule"
+modal's first Rules dropdown offers ONLY **Pay Type** and **Sale Type (Fixed Ops)**
+(verified scrollHeight = 2 items, not truncated). So BC internal service work cannot be
+routed by department; it routes by **Service Type**, and BC has a Service Type literally
+named **"Used Car Department"**.
+
+Department also appears as a read-only attribute column on **Chart of Accounts**
+(`/accounting/chartOfAccounts/list`, 1,009 accounts at BC) — e.g. 460A→`D - Service`,
+467→`F - Parts`. That is the account's own department tag, downstream of routing.
+
+Journal-level routing is yet another layer: **Journal Mapping**
+(`/accounting/journalMapping/list`, button top-right of GLAM). BC has
+`Repair Order - Internal | Workflow: Service + Pay Type: Internal Pay → 34 - INTERNALS`.
+Its rule dims are Workflow/Pay Type/Deal Type/OEM — again no Department.
+
 ## The 3 levers for "change the default internal account for department X"
 
 1. **Credit/sale side — labor** → GL Account Transaction Mapping → Fixed Operations →

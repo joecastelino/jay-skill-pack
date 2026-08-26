@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-26T09:30:06",
+ "generated": "2026-08-26T09:45:19",
  "skill_count": 192,
  "skills": [
   {
@@ -39,7 +39,7 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 69,
+   "times_used": 70,
    "last_used": "2026-08-26"
   },
   {
@@ -475,20 +475,20 @@
    "last_used": "2026-07-01"
   },
   {
+   "name": "tekion-coupon-management",
+   "path": "automotive/tekion-coupon-management",
+   "category": "automotive",
+   "description": "Create/edit service discount coupons in Tekion's Coupon Management app (e.g. tire promos like Bridgestone B3G1, $-off or %-off labor/parts coupons). Covers the real URLs, form mechanics (old antd calendar, react-select GL account), toggle defaults, GL split conventions, and verification. Verified live at SCT 2026-08-02.",
+   "times_used": 5,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "hermes-slack-token-recovery",
    "path": "automotive/hermes-slack-token-recovery",
    "category": "automotive",
    "description": "Fix an AMG Hermes agent that is silent on Slack because its SLACK_BOT_TOKEN/SLACK_APP_TOKEN are missing or wrong in the profile .env \u2014 including recovering LOST tokens from old session transcripts without asking Joe to regenerate them at api.slack.com. Use when an agent's service is running but it never answers Slack messages (Autumn case, 2026-07-14).",
    "times_used": 4,
    "last_used": "2026-07-14"
-  },
-  {
-   "name": "tekion-coupon-management",
-   "path": "automotive/tekion-coupon-management",
-   "category": "automotive",
-   "description": "Create/edit service discount coupons in Tekion's Coupon Management app (e.g. tire promos like Bridgestone B3G1, $-off or %-off labor/parts coupons). Covers the real URLs, form mechanics (old antd calendar, react-select GL account), toggle defaults, GL split conventions, and verification. Verified live at SCT 2026-08-02.",
-   "times_used": 4,
-   "last_used": "2026-08-25"
   },
   {
    "name": "tekion-journal-entry-error-diagnosis",
@@ -537,6 +537,14 @@
    "description": "Log into Tekion DMS via browser, switch dealerships, navigate to Opcode Management, search for opcodes, and edit opcode details. Covers OTP retrieval via IMAP, session persistence, dealer switching pitfalls, and search quirks.",
    "times_used": 3,
    "last_used": "2026-06-29"
+  },
+  {
+   "name": "tekion-coupon-not-applying-diagnosis",
+   "path": "automotive/tekion-coupon-not-applying-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose \"failed to apply coupon\" / \"the coupon won't attach to job N\" on a Tekion repair order. The #1 root cause is NOT the coupon \u2014 it is the OPCODE's \"Discount Eligible\" checkbox being unchecked. Covers the full evidence-first triage, the API field mapping that proves it without clicking anything, and how to audit a whole store for un-couponable opcodes.",
+   "times_used": 3,
+   "last_used": "2026-08-26"
   },
   {
    "name": "tekion-customer-email-change-investigation",
@@ -641,14 +649,6 @@
    "description": "Investigate REAL Tekion OpenAPI quota/429 usage per dealer using the APC portal's Transaction Dashboard (ground truth, not assumptions) \u2014 find which store/endpoint is burning quota, when Joe says \"don't assume, go check the APC portal\". Also covers what Plan Details and Usage Dashboard actually show (and don't).",
    "times_used": 2,
    "last_used": "2026-08-05"
-  },
-  {
-   "name": "tekion-coupon-not-applying-diagnosis",
-   "path": "automotive/tekion-coupon-not-applying-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose \"failed to apply coupon\" / \"the coupon won't attach to job N\" on a Tekion repair order. The #1 root cause is NOT the coupon \u2014 it is the OPCODE's \"Discount Eligible\" checkbox being unchecked. Covers the full evidence-first triage, the API field mapping that proves it without clicking anything, and how to audit a whole store for un-couponable opcodes.",
-   "times_used": 2,
-   "last_used": "2026-08-25"
   },
   {
    "name": "tekion-labor-rate-create",
