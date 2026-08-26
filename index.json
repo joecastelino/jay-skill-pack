@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-25T17:00:03",
+ "generated": "2026-08-25T17:15:24",
  "skill_count": 190,
  "skills": [
   {
@@ -83,18 +83,18 @@
    "last_used": "2026-08-21"
   },
   {
-   "name": "tekion-autonomous-login",
-   "path": "automotive/tekion-autonomous-login",
-   "category": "automotive",
-   "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
-   "times_used": 37,
-   "last_used": "2026-08-25"
-  },
-  {
    "name": "tekion-kb-search-scrape",
    "path": "automotive/tekion-kb-search-scrape",
    "category": "automotive",
    "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
+   "times_used": 38,
+   "last_used": "2026-08-25"
+  },
+  {
+   "name": "tekion-autonomous-login",
+   "path": "automotive/tekion-autonomous-login",
+   "category": "automotive",
+   "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
    "times_used": 37,
    "last_used": "2026-08-25"
   },
@@ -159,7 +159,7 @@
    "path": "automotive/tekion-service-settings",
    "category": "automotive",
    "description": "Reference map of Tekion's Service Settings application (App Grid > Settings > Service Settings) \u2014 the master config for service/RO workflows: General Setup, Job Sequence, Flag Tech on, Round-Up rules, Default Service Advisor, RO/Job Flags, Holds, Parts Request, pay-type setups (Customer/Warranty/Internal/ Insurance), Reminders, Express Mode, Tags, RO KPI List, Quotes, Role Config, Consumer Portal, Approval Settings, Deferred Recommendation Rules, Job Clock Setup, P&L View Setup. Use when asked where/how a service workflow behavior is configured (e.g. \"why do tech flag hours auto-match bill time\", \"how is the recommendation opcode set\", \"where do return-RO / comeback tags come from\").",
-   "times_used": 22,
+   "times_used": 23,
    "last_used": "2026-08-25"
   },
   {
@@ -299,6 +299,14 @@
    "last_used": "2026-08-11"
   },
   {
+   "name": "tekion-roles-permissions",
+   "path": "automotive/tekion-roles-permissions",
+   "category": "automotive",
+   "description": "Create/duplicate a Tekion custom ROLE and toggle its PERMISSIONS via the Roles admin page (/core/roles). Verified live at Blackstone Chevrolet 2026-07-10 (created \"Concierge\" cloned from ServiceAdvisor + enabled deal viewing). Covers the no-duplicate-button trap, permission pill mechanics, and save/verify flow.",
+   "times_used": 9,
+   "last_used": "2026-08-25"
+  },
+  {
    "name": "tekion-writer-handoff-report",
    "path": "automotive/tekion-writer-handoff-report",
    "category": "automotive",
@@ -329,14 +337,6 @@
    "description": "Build a \"units of X sold in a period\" report (tires, batteries, brakes, BG products, wipers...) for any Tekion store using the Source Code part list + bulk salehistory API \u2014 NO OpenAPI quota, no RO fan-out. Use when Joe asks \"how many tires/batteries/etc were sold last month/quarter\" and the category maps to a parts Source Code. Verified TOL tires Q2 2026.",
    "times_used": 8,
    "last_used": "2026-08-18"
-  },
-  {
-   "name": "tekion-roles-permissions",
-   "path": "automotive/tekion-roles-permissions",
-   "category": "automotive",
-   "description": "Create/duplicate a Tekion custom ROLE and toggle its PERMISSIONS via the Roles admin page (/core/roles). Verified live at Blackstone Chevrolet 2026-07-10 (created \"Concierge\" cloned from ServiceAdvisor + enabled deal viewing). Covers the no-duplicate-button trap, permission pill mechanics, and save/verify flow.",
-   "times_used": 8,
-   "last_used": "2026-08-25"
   },
   {
    "name": "tekion-uber-lyft-transportation-swap",
@@ -443,6 +443,14 @@
    "last_used": "2026-07-01"
   },
   {
+   "name": "tekion-approval-notes-on-ro-pdf",
+   "path": "automotive/tekion-approval-notes-on-ro-pdf",
+   "category": "automotive",
+   "description": "How to get RO approval information / approval notes (additional warranty hours approvals, warranty job approvals, recommendation approvals) to print on a Tekion RO / invoice PDF. Covers the prerequisite Service Settings + support ticket, the PDF Configurator toggle, and where the live UI differs from the KB article. Use when Joe or a store asks \"how do I get the approval notes on the RO PDF\" or \"approvals aren't printing on the warranty invoice\".",
+   "times_used": 5,
+   "last_used": "2026-08-25"
+  },
+  {
    "name": "tekion-deferred-by-advisor-daily",
    "path": "automotive/tekion-deferred-by-advisor-daily",
    "category": "automotive",
@@ -465,14 +473,6 @@
    "description": "Fix an AMG Hermes agent that is silent on Slack because its SLACK_BOT_TOKEN/SLACK_APP_TOKEN are missing or wrong in the profile .env \u2014 including recovering LOST tokens from old session transcripts without asking Joe to regenerate them at api.slack.com. Use when an agent's service is running but it never answers Slack messages (Autumn case, 2026-07-14).",
    "times_used": 4,
    "last_used": "2026-07-14"
-  },
-  {
-   "name": "tekion-approval-notes-on-ro-pdf",
-   "path": "automotive/tekion-approval-notes-on-ro-pdf",
-   "category": "automotive",
-   "description": "How to get RO approval information / approval notes (additional warranty hours approvals, warranty job approvals, recommendation approvals) to print on a Tekion RO / invoice PDF. Covers the prerequisite Service Settings + support ticket, the PDF Configurator toggle, and where the live UI differs from the KB article. Use when Joe or a store asks \"how do I get the approval notes on the RO PDF\" or \"approvals aren't printing on the warranty invoice\".",
-   "times_used": 4,
-   "last_used": "2026-08-25"
   },
   {
    "name": "tekion-coupon-management",

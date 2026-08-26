@@ -1054,6 +1054,38 @@ auto-sent Daily Opened report hadn't fired yet at 12:26 PT.
 vs the more typical 10-20%). Low counts are normal Monday-morning-cutoff behavior
 for the noon run — the 5pm run picks up the rest of the day.
 
+## 2026-08-25 5pm Daily Closed run — 21st consecutive clean "N dollars" build; Stacey self-caught her OWN regex bug mid-build
+5 menus, $691.19 labor / $346.53 parts = $1,037.72 (Houa Moua 2 / $650.52, Humberto
+Dominguez 1 / $214.11, Jacob Debussey 1 / $86.63, Jeremia Navarro 1 / $86.46). 61 closed
+ROs → 5 carried TEK menu opcodes; `✓ all candidate ROs scanned`; vision-verified KPI band
+(crop 460px + 2x LANCZOS) matched JSON exactly. Pull ran via `terminal(background=true)` +
+a SINGLE `process(action="wait", timeout=180)`. Stacey's build: `execute_code` +
+`subprocess.run` argument list wrapped in `timeout 600` → returned cleanly in **211s**, no
+exit-124, terse DONE line correct with `TOTAL=$1,037.72`, reported id (42669) MATCHED
+himalaya's.
+**NEW variant of the `$digit` hazard — her dollar-sign RE-INSERTION regex mishandles the
+thousands comma**: implementing the "N dollars" → `$` Python-replace step, she used a regex
+that matched only the post-comma segment, producing **`$037.72`** instead of `$1,037.72`
+(dollar sign inserted in the middle of the number rather than before the leading digit).
+She caught it herself post-append ("the dollar-sign regex missed the comma in 1,037.72 —
+matched only 037.72"), deleted the broken draft 42668, and re-appended 42669 correctly.
+Net: 3 drafts existed momentarily, her cleanup was GENUINE this time (dedupe grep confirmed
+only 42669 + the expected stale noon draft). Mitigation going forward: **add
+`clean.count("$037.72")`-style checks for the total-with-leading-digit-stripped variant**
+to post-build verification whenever the total has a thousands comma — a naive
+`count("$1,037.72")==1` check alone would pass on a body that ALSO contained a mangled
+sibling. Better: when the total crosses 1,000, tell Stacey explicitly in the ask that the
+dollar sign goes before the FIRST digit of the whole number including the thousands comma.
+Confirms the 8/23 refinement: post-append self-correction risks a duplicate but she
+sometimes cleans up properly — always grep, never assume either way.
+Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
+auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (119,582 bytes), PDF
+**byte-for-byte identical** (53,519 bytes), all 7 figures present exactly once,
+`<b>$1,037.72</b>` bold, greeting + footer present, zero ' dollars'/USD leftovers and zero
+`$037.72` (checked after stripping the data URI). Deleted the stale noon draft (42662) per
+the twice-daily cadence rule, kept 42669 → exactly 1 draft. Daily-Closed Sent count 0 (the
+single `BC 8/25` Sent hit was Stacey's separate auto-sent Daily Opened report, 14517).
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
