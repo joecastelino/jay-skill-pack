@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-26T11:15:32",
+ "generated": "2026-08-26T11:30:42",
  "skill_count": 196,
  "skills": [
   {
@@ -7,7 +7,7 @@
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 250,
+   "times_used": 251,
    "last_used": "2026-08-26"
   },
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 150,
+   "times_used": 151,
    "last_used": "2026-08-26"
   },
   {
@@ -127,7 +127,7 @@
    "path": "automotive/tekion-opcode-api",
    "category": "automotive",
    "description": "Read, audit, and VERIFY Tekion opcode override rows directly from the backend REST API using the session's own auth token. This is the AUTHORITATIVE source of truth \u2014 the override UI grid frequently renders wrong/empty even when rows exist in the backend. Use to get the true committed row count before a batch, detect incomplete (part-less) rows, and confirm persistence after saving.",
-   "times_used": 27,
+   "times_used": 28,
    "last_used": "2026-08-26"
   },
   {
@@ -515,6 +515,14 @@
    "last_used": "2026-08-25"
   },
   {
+   "name": "tekion-ro-job-paytype-triage",
+   "path": "automotive/tekion-ro-job-paytype-triage",
+   "category": "automotive",
+   "description": "Triage a bare \"RO <number> job <N> needs to be <pay type>\" ticket (or any bare-RO# request) from Joe. Covers the CRITICAL cross-store RO#-collision trap (RO numbers are NOT unique across the 7 AMG stores), the zero-quota OpenAPI symptom-verification pass that runs BEFORE any browser work, and where the pay-type change actually happens. Use for any ticket that names an RO number without naming a store.",
+   "times_used": 4,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "tekion-ro-traffic-heatmap-report",
    "path": "automotive/tekion-ro-traffic-heatmap-report",
    "category": "automotive",
@@ -593,14 +601,6 @@
    "description": "Restrict Tekion Parts-on-Appointments (Parts RO Sales > Appointments queue) to a subset of opcodes \u2014 e.g. recalls only, per Glade at SCT. Covers the per-opcode \"Consider for Parts preparation on Appointment\" checkbox, Bulk Update, the limited Appointments-tab filters, and how to derive a store's recall keep-list from the opcode list. Load for any \"parts department should only see X appointments\" request.",
    "times_used": 3,
    "last_used": "2026-08-24"
-  },
-  {
-   "name": "tekion-ro-job-paytype-triage",
-   "path": "automotive/tekion-ro-job-paytype-triage",
-   "category": "automotive",
-   "description": "Triage a bare \"RO <number> job <N> needs to be <pay type>\" ticket (or any bare-RO# request) from Joe. Covers the CRITICAL cross-store RO#-collision trap (RO numbers are NOT unique across the 7 AMG stores), the zero-quota OpenAPI symptom-verification pass that runs BEFORE any browser work, and where the pay-type change actually happens. Use for any ticket that names an RO number without naming a store.",
-   "times_used": 3,
-   "last_used": "2026-08-26"
   },
   {
    "name": "tekion-ro-payer-split-sunbit",
@@ -761,6 +761,14 @@
    "description": "Pull the ToyotaCare (TAC) billed-hours number from Tekion's Advisor Performance report (Reports module) for SCT or any store, using Joe's saved TAC/ToyotaCare filter \u2014 and roll it out to the other 6 AMG stores. Use when Joe asks for ToyotaCare / TAC billed hours, or is building his monthly SCT fixed-ops sheet (\"first number, Toyota Care\").",
    "times_used": 1,
    "last_used": "2026-08-03"
+  },
+  {
+   "name": "tekion-add-job-to-ro-button-disabled",
+   "path": "automotive/tekion-add-job-to-ro-button-disabled",
+   "category": "automotive",
+   "description": "Diagnose \"I can't add opcode X to RO #NNNNNN\" / the \"Add To RO\" button is greyed out with no error message in Tekion. Root cause is almost always the RO Approval Flow \"Paytype Rules\" setting, NOT the opcode, the RO, or a permission.",
+   "times_used": 1,
+   "last_used": "2026-08-26"
   },
   {
    "name": "tekion-department-opcode-buildout",
@@ -975,14 +983,6 @@
    "path": "automotive/slack-store-thread-cron-retarget",
    "category": "automotive",
    "description": "Retarget an AMG store's Hermes cron report deliveries to a new Slack thread when Joe says \"can this thread be <store> reports only?\", and sweep the whole fleet for dead channel_not_found cron deliveries.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tekion-add-job-to-ro-button-disabled",
-   "path": "automotive/tekion-add-job-to-ro-button-disabled",
-   "category": "automotive",
-   "description": "Diagnose \"I can't add opcode X to RO #NNNNNN\" / the \"Add To RO\" button is greyed out with no error message in Tekion. Root cause is almost always the RO Approval Flow \"Paytype Rules\" setting, NOT the opcode, the RO, or a permission.",
    "times_used": 0,
    "last_used": null
   },
