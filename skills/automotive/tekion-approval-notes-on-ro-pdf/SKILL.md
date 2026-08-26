@@ -259,6 +259,14 @@ Prereq: :9223 logged in on the target dealer (the script opens Approval Workspac
 and steals the axios headers). Change store by passing `--dealer-key` (key into
 `tekion_client` config `dealers`).
 
+### Audit finding this report surfaces: SELF-APPROVAL
+The TL rule **"Warranty Recommendation"** has `submitterApproval: true`, so the submitter
+can clear their own request even though 4 eligible approvers exist. APPR0826-000012 was
+submitted AND approved by Sean Preston 1 minute apart. Always diff
+`createdBy` vs `approvalTaskResponses[].approvers[].approverId` and flag matches — that is
+the single most useful control finding in this dataset. Toggle lives in Approval Setup on
+the rule; do NOT change it without Joe's go-ahead.
+
 Verifying the output PDF: ReportLab writes **ASCII85 + Flate** streams, so the usual
 `zlib.decompress(stream)` finds 0 streams. Use
 `zlib.decompress(base64.a85decode(raw, adobe=True))` then regex `\((.*?)\)\s*Tj`.
@@ -410,6 +418,13 @@ The third option **All Approvals** only appears with the right permission. Per K
 - `View All Requests <Department>` (e.g. Service)
 
 Without them the dropdown shows only `My Approvals | My Requests`.
+
+**2026-08-25: Joe granted himself these permissions on the System Administrator role**
+(he did it himself rather than have Jay edit the role — consistent with the standing
+"never change employee/role records without explicit approval" rule). `All Approvals`
+now appears for `jcastelino@scvolkswagen.com` at TL. **But the tab still read (0)** until
+the default `Status In Pending` filter was cleared — permission and filter are two
+separate gates; don't stop at the first one.
 
 **Confirm WHO you are before concluding data is missing** — decode the session token:
 ```js

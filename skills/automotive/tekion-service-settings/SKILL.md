@@ -252,7 +252,27 @@ id `6a8ddcd7bd725a438565b5b1`) + **Recommendation** (`RECOMMENDATION`, JOB, id
 which is exactly why all their funnels open empty. Note `Recommendation` in
 `tagTypeOptions` is `isDisabled:true` — you cannot create new Recommendation-type tags.
 
-### ARCHIVED tag = name is RESERVED; Unarchive CLEARS criteria (VC 1891, 2026-08-25)
+### TRIAGE FIRST on a bare "I can't edit job tag filters" (2026-08-26)
+Two questions before touching a live settings page — the fix path forks completely:
+1. **Which store?** Tag inventory differs per store and drifts. Don't assume SCT.
+2. **New tag or existing tag?** New → blank add-row is fully editable, just build it.
+   Existing → Criteria is locked forever (see root cause above); it's Archive+re-create
+   (if name is free) or Unarchive (if already archived). **Never archive a published tag
+   without Joe's explicit go.**
+
+⚠ **Baselines drift — re-read live, don't quote a stored count.** On 2026-08-26 SCT/876
+showed only **3 saved rows (UVI/MPI/PDI, all Recommendation) with NO Job-type tags**,
+contradicting the 5-tag 2026-08-25 baseline below (which included Add-on + Recommendation
+as JOB). Either the tags were removed or a stale/wrong dealer context was read. Always
+assert `currentActiveDealerId` + the header store name before reporting a tag inventory,
+and state the read date.
+
+### ARCHIVED tag = name is RESERVED; Unarchive CLEARS criteria (VC 1891, 2026-08-26)
+
+**VC 1891 end state after the unarchive (verified by screenshot, Active Tags):**
+MPI / UVI / PDI (Recommendation) · Recommendation (Job) · **Add-on (Job, Criteria empty)**.
+Archived Tags tab = empty. Reversible: archive Add-on again to undo.
+
 
 A second store presented the *opposite* shape of the same ticket, and the SCT playbook does
 not work there. **Check the Archived Tags sub-tab BEFORE assuming you must re-create.**

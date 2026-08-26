@@ -88,6 +88,14 @@ Name at `userNameDetails.completeNames[DISPLAY_NAME]`. Write new ids back to `ad
 Note some ids resolve to non-advisor personas (e.g. BC `8c0d2da8…` = Dale Alexander, INVENTORY_MANAGER)
 — they still carry deferred lines as RO primary advisor; keep them but don't assume they're writers.
 
+## Reference run (BC / 1251, Mon 8/24/2026)
+43 declined lines · 22 ROs · $35,836.63 · 9 Critical. Jacob Debussey #1 ($13,731.77 / 2 lines / 2 ROs)
+— driven by a single RO 101776 (2016 Corvette, differential carrier assembly, $12,234.84). Then
+Erik Mercado $5,226.01, Dimetri Reynoso $5,086.15, Houa Moua $5,076.02, Dale Alexander $3,446.19
+(14 lines / 5 ROs — highest line count, non-advisor persona), Jeremia Navarro $1,829.58,
+Michael Reyes $1,191.17, Humberto Dominguez $249.74 (new name, not in the 8/19 roster).
+Draft UID 42652. Note one big-ticket line can dominate the ranking — lead with it when presenting.
+
 ## Reference run (BC / 1251, Mon 8/17/2026)
 46 declined lines · 20 ROs · $23,179.47 · 21 Critical. Michael Reyes #1 ($6,233).
 
@@ -140,8 +148,9 @@ thread. Sundays return 0 → job reports `[SILENT]` and creates no email.
 Joe asked for 6 AM (he's up by 4) — not the 7:30 AM originally proposed below.
 
 ## Pitfalls
-- **"I don't see the draft" usually means it's STALE, not missing.** This report has no cron
-  (as of 8/2026) so it only exists for whatever day it was last hand-run. Gmail sorts Drafts by
+is STALE, not missing.** (Pre-cron history; since
+  2026-08-25 job `d0bfeeef5851` produces one every 6 AM, so a missing draft now means the CRON
+  failed — check its log/delivery before hand-running.) Gmail sorts Drafts by
   creation date, so a days-old draft sits ~13 rows down under the menu-sales drafts and Joe
   reads that as absent. Don't argue from the Gmail UI — prove it with raw IMAP (UID, `\Draft`
   label only, 0 hits in Sent), then **immediately build a fresh one for the latest business day**

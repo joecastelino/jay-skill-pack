@@ -204,6 +204,18 @@ Only the **Customer Pay** row needs flipping for a CP coupon. Leave Internal and
 Warranty `false` — that's correct (you don't coupon a warranty claim). Confirmed
 end state at TL: CP `true`, INT `false`, WAR `false` on all 15.
 
+**Already remediated at TL/1092 (2026-08-25) — do NOT re-flag in a future audit:**
+`CABIN` + `AIRFILTER` (Joe did these himself), plus the 15 Jay flipped:
+`4ALIGN` `BALANCE` `WIPER` `BATT` `RBRAKE` `BELT` `ATFX` `BFX` `FUELINJ` `HVAC`
+`DETAIL` `MAJORP` `MAJORV` `INTERV` `4X4SERVC`.
+Joe **deliberately deferred** `TIRE3` `TIRE4` `FLAT` `SMOG` out of the 19-item
+revenue bucket — he trimmed the list I proposed. Don't flip them unprompted; offer
+tires/value-packages as an explicit next batch.
+
+**Baseline first, always.** Before flipping anything, re-read the current flag — on
+this job two of the targets had already been fixed by Joe minutes earlier and I
+reported them as broken. Diff the audit against this remediated list.
+
 ## Step 5 — The store-wide audit (do it, don't just offer it)
 
 `eligibleForPromotions:false` is never a one-off. Full-store sweep, ~7s:
@@ -250,6 +262,13 @@ Discount Eligible → Update.
 
 ## Pitfalls hit this session
 
+- **Joe edits Tekion in parallel while you work the same ticket.** He flipped
+  `CABIN` and `AIRFILTER` himself minutes before I read them, and I reported them as
+  still broken. Re-read current state immediately before declaring anything broken or
+  before clicking. `lastModifiedBy` + `modifiedTime` on `/v2` tell you who beat you to it.
+- **He trims the batch list you propose.** I offered 19 revenue opcodes; he came back
+  with 15 (dropped `TIRE3` `TIRE4` `FLAT` `SMOG`). Execute exactly the trimmed list and
+  offer the remainder as an explicit follow-up batch — don't "helpfully" include them.
 - **Don't start in the browser.** The RO sweep + jobs/operations + opcode search all
   answer the question over API in seconds. The browser was only needed for the coupon
   read and the visual checkbox confirmation.

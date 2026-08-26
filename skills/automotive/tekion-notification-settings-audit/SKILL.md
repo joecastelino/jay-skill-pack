@@ -85,10 +85,12 @@ Mobile+Text Unavailable), `ROLE_PERMISSION_APPROVAL` (General, WEB only),
 
 **Two things to tell the asker (both are the real gotchas):**
 1. **It is a PER-USER preference, not a store setting.** Flipping your own toggles does
-   nothing for anyone else. Each approver must set their own — or an admin must
-   **Mimic** that user (KB0011016) to set it for them. TEXT needs a valid mobile number
-   on the employee record. **NEVER edit another employee's record without Joe's explicit
-   OK** (standing hard rule).
+   nothing for anyone else. Each approver must set their own — **there is NO admin path.**
+   (Do NOT suggest User Mimicking: KB0011016 confirms it's an internal Tekion-only ARC app,
+   not available to dealer admins. Every admin/override endpoint 404s and userId spoofing
+   is ignored — see the PER-USER proof section below.) TEXT goes to the **user record**
+   phone, not the employee record. **NEVER edit another employee's record without Joe's
+   explicit OK** (standing hard rule).
 2. **Reminders/nagging are NOT a user preference** — they live on the RULE:
    `/core/approval-setup` → business process → rule → **Additional Options →
    Reminders** (interval min/hrs) and **Request Expiry**. Approval requests themselves
@@ -291,6 +293,23 @@ Text notifications go to the **USER record** phone, not the employee record — 
 Sean Preston TL: user `6619522134` vs employee `6616097997` — **different numbers**. If the user-record number
 isn't the person's cell, texts silently go nowhere with every toggle correctly ON. Always reconcile both before
 blaming the notification engine.
+
+**EMAIL destination** comes from the same two records — check both the same way
+(`email` on the user record, `email` on the employee record). In the Sean Preston case they MATCHED
+(`spreston@tol-av.com` both places), which is the useful contrast: **phone mismatched, email did not.**
+So if email still doesn't land after the toggle is verifiably saved on the right dealer, it's a
+delivery-side problem (recipient spam filtering / Tekion sender reputation), not a config problem —
+say that plainly rather than re-walking the toggles.
+
+## TRIAGE ORDER for "I turned it on and they still get nothing"
+Run in this order; each step is cheap and rules out a whole class of cause.
+1. **Verify the save actually persisted, by API, for the RIGHT dealerId** — `GET /api/notificationServiceV2/u/user/preference/<dealerId>`,
+   read the event row's `preference` + `override`. The UI renders defaults on unsaved rows and will lie. (#1 real cause = per-dealer `View By` drift.)
+2. **Verify the person is actually an approver on the rule** — Approval Workspace search replay (above). If they're not on the rule, no notification setting can help.
+3. **Reconcile the destination** — user-record phone vs employee-record phone; same for email.
+4. **Only then** suspect the delivery engine — and open a Tekion ticket with 1–3 attached as evidence.
+5. **Recommend Alert Banner regardless.** It's the most reliable of the three channels: no phone number
+   to be wrong, no deliverability to fail, renders in the app the approver already has open all day.
 
 ## ⚠ APPROVAL WORKSPACE notifications (verified TL 1092, 2026-08-25)
 Joe: "how do I turn on approval workspace notifications so the approver gets a text/email?"

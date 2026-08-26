@@ -306,13 +306,28 @@ payload (`typeSetting.vehicleSubTypeMandatory.enable === true`), not the toggle 
   was enabled — still bare `152xx`. Left ON anyway (harmless, cleaner data entry).
   Do not re-propose it.
 
-- **NEXT TEST (queued, unresolved at time of writing): reversed entry order.**
-  Select Used Vehicle + Used CPO **first**, then paste the VIN. If decode evaluates
-  rules against whatever is already populated, this should yield `CT245xx` and the
-  fix is purely procedural. If it still yields bare `152xx`, decode ignores the
-  rules entirely = genuine Tekion defect, file with the 12 CT27xxx VINs as the
-  reproduction set. Script: `/tmp/reverse_test.py` (waits for a free browser window,
-  never saves the draft).
+- **✅ REVERSED-ORDER TEST — RUN AND SETTLED (2026-08-25).** Sequence executed on
+  `/vi/vehicle/new` at SCT with **every** rule attribute committed BEFORE decode:
+
+  | Step | Stock # |
+  |---|---|
+  | Form open | `''` |
+  | Used Vehicle selected (header → `Stock Type \| Used`) | `''` |
+  | **`Used CPO` radio verified `chk: true`** | `''` |
+  | VIN typed | `''` |
+  | **Tab → decode** | **`15257`** ← bare, not `CT24559` |
+  | +18s | `15257` (never revised) |
+
+  stockType=USED + subType=Used CPO + make=Toyota is an exact match for CT rule #3
+  and it STILL issued the global counter. **Decode does not consult the rules at all.
+  Entry order is irrelevant. Tekion platform defect, confirmed.**
+
+  ⚠️ **ABORT-ON-UNSET-PRECONDITION RULE.** An earlier run of this same test reported
+  `15256` — but line 9 of its log showed all five subtype radios still `chk:false`,
+  i.e. it had actually tested "Used, no subtype" (expected behaviour, not a bug) and
+  proved nothing. **Any test script here must assert the precondition really took and
+  ABORT rather than report a result from an unset condition.** Reporting that run cost
+  a retraction.
 - Vehicle Type radios are custom divs `vi_cargoradio_label_container__*` /
   `vi_cargoradio_main_container__*` (New ~482,659 · Used ~622,659). No
   `input[type=radio]` exists. `/mouse` on the label container did NOT flip the
@@ -409,6 +424,80 @@ Everything downstream — picking Used, picking a subtype, saving — happens to
 
 **Conclusion: this is a Tekion platform defect, not a dealership misconfiguration.**
 Stop proposing Stock# Rules edits. File a ticket and automate the correction.
+
+## 🧭 MANDATORY BEFORE BLAMING TEKION — RUN THE FLEET COMPARISON
+
+I drafted a support ticket asserting a platform defect, then ran the 7-store scan and
+found **SCT was the CLEANEST store in the fleet**, which killed the ticket for half a
+day. Do this scan BEFORE writing any vendor ticket
+(`/home/itadmin/tekion-reports/fleet_stock_pattern.py`):
+
+| Store | USED bare | NEW bare (real VIN) |
+|---|---|---|
+| **SCT 876** | **0 / 160** | 2 / 107 |
+| BT 1249 | 1 / 74 | 14 / 32 |
+| TL 1092 | 37 / 70 | 3 / 6 |
+| BC 1251 | 0 / 66 | 8 / 8 |
+| AR 6195 | 3 / 33 | 0 / 0 |
+| SV 826 / VC 1891 | 0 | 0 |
+
+How to read it: a low per-store defect rate does **not** disprove a platform defect —
+it means the defect is **intermittent**, and only a controlled repro (with every
+precondition asserted) can settle it. Both readings are consistent with the data;
+the repro is what decides. Don't swing to "in-house" on volume statistics alone —
+I did, and had to swing back.
+
+### ⚠️ TL (1092) USES **RANGE** RULES — "no letter prefix" is NOT a defect
+TL's stock numbers are purely numeric bands, no prefixes at all:
+`USED 5696–5852 (41)` · `NEW 183616–185011 (36)` — separate counters, no overlap,
+median gap 3 = perfectly healthy. TL *does* use **suffixes** (`5711P`, `5736RP`,
+`5749P`). Recall `stockRuleTypeWeights` contains a **`RANGE`** attribute — a store can
+be configured RANGE-based instead of LETTERS-based. My scan's "no prefix = broken" test
+falsely flagged all 76 TL units and produced a bogus "TL is a bigger issue" escalation.
+**Derive each store's rule table from its own `stockRuleConfig`; never port SCT's.**
+TL's subtypes are also different (`Trade Vehicle`, `Used Vehicle Purchase`, `CPO Gold`
+— no hyphen).
+
+## DETECTOR v2 RESULTS (SCT, 30 days) — after both false-positive fixes
+
+`sct_stock_audit.py --days 30`: **284 scanned → 22 pre-VIN skipped → 5 flagged**
+(was 30 before the model-year and pre-VIN fixes; no true defects lost).
+
+| Stock# | Should be | Vehicle |
+|---|---|---|
+| `S15042` | S84xx | Mercedes Sprinter |
+| `CT15232` | **NT**29xx | Sienna — wrong prefix too |
+| `CT15230` | CT245xx | Camry, CPO-Gold |
+| `15051` | T26xxxxx | 2026 RAV4 Plug-In Hybrid, **real 17-char VIN**, NEW |
+| `15196` | T26xxxxx | 2026 RAV4 Plug-In Hybrid, **real 17-char VIN**, NEW |
+
+Those last two matter: **the defect is not used-vehicle-only.** Other RAV4 PHVs the
+same day numbered correctly — same model, same day, different outcome. Rate ≈ 1.8%.
+
+## FILING THE TEKION TICKET — exact language matters
+
+**Never say "the decoder isn't working."** The decoder works fine (it returns correct
+year/make/model). Support will verify decode, find it healthy, and close the ticket.
+
+> ✅ **"The stock number is assigned during VIN decode, and at that moment it bypasses
+> the Stock# rules entirely — it takes the next global counter value instead. Once
+> stamped it never re-evaluates, so setting Stock Type / SubType afterward has no effect."**
+
+Also avoid "at write-up / at save" — the number exists before the record is ever saved
+(my repro draft was never saved). Point them at **decode**, or they'll audit the save path
+and find nothing.
+
+**Pre-empt the two canned replies:**
+- *"Add the make/subtype to Inventory Setup."* → Done 8/17 and 8/24, plus
+  SubType-Mandatory 8/25. All three had zero effect. Lead with the counter-health table
+  (`startingValue + currentCount` tracking live stock) so this door is shut on reply #1.
+- *"What number did you expect?"* → `CT24559`, per the CT rule's own sequence.
+
+Repro to hand them (4 steps, sub-minute; offer a Loom — much harder to deflect):
+open Add Vehicle → set Stock Type=Used Vehicle **and** Stock SubType=Used CPO →
+enter VIN `2T3W1RFV7RW336932` → Tab → Stock # populates `15257` instead of `CT24559`.
+Attach the bare stream (`15196` 8/20 · `15215` 8/22 · `15230/32/34/42/50` 8/24 ·
+`15256`/`15257` 8/25) and the 3 confirmed defective units above.
 
 ### Each decode BURNS a counter value
 `15247` (Joe's abandoned draft) and `15256` (mine) were both consumed by drafts that
