@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-26T08:15:06",
+ "generated": "2026-08-26T08:30:53",
  "skill_count": 192,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 147,
-   "last_used": "2026-08-25"
+   "times_used": 148,
+   "last_used": "2026-08-26"
   },
   {
    "name": "agent-to-agent-bridge",
@@ -31,8 +31,8 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 73,
-   "last_used": "2026-08-25"
+   "times_used": 74,
+   "last_used": "2026-08-26"
   },
   {
    "name": "tekion-sitemap",
@@ -147,20 +147,20 @@
    "last_used": "2026-08-25"
   },
   {
+   "name": "tekion-service-settings",
+   "path": "automotive/tekion-service-settings",
+   "category": "automotive",
+   "description": "Reference map of Tekion's Service Settings application (App Grid > Settings > Service Settings) \u2014 the master config for service/RO workflows: General Setup, Job Sequence, Flag Tech on, Round-Up rules, Default Service Advisor, RO/Job Flags, Holds, Parts Request, pay-type setups (Customer/Warranty/Internal/ Insurance), Reminders, Express Mode, Tags, RO KPI List, Quotes, Role Config, Consumer Portal, Approval Settings, Deferred Recommendation Rules, Job Clock Setup, P&L View Setup. Use when asked where/how a service workflow behavior is configured (e.g. \"why do tech flag hours auto-match bill time\", \"how is the recommendation opcode set\", \"where do return-RO / comeback tags come from\").",
+   "times_used": 24,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "sct-backcounter-ro-sales-countsheet",
    "path": "automotive/sct-backcounter-ro-sales-countsheet",
    "category": "automotive",
    "description": "Build Joe's daily SCT Back Counter Bin Check count sheet \u2014 cross-reference a day's RO part sales (Tekion OpenAPI) against parts that stock in a back-counter bin (5000 section) and render a Tekion-bin-check-style sheet with Primary Bin and Back Counter Bin write-in Count boxes, emailed via Stacey. Use when Joe asks to \"verify counts daily\", \"which back counter parts sold today\", or re-run the back-counter check for a date. KEY DESIGN INSIGHT (Joe corrected me 2026-07-04): a bin-snapshot DIFF can NEVER catch a back-counter pull \u2014 Tekion only relieves the PRIMARY bin (2420), so the 5000s bin doesn't move when the sale posts. Detection must be sales-driven: today's RO parts INTERSECT back-counter roster.",
    "times_used": 23,
    "last_used": "2026-07-25"
-  },
-  {
-   "name": "tekion-service-settings",
-   "path": "automotive/tekion-service-settings",
-   "category": "automotive",
-   "description": "Reference map of Tekion's Service Settings application (App Grid > Settings > Service Settings) \u2014 the master config for service/RO workflows: General Setup, Job Sequence, Flag Tech on, Round-Up rules, Default Service Advisor, RO/Job Flags, Holds, Parts Request, pay-type setups (Customer/Warranty/Internal/ Insurance), Reminders, Express Mode, Tags, RO KPI List, Quotes, Role Config, Consumer Portal, Approval Settings, Deferred Recommendation Rules, Job Clock Setup, P&L View Setup. Use when asked where/how a service workflow behavior is configured (e.g. \"why do tech flag hours auto-match bill time\", \"how is the recommendation opcode set\", \"where do return-RO / comeback tags come from\").",
-   "times_used": 23,
-   "last_used": "2026-08-25"
   },
   {
    "name": "tekion-vi-api-migration",
@@ -419,6 +419,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-fee-not-showing-diagnosis",
+   "path": "automotive/tekion-fee-not-showing-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose \"the store can't see / isn't getting charged fee X\" in Tekion \u2014 e.g. \"SCT isn't seeing fees 1TIRE 2TIRE 3TIRE 4TIRE\". Covers the Fee Management v3 API (list + per-fee detail), the ADD_TO_RO (\"Allow to Add at RO Level\") flag that controls whether a fee appears in the RO fee dropdown, opcode\u2192fee attachment, and how to prove whether a fee is actually landing on real ROs. Use for any Tekion fee visibility, fee-not-auto-applying, or fee-attach-rate question.",
+   "times_used": 6,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "tekion-parts-sales-by-advisor-report",
    "path": "automotive/tekion-parts-sales-by-advisor-report",
    "category": "automotive",
@@ -459,12 +467,12 @@
    "last_used": "2026-07-01"
   },
   {
-   "name": "tekion-fee-not-showing-diagnosis",
-   "path": "automotive/tekion-fee-not-showing-diagnosis",
+   "name": "tekion-ro-fee-waiver-investigation",
+   "path": "automotive/tekion-ro-fee-waiver-investigation",
    "category": "automotive",
-   "description": "Diagnose \"the store can't see / isn't getting charged fee X\" in Tekion \u2014 e.g. \"SCT isn't seeing fees 1TIRE 2TIRE 3TIRE 4TIRE\". Covers the Fee Management v3 API (list + per-fee detail), the ADD_TO_RO (\"Allow to Add at RO Level\") flag that controls whether a fee appears in the RO fee dropdown, opcode\u2192fee attachment, and how to prove whether a fee is actually landing on real ROs. Use for any Tekion fee visibility, fee-not-auto-applying, or fee-attach-rate question.",
+   "description": "Investigate whether a specific Tekion Misc/RO-level Fee (e.g. LYFT ride-share charge, shop supply fee, diagnostic fee) is being silently zeroed out on customer-pay ROs while the rest of the ticket bills normally \u2014 i.e. someone quietly waiving a charge without a documented coupon/discount. Use when asked \"is advisor/manager X hiding/not charging for Y\" or \"why did our [fee] revenue drop.",
    "times_used": 5,
-   "last_used": "2026-08-24"
+   "last_used": "2026-08-26"
   },
   {
    "name": "hermes-slack-token-recovery",
@@ -497,14 +505,6 @@
    "description": "Definitively answer \"where did notification X go / does notification Y exist / who gets notified when Z happens\" in Tekion. Dumps the COMPLETE list of user notification event types (all modules) from the internal notification-preference API instead of scrolling the giant Profile Settings table, then maps the request to the right config surface (per-user Profile Settings vs Service Settings vs Dispatch vs Scheduling vs Parts Settings). Load for any \"I can't find the setting that notifies ...\" ticket.",
    "times_used": 4,
    "last_used": "2026-08-25"
-  },
-  {
-   "name": "tekion-ro-fee-waiver-investigation",
-   "path": "automotive/tekion-ro-fee-waiver-investigation",
-   "category": "automotive",
-   "description": "Investigate whether a specific Tekion Misc/RO-level Fee (e.g. LYFT ride-share charge, shop supply fee, diagnostic fee) is being silently zeroed out on customer-pay ROs while the rest of the ticket bills normally \u2014 i.e. someone quietly waiving a charge without a documented coupon/discount. Use when asked \"is advisor/manager X hiding/not charging for Y\" or \"why did our [fee] revenue drop.",
-   "times_used": 4,
-   "last_used": "2026-08-20"
   },
   {
    "name": "tekion-ro-traffic-heatmap-report",
@@ -699,6 +699,14 @@
    "last_used": "2026-08-25"
   },
   {
+   "name": "tekion-ro-payer-split-sunbit",
+   "path": "automotive/tekion-ro-payer-split-sunbit",
+   "category": "automotive",
+   "description": "Add a second payer (Sunbit / third-party financier, insurance, another customer) to a Tekion repair-order JOB and split the dollars to them. Covers the \"I added the payer but it stays at $0.00 / 0%\" trap, the exact Manage Splits click path, and the Tekion global-hotkey trap that hijacks the browser mid-flow. Use for any \"split job X to <payer>\" or \"can't get the Sunbit split to work\" ticket.",
+   "times_used": 2,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "tekion-vehicle-override-row-builder",
    "path": "automotive/tekion-vehicle-override-row-builder",
    "category": "automotive",
@@ -809,14 +817,6 @@
    "description": "Audit, diagnose, and repair the Tekion scraper pipeline including OTP fetching, session reuse, lock starvation, and Puppeteer navigation timeouts.",
    "times_used": 1,
    "last_used": "2026-08-05"
-  },
-  {
-   "name": "tekion-ro-payer-split-sunbit",
-   "path": "automotive/tekion-ro-payer-split-sunbit",
-   "category": "automotive",
-   "description": "Add a second payer (Sunbit / third-party financier, insurance, another customer) to a Tekion repair-order JOB and split the dollars to them. Covers the \"I added the payer but it stays at $0.00 / 0%\" trap, the exact Manage Splits click path, and the Tekion global-hotkey trap that hijacks the browser mid-flow. Use for any \"split job X to <payer>\" or \"can't get the Sunbit split to work\" ticket.",
-   "times_used": 1,
-   "last_used": "2026-08-25"
   },
   {
    "name": "tekion-tech-clock-time-by-opcode",
