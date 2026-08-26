@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-26T16:15:03",
+ "generated": "2026-08-26T16:30:37",
  "skill_count": 198,
  "skills": [
   {
@@ -227,6 +227,14 @@
    "last_used": "2026-08-05"
   },
   {
+   "name": "tekion-opcode-create",
+   "path": "automotive/tekion-opcode-create",
+   "category": "automotive",
+   "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
+   "times_used": 13,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "tekion-parts-sales-orders",
    "path": "automotive/tekion-parts-sales-orders",
    "category": "automotive",
@@ -249,14 +257,6 @@
    "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
    "times_used": 11,
    "last_used": "2026-08-03"
-  },
-  {
-   "name": "tekion-opcode-create",
-   "path": "automotive/tekion-opcode-create",
-   "category": "automotive",
-   "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
-   "times_used": 11,
-   "last_used": "2026-08-26"
   },
   {
    "name": "tekion-parts-appointments-recalls-only",
@@ -491,6 +491,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-department-opcode-buildout",
+   "path": "automotive/tekion-department-opcode-buildout",
+   "category": "automotive",
+   "description": "Derive the complete opcode list a Tekion department (UCD/Used Car, PDI, Express, Body Shop) actually uses over a period, split it into already-correctly-tagged vs shared-with-other-departments, and produce a build sheet of new department-scoped opcodes so ONE Service-Type GL mapping row captures all of that department's internal spend.",
+   "times_used": 5,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "tekion-ro-job-paytype-triage",
    "path": "automotive/tekion-ro-job-paytype-triage",
    "category": "automotive",
@@ -585,14 +593,6 @@
    "description": "Pull declined/deferred service data (recommendations customers didn't buy) for any Tekion store via the internal Deferred Services report API \u2014 service name, counts, dollar estimates, customer/vehicle/advisor detail. Zero OpenAPI quota; works when OVERALL_QUOTA is exhausted. Use for marketing campaign lists (Autumn) or lost-sales analysis.",
    "times_used": 3,
    "last_used": "2026-08-18"
-  },
-  {
-   "name": "tekion-department-opcode-buildout",
-   "path": "automotive/tekion-department-opcode-buildout",
-   "category": "automotive",
-   "description": "Derive the complete opcode list a Tekion department (UCD/Used Car, PDI, Express, Body Shop) actually uses over a period, split it into already-correctly-tagged vs shared-with-other-departments, and produce a build sheet of new department-scoped opcodes so ONE Service-Type GL mapping row captures all of that department's internal spend.",
-   "times_used": 3,
-   "last_used": "2026-08-26"
   },
   {
    "name": "tekion-generic-placeholder-part-swap",
