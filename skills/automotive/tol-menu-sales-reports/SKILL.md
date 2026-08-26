@@ -954,6 +954,25 @@ SANITY-SCAN PROBE RECIPE THAT WORKED (reuse verbatim): build `_probe_<date>.py` 
 `O.call("GET", f"/repair-orders/{rid}/jobs/{j['id']}/operations")` -> `ops["data"]["roOperations"]`.
 Cap it at ~60 ROs (full 105 would exceed the execute_code 300s budget; 60 took 149s).
 
+## (8/25 8:05PM, Opened) TEXTBOOK CLEAN RUN — 6th consecutive genuine $0 day
+Zero exit-124s across ALL 4 calls, CORRECT UID (78) reported and it worked first try on the
+part-listing (no bogus-ID self-correction needed). Hand-off returned in 106s, draft correct
+FIRST TRY with TRUE dedupe (she found and deleted the noon draft on her own before building).
+MIME clean: multipart/mixed > related > alternative(text/plain+text/html) + image/png
+Content-ID=<scorecard> + application/pdf. Verification asks with "use raw IMAP, NOT the Gmail
+API" leading + parts-only part-listing wording: subject-list 42s, part-listing 41s, Sent-check
+40s. Sent-check = 4 hits, all old em-dash-era sends (06/30-07/03), zero today = no leak.
+DATA: 163 opened ROs scanned (busy Monday), 0 menus / $0.00 — SIXTH straight $0 opened day
+(8/23 noon through 8/25 EOD). Sanity scan over the first 55 ROs confirmed genuine: 16 TEK ops,
+ALL numeric-suffix (TEK09040104 x6, TEK09070103 x3, TEK09030103 x3, TEK09050103 x2,
+TEK09010103 x2), ZERO menu-set hits; classic real-$0 prefix histogram (MPV 52, TPS/SUR/INV/FLO
+49, TXM 35, LOF 16, CON/UCD 12). KEEP ESCALATING to Joe.
+SANITY-SCAN PROBE GOTCHA (new, cost 1 iteration): `data/tl-menu-opcodes.json` is a list of
+DICTS, not a list of strings — build the set as `{d["opcode"] for d in json.load(...)}`.
+A bare `set(json.load(...))` raises `TypeError: unhashable type: 'dict'`.
+Drafts stack tiny (6): 08/21-08/25 hyphen-subject Opened drafts + the perennial 08/02 em-dash
+one (UID 20).
+
 ## (8/24 8:05PM, Closed MTD) Clean one-shot, zero exit-124s; ZERO-DELTA day
 Hand-off returned in 103s (no timeout), draft correct FIRST TRY, no dedupe needed. All 3
 verification asks returned FIRST try with "use raw IMAP, NOT the Gmail API" leading and the

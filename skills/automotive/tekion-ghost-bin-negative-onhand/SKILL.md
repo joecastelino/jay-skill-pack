@@ -290,6 +290,22 @@ BEFORE flagging it as a missed transfer:
   itself is benign, yet the stale companion negative (2418 = −2) was still sitting there
   uncorrected from prior runs. Report the recurrence count and the unresolved companion, not the
   increase.
+- **STATUS UPDATE 2026-08-25 — FIRST REAL CORRECTION IN 7+ WEEKS:** **04500-1 (PLUG&GASKET, bin 5005)
+  jumped −120 → −23, a +97 correction** — someone finally posted an adjustment on the longest-running
+  standalone negative (open since 7/04 at −69, worsened to −120 by 8/24). NOT fully resolved (still −23),
+  so keep tracking, but report the improvement as the headline rather than re-flagging it as drift. This
+  is the first evidence that daily escalation language actually got actioned — when a tracked escalation
+  IMPROVES, lead with it and note the delta + remaining balance. Other escalations flat: 31532 −56 (7th
+  flat day), 87139-42040 −12 (6th flat), 87139-YZZ09 −22 (day 18 flat). **17801-F4010 recurrence #9** —
+  5006 rose 2→4 (restock off its own Primary) but companion 2418 STILL −2 and Total Inventory Qty=**2**
+  vs bin 4; unmoved 15 days since 8/11. 87139-YZZ93 5007 34→32 reconciled clean (32+30=62 ✓, Primary=5007).
+  77144-04010 5001 0→1 benign (5001 IS Primary, RC1=0, Total 1 ✓). Negatives held at **26 for an 8th
+  consecutive day** (composition improved though — 04500-1 no longer in the top 4); bin mix 5005=11 rows,
+  5007=7 and still owns 4 of the 6 deepest. Session state: :9223 alive/authenticated but bound to an
+  `about:blank` tab with 3 stale tabs (2 on `/login`, 1 ServiceNow KB) and parked on **TL/1092** — fix was
+  `/pages/close` the 3 stale tabs → `/navigate /home` (welcome:true, no login.py needed) → dealer pill
+  x1130,y32 → SCT leaf x1095,y346 → 876 in ONE 4s poll. Total recovery ~20s. 7/7 bins tagged+clicked first
+  try via the "500" filter + `data-jaybin` tagging, zero scrolling, 4 pages paginated clean.
 - **STATUS UPDATE 2026-08-24:** 2 diffs / 174 rows and **ALL FIVE tracked escalations FLAT** — 31532 −56
   (6th flat day), 04500-1 −120 (flat after 8/23's resume), 87139-42040 −12 (5th flat), 87139-YZZ09 −22
   (day 17). **17801-F4010 recurrence #8** — 5006=2 (Primary) vs Total Inventory Qty=**0**, companion 2418
