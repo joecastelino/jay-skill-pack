@@ -1,6 +1,6 @@
 {
- "generated": "2026-08-26T10:00:06",
- "skill_count": 193,
+ "generated": "2026-08-26T10:15:29",
+ "skill_count": 194,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -31,7 +31,7 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 75,
+   "times_used": 76,
    "last_used": "2026-08-26"
   },
   {
@@ -175,8 +175,8 @@
    "path": "automotive/tekion-declined-deferred-services-report",
    "category": "automotive",
    "description": "Pull declined/deferred services (recommendations customers said no to) for any/all AMG Tekion stores via the internal recommendation/search reporting API. Powers \"most declined service\", declined-services marketing lists (with customer phone/email), and deferred-dollars opportunity reports. Zero OpenAPI quota.",
-   "times_used": 19,
-   "last_used": "2026-08-20"
+   "times_used": 20,
+   "last_used": "2026-08-26"
   },
   {
    "name": "tekion-ro-close-blocked-triage",
@@ -755,6 +755,14 @@
    "last_used": "2026-08-03"
   },
   {
+   "name": "tekion-duplicate-customer-record-diagnosis",
+   "path": "automotive/tekion-duplicate-customer-record-diagnosis",
+   "category": "automotive",
+   "description": "Confirm/refute a store claim that an RO, recommendation, or deferred service \"went to a different customer number for the same customer\" in Tekion. Finds duplicate customer records sharing a phone/VIN, maps which customer id each RO + recommendation was stamped with, and identifies who wrote it.",
+   "times_used": 1,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "tekion-fee-charging-tax-diagnosis",
    "path": "automotive/tekion-fee-charging-tax-diagnosis",
    "category": "automotive",
@@ -979,10 +987,10 @@
    "last_used": null
   },
   {
-   "name": "tekion-duplicate-customer-record-diagnosis",
-   "path": "automotive/tekion-duplicate-customer-record-diagnosis",
+   "name": "tekion-department-opcode-census",
+   "path": "automotive/tekion-department-opcode-census",
    "category": "automotive",
-   "description": "Confirm/refute a store claim that an RO, recommendation, or deferred service \"went to a different customer number for the same customer\" in Tekion. Finds duplicate customer records sharing a phone/VIN, maps which customer id each RO + recommendation was stamped with, and identifies who wrote it.",
+   "description": "Answer \"what opcodes would I need to build for department X\" / \"run a report of ROs closed in the <UCD/PDI/Body Shop/Express> department over the last N days\". Produces the opcode list a department actually uses, classified EXCLUSIVE vs SHARED, cross-referenced against the Service Type each opcode is tagged to \u2014 which is what determines whether a GL-mapping-by-Service-Type change will actually capture the work.",
    "times_used": 0,
    "last_used": null
   },

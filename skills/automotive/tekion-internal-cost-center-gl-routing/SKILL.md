@@ -225,6 +225,17 @@ Service Catalog · Service Menu · Cadillac Express Shop.
 work currently posts labor to **463** and parts to **481** via the catch-alls.
 Fix = add `Internal Pay | Used Car Department | <acct>` rows.
 
+⚠️ **Adding that row is only HALF the fix — verify opcode coverage first.** Because BC
+routes by Service Type, the new row only captures opcodes actually *tagged* to the
+"Used Car Department" service type (`62e806c31e9d980006b3e8ef`). A 90-day census of
+BC's UCD department (391 closed ROs) found only **6 of 27** opcodes tagged to it
+(UCDETAIL/UCSAFETY/UCSMOG/UCEV/UCFRONTLINE/CERTSAFETY); the other 21 — ALIGN, 4ALIGN,
+TIRE1/2/4, FBRAKE, RBRAKE, BELT, BALANCE, AGMBATTERY, CABIN, LOF6, CADTIRE1-4 — are
+tagged to XPRESS SERVICE / Main Service / Maintenance Service and would silently keep
+posting to 463/481. Most of them are ALSO used heavily outside UCD, so they can't just
+be retagged. Run the census before promising Joe the mapping row "captures UCD" —
+skill **`tekion-department-opcode-census`**.
+
 BC *Repair Order – Internal* cost centers: 460L Lyft · PDI 263A · Chevy New Car INV 231 ·
 Chevy New Truck INV 237 · Used Car INV 240 · Used Truck INV 241 · WeOwe/Due Bill 305 ·
 New Car - Lot Damage (inactive) · Used Car Lot Damage (inactive) · Service Lot Damage ·
@@ -304,6 +315,9 @@ Bare `login.py` reuses a live session ("session ALIVE — reusing" → `REUSED`)
 rather than re-logging in — safe to call before accounting recon.
 
 ## Related skills
+- `tekion-department-opcode-census` (which opcodes a department actually uses, and
+  whether a Service-Type mapping row will really capture them — run this BEFORE
+  promising a GL change covers a department)
 - `tekion-sitemap` (Accounting URL table + App Grid coords)
 - `tekion-journal-entry-error-diagnosis` (when the JE actually errors)
 - `tekion-kb-search-scrape`, `persistent-browser-server`
