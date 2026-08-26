@@ -383,6 +383,18 @@ if you need a specific historical count:
 1. **Clean no-op run** = disk `.md` count == import scan total (`0 imported / N skipped, 0 errors`),
    `embed --stale` = "0 chunks", `stats` Embedded==Chunks, `orphans` 0, `git status` clean. Nothing to
    do — respond `[SILENT]`.
+   **BUT NEVER STOP ON THE FIRST CLEAN PASS — ALWAYS RE-IMPORT ONCE TO CONFIRM (learned 2026-08-26).**
+   A first import can report a PERFECT no-op (0 imported / 1293 skipped / 0 errors, `embed --stale`
+   0 stale, `orphans` 0/1299, `git status` clean) and still be wrong: the every-15-min session-end-sync
+   commits new `projects/session-*` captures mid-run, so the "clean" reading is just a snapshot taken
+   before they landed. On 2026-08-26 that exact clean first pass was followed by a plain re-import that
+   found **1 page imported / 1 chunk**, which then surfaced 1 orphan — and clearing it cascaded into a
+   SECOND latecomer (`session-20260826_064650_59276f`) on the next pass. Two full link→index.md→commit→
+   reimport→embed rounds were needed before `orphans` finally hit 0/1301 with `git status` clean.
+   So the exit condition is never "the first pass looked clean"; it is **two consecutive passes agreeing**:
+   re-run `gbrain import --no-embed` + `embed --stale` + `orphans` and only declare `[SILENT]` when that
+   CONFIRMING pass is also 0-imported / 0-stale / 0-orphans / clean tree. Cost is ~5s; the failure mode
+   it prevents is silently leaving a fresh session page unembedded and unlinked until the 3 AM refresh.
 2. **Orphan repair run** = import picks up 1-3 fresh same-day `projects/session-*` captures; clear each
    with hub→page `gbrain link index projects/session-<ts> --link-type references`, append to index.md
    `## Sessions`, `git add -A` / `git commit -m "brain sync"` (separate calls), re-import + `embed --stale`,
