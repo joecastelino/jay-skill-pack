@@ -20,6 +20,61 @@ triggers:
 
 # Tekion — Create a New Opcode (Opcode Management)
 
+## 🚦 MANDATORY PROTOCOL — run these 3 things BEFORE tool call #1
+
+Joe called out (2026-08-26) that one opcode took **40 minutes / 190 tool calls**. The
+post-mortem found 4 causes, all preventable. This gate exists so they cannot recur.
+**Budget: ~10 min / ~25 calls per opcode. If you pass 40 calls, STOP and re-read this.**
+
+**1. Load this skill FIRST.** On the UC4ALIGN build I loaded
+`tekion-internal-cost-center-gl-routing`, `tekion-autonomous-login` and
+`persistent-browser-server` — and never opened THIS one, the only skill with the click
+path for the form I was filling. Trigger words: *build/create/clone an opcode*, any
+`UC*`/dept opcode, "set it up like <existing op>".
+
+**2. Run the preflight — one call, replaces ~15.**
+```bash
+cd /home/itadmin/tekion-reports && \
+  /home/itadmin/.hermes/hermes-agent/venv/bin/python3.11 opcode_preflight.py --dealer <ID>
+# ... build ...
+  /home/itadmin/.hermes/hermes-agent/venv/bin/python3.11 opcode_preflight.py --restore
+```
+Checks :9223 alive → waits out any in-flight `cron-pipeline` → pauses the cron (safe
+backup+install, no sed-pipe) → asserts `currentActiveDealerId` → reports the SPA url.
+Exit 0 = safe to build. Non-zero = do NOT start. `--restore` is not optional.
+
+**3. Use the helper library, don't re-derive mechanics.**
+`/home/itadmin/tekion-reports/jay_opcode.py` — every verified recipe below is already
+implemented (ES5 `/eval`, scrollIntoView+re-read, type-filter-to-one-option,
+tree-leaf-only clicks, section-relative `Add`, price-input polling, readback, commit,
+verify). It is a HELPER for hand-building, not a fire-and-forget script.
+```python
+import sys; sys.path.insert(0,"/home/itadmin/tekion-reports")
+from jay_opcode import B
+b = B(); b.assert_dealer("1251"); b.goto("/ro/opcode/add")
+b.fill_text_fields([code, code, desc])
+b.select("Category","Maintenance"); b.select("Service Type","Used Car Department")
+b.tree_select_field("Default Pay Type","I - Default internal pay")
+b.set_labor_hours(customer=hrs, manufacturer=hrs)
+b.add_rate_row("Internal Pay","Fixed Price",int_price)
+b.add_rate_row("CP - Default customer pay","Fixed Price",cp_price)
+b.set_cost_center("Used Car INV 240")
+print(b.readback())        # eyeball BEFORE commit
+b.commit(); print(b.verify(code))
+```
+**Batch one section per `execute_code` call** (fill → verify → next), not one `/eval`
+per field. That alone is the difference between 190 calls and ~25.
+
+**4. NEVER write new automation mid-task.** See the "Don't rewrite this as a headless
+Playwright script" section below — I burned ~75 calls on exactly that, then threw it
+away and hand-built anyway. If a click path is proven, grind it. Script it AFTER, on my
+own time, never while Joe is waiting.
+
+**5. If context compaction fires mid-build**, re-read the store's pinned field standard
+(in `tekion-department-opcode-buildout`) instead of re-deriving it from the API.
+
+---
+
 Authoritative field-by-field reference for creating a new opcode, distilled from
 Tekion's own KB **KB0025686** (PDF saved at `~/tekion-kb/pdfs/`, text at
 `~/tekion-kb/text/Create_a_new_opcode_in_the_Opcode_Management_application.txt`).
@@ -414,6 +469,10 @@ Also note the hook must be re-armed after any hard reload, and `/opcode/skills` 
 instead of hardcoding ids.
 
 ## 🔴 PAUSE THE CALIBER PIPELINE CRON BEFORE ANY MULTI-MINUTE :9223 FORM SESSION
+
+**→ Just run `opcode_preflight.py --dealer <ID>` (see the MANDATORY PROTOCOL at the top).
+It does everything in this section in one call, and `--restore` undoes it.** The manual
+detail below is kept for when the preflight itself needs debugging.
 
 `cron-pipeline.sh` runs **every 15 minutes** and drives the SAME `:9223` browser. Building an
 opcode takes longer than 15 minutes, so it WILL navigate your half-filled form away mid-build.

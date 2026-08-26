@@ -239,11 +239,26 @@ assert the id immediately before clicking `Create`, not just when you opened the
 ### ⚠️ Budget the wall-clock honestly
 
 Opcode #1 and #2 each took far longer than expected and Joe asked *"why is it taking you so
-long this time?"* Two causes, both avoidable and both now documented in
-`tekion-opcode-create`: (a) the 15-min pipeline cron stealing the browser — **pause it up
-front**, and (b) choosing to write a headless script instead of hand-building — **don't**.
-A clean hand-build of one opcode is roughly 10 minutes. If it's running long, stop and check
-which of those two is happening rather than pushing harder.
+long this time?"* — then, after a log audit, *"make the fixes so this inefficiency doesn't
+reoccur."* Measured cause of the 40-min / 190-call UC4ALIGN build:
+
+| Cause | Calls |
+|---|---|
+| Wrote a headless script mid-task, debugged 20 cycles, **abandoned it** | ~75 |
+| Never loaded `tekion-opcode-create` (loaded 3 wrong skills instead) | — |
+| Browser contention with the 15-min `cron-pipeline` | ~15 |
+| Leftover GL/cost-center probing bleeding in from the prior question | ~16 |
+| One `/eval` per field instead of one batched call per section | ~70 |
+
+**The fix is now enforced, not just documented** — before opcode #1:
+```bash
+cd /home/itadmin/tekion-reports && \
+  /home/itadmin/.hermes/hermes-agent/venv/bin/python3.11 opcode_preflight.py --dealer <ID>
+```
+and build through `jay_opcode.py` (`from jay_opcode import B`), batching one SECTION per
+`execute_code` call. **Target: ~10 min / ~25 calls per opcode. Past 40 calls, stop and
+re-read `tekion-opcode-create`'s MANDATORY PROTOCOL rather than pushing harder.**
+Run `opcode_preflight.py --restore` the moment the last opcode commits.
 
 ## Pitfalls
 
