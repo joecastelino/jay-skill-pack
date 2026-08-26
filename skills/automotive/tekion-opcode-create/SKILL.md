@@ -231,6 +231,34 @@ duplicate = the "Perform Tire Rotation (2)" clutter problem Joe hates. Default t
 reuse+reprice an existing cousin (flag the à-la-carte blast radius) and only create new when
 the service content genuinely differs (e.g. BALANCE lacked rotation → ROTATEBAL justified).
 
+## Create-form mechanics verified at BC 1251 (2026-08-26, UCALIGN)
+
+Page: `/ro/opcode/add` → commits to `/ro/opcode/edit/<OPCODE>`.
+
+- **Default Pay Type** is an **ant-v5 tree-select**, not a react-select. Options render as
+  `.ant-v5-select-tree-treenode`; click the inner `.ant-v5-select-tree-title`, not the node
+  wrapper (clicking the wrapper no-ops). Leaf label is `I - Default internal pay` /
+  `CP - Default customer pay` under parent `Internal Pay` / `Customer Pay`.
+- **Labor Rate Configuration** table: `Add` button at ~`1202,294`. New row appears at the TOP
+  (y≈372) and pushes existing rows down — always re-locate rows by y, never cache them.
+  - Pay Type cell = same tree-select. Customer Type cell = multi-select (`All / Individual /
+    Business`) — pick **All**, then `Escape` to close (it stays open otherwise).
+  - Labor Rate cell = react-select at td index 3 (`[class*=tuc-react-select]`), options
+    `Labor Price Guide / Hourly Price / Fixed Price`.
+  - Price input `placeholder="Enter price"` appears only after Fixed/Hourly is chosen.
+- **PRICE INPUT DOUBLE-ENTRY TRAP**: the `/type` endpoint AND a subsequent click+`/press`
+  both write. Typing "80" twice yields `8080` with no visible error. Use ONE method
+  (click the input, then `/press` per character) and **always read `input.value` back**
+  before moving on.
+- **Internal Default Cost Center** block has no Add button — it ships with one blank row.
+  Click its `Select` (~`261,541` when scrolled to the block), type to filter, click the
+  option. Split auto-fills `100`. `Allow Override` defaults ON.
+- **Skill** is mandatory (`Skill*`). Defaults to `tech/generic`. It's a react-select whose
+  `singleValue` div carries the current text — locate by `innerText` match, not by label.
+- Verify commit by arming an XHR hook then `history.pushState` away and back; the reload
+  fires `GET /api/service-module/u/opcode/<OPCODE>/v2` which returns the full committed
+  record. Do NOT trust the post-save DOM.
+
 ## Pitfalls / notes
 - Opcodes are **store-specific** — create only at the store(s) needed (Joe-confirmed);
   don't replicate across all 7 unless asked.
