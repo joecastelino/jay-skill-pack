@@ -1,6 +1,15 @@
 ---
 name: tekion-bin-replenishment-picklist
 description: Build and run the Tekion Bin Replenishment Pick List for multi-bin parts warehouses (pilot SCT). Detects parts where the Primary Bin is running low while overflow bins hold real stock, produces a daily warehouse-walk pick list, and (phase 2) auto-keys the system-side bin adjustment via Tekion's new Adjust Bin by Part / QOH bin adjustment features. Load whenever Joe mentions bin replenishment, sell-by-bin, primary bin stockouts, or moving stock between bins.
+triggers:
+  - bin replenishment pick list
+  - primary bin running low
+  - sell by bin automation
+  - move stock from overflow bin to primary
+  - daily warehouse walk pick list
+  - adjust bin by part
+  - qoh bin adjustment
+  - primary bin stockout detection
 ---
 
 # Tekion Bin Replenishment Pick List

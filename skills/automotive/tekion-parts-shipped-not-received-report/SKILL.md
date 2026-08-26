@@ -1,6 +1,15 @@
 ---
 name: tekion-parts-shipped-not-received-report
 description: Build the "parts ordered/shipped and NOT received" report for a Tekion store (outstanding part lines on open POs, with aging + $ value). Uses the Parts Receiving "Orders Not Received" queue and an XHR hook on partTrade/u/purchase/search to harvest full per-part JSON (ordered/received/backorder/cancelled qty, unit cost, ref RO/SO, customer). Verified SCT 2026-07-06 (400 POs, 1127 lines, $180K). Load when Joe asks for shipped-not-received, unreceived parts, open PO parts, or PO aging reports.
+triggers:
+  - parts shipped not received report
+  - unreceived parts report
+  - open po parts aging
+  - orders not received queue
+  - outstanding po parts by dollar value
+  - parts receiving exception report
+  - backordered parts report
+  - po aging buckets
 ---
 
 # Tekion "Parts Shipped & Not Received" Report

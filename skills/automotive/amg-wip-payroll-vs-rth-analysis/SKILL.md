@@ -1,6 +1,16 @@
 ---
 name: amg-wip-payroll-vs-rth-analysis
 description: Analyze an AMG per-store semi-monthly WIP workbook (tech payroll vs RTH / labor relieved to WIP) and produce Joe's service-manager meeting prep — trend table, per-tech gap ranking, talking points, recoverable-$ target. First run 2026-07-08 on "2026- SCWV Wip.xlsx" (Stevens Creek VW); Joe approved the format verbatim.
+triggers:
+  - prep for the service manager meeting
+  - analyze the store wip workbook
+  - payroll vs rth applied percentage
+  - tech payroll gap analysis
+  - unapplied labor 5416 review
+  - per tech applied percent ranking
+  - joe dropped a wip xlsx for input
+  - recoverable dollars from applied percent
+  - semi-monthly payroll reconciliation
 ---
 
 # AMG WIP Payroll-vs-RTH Analysis (Service Manager Meeting Prep)

@@ -1,6 +1,16 @@
 ---
 name: tekion-parts-ordering-receiving
 description: Order parts (purchase orders), handle Special Order Requests (SOR/SOP), and receive parts in Tekion's Parts module. Covers the 8 PO types, the SOR→special-order-PO flow, Parts Receiving app (web + mobile scan-gun), Manual Receipts, float/cross-ship/backorder handling, and all statuses. Load for any "how do I order/receive a part" or SOR troubleshooting task in Tekion.
+triggers:
+  - how do i create a purchase order in tekion
+  - special order request not showing up
+  - receive parts against a PO
+  - sor stuck at 0/0 in red
+  - manual receipt for a part ordered outside tekion
+  - part backordered how do i cancel it
+  - float parts need a source code and bin
+  - vendor stock order vs oem stock order
+  - core return process in tekion parts
 ---
 
 # Tekion Parts — Ordering & Receiving

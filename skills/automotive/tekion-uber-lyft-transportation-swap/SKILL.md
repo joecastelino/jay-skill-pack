@@ -1,6 +1,15 @@
 ---
 name: tekion-uber-lyft-transportation-swap
 description: Reference for the AMG project to replace Tekion's native Lyft transportation/ride-fee integration with Uber. Load when asked about Uber API integration, swapping Lyft for Uber in Tekion, or prepping for Uber engineering team talks.
+triggers:
+  - replace lyft with uber in tekion
+  - swap lyft for uber
+  - uber integration for transportation
+  - uber for business ride booking
+  - can we use uber instead of lyft
+  - ro fee api write access for uber fares
+  - prep for the uber engineering call
+  - uber lyft transportation swap project status
 ---
 
 # Tekion Uber/Lyft Transportation Swap

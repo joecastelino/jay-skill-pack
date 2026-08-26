@@ -353,6 +353,36 @@ no manual `backfill-skills-to-brain.py` call needed. NOTE the backfill only cove
 skills dir (the 73 generic plugin skills are intentionally excluded as search noise).
 
 ## SKILL INDEX with descriptions + metadata + usage counts (SELF-MAINTAINING as of 2026-06-25)
+
+### ⚠️ Folded-description bug — FIXED 2026-08-26, check for regressions
+
+`rebuild-skill-index.sh` originally parsed `description:` with an inline-only regex
+(`^description:\s*(.+)$`). Any skill whose frontmatter uses a **YAML folded/literal block
+scalar** —
+```yaml
+description: >
+  Create a NEW opcode from scratch in Tekion's Opcode Management...
+```
+— had its description stored in `manifest.json` as the literal string `">"`.
+**39 of 198 skills were affected**, including high-traffic ones: `tekion-opcode-create`,
+`tekion-autonomous-login`, `persistent-browser-server`, `bt-tony-menu-rebuild`,
+`sct-menu-sales-*`, `tekion-add-job-to-ro-button-disabled`. Those skills were effectively
+invisible to description-based lookup — a direct contributor to loading the WRONG skills
+during the 40-min UC4ALIGN build (Joe: *"are you not using the skills?"*).
+
+Parser now handles `>`, `>-`, `>+`, `|`, `|-`, `|+` and bare-empty heads by collecting the
+following indented block. **Verify after EVERY index rebuild:**
+```bash
+python3 -c "import json;m=json.load(open('/home/itadmin/.hermes/profiles/jay/skills/manifest.json'));\
+b=[s['name'] for s in m['skills'] if s['description'].strip() in ('>','|','>-','|-','')];\
+print('broken:',len(b),'of',m['count'])"
+```
+Must print `broken: 0`. Back up `usage-stats.json` first and confirm the `times_used` sum
+didn't drop — the rebuild merges rather than resets, but a bad edit can wipe counters.
+
+**Second known gap: only 95 of 198 skills declare `triggers:`** — the strongest matching
+signal. When creating or patching a skill, add a `triggers:` list.
+
 Files under `/home/itadmin/.hermes/profiles/jay/skills/`:
 - `manifest.json` — enriched: per skill {name, skill_name, path, **description**, **triggers**,
   category, size_bytes, modified}. Regenerate with `/home/itadmin/bin/rebuild-skill-index.sh`

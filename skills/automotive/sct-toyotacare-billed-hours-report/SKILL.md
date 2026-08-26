@@ -1,6 +1,15 @@
 ---
 name: sct-toyotacare-billed-hours-report
 description: Pull the ToyotaCare (TAC) billed-hours number from Tekion's Advisor Performance report (Reports module) for SCT or any store, using Joe's saved TAC/ToyotaCare filter — and roll it out to the other 6 AMG stores. Use when Joe asks for ToyotaCare / TAC billed hours, or is building his monthly SCT fixed-ops sheet ("first number, Toyota Care").
+triggers:
+  - toyotacare billed hours
+  - tac billed hours report
+  - pull the toyota care number
+  - first number for my monthly sheet
+  - tac bill hrs for sct
+  - advisor performance report toyotacare filter
+  - roll out tac hours to all stores
+  - toyota care hours by store
 ---
 
 # SCT ToyotaCare (TAC) Billed-Hours Report

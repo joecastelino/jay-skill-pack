@@ -1,6 +1,15 @@
 ---
 name: tekion-warranty-admin-closings
 description: Build a "which warranty admin closed what tickets" report for any AMG store from the Tekion OpenAPI — per-clerk RO counts, warranty $ and total RO $, month-to-date or any window. Verified SCT July 2026.
+triggers:
+  - which warranty admin closed what tickets
+  - warranty closings report
+  - who is closing warranty ros
+  - warranty admin mtd breakdown
+  - bc warranty closings daily email
+  - per clerk warranty ro count and dollars
+  - warranty clerk closed amount
+  - ruben warranty closings report
 ---
 
 # Tekion Warranty Admin Closings Report

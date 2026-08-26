@@ -1,6 +1,16 @@
 ---
 name: tekion-process-automation
 description: Tekion CRM Process Automation — the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or "why didn't this task fire" question. This is CRM-side, NOT Fixed Ops.
+triggers:
+  - why didn't this task fire
+  - crm process automation
+  - new lead decision tree
+  - rules vs processes in crm
+  - lead not getting tasks
+  - process execution log
+  - exit condition missing
+  - bdc assignment delay task
+  - schedule time rules
 ---
 
 # Tekion CRM — Process Automation

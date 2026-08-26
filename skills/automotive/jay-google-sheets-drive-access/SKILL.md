@@ -1,6 +1,16 @@
 ---
 name: jay-google-sheets-drive-access
 description: Access Joe's Google Sheets and Drive files from Jay's profile — token symlink bootstrap, reading/writing native Sheets, downloading Drive-hosted .xlsx files (like AMG WIP.xlsx) via alt=media, and the xlsx-vs-native-Sheet write limitation. Established 2026-08-02.
+triggers:
+  - read joe's google sheet
+  - update the advisor performance report sheet
+  - pull the amg wip xlsx from drive
+  - google token not authenticated
+  - download a drive hosted xlsx file
+  - append rows to a native google sheet
+  - cant write to this xlsx in drive
+  - access joe's drive files
+  - sheets api fails on uploaded excel file
 ---
 
 # Jay → Joe's Google Sheets / Drive Access

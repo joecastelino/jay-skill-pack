@@ -8,6 +8,15 @@ description: >
   pipeline (sct-menu-sales-api-scorecard). Use for any "BC menu report",
   "Blackstone Chevy/Cadillac menu sales", or Ruben report request.
 trigger: BC menu sales, Blackstone Chevrolet Cadillac menu report, Ruben menu report, BC daily closed, BC closed MTD, blackstonegm report
+triggers:
+  - run the bc menu sales report
+  - bc daily closed report
+  - bc closed month to date report
+  - blackstone chevrolet cadillac menu sales
+  - draft the bc menu report to ruben estrada
+  - gm store menu sales scorecard
+  - bc menu opcode numbers
+  - ruben wants the menu report
 ---
 
 # BC (Blackstone Chevrolet & Cadillac) Menu Sales Reports

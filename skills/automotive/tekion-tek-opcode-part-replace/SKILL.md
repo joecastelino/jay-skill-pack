@@ -14,6 +14,15 @@ description: >
   opcode starts with "TEK".
 category: automotive
 tags: [tekion, opcode, parts, override, service-menu, factory-opcode, part-replace, browser]
+triggers:
+  - menu pulls the wrong factory part
+  - replace part number on a TEK opcode
+  - fix wrong part on a maintenance menu line
+  - modify system parts on opcode overrides
+  - swap a superseded part number for the current one
+  - factory opcode showing incorrect part
+  - cabin filter opcode has wrong part number
+  - replace part number modal on opcode management
 ---
 
 # Tekion — TEK Factory-Opcode Part Replace

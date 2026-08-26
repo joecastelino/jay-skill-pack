@@ -1,6 +1,15 @@
 ---
 name: tekion-parts-appointments-recalls-only
 description: Restrict Tekion Parts RO Sales appointment notifications to recall opcodes only (or any opcode subset) by mass-toggling the per-opcode "Consider for Parts preparation on Appointment" flag. Covers the Bulk Update UI, the underlying bulk-update API for scale, and full verification. Built for Glade at SCT 2026-07-20; applies to any store.
+triggers:
+  - parts appointments should only show recalls
+  - turn off parts prep notifications for non recall opcodes
+  - make the parts appointment queue recalls only
+  - consider for parts preparation on appointment checkbox
+  - bulk update opcode parts flag
+  - mass toggle the parts appointment setting
+  - parts department getting too many appointment notifications
+  - eligible for parts preparation field
 ---
 
 ## Deployment log (durable state — memory tool was unavailable at save time)

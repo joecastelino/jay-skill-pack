@@ -1,6 +1,15 @@
 ---
 name: tekion-parts-appointments-opcode-scoping
 description: Restrict Tekion Parts-on-Appointments (Parts RO Sales > Appointments queue) to a subset of opcodes — e.g. recalls only, per Glade at SCT. Covers the per-opcode "Consider for Parts preparation on Appointment" checkbox, Bulk Update, the limited Appointments-tab filters, and how to derive a store's recall keep-list from the opcode list. Load for any "parts department should only see X appointments" request.
+triggers:
+  - parts department should only see recall appointments
+  - limit parts appointments queue to certain opcodes
+  - too many appointments showing in parts prep
+  - consider for parts preparation on appointment checkbox
+  - bulk update opcodes for parts appointment notifications
+  - filter appointments tab by opcode type
+  - parts appointments queue should only show recalls
+  - stop parts getting notified for every opcode
 ---
 
 # Tekion — Scope Parts-on-Appointments to specific opcodes (recalls-only pattern)

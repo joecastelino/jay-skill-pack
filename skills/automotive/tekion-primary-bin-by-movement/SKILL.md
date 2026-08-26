@@ -1,6 +1,15 @@
 ---
 name: tekion-primary-bin-by-movement
 description: Recommend which bin should be a part's PRIMARY bin based on where the movement actually happens — back counter (RO parts sales) vs front counter (Sales Orders). Glade's alternative to the "zero out every non-primary bin" policy. Use when Joe/Glade asks which counter drives a part's sales or wants primary-bin flip recommendations.
+triggers:
+  - which bin should be primary
+  - front counter vs back counter bin movement
+  - flip primary bin recommendation
+  - glade's primary bin policy
+  - dual bin drift analysis
+  - fulfilment vs sales order bin split
+  - majority movement bin recommendation
+  - should we flip this part's primary bin
 ---
 
 # Primary Bin by Majority Movement (Front vs Back Counter)

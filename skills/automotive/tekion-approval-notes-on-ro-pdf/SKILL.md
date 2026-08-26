@@ -1,6 +1,15 @@
 ---
 name: tekion-approval-notes-on-ro-pdf
 description: How to get RO approval information / approval notes (additional warranty hours approvals, warranty job approvals, recommendation approvals) to print on a Tekion RO / invoice PDF. Covers the prerequisite Service Settings + support ticket, the PDF Configurator toggle, and where the live UI differs from the KB article. Use when Joe or a store asks "how do I get the approval notes on the RO PDF" or "approvals aren't printing on the warranty invoice".
+triggers:
+  - approval notes not printing on the ro pdf
+  - get approvals to show on the invoice
+  - warranty approval missing from printed ro
+  - pdf configurator approval field
+  - enable ro approval flow
+  - approval setup app in tekion
+  - recommendation approvals on the invoice
+  - additional warranty hours approval not printing
 ---
 
 # Tekion — Approval notes on the RO PDF

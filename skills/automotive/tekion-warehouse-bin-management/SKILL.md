@@ -1,6 +1,15 @@
 ---
 name: tekion-warehouse-bin-management
 description: Answer how Tekion handles bins — which bin a sale pulls from (Primary Bin), whether you can replenish/auto-transfer between bins, the Warehouse Management app (Bin Change, Bin Reports, locations), and the CDK-migration ghost-bin pattern. Use when Joe asks about "bins messed up", choosing a pull bin, per-bin replenishment, bin transfers, or primary vs secondary bins. Load with tekion-sitemap + persistent-browser-server.
+triggers:
+  - bins are messed up
+  - which bin does a sale pull from
+  - primary bin vs secondary bin
+  - can we replenish one bin from another
+  - bin transfer settings
+  - warehouse management app bin change
+  - ghost bin negative on hand
+  - choosing a pull bin for a part
 ---
 
 # Tekion Warehouse / Bin Management

@@ -1,6 +1,15 @@
 ---
 name: tekion-kb-search-scrape
 description: Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session — no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.
+triggers:
+  - search the tekion knowledge base
+  - look up a tekion kb article
+  - find kb articles about a topic
+  - scrape the tekion servicenow kb
+  - how does this tekion workflow or setting work
+  - pull a kb0012192 style article
+  - ingest tekion documentation into gbrain
+  - check the kb before answering a tekion question
 ---
 
 # Tekion ServiceNow KB — Search & Scrape

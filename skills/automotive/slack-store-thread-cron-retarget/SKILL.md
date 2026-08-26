@@ -1,6 +1,15 @@
 ---
 name: slack-store-thread-cron-retarget
 description: Retarget an AMG store's Hermes cron report deliveries to a new Slack thread when Joe says "can this thread be <store> reports only?", and sweep the whole fleet for dead channel_not_found cron deliveries.
+triggers:
+  - can this thread be bc reports only
+  - make this the bt thread
+  - retarget cron reports to this thread
+  - reports stopped showing up in slack
+  - channel_not_found cron delivery
+  - move store reports to a new thread
+  - fix dead slack cron delivery
+  - sweep crons for broken channels
 ---
 
 # Slack store-thread cron retarget

@@ -1,6 +1,15 @@
 ---
 name: tekion-vendor-data-sharing-audit
 description: Audit which third-party vendors/integrations (vAuto, HomeNet, VinSolutions, CDK, Carfax, Podium, OEM feeds, etc.) are receiving data feeds from Tekion, broken down by store. Use when asked "what vendors get data feeds/integrations from AMG", "who are we sending inventory/CRM/recon feeds to", or similar vendor-integration inventory questions.
+triggers:
+  - what vendors get data feeds from us
+  - who are we sending inventory or crm feeds to
+  - vendor data sharing audit
+  - integration hub vs vendor data sharing
+  - which vendors sync with tekion per store
+  - vauto homenet carfax feed audit
+  - oem feed rollup by store
+  - data sharing status by vendor
 ---
 
 # Tekion Vendor Data Sharing Audit

@@ -1,6 +1,15 @@
 ---
 name: tekion-parts-sales-by-advisor-report
 description: Build a Tekion parts-sales-by-service-advisor report (e.g. cabin/engine air filters, or any specific part category) for any AMG store — units, revenue, menu-attach, ranked bar-chart summary AND full RO-level line-item detail per advisor. Use whenever Joe asks for a parts sales report "broken down by advisor" or "like the alignment report" — he means BOTH a summary table AND the underlying RO detail, not just aggregate numbers.
+triggers:
+  - parts sales by advisor report
+  - cabin or air filter sales by advisor
+  - parts report like the alignment report
+  - ro level detail for parts sales
+  - menu attach rate by advisor
+  - parts units and revenue per advisor
+  - which advisor sold this part
+  - parts sales broken down by advisor
 ---
 
 # Tekion Parts Sales — By Service Advisor (with RO-level detail)

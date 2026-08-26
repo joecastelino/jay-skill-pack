@@ -1,6 +1,15 @@
 ---
 name: tekion-appointment-source-audit
 description: Answer "why do appointments from vendor X show as Integration / can we relabel the appointment source" and audit appointment volume by source (BDC, Consumer, Walk-in, Integration/Open API, AI) per store. Covers Tekion's fixed appointmentSource→category enum, the internal /api/scheduling/u/appointment/search aggregation API, and how to identify which vendor is behind an Integration bucket.
+triggers:
+  - why do appointments show as integration
+  - can we relabel the appointment source
+  - appointment source audit by store
+  - bdc vs walk-in vs integration appointments
+  - which vendor is behind the integration bucket
+  - open_api appointment source
+  - ai bdc appointment bucket
+  - appointment volume by source per store
 ---
 
 # Tekion — Appointment Source / "shows as Integration" audit

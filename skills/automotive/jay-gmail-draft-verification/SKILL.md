@@ -1,6 +1,15 @@
 ---
 name: jay-gmail-draft-verification
 description: Independently verify a Gmail draft/send that Stacey (email-agent) reports she created — confirm it's actually in Drafts/Sent with correct recipients, body, and attachments, without trusting her self-report alone. Use whenever Joe asks to "chase" or double-check an email Jay routed through Stacey, or when Jay's own Gmail-dependent flow (himalaya/Google API) throws auth errors.
+triggers:
+  - verify stacey actually drafted the email
+  - check if the email is really in drafts
+  - confirm the report was actually sent
+  - double check stacey's email draft
+  - himalaya authentication failed
+  - gmail app password is stale
+  - chase an email jay routed through stacey
+  - verify sent mail for a report
 ---
 
 # Verifying Stacey's Gmail Drafts/Sends (Jay's independent check)

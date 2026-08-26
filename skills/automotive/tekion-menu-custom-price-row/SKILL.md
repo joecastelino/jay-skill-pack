@@ -1,6 +1,15 @@
 ---
 name: tekion-menu-custom-price-row
 description: Set a vehicle-scoped CUSTOM package price and labor hours on a Tekion Service Menu by adding a new vehicle row (e.g. "2014 Camry 90K VNM = 2.4 hrs / $469.88"). Use when Joe wants a specific vehicle's menu package price/hours changed without touching other vehicles or tiers. Verified SCT 90K menu 2026-07-03.
+triggers:
+  - change the price on one vehicle's menu package
+  - set custom price and hours for a specific year model
+  - menu quotes wrong price for this vehicle only
+  - add a vehicle row to the service menu
+  - override menu tier pricing for one model
+  - opcode overrides show no labor module for this menu line
+  - scope a price change to just one vehicle
+  - custom package price on a tier without affecting others
 ---
 
 # Tekion Menu Custom Price/Hours Vehicle Row

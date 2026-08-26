@@ -1,6 +1,16 @@
 ---
 name: tekion-parts-tax-not-calculating-diagnosis
 description: Diagnose "sales tax isn't calculating / tax is $0" on Tekion Parts Sales Orders (counter sales), especially for CUSTOM sale order types like ONLINE RETAIL. Finds whether the store was migrated to the NEW Parts Tax Code Setup and whether a sale type is missing from the saved tax-code grid. Use when a Parts Manager reports missing tax on SOs.
+triggers:
+  - tax isn't calculating on sales orders
+  - tax is showing $0 on parts sale
+  - online retail sale type not taxing
+  - parts sales order missing tax
+  - sale type dropped from tax code grid
+  - tax setup for parts migration issue
+  - fee is charging tax when it shouldn't
+  - custom sale type shows no tax
+  - saleTypeTaxSetup missing sale type
 ---
 
 # Tekion Parts Sales Order — tax not calculating

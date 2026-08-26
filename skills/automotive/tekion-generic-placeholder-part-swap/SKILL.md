@@ -1,6 +1,15 @@
 ---
 name: tekion-generic-placeholder-part-swap
 description: Replace a specific auto-populating part (e.g. a BG or WS transmission fluid) on Tekion opcodes and menu included-services with a GENERIC placeholder part (e.g. "Transmission Fluid") that has NO inventory/parts-master record, preserving exact pricing. Use when a menu/opcode estimates the wrong specific part for some vehicles and Parts should substitute the real part at RO time. Verified end-to-end at Blackstone Toyota (BT, dealer 1249) 2026-07-20 across 5 fluid lines.
+triggers:
+  - opcode auto-populates the wrong fluid
+  - swap a specific part for a generic placeholder
+  - menu estimate shows wrong transmission fluid
+  - create a generic part with no inventory record
+  - joe doesn't want a part added to inventory
+  - replace bg fluid with generic transmission fluid
+  - estimate pulls brand specific part for some vehicles
+  - included service parts wrong on menu
 ---
 
 # Tekion Generic Placeholder Part Swap

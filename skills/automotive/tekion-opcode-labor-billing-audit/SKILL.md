@@ -1,6 +1,16 @@
 ---
 name: tekion-opcode-labor-billing-audit
 description: Audit a Tekion opcode for wrong labor hours / wrong labor rate across recent ROs (e.g. ToyotaCare TEK opcodes billing 0.8 instead of 0.5, or TEW vs W rate). Determines whether root cause is opcode config, advisor behavior, or post-creation edits. Read-only diagnosis workflow + open case log.
+triggers:
+  - ro billed wrong labor hours
+  - toyotacare opcode billing 0.8 instead of 0.5
+  - wrong labor rate on this opcode
+  - warranty rate pointing at the wrong rate id
+  - audit opcode for hours or rate discrepancies
+  - tew vs w rate mismatch
+  - opcode billing inconsistent hours across ROs
+  - is this a config problem or advisor error
+  - scan recent ROs for a labor billing issue
 ---
 
 # Tekion Opcode Labor-Billing Audit (wrong hours / wrong rate)

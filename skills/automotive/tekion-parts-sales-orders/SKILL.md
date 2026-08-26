@@ -1,6 +1,16 @@
 ---
 name: tekion-parts-sales-orders
 description: Tekion Parts Sales Orders (counter sales) + Parts RO Sales (parts on repair orders) + the full parts PRICING system (hierarchy, price codes, price breaks/formulas, matrices, defaults). Covers /parts/sales-order, P&A vs Fulfillment, cores, prepaid parts, core returns (CM credit memos), and the 5-tier pricing hierarchy where manual override is "king of kings." Load for counter-sale, parts-on-RO, or parts-pricing questions.
+triggers:
+  - parts sales order screen question
+  - counter sale help
+  - parts on ro sales
+  - parts pricing hierarchy
+  - core return credit memo
+  - prepaid parts question
+  - price code or price break setup
+  - manual price override on a part
+  - special order sor for a customer
 ---
 
 # Tekion Parts Workflows & Pricing (Sales Orders + RO Sales)

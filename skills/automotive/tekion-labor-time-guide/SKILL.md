@@ -1,6 +1,15 @@
 ---
 name: tekion-labor-time-guide
 description: Look up or bulk-pull Tekion's Labor Time Guide (OEM warranty labor-time data) for any store/vehicle. Covers the nav path, the underlying API (VIN or Make/Year/Model search), pagination, and the critical fact that THERE IS NO DOWNLOAD/EXPORT BUTTON in the UI — it's a live per-vehicle OEM feed, not a static file. Use when Joe asks to "download the labor time guide", "get OEM labor times", or look up warranty hours/parts/failure codes for a repair.
+triggers:
+  - download the labor time guide
+  - get oem labor times
+  - look up warranty hours for a repair
+  - labor time guide for a vin
+  - ltg opcode lookup
+  - oem warranty labor time data
+  - bulk export the labor time guide
+  - failure codes and tsb for an opcode
 ---
 
 # Tekion Labor Time Guide

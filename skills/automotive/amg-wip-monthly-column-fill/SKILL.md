@@ -1,6 +1,15 @@
 ---
 name: amg-wip-monthly-column-fill
 description: Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data — hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to "finish" or "work on" the AMG WIP sheet for a month.
+triggers:
+  - fill in the wip sheet for this month
+  - finish the amg wip workbook
+  - update the wip column for a store
+  - hours sold by pay type for wip
+  - vehicle attendance numbers for wip
+  - elr numbers for the wip sheet
+  - workshop hours on the wip tab
+  - wip dollar column needs updating
 ---
 
 # AMG WIP Monthly Column Fill (Tekion → workbook)

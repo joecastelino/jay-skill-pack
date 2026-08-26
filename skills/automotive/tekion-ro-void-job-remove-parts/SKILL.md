@@ -1,6 +1,16 @@
 ---
 name: tekion-ro-void-job-remove-parts
 description: Remove parts from a Tekion RO and VOID the ticket, OR flip the job to INTERNAL pay and close at $0 (Joe's preferred cleanup). Void order - void JOB first, then RO-level void appears. Covers Return Part flow, deleting stuck Request Pending returns via the fulfillment row kebab Remove, the Void Job remove-parts gate, pay-type CP-to-I switch with Confirm PayType Change modal, and the Internal cost-center requirement. Verified live on SCT test RO 574398 (2026-07-31).
+triggers:
+  - void an RO in tekion
+  - void job button is greyed out
+  - need to remove parts before voiding
+  - stuck request pending part return
+  - flip job to internal pay and close at zero
+  - cant delete a return part on the RO
+  - void cannot be reversed remove parts first
+  - clean up a test RO
+  - confirm pay type change modal
 ---
 
 # Tekion: Remove Parts + Void an RO (job first, then RO)

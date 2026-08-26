@@ -6,7 +6,15 @@ description: >
   computed from Jay's cached Tekion pipeline data, framed as what JOE (VP Fixed
   Ops) can do to help, drafted to Joe's own inbox. Use for any "prep a meeting
   with <manager>", "action items for <store>", "what can I do to help him" ask.
-trigger: meeting prep, action items for Ruben/Kevin/Sean, all-day meeting, help store manager, store action plan
+triggers:
+  - prep me for my meeting with ruben
+  - action items for kevin at sct
+  - meeting prep for sean at tol
+  - what can i do to help the store manager
+  - draft a store manager meeting prep email
+  - all-day meeting prep for a store visit
+  - store action plan for bc
+  - help the manager improve his numbers
 ---
 
 # AMG Store-Manager Meeting Prep (verified 2026-07-07, Ruben/BC)

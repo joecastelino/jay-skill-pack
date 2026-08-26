@@ -1,6 +1,16 @@
 ---
 name: tekion-physical-inventory
 description: Run a Tekion Parts Physical Inventory or Bin Spot Check audit — the full Setup → Counting → Reconciliation → Summary workflow that compares system count vs physical count, surfaces variance, and writes on-hand adjustments. Use when Joe asks about counting parts, bin spot checks, inventory variance, reconciling shelf qty vs Tekion, or "Make Adjustments". Load alongside tekion-sitemap.
+triggers:
+  - run a physical inventory count
+  - bin spot check in tekion parts
+  - reconcile shelf count vs system count
+  - inventory variance needs adjustment
+  - make adjustments on hand quantity
+  - counting phase for parts inventory
+  - system count vs physical count mismatch
+  - write-in a part not on the count sheet
+  - variance dashboard for physical inventory
 ---
 
 # Tekion Physical Inventory & Bin Spot Check

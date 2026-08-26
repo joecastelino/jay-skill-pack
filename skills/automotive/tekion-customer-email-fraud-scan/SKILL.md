@@ -1,6 +1,16 @@
 ---
 name: tekion-customer-email-fraud-scan
 description: Detect CSI/survey-manipulation fraud by scanning Tekion customer records for redirect emails via the OpenAPI customer-search endpoint (GET /customers?email=). Two modes — KNOWN-EMAIL mode scans all 7 AMG stores for a suspect email Joe names (returns every record currently pointing at it + lastUpdateTime timeline); DISCOVERY mode pages a store's whole customer base to find ALL emails shared across 3+ unrelated customers, then attributes each to the RO-creating advisor (single-advisor-lock = bad actor) to surface ADDITIONAL bad actors beyond the first. Use when Joe says an advisor swapped customer emails to redirect surveys/CSI, asks "how many customers have email X" / "when was this changed", or "find anything else / who else is doing this." Covers the count-param 400 trap, the floor-not-total caveat, the no-modifiedBy / no-change-history API limits, the exclude-staff-domain+dummy-placeholder rules, and the >=85% single-advisor-lock classification threshold.
+triggers:
+  - advisor swapped customer emails to redirect surveys
+  - how many customers have this email address
+  - csi survey manipulation investigation
+  - find who else is faking surveys
+  - scan customer records for shared email addresses
+  - when was this customer's email changed
+  - find every account pointing at this email
+  - suspect employee editing customer emails for csi
+  - fraud scan across all 7 stores for an email
 ---
 
 # Tekion Customer-Email Fraud Scan (CSI / survey manipulation)

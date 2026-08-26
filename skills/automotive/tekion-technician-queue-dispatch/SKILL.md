@@ -1,6 +1,15 @@
 ---
 name: tekion-technician-queue-dispatch
 description: Explains Tekion's Technician Queue / Claim Work auto-dispatch behavior — why a tech gets pulled out of the queue when an advisor opens/reopens an RO, and what settings can change that behavior. Use when diagnosing "why did my tech get grabbed out of queue" or "can we stop a tech from being pulled on RO reopen" questions.
+triggers:
+  - why did my tech get grabbed out of queue
+  - can we stop a tech from being pulled on reopen
+  - technician queue auto dispatch
+  - claim work queue behavior
+  - reopened ro pulls tech from queue
+  - dispatch settings for technician queue
+  - reserve technician feature
+  - auto assign technician to added job
 ---
 
 # Tekion Technician Queue / Auto Dispatch

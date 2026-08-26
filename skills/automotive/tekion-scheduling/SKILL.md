@@ -3,6 +3,16 @@ name: tekion-scheduling
 description: Tekion Service Scheduling Settings — appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the "lowest ceiling wins" capacity model, shop top-down matching, the daily overnight scheduler + "Run Scheduler" button, parts-on-appointment notifications, and the concierge mobile write-up flow. Load for any appointment/scheduling/capacity setup or troubleshooting in Tekion.
 tags: []
 related_skills: []
+triggers:
+  - appointment slots arent working
+  - fix scheduling capacity settings
+  - lyft ride radius or mileage limit
+  - service advisor scheduling setup
+  - run the scheduler button
+  - consumer scheduler configuration
+  - shop capacity or booking window settings
+  - parts on appointment notifications
+  - transportation settings in tekion scheduling
 ---
 
 # Tekion — Service Scheduling Settings

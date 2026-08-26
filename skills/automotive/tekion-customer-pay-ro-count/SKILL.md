@@ -1,6 +1,15 @@
 ---
 name: tekion-customer-pay-ro-count
 description: Produce the TRUE count + CP dollars + revenue/RO of customer-pay repair orders for a store per month OR per week (incl. prior-4-week trend averages) via Tekion OpenAPI — CP invoice dollars > $0.01, not the misleading CUSTOMER_PAY tag. Verified SCT June 2026 (1,928 of 5,381) and BC weekly 2026-07-05 (226 of 604).
+triggers:
+  - true customer pay ro count
+  - cp dollars for the month
+  - customer pay revenue per ro
+  - cp ro count by advisor
+  - customer pay over a penny not the tag count
+  - weekly customer pay trend report
+  - true numbers for customer pay ros
+  - cp invoice amount vs customer pay tag
 ---
 
 # Tekion Customer-Pay RO Count (true invoiced dollars)
