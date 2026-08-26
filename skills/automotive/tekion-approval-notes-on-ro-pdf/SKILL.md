@@ -204,6 +204,65 @@ XMLHttpRequest.prototype.setRequestHeader=function(k,v){
 
 Assemble the response out of the browser in ≤16,000-char `substr` slices (eval truncates ~20,000).
 
+## WHERE THE APPROVER COMMENT IS VISIBLE IN THE UI (verified TL 2026-08-25)
+
+It IS on screen, just buried 3 levels deep. Approval Workspace → select the request →
+right detail panel → scroll to **`Rules Matched (N)`** → **click the rule name row**
+(e.g. "Warranty Recommendation", it's an `ant-collapse-header` — collapsed by default)
+→ expands to reveal **Rule Criteria** + **Approvers**:
+
+```
+Approvers
+Level 1: Approved
+Sean Preston
+25th Aug, 2026 | 02:55 PM
+SEAN IS RAD!            <- the comment, in italics
+```
+
+**The comment is NOT in the collapsed view** — the panel's top-level "Comment" field shows
+the SUBMITTER's comment (`Source: RECOMMENDATION 4`), which is a different field entirely.
+Easy to mistake one for the other.
+
+TRAP: the list itself reads **(0)** until you clear the default filter. Filter funnel icon
+(~89,262) → filter group shows `Status | In | Pending` → click the Status value selector
+(~593,447) → 7 options (Pending/Completed/Declined/Withdrawn/Expired/Returned/Void) →
+multi-select the rest → **Apply** (~887,626). Then the list populates.
+
+## THERE IS NO NATIVE EXPORT / PDF (verified TL 2026-08-25)
+
+Checked exhaustively, all negative:
+- No export/download/print icon on the list toolbar OR the detail panel (DOM scan for
+  `export|download|print|pdf` in className/data-test-id returns **[]**).
+- **Bulk Actions** toggle (~268,262 — the switch itself, not the label) is approve/decline
+  only, and explicitly states *"Only the 'Pending' requests are eligible for bulk actions"*
+  and max 15 at a time. No export action.
+- Nothing on the RO. The Approval Workspace record is NOT surfaced on the RO detail page,
+  and there is no approval indicator on the Recommendations tab.
+- KB0021342 documents an Export, but it does not exist in this build/permission set.
+
+**So the answer to "where can I export it as a PDF?" is: you can't — build it.**
+
+## THE FIX: `/home/itadmin/tekion-reports/approval_log_report.py`
+
+Generates a proper PDF audit log including the approver comment.
+
+```
+python3 approval_log_report.py --days 7 --out /tmp/tl_approval_log.pdf \
+        --store "Toyota of Lancaster" --dealer-key tl
+```
+
+Columns: Request · RO · Status · Submitted by · Approved by · When · **Approver Comment**.
+Resolves every uid to a real name via OpenAPI `GET /users/{id}`. Verified 2026-08-25:
+14 TL records, "SEAN IS RAD!" correctly attributed to APPR0826-000012.
+
+Prereq: :9223 logged in on the target dealer (the script opens Approval Workspace itself
+and steals the axios headers). Change store by passing `--dealer-key` (key into
+`tekion_client` config `dealers`).
+
+Verifying the output PDF: ReportLab writes **ASCII85 + Flate** streams, so the usual
+`zlib.decompress(stream)` finds 0 streams. Use
+`zlib.decompress(base64.a85decode(raw, adobe=True))` then regex `\((.*?)\)\s*Tj`.
+
 ## Reading the actual generated PDF (the only real proof)
 
 Do NOT judge by the on-screen preview. Pull the real file:
