@@ -1086,6 +1086,37 @@ auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (119,582 byt
 the twice-daily cadence rule, kept 42669 → exactly 1 draft. Daily-Closed Sent count 0 (the
 single `BC 8/25` Sent hit was Stacey's separate auto-sent Daily Opened report, 14517).
 
+## 2026-08-25 6:21pm Closed MTD run — textbook one-shot, 22nd consecutive clean "N dollars" build
+174 menus, $26,757.74 labor / $17,632.67 parts = $44,390.41 (Aug 1-25). Advisors:
+Juan Ramirez 41 / $11,967.09, Houa Moua 35 / $8,145.61, Humberto Dominguez 26 /
+$8,170.37, Dimetri Reynoso 24 / $5,575.90, Michael Reyes 18 / $3,501.72, Jacob
+Debussey 15 / $2,624.26, Erik Mercado 10 / $3,456.44, Jeremia Navarro 5 / $949.02.
+Master asof was 2026-08-24 → default append (no seed/catch-up); 63 closed ROs → 5
+carried TEK menu opcodes → master 174 rows; `✓ all candidate ROs scanned`. Pull ran
+via `terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
+Vision KPI band (crop 460px + 2x LANCZOS) matched JSON exactly; master `_gross` sums
+matched the emitted report `totals` exactly. Stacey's build: `execute_code` +
+`subprocess.run` argument list wrapped in `timeout 600` → returned cleanly in **128s**,
+no exit-124, no recovery probe, terse DONE line correct with `TOTAL=$44,390.41`, and
+her reported id (42671) MATCHED himalaya's. Her reply DID contain the recurring
+em-dash IMAP-search wrinkle ("Draft APPEND succeeded! The error is just in the
+verification search (em-dash in IMAP query)") plus a "Himalaya ID != IMAP UID" note —
+both are POST-append *verification* steps, not rebuilds, so no duplicate resulted;
+dedupe grep confirmed exactly 1 MTD draft. Verified via the stdlib-`email` parser:
+To=Restrada, Cc real None, From=Joe, Subject auto-decoded with em-dashes, inline PNG
+**byte-for-byte identical** (1,393,131 bytes), PDF **byte-for-byte identical**
+(85,580 bytes), all 11 figures present exactly once, `<b>$44,390.41</b>` bold,
+greeting + footer present, zero ' dollars'/USD leftovers (checked after stripping the
+data URI), and — per the 8/25 5pm `$037.72` lesson — explicitly checked all 10
+thousands-comma figures for the leading-digit-stripped variant ($390.41, $757.74,
+$632.67, $967.09, $145.61, $170.37, $575.90, $501.72, $624.26, $456.44): all zero.
+Adding that explicit "dollar sign goes before the FIRST digit including the thousands
+comma" instruction to the ask (new since 8/25 5pm) appears to have prevented the
+regex bug entirely — keep it in every ask where the total exceeds 1,000.
+MTD Sent count 0 (the single `BC 8/25` Sent hit was Stacey's separate auto-sent
+Daily Opened report, 14517). Left the sibling Daily Closed 8/25 draft (42669)
+untouched — different report type, not a duplicate.
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.

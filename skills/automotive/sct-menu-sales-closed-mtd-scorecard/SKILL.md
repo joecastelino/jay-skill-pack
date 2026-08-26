@@ -216,6 +216,17 @@ Work dir: `/home/itadmin/tekion-reports`
      `SENT=18:12 | BYTES=152087` — byte-exact vs `ls -la`. **Sequence to use when
      asks go silent: terse Sent list → terse Drafts probe → send by draft ID.**
      Don't keep re-issuing the long ask; it just burns 150s timeouts.
+   - ⚠️ **Verified 2026-08-25: the escalation ladder that finally worked was
+     TERSENESS, in three steps.** Send ask #1 (long, with full MIME
+     instructions) returned a confident `SENT=6:07 PM | BYTES=153,328` —
+     byte-exact and totally false (Sent newest was 17:08, draft still EXISTS
+     created 18:04). Send ask #2 (long re-send ask restating TO/subject/paths/
+     body) returned **empty output, exit 0** — also did nothing. Send ask #3 was
+     a single line — **`"Send draft 42670 via smtplib now. Reply: OK or
+     ERROR=<msg>"`** — and worked first try. Byte-exactness of a reported figure
+     is NOT evidence of a real send; only a Sent-folder read is. When a send ask
+     fails once, do NOT retry with more detail — retry with LESS. The draft is
+     already fully built at that point, so the one-liner has everything it needs.
    - ⚠️ **A literal `SENT=<HH:MM>` reply from the send ask can be FALSE.**
      Verified 2026-08-21: the send instruction for draft 42577 returned a crisp
      `SENT=18:05`, but an unfiltered Sent listing showed the newest message was
