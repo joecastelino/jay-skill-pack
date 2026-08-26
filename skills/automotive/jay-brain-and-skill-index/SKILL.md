@@ -395,6 +395,11 @@ if you need a specific historical count:
    re-run `gbrain import --no-embed` + `embed --stale` + `orphans` and only declare `[SILENT]` when that
    CONFIRMING pass is also 0-imported / 0-stale / 0-orphans / clean tree. Cost is ~5s; the failure mode
    it prevents is silently leaving a fresh session page unembedded and unlinked until the 3 AM refresh.
+   TIP (2026-08-26 11:00 cron): put a `sleep 15`-`20` at the START of the confirming pass. The pass costs
+   only ~5s, so back-to-back imports can both finish inside the same session-end-sync write window and
+   both miss the same in-flight capture; the short wait lets it land and be caught in THIS run instead of
+   surfacing as an orphan two rounds later. Confirmed: clean pass 1 (0/1308) → sleep 20 → pass 2 found
+   1 page/2 chunks + 1 orphan, then the usual 2b mixed session+skill orphan round, settling at 0/1317.
 2. **Orphan repair run** = import picks up 1-3 fresh same-day `projects/session-*` captures; clear each
    with hub→page `gbrain link index projects/session-<ts> --link-type references`, append to index.md
    `## Sessions`, `git add -A` / `git commit -m "brain sync"` (separate calls), re-import + `embed --stale`,

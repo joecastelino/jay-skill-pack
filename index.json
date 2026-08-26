@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-26T11:00:53",
+ "generated": "2026-08-26T11:15:32",
  "skill_count": 196,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 149,
+   "times_used": 150,
    "last_used": "2026-08-26"
   },
   {
@@ -123,6 +123,14 @@
    "last_used": "2026-08-18"
   },
   {
+   "name": "tekion-opcode-api",
+   "path": "automotive/tekion-opcode-api",
+   "category": "automotive",
+   "description": "Read, audit, and VERIFY Tekion opcode override rows directly from the backend REST API using the session's own auth token. This is the AUTHORITATIVE source of truth \u2014 the override UI grid frequently renders wrong/empty even when rows exist in the backend. Use to get the true committed row count before a batch, detect incomplete (part-less) rows, and confirm persistence after saving.",
+   "times_used": 27,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "tekion-scheduling",
    "path": "automotive/tekion-scheduling",
    "category": "automotive",
@@ -137,14 +145,6 @@
    "description": "Navigate to, read, and inspect Tekion Service Menu Setups (the service-menu builder where interval menus, tiers, tags, opcodes, included services and inspections are configured). Covers the non-obvious nav path, the page/tab structure, where free-text \"notes\"/tags live, and the headless storage_state harness that reaches it reliably. Use when asked to find/check/edit a service menu, a menu's tag/name, or \"the last service menu\".",
    "times_used": 27,
    "last_used": "2026-07-15"
-  },
-  {
-   "name": "tekion-opcode-api",
-   "path": "automotive/tekion-opcode-api",
-   "category": "automotive",
-   "description": "Read, audit, and VERIFY Tekion opcode override rows directly from the backend REST API using the session's own auth token. This is the AUTHORITATIVE source of truth \u2014 the override UI grid frequently renders wrong/empty even when rows exist in the backend. Use to get the true committed row count before a batch, detect incomplete (part-less) rows, and confirm persistence after saving.",
-   "times_used": 26,
-   "last_used": "2026-08-26"
   },
   {
    "name": "tekion-service-settings",
@@ -595,6 +595,14 @@
    "last_used": "2026-08-24"
   },
   {
+   "name": "tekion-ro-job-paytype-triage",
+   "path": "automotive/tekion-ro-job-paytype-triage",
+   "category": "automotive",
+   "description": "Triage a bare \"RO <number> job <N> needs to be <pay type>\" ticket (or any bare-RO# request) from Joe. Covers the CRITICAL cross-store RO#-collision trap (RO numbers are NOT unique across the 7 AMG stores), the zero-quota OpenAPI symptom-verification pass that runs BEFORE any browser work, and where the pay-type change actually happens. Use for any ticket that names an RO number without naming a store.",
+   "times_used": 3,
+   "last_used": "2026-08-26"
+  },
+  {
    "name": "tekion-ro-payer-split-sunbit",
    "path": "automotive/tekion-ro-payer-split-sunbit",
    "category": "automotive",
@@ -705,14 +713,6 @@
    "description": "Run a Tekion Parts Physical Inventory or Bin Spot Check audit \u2014 the full Setup \u2192 Counting \u2192 Reconciliation \u2192 Summary workflow that compares system count vs physical count, surfaces variance, and writes on-hand adjustments. Use when Joe asks about counting parts, bin spot checks, inventory variance, reconciling shelf qty vs Tekion, or \"Make Adjustments\". Load alongside tekion-sitemap.",
    "times_used": 2,
    "last_used": "2026-06-29"
-  },
-  {
-   "name": "tekion-ro-job-paytype-triage",
-   "path": "automotive/tekion-ro-job-paytype-triage",
-   "category": "automotive",
-   "description": "Triage a bare \"RO <number> job <N> needs to be <pay type>\" ticket (or any bare-RO# request) from Joe. Covers the CRITICAL cross-store RO#-collision trap (RO numbers are NOT unique across the 7 AMG stores), the zero-quota OpenAPI symptom-verification pass that runs BEFORE any browser work, and where the pay-type change actually happens. Use for any ticket that names an RO number without naming a store.",
-   "times_used": 2,
-   "last_used": "2026-08-25"
   },
   {
    "name": "tekion-vehicle-override-row-builder",

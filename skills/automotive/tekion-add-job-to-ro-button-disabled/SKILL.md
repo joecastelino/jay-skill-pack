@@ -9,7 +9,7 @@ triggers:
   - Add To RO button disabled
   - Add To RO greyed out
   - PORTMAJOR can't be added
-trigger: Add To RO disabled, cannot add job to repair order, add job greyed out, opcode won't add to RO, Tekion approval flow paytype
+trigger: Add To RO disabled, cannot add job to repair order, add job greyed out, opcode won't add to RO, Tekion approval flow paytype, Approval Workspace still work, /core/approval-workspace
 ---
 
 # "Add To RO" button disabled — Tekion
@@ -68,10 +68,64 @@ Service Settings → General Setup → scroll to **Enable RO Approval flow**:
 Then **Submit** (button bottom-right). Requires a success toast — re-navigate
 away and back to verify, a hash-only nav does NOT remount the SPA.
 
+## Verify the fix landed (API, not vision)
+Re-read `approvalSetting` and confirm `metaData[0].modifiedTime` ADVANCED to the
+moment of the change. TL 2026-08-26: flipped-on 8/25 15:10 PT → fixed 8/26 10:59 PT.
+Joe's fix set BOTH `roApprovalFlowEnabled:false` AND populated
+`jobsAllowedToAdd:[CUSTOMER_PAY,WARRANTY,INTERNAL]` — either alone unblocks it.
+
+## "Does Approval Workspace still break if I turn the flow off?" — NO
+Expect this as the immediate follow-up question. Answer, verified live:
+
+- **Approval Workspace is a CORE app, not gated by the service setting.** Route is
+  **`/core/approval-workspace`** — it loads clean with flow OFF (Settings tab,
+  My Approvals, filters, Bulk Actions all render; shows `My Approvals (0)`).
+- What turning the flow off actually does: **RO job-add / paytype-change requests
+  stop being generated.** The advisor just does the action directly. In-flight items
+  and other request types remain viewable/actionable.
+- So: module alive, RO-approval pipeline dormant. Those are different things — say
+  both, don't answer with just "yes it works."
+
+### The empty-approvers trap (flag this proactively)
+`approvalSetting.metaData[].hierarchies[].levels[].approvers` can be `[]` while a
+`requestType` (e.g. `OTHER_LABOR_HOURS`) is still configured. TL has exactly this.
+Harmless while the flow is OFF, but **re-enabling with an empty approver list is a
+SECOND way to wedge the store** — requests generate with nobody able to approve them.
+Check it before any future re-enable.
+
+## Finding a Tekion module route — use the app grid, don't guess
+Cost 4 wasted navigations guessing `/ro/approval-workspace`,
+`/service/approval-workspace`, `/ro/approvals`, `/ro/approval` — all returned the
+empty SPA shell (`innerText.length == 117`, just the sidebar codes) which looks
+identical to "module broken." The real route was `/core/...`.
+
+Reliable discovery: open the nine-dot app grid (`/mouse` ~x22,y32) then regex the
+visible text for the module name:
+
+```js
+[...document.querySelectorAll('a,div,li,span')]
+  .filter(e => e.offsetParent !== null)
+  .filter(e => /approv/i.test((e.innerText||'').trim()))
+```
+
+Then `scrollIntoView` the exact-match leaf and `/mouse` its center — the tiles are
+`href`-less React handlers, so read the resulting `location.pathname`.
+
+Bonus recon: the left sidebar's 2-letter codes DO carry real hrefs. Map them with
+`innerText` → `getAttribute('href')` to dump the whole module list at once
+(`EH`→`/core/employeeHours`, `RO`→`/ro/repair-orders`, `PO`→`/parts/purchase-order/list`,
+`R`→`/core/reports`, `US`→`/core/user-setup`, …).
+
 ## Pitfalls
+- **An empty SPA shell (`innerText.length ≈ 117`) means WRONG ROUTE, not a broken
+  page.** A real loaded page is 300+ chars minimum, usually thousands.
+- **The RO List page-level search (`input[searchfield="ALL"]`) would not filter to a
+  specific RO#** — tried native value-setter + `input` + synthetic Enter, and
+  `/type` + `/press Enter`; list stayed unfiltered at 218,568 results. Don't sink
+  time into it; navigate to the RO by URL/id or drive the search a different way.
+- `:9223 /screenshot` is a **GET**, not POST (POST 404s).
 - Do NOT chase the opcode: `MPVI` returning "no button" just means the opcode
   didn't match search; `ALIGN`/`PORTMAJOR` returning `disabled:true` is the real gate.
-- Do NOT blame RO state, multi-payer, or role permissions — check the setting first.
 - ALWAYS run the 7-store fleet comparison before calling it a Tekion defect. If
   6 stores are fine, it is store config, not a platform bug.
 - `metaData[0].modifiedTime` is gold: correlate it against when the store started
