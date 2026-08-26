@@ -410,6 +410,31 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   dated-today search that she then retries is a search-syntax artifact, not a missing
   draft; let her self-correct before re-asking. Short sleeps sufficed throughout (15s
   then 10s), no timeouts at all this run.
+  **Confirmed again 2026-08-25 (15th consecutive clean night) — NEW TRAP: PARTS-reported
+  PDF size can equal a PRIOR NIGHT'S file size:** OPS probe 200 (same validated RO/job pair,
+  unchanged since 8/3); no same-day index pre-run. Index 3,514 closed ROs (up 194), 1,079+
+  candidates, 0 failed, ~43 min (19:01→19:44). Window end advanced 1787641199999 →
+  1787727599999 and index grew 458,053 → 484,759 B — both fresh-index confirmations; id diff
+  new: 194, dropped: 0. 325 alignments (293 dedicated + 32 bundled), 325 ROs, 16 advisors.
+  **Two-way tie at #1: Jaime Sanchez and Cristian Gonzalez, 34 each** (Chris Mai / Artist
+  Battle 33) — phrase ties as ties per the 8/24 note. Stacey's build clean on the FIRST ask
+  (102s) with paths + on-disk sizes baked in.
+  **The trap:** the PARTS verify returned `application/pdf:316575` — which was NOT today's
+  on-disk PDF (320,623) but was an EXACT match for the PREVIOUS night's (8/24) PDF file size,
+  which looks exactly like she attached the wrong/stale file. She did not. The note-14 decode
+  tiebreaker settled it in one 27s ask — extend it to also request the FILENAME, which is the
+  strongest single signal: "PDF_FILENAME=<exact attachment filename> | PDF_DECODED_BYTES=<n>"
+  → `SCT-Alignment-By-Advisor-MTD-2026-08-25.pdf | 320623`, i.e. correct file, exact byte
+  match. Lesson: a PARTS PDF size matching a PRIOR night's file size is a coincidental
+  misreport, not a stale attachment — ALWAYS resolve with filename+decoded-bytes before
+  rebuilding, since the filename carries the date and removes all ambiguity. Also note the
+  HTML part passed the PNG*4/3 floor by only **117 bytes** (130,540 vs 130,423) — even
+  tighter than the 8/21 558-byte pass; a tight pass is still a PASS (note 13).
+  Two-ask verify with short sleeps (15s then 10s), both first-try:
+  `DRAFTS_COUNT=1 | TO=kstapp@sctoyota.com | SENT_FOLDER_COUNT=0`. Underscore-stripped keys
+  again. Also: her PARTS list included zero-size structural parts
+  (`multipart/mixed:0, multipart/alternative:0`) — those are container parts, NOT the
+  note-13 zero-byte-PDF trap; only a zero-size `application/pdf` part is a failure.
   **Confirmed again 2026-08-16 (6th consecutive clean night, quota fully healthy):**
   pre-flight OPS probe (same validated RO/job pair) returned 200. Index built 2,364
   closed ROs, 771 candidates, 0 failed, ~30 min scan (19:01→19:31, no backoff
