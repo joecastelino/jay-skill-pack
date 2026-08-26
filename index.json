@@ -1,6 +1,6 @@
 {
- "generated": "2026-08-26T14:00:22",
- "skill_count": 197,
+ "generated": "2026-08-26T14:15:03",
+ "skill_count": 198,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -1047,6 +1047,14 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-recommendation-part-not-found-diagnosis",
+   "path": "automotive/tekion-recommendation-part-not-found-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose \"Parts can only hit Create for the part number when we have N in stock\" / \"the part won't populate on a recommendation\" in Tekion. Root-causes the empty part line on an MPI recommendation or estimate back to a free-text placeholder part on the opcode plus the OEM-description search trap. Verified TL (dealer 1092) RO 398792 cabin filter, 2026-08-26.",
    "times_used": 0,
    "last_used": null
   },

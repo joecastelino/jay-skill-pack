@@ -5,6 +5,20 @@ description: Replace a specific auto-populating part (e.g. a BG or WS transmissi
 
 # Tekion Generic Placeholder Part Swap
 
+## ⚠️ When NOT to use — placeholders have a real downside (learned TL 2026-08-26)
+A placeholder part carries `partId: null, partNumber: null`, so **every recommendation /
+estimate line generated from that opcode arrives with all three identity fields NULL**.
+Parts then opens the line, searches the service wording, finds nothing in the catalog
+(OEM descriptions differ — e.g. all Toyota cabin filters read "ELEMENT, AIR REFINER", not
+"cabin"), and the only action Tekion offers is `Create "<text>"` — which spawns ANOTHER
+ad-hoc non-inventory part that never relieves stock. Store complaint sounds like
+"they can only hit Create when we have 515 in stock."
+
+Rule of thumb: placeholders are GOOD for **fluids** (any equivalent spec works, Parts
+substitutes at RO time). They are BAD for **vehicle-specific hard parts** (filters, pads,
+wipers) — those need VIN-scoped Overrides → Parts rows instead. Diagnosis skill for the
+fallout: `tekion-recommendation-part-not-found-diagnosis`.
+
 ## When to use
 A service opcode or menu included-service auto-populates a SPECIFIC part (specific fluid, filter brand, etc.) that is wrong for some vehicles on the estimate. Joe's fix: swap it for a generic placeholder line ("Transmission Fluid") so the estimate is brand/spec-neutral and Parts bills the correct real part at RO time. Joe explicitly does NOT want a part added to inventory/parts master.
 
