@@ -259,6 +259,60 @@ Page: `/ro/opcode/add` → commits to `/ro/opcode/edit/<OPCODE>`.
   fires `GET /api/service-module/u/opcode/<OPCODE>/v2` which returns the full committed
   record. Do NOT trust the post-save DOM.
 
+## EDITING an opcode you just created (skill/field change) — BC 1251, 2026-08-26
+
+Same page, `/ro/opcode/edit/<OPCODE>`; commit button is **`Update`** (same slot ~`1211,688`),
+and unlike Create it DOES fire a toast: `Opcode '<CODE>' has been updated successfully`.
+
+**React-select long lists: clicking the option in the unfiltered list silently fails.**
+Changing Skill from `alignment` → `tech/generic`, I opened the dropdown (26 options rendered
+with correct coords) and `/mouse`-clicked `tech/generic` at its reported center. Click returned
+`{"success":true}`, but `singleValue` still read `alignment`. The list is virtualized/scroll-
+positioned and the reported y was stale by the time the click landed.
+
+**WORKING RECIPE — always type-filter down to ONE option first:**
+```
+1. locate the control by its singleValue text (NOT by label):
+   [].slice.call(document.querySelectorAll('div'))
+     .filter(x => x.offsetParent!==null && /singleValue/i.test(x.className)
+                  && x.innerText.trim()==='<CURRENT VALUE>')[0]
+2. scrollIntoView({block:'center'}), re-read the rect (coords shift after scroll)
+3. /mouse click it → dropdown opens and focuses a hidden input
+4. tag the focused input:  document.activeElement.setAttribute('data-jay','skin')
+5. /type {selector:"[data-jay='skin']", text:"tech/gen"}
+6. re-scan [class*=option] → should be exactly ONE → /mouse click it
+7. verify singleValue flipped BEFORE clicking Update
+```
+
+## :9223 endpoint gotchas hit repeatedly this session
+
+- **`/eval` 500s on modern JS.** Payloads using spread (`[...document.querySelectorAll()]`)
+  inside certain arrow/closure combinations return `HTTP 500 Internal Server Error` with no
+  message. The SAME logic written ES5-style (`[].slice.call(...)`, `function(){}`, no spread,
+  no template literals) works every time. When `/eval` 500s, don't debug the page — rewrite
+  the JS as ES5.
+- **`/screenshot` is a GET**, not a POST, and returns JSON `{"screenshot":"<base64>"}`.
+  `curl -s http://127.0.0.1:9223/screenshot -o f.json` then base64-decode the key. There is
+  no `-o file` option, and the `browser_vision`/`browser_navigate` tools open a SEPARATE
+  unauthenticated context — never use them against :9223.
+- **`/press` sends one key per call** — loop per character for numeric input.
+
+## Reading back MANY opcodes via the XHR hook — bounce through the list page
+
+Iterating `pushState('/ro/opcode/edit/<OP>')` straight from one opcode to the next captures
+NOTHING for every opcode after the first (React Query serves the detail from cache, no XHR
+fires). Insert a `pushState('/ro/opcode')` + ~2s wait BETWEEN each one to force a real remount:
+
+```
+for op in ops:
+    pushState('/ro/opcode');            sleep 2
+    pushState(f'/ro/opcode/edit/{op}'); sleep 3.5
+    grab window.__cap entry matching f'/{op}/v2'
+```
+Also note the hook must be re-armed after any hard reload, and `/opcode/skills` +
+`/opcode/serviceTypes` responses get captured on the way in — free id→name maps, use them
+instead of hardcoding ids.
+
 ## Pitfalls / notes
 - Opcodes are **store-specific** — create only at the store(s) needed (Joe-confirmed);
   don't replicate across all 7 unless asked.

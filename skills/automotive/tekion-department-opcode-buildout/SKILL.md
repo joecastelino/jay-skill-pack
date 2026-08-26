@@ -148,6 +148,49 @@ Cross-store peeking IS useful once you know you're doing it — TL's combined
 `UCDAIR` (cabin + engine air filter, one opcode) is a better pattern than two
 separate ops, and worth offering as an alternative.
 
+## Step 6b — DERIVE the department's skill convention; never copy the source opcode's
+
+When cloning a shared opcode (Bucket B), the instinct is to carry over the source's
+**Skill** so auto-dispatch still routes to the right tech group (`ALIGN` → `alignment`).
+**That is usually wrong.** Joe's ruling at BC, emphatically: *"EVERYTHING SHOULD GO TO
+UCD SKILL."* Departments dispatch as a unit; the department's own techs pick up all its
+work regardless of work type.
+
+**There is often NO skill literally named after the department.** BC's 39-skill list has
+`tech/generic`, `alignment`, `4 wheel alignment`, `used car inspection`, `new car
+department`, `PDI`, `Xpress Lube` … and **no "UCD"**. Don't go looking for one and don't
+create one — instead **derive the convention empirically from the ops already tagged to
+the department's service type**:
+
+```
+for op in existing_department_opcodes:
+    read skillId  →  map via the /opcode/skills response
+```
+BC UCD result: UCSAFETY / UCDETAIL / UCEV / UCFRONTLINE / UCRECALL = `tech/generic`
+(id `625505ea77490b000771f95a`); UCSMOG = `smog` (lone exception). Majority wins →
+`tech/generic` IS the de-facto UCD skill. Set it on every clone.
+
+Do this BEFORE building opcode #1 — I set `alignment` on UCALIGN, shipped it, and had to
+go back and Update it. Ask/derive the skill convention in the same breath as pay type and
+cost center.
+
+**Also worth reporting when you audit the existing set** (both surfaced at BC and both
+were news to Joe):
+- an op whose skill breaks the pattern (UCSMOG on `smog` — may be intentional if there's
+  a dedicated smog tech; ask, don't "fix")
+- an op whose **pay type isn't INTERNAL** (UCRECALL = WARRANTY — correct for recall work,
+  but it means that op will never hit the department's internal GL, so it's outside the
+  scope of the mapping row you're building)
+
+## Build them ONE AT A TIME with API read-back between each
+
+Joe's explicit instruction, and it paid off immediately — the skill error was caught on
+#1 instead of being replicated across 26 opcodes. Loop per opcode:
+create → `pushState` remount → capture `GET /api/service-module/u/opcode/<CODE>/v2` →
+show the committed field table → get confirmation → next. Never trust the post-save DOM;
+see `tekion-opcode-create` for the XHR-hook read-back recipe and the list-page bounce
+required between consecutive detail loads.
+
 ## Pitfalls
 
 - **Don't propose retagging a shared opcode.** It silently reroutes the other
