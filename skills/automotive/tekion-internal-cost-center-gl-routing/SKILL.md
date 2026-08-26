@@ -118,15 +118,96 @@ The judgment call is three checks — run all three before answering:
    account (4440), the revenue is already in P&L. "Skip the holding account" may mean
    the debit/offset should go to expense/COS, not that a hold account should become cash.
 
-## Known gap — STOP and ask, do not guess
+## RESOLVED 2026-08-26 — the cost-center record carries NO GL account
 
-**Not verified:** whether the debit/offset account is bound to the *cost center record
-itself* (in the Setup Fields add/edit dialog) or is derived ONLY from the
-Services-Internal mapping row. The `PDI - 2211` / `Service Dept Policy - 7113` naming
-*suggests* a binding, but the KB (KB0010144) only documents Cost Center Name +
-Enable Control + Enable Control 2 in that dialog — no GL field. Per Joe's NEVER-GUESS
-rule, surface this explicitly and ask which side (debit/hold vs credit/sale) he wants
-moved before touching anything.
+Previously listed as a known gap. **Settled by opening the dialog at BC (1251):**
+Setup Fields → Cost Center Setup → *Repair Order – Internal* → row kebab
+(`[data-test-id*=optionMenuKebabIcon]`, right edge ≈x1201) → **Edit**. The modal
+contains exactly three fields: **Cost Center Name · Enable Control · Enable Control 2**.
+No GL account field, matching KB0010144.
+
+**Therefore: cost-center names like `PDI 263A` / `Used Car INV 240` / `Service Dept
+Policy 67D` are labels only.** ALL internal GL routing comes from the
+Services-Internal mapping rows. The cost center controls only which control number
+(VIN, stock#, etc.) is captured on the RO.
+
+Kebab menu offers only **Edit / Deactivate** — there is no delete.
+
+## The 3 levers for "change the default internal account for department X"
+
+1. **Credit/sale side — labor** → GL Account Transaction Mapping → Fixed Operations →
+   Services → **Service - Internal**. Add a row for that Service Type; otherwise it
+   falls to the `Pay Type = Internal Pay, Service Type = All` catch-all.
+2. **Credit/sale side — parts** → …→ **Part & Accessories** → **PARTS - REPAIR ORDER**.
+   Separate table, separate catch-all. Changing labor does NOT move parts.
+3. **Default cost center on the RO** → Service Settings (`/service/settings/ro-settings`)
+   → left-nav **Internal Pay** → *Cost Center / Split* grid (default row + 100 split).
+   Also holds "Set limit for Internal Pay on RO Level" and "Default Internal Labor Rate".
+
+Always ask which of the three Joe means before touching anything.
+
+## BC / Blackstone Chevrolet Cadillac (1251) — verified 2026-08-26
+
+**Column set differs per store.** SCT shows Department · Make · Pay Type · Service Type ·
+Tax Status · GL Account. **BC Service-Internal shows only Pay Type · Service Type ·
+GL Account** — no Department/Make columns at all, so BC cannot route by department;
+it routes by **Service Type**.
+
+Service - Internal (mapping id `6287af0bd20c290007476bf1`):
+```
+Internal Pay | Sublet           | 466  - SUBLET REPAIRS
+Internal Pay | Service Contract | 460B - SERVICE CONTRACTS CUSTOMER LABOR
+Internal Pay | PDI              | 464  - NEW VEHICLE INSPECTION LABOR
+Internal Pay | MPVI             | 460A - CUSTOMER LABOR - CARS & LIGHT DUTY TRUCKS
+Internal Pay | All              | 463  - INTERNAL LABOR - MECHANICAL   <-- catch-all
+```
+PARTS - REPAIR ORDER (cols: Pay Type · Service Type · Source Code · Sale Type · GL):
+```
+Internal Pay | All            | All            | Repair Order | 481 - PARTS-INTERNAL  <-- catch-all
+Internal Pay | All            | 500 - TIRES    | Repair Order | 490 - TIRES
+Internal Pay | All            | 600 - GM TIRES | Repair Order | 490 - TIRES
+Internal Pay | All            | 110 - BULK OIL | Repair Order | 491 - GAS, OIL & GREASE
+Internal Pay | All            | 111 - ACCESSORIES | Repair Order | 484 - ACCESSORIES
+Internal Pay | XPRESS SERVICE | (bulk oil/acc/tires rows) …
+Internal Pay | XPRESS SERVICE | All            | Repair Order | 481 - PARTS-INTERNAL
+Internal Pay | Sublet         | All            | Repair Order | 466 - SUBLET REPAIRS
+```
+BC **Service Types** (`/ro/opcode` tab rail = same list the mapping dropdown offers):
+All · Sublet · Service Contract · PDI · Main Service · Maintenance Service ·
+Service Interval Menu · XPRESS SERVICE · ACCESSORIES · MPVI · **Used Car Department** ·
+Service Catalog · Service Menu · Cadillac Express Shop.
+
+→ **UCD ("Used Car Department") has NO explicit row on either table**, so UCD internal
+work currently posts labor to **463** and parts to **481** via the catch-alls.
+Fix = add `Internal Pay | Used Car Department | <acct>` rows.
+
+BC *Repair Order – Internal* cost centers: 460L Lyft · PDI 263A · Chevy New Car INV 231 ·
+Chevy New Truck INV 237 · Used Car INV 240 · Used Truck INV 241 · WeOwe/Due Bill 305 ·
+New Car - Lot Damage (inactive) · Used Car Lot Damage (inactive) · Service Lot Damage ·
++View More (Advertising, Company Vehicle Parts 51F, Company Vehicle Service 51D, …).
+BC Service Settings → Internal Pay default cost center = **Service Dept Policy 67D**,
+split 100; Default Internal Labor Rate **$219.00**; RO-level internal limit $1.00.
+
+## Verified click-path (BC, :9223)
+
+```
+/accounting/glaccountmapping/list
+  left-nav "Fixed Operations" @92,433  →  "Services (3)" @92,504
+  main-panel accordion label "Service - Internal" @547,298   (expands read-only rows)
+  pencil on that header row @1200,297  →  /glaccountmapping/<id>/edit?additional={"isCreateMode":false}
+    edit grid: per-row Pay Type / Service Type / GL Account ant-v5-selects
+      + per-row icon-add-circle @x1201 (adds a row below) and a delete icon
+      Cancel @1105,689 · Confirm
+  "Add" @1211,168 → modal "Create GL Account Mapping Rule"
+      Name* + Rules: [dim] > [value], first Select offers ONLY
+      "Pay Type" and "Sale Type (Fixed Ops)"; Cancel @795,538 / Continue
+```
+Left-nav coords shift once a section is expanded — re-read them each time; the
+`Part & Accessories` leaf lands at ≈226,341 after Services collapses.
+
+Screenshot note: `:9223/screenshot -o file` writes **JSON** `{"screenshot":"<b64>"}`,
+not a PNG. `vision_analyze` rejects it ("Only real image files are supported") —
+base64-decode first.
 
 ## KB references (via `tekion-kb-search-scrape`)
 - **KB0010144** — ACCOUNTING SETTINGS: Setup Fields – Cost Center Setup (the 4 categories, field-by-field)
