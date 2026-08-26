@@ -347,6 +347,33 @@ ss=json.load(open('/home/itadmin/caliber-ops/scripts/.tekion-storage-state.json'
 ```
 Lands on BC 1251 by default — switch dealers through the UI pill afterward.
 
+## "The RO Estimate Amount does not match the Actual Amount" popup (FIXED SCT 876, 2026-08-26)
+
+That modal is titled **Pre-Job Completion Information → Warnings in RO** and is produced by
+the **Pre-Job Completion** section's validation rule **`Estimate Amount Validation`**
+(Rule Level = RO). Turn OFF the row's **Applicable** checkbox (`.rt-td` index **1**) to kill
+the popup. There is a SECOND, DIFFERENT rule with a similar name — **Pre-Invoice →
+`CP Amount Exceeds Estimate Amount`** — which fires at INVOICE time, not job-completion.
+Always enumerate both before changing anything; only disable the one matching the modal
+title in the screenshot.
+
+Working recipe (avoids every trap in this file):
+```python
+# 1. dealer pill (1130,32) -> /mouse the store leaf row; assert localStorage.currentActiveDealerId
+# 2. navigate /service/settings/ro-settings, sleep 12
+# 3. locate the row across ALL ~120 .rt-table's (the page renders every section at once):
+#    for each .rt-table, scan .rt-tbody .rt-tr innerText for /Estimate Amount/
+#    -> SCT: tbl index 9 = Pre-Job Completion, tbl index 10 = Pre-Invoice
+# 4. tag the checkbox AND its wrapper with data-jay, scrollIntoView({block:'center'})
+# 5. /click '[data-jay="estcbwrap"]'  (click the WRAPPER, not the raw input; ant-v5-checkbox)
+# 6. tag buttons matching /^(Submit|Save)$/ -> /click; require toast
+#    "Service settings updated successfully"
+# 7. TRUE remount verify: nav /home -> sleep 6 -> nav back -> sleep 14 -> re-read checked
+```
+Row `y` can be ~8000px (full-page scroll) — `/mouse` coords are useless here; use
+`/click` with `data-jay`. `/eval` must be an IIFE `(function(){...})()`; a bare
+`function out(){}; out()` throws `SyntaxError: Unexpected identifier`.
+
 ## Pitfalls
 - Several behaviors are gated by **"when enabled by support"** (e.g. Select Default Service
   Advisor for jobs) — if a toggle is missing, it may need Tekion support to enable.
