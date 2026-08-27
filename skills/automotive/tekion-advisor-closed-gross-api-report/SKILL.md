@@ -212,6 +212,13 @@ run unless he says otherwise.
   HTML fragments (e.g. the logo `<img>`) with `%` formatting on a prior line.
 - A full-store day scan with jobs/ops/parts fan-out runs ~3+ min → launch with
   `terminal(background=true, notify_on_complete=True)`, not the 300s code tool.
-- Logo lives at `/home/itadmin/tekion-reports/logo_0.png`; base64-embed it.
+- Logo: `render_advisor_perf_style.py` loads `logo_<store>.png` from
+  `/home/itadmin/tekion-reports/` keyed off `META["store"]`, and renders **text-only
+  with a stderr warning** when that file is missing. It used to hardcode `logo_0.png`
+  — which is the **Stevens Creek Toyota** logo — so every BT/BC/TL/SV run was branded
+  with the wrong dealership. Never reinstate a cross-store fallback. On disk today:
+  `logo_st.png` only. Ask Joe for a store's logo rather than substituting one.
+- `send_report(inline_png=...)` **raises** unless the html contains `cid:scorecard` —
+  always include `<img src="cid:scorecard">` in the body.
 - Reuse the house visual language: white bg, red `#EB0A1E` rule + hero KPI,
   `#1a1a1a` table header, green totals, red bar scaled to leader.
