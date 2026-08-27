@@ -1154,6 +1154,29 @@ stale prior 8/26 draft to clean up (noon run = first of the day). The explicit
 char after the $ is the digit 1" instruction is now standard on every ask where the
 total exceeds 1,000 — 2nd consecutive run with zero regex corruption since adding it.
 
+## 2026-08-26 5pm Daily Closed run — textbook one-shot, 24th consecutive clean "N dollars" build
+14 menus, $1,963.54 labor / $1,107.98 parts = $3,071.52 (Humberto Dominguez 5 / $1,032.21,
+Jacob Debussey 4 / $352.46, Juan Ramirez 2 / $1,056.52, Jeremia Navarro 1 / $374.86, Erik
+Mercado 1 / $200.09, Houa Moua 1 / $55.38 — six advisors on the board, best Daily total
+since 8/21 5pm). 68 closed ROs → 14 carried TEK menu opcodes; `✓ all candidate ROs scanned`;
+vision-verified KPI band (crop 460px + 2x LANCZOS) matched JSON exactly. Pull ran via
+`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`. Stacey's build:
+`execute_code` + `subprocess.run` argument list wrapped in `timeout 600` → returned cleanly
+in **203s**, no exit-124, no recovery probe, no self-correction text → no duplicate (pattern
+holds). Terse DONE line correct with `TOTAL=$3,071.52`, and her reported id (42711) MATCHED
+himalaya's. Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe,
+Subject auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (205,510 bytes),
+PDF **byte-for-byte identical** (58,006 bytes), all 9 figures present exactly once,
+`<b>$3,071.52</b>` bold, greeting + footer present, zero ' dollars'/USD leftovers (checked
+after stripping the data URI), and per the 8/25 5pm `$037.72` lesson explicitly checked all
+five thousands-comma leading-digit-stripped variants ($071.52, $963.54, $107.98, $032.21,
+$056.52): all zero. Deleted the stale noon draft (42696) per the twice-daily cadence rule,
+kept 42711 → exactly 1 draft. Daily-Closed Sent count 0 (both `BC 8/26` Sent hits were
+Stacey's separate auto-sent Daily Opened reports, 14573 + 14592).
+**Note on the noon→5pm delta**: noon showed 7 menus / $1,131.49 with only two advisors;
+the 5pm run picked up 7 more menus and four additional advisors — normal intraday behavior,
+the noon run is a partial-day cut and the 5pm run supersedes it.
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
