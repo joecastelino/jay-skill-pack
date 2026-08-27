@@ -210,25 +210,59 @@ Used Car INV 240`. Row pay-type cells render **truncated** — match on prefix, 
 
 ### The verified per-opcode standard (BC 1251 UCD — pin this before building #1)
 
+Fields split into **fixed** (same on every clone) and **inherited** (copied from the
+source opcode, differs per clone). Getting that split wrong is the #1 rework cause.
+
+**FIXED — identical on every clone:**
+
 | Field | Value |
 |---|---|
 | Opcode Type | Individual Service *(form default)* |
-| Category | Maintenance |
 | Service Type | **Used Car Department** (`62e806c31e9d980006b3e8ef`) |
 | Skill | **tech/generic** (`625505ea77490b000771f95a`) — *form default, verify only* |
 | Default Pay Type | `I - Default internal pay` — **form defaults to CP, must be changed** |
-| Rate row 1 | Internal Pay / All / Fixed Price / internal $ |
-| Rate row 2 | `CP - Default customer pay` / All / Fixed Price / customer $ |
-| Internal Default Cost Center | **Used Car INV 240** (`6286a14ce21b8400071cad0f`) @ 100%, override ON |
+| Internal Default Cost Center | **Used Car INV 240** (`6286a14ce21b8400071cad0f`) @ 100%, override ON — **add it even when the source opcode has blank cost centers** (the brake and tire sources both did) |
 
-Pull the **source opcode's live record** before each clone (`ALIGN` → `UCALIGN`,
-`4ALIGN` → `UC4ALIGN`) and copy its real labor hours + prices rather than trusting the
-build sheet — the sheet is an estimate, the live record is truth.
+**INHERITED — read off the source opcode's live record, per clone:**
+
+| Field | Notes |
+|---|---|
+| Category | **The work type, NOT "Maintenance".** Brakes→`Brakes`, TIRE4→`Tire`. Category drives GLAM account mapping; **Service Type** is what carries the UCD routing, so Category is free to stay truthful to the work. |
+| Labor hours (billed/actual) | e.g. brakes 2.00/2.00, TIRE4 1.60/1.60 |
+| Rate row(s) | Copy the source's shape exactly — see the Internal-only rule below |
+| Standard Opcode Mapping | Copy the rows — **the opcode number varies by work type** |
+
+#### Joe's two standing rulings (BC, 2026-08-26 — verbatim: *"1) I want it copied. 2) internal only."*)
+
+1. **COPY the Standard Opcode Mapping rows onto the clone.** Even though a UCD internal
+   opcode will never be submitted as a warranty claim, Joe wants the mapping carried over.
+   At BC that's 3 rows: `gm|chevrolet`, `gm|cadillac`, `gm|gmc`.
+   ⚠️ **The mapped opcode number is per-work-type — do NOT reuse the previous clone's.**
+   FBRAKE/RBRAKE → `0300`; TIRE4 → `0400`. Read it off the source every single time.
+2. **Internal-only rate rows.** If the source opcode has no Customer Pay row, the clone
+   gets none either — ONE row, `Internal Pay / All / <rate type> / $`. This **supersedes**
+   the older "Rate row 2 = CP" guidance; UCALIGN/UC4ALIGN got a CP row, UCFBRAKE/UCRBRAKE
+   correctly did not. Match the source.
+   Rate type also varies: brakes = `Hourly Price $150.00`, TIRE4 = `Fixed Price $120.00`.
+
+### ⚠️ Sibling opcodes are NOT interchangeable — diff the source before every clone
+
+The tempting shortcut after two identical builds is to reuse the last recipe. It breaks.
+`TIRE4` vs `FBRAKE`, both plain BC internal ops, differed on **four** fields: mapping
+opcode (0400 vs 0300), Category (Tire vs Brakes), rate type (Fixed vs Hourly), and source
+Service Type (XPRESS SERVICE vs Maintenance). Always `navigate` to
+`/ro/opcode/edit/<SOURCE>` and dump inputs + `singleValue`s + the rate grid + the cost
+centers *before* opening `/ro/opcode/add`. The build sheet is an estimate; the live
+record is truth.
 
 Minor divergence to be aware of: source `4ALIGN`'s CP rate row uses the **parent**
 `Customer Pay` node (ALL_CUSTOMER_PAY), while the clones use the **leaf**
 `CP - Default customer pay`. Harmless and self-consistent across the new set, but pick one
 convention deliberately and stay on it.
+
+**When an inherited field is genuinely ambiguous, ask — don't guess.** Category was the
+one field where the fixed/inherited split wasn't obvious from the first four builds; one
+short question to Joe is far cheaper than 26 opcodes mapped to the wrong GLAM account.
 
 ### ⚠️ Verify `currentActiveDealerId` before EVERY write, not just at session start
 
@@ -259,6 +293,31 @@ and build through `jay_opcode.py` (`from jay_opcode import B`), batching one SEC
 `execute_code` call. **Target: ~10 min / ~25 calls per opcode. Past 40 calls, stop and
 re-read `tekion-opcode-create`'s MANDATORY PROTOCOL rather than pushing harder.**
 Run `opcode_preflight.py --restore` the moment the last opcode commits.
+
+#### If preflight HANGS — two known causes, both diagnosed by reading its log
+
+Do not sit and re-run it. `opcode_preflight.py` legitimately blocks while waiting out an
+in-flight cron run, so **launch it with `terminal(background=true)` and poll** — a
+foreground/`execute_code` call will blow the 300s timeout and tell you nothing. Then read
+the log:
+
+1. **`WAIT pipeline running: <pid> /bin/sh -c pgrep -af cron-pipeline`** — this is
+   `pgrep -f` **self-matching**: `subprocess.run()`'s own `/bin/sh -c` wrapper contains the
+   pattern string, so the wait loop can never exit. **Fixed 2026-08-26** via the bracket
+   trick — `PIPELINE_PAT = "[c]ron-pipeline"` used at both `pgrep` call sites while
+   `PIPELINE` stays plain for display. If this regresses, that's the fix.
+2. **The `:9223` session silently expired** and the browser is sitting on `/login` — the
+   cron pipeline navigating to a parts page is enough to trigger the redirect. Preflight's
+   dealer-id assert then spins. Confirm with a `/eval` read of `location.href`, then:
+   ```bash
+   HOME=/home/itadmin python3.11 /home/itadmin/tekion-auth/login.py --force   # background it
+   ```
+   and re-inject cookies + localStorage into `:9223` (expect ~5 cookies / ~21 keys /
+   token len ~536), re-assert `currentActiveDealerId`, then re-run preflight.
+
+⚠️ **`search_files` tool anomaly on this file:** pattern `pgrep|cron-pipeline` against
+`opcode_preflight.py` returned `total_count: 0` despite both strings being present. Fall
+back to `grep -n` via `terminal` when grepping this script.
 
 ## Pitfalls
 
