@@ -60,6 +60,25 @@ store stops re-running the INVOICED-only version. Then the number stops "droppin
 5. **Quantify the hidden bucket** (MTD INVOICED vs CLOSED gross) so the manager
    sees the real magnitude, not just the one RO.
 
+## ⚠️ NEVER diagnose off a SCREENSHOT transcription (burned 2026-08-27)
+`vision_analyze` reliably MISREADS Tekion report digits. Verified errors in one image:
+`579513`→"S79613", `$5,173.99`→"$517.99", `$3,394.19`→"$394.19", `$231.03`→"$217.03",
+`-$36.14`→"$36.14" (sign dropped). Three "refs" I read off the image turned out to
+belong to OTHER advisors and to have closed a week earlier.
+**Rule: use the screenshot ONLY to learn which filters/date range the manager used.
+Pull every RO number and dollar figure from the API.** Cross-check by matching the
+report's ROW COUNT to your API set, not by matching individual OCR'd refs.
+Also: "N Result(s)" on Advisor Performance = TOTAL row + advisor row(s), NOT RO count.
+The real RO count is the `Ro Count` column.
+
+## ⚠️ Do NOT declare a "Tekion defect" without a cross-store repro
+On 2026-08-27 I called the Pay Type Closed Date filter defective because RO 581233
+(pay types closed 8/26 18:10) was absent while 581311 (closed 8/26 18:13) was present.
+That conclusion was premature — it rested on an OCR'd ref list. Before filing any
+platform-defect ticket: (1) rebuild the expected set from the API, (2) have the user
+read the specific RO numbers off their own screen, (3) reproduce at a second store.
+Fleet-comparison-before-blaming-the-vendor is a standing rule.
+
 ## Pitfalls
 - **All Tekion $ are CENTS** — divide by 100 or you report $1.5M on one RO.
 - `closedTime` filters have a broken pagination token; use `invoicedTime` BTW with
