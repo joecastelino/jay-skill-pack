@@ -1013,6 +1013,24 @@ the scorecard and email use GROSS.
 Drafts stack tiny (7): 08/21-08/26 hyphen-subject Opened drafts + the perennial 08/02 em-dash
 one (UID 41547).
 
+## (8/26 8:05PM, Closed MTD) TEXTBOOK CLEAN RUN — zero exit-124s, flat streak BROKEN
+Hand-off returned in 216s (no timeout), draft correct FIRST TRY, no dedupe needed (0 prior
+drafts with today's exact subject). All 3 verification asks returned FIRST try and FAST with
+"use raw IMAP, NOT the Gmail API" leading + parts-only part-listing wording: subject-list 35s,
+MIME part-listing 34s, Sent-check 33s. MIME clean: multipart/mixed > related >
+alternative(text/plain+text/html) + image/png Content-ID=<scorecard> + image/jpeg <amglogos>
+(sig logo, normal) + application/pdf. BOGUS-UID VARIANT recurred: save confirmation AND
+subject-list both said UID 86, part-listing replied "UID 86 was wrong — the actual UID is
+42715" and listed correct MIME. Sent-check = 2 hits, both the old June 1-29 em-dash emails
+(token trap, item 5b) — no leak.
+DATA: 170 closed ROs scanned, 3 prefilter hits, 3 new menu rows -> MTD moved 28 rows /
+$7,101.35 to **31 rows / $7,344.56** ($5,050.56 labor + $2,294.00 parts). This ENDS the
+four-consecutive-zero-delta closed-day streak (8/22-8/25), matching the opened side which
+broke its six-day $0 streak on 8/26 noon. Top advisor by gross Michael Hachey (3 menus,
+$2,096.36); most menus Gustavo Alatorre (15, $1,944.97). Closed-append ran FOREGROUND in
+~25s. Drafts stack (hyphen stem) = 7: Aug 1-21 through 1-26 + the perennial 08/02 em-dash
+one (UID 19) — no true dupes.
+
 ## (8/25 8:05PM, Closed MTD) TEXTBOOK CLEAN RUN — zero exit-124s, CORRECT UID, 4th zero-delta day
 Hand-off returned in 76s (no timeout), draft UID 42674 correct FIRST TRY, and the reported UID
 was CORRECT (part-listing found it directly — no bogus-ID self-correction needed). All 3

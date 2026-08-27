@@ -298,6 +298,24 @@ BEFORE flagging it as a missed transfer:
   itself is benign, yet the stale companion negative (2418 = −2) was still sitting there
   uncorrected from prior runs. Report the recurrence count and the unresolved companion, not the
   increase.
+- **STATUS UPDATE 2026-08-26 — TWO ESCALATIONS RESUMED DEEPENING + a NEW wrinkle on 31532.**
+  **04500-1 (5005, single-bin, 5005 IS Primary) RESUMED: −23 → −26** — only ONE day after the +97
+  correction landed on 8/25. The correction did NOT fix the underlying process; the part is
+  consuming/receiving off-book again immediately. Report as "corrected 8/25, already regressing."
+  **31532 (5001) RESUMED after 7 flat days: −56 → −58** — AND its Primary changed character: SP-ORD
+  went from qty **0** (its state for the whole prior escalation) to **32**, so Total Inventory Qty is
+  now **−26** rather than equal to the bin (−58). Someone received 32 into the SP-ORD Primary while
+  the 5001 negative kept growing — the receipt masks the total but does not touch the bin. Watch for
+  the bin-vs-Total divergence here now (it previously matched). **17801-F4010 recurrence #10** — 5006
+  rose 4→6 (restock off its own Primary), companion 2418 STILL −2, Total Inventory Qty=**4** vs bin 6;
+  unmoved 16 days since 8/11. Flat: 87139-42040 −12 (7th flat), 87139-YZZ09 −22 (day 19 flat).
+  87139-YZZ93 5007 32→42 reconciled clean (42+30=72 ✓, Primary=5007). Negatives held at **26 for a
+  9th consecutive day**; bin mix 5005=11 rows, 5007=7 and still owns 4 of the 6 deepest. Session
+  state: :9223 alive/authenticated, bound to a stale `/ro/opcode/edit/UCRBRAKE` tab + 1 extra tab,
+  parked on **BC/1251** — recovery was `/pages/close` index 1 → `/navigate /home` (welcome:true, no
+  login.py) → dealer pill x1130,y32 → SCT leaf x1095,y344 → 876 in ONE 4s poll (~15s total). 7/7 bins
+  tagged+clicked first try via "500" filter + `data-jaybin`, zero scrolling, 4 pages clean, 5 diffs
+  out of 174 rows, 73/174 with 24h activity.
 - **STATUS UPDATE 2026-08-25 — FIRST REAL CORRECTION IN 7+ WEEKS:** **04500-1 (PLUG&GASKET, bin 5005)
   jumped −120 → −23, a +97 correction** — someone finally posted an adjustment on the longest-running
   standalone negative (open since 7/04 at −69, worsened to −120 by 8/24). NOT fully resolved (still −23),
