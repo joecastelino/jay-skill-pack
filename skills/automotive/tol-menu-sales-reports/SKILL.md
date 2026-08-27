@@ -992,6 +992,27 @@ the scorecard/KPI + email use PARTS GROSS — use gross, not price.
 Drafts stack = 13 TOL total (08/21-08/26 Opened & Closed pairs + the perennial 08/02 em-dash
 pair UIDs 19/20) — no true dupes.
 
+## (8/26 8:05PM, Opened) Clean draft, TRUE dedupe; only the INITIAL hand-off exit-124'd
+Initial hand-off hit exit-124 at 235s — but per the 8/19-EOD lesson, a subject-search right
+after showed the draft HAD saved correctly (UID 42714) AND true dedupe had happened (the noon
+draft 42695 with the identical subject was gone; exactly one 08/26 hit). NEVER blind re-fire.
+All 3 verification asks returned FIRST try and fast with "use raw IMAP, NOT the Gmail API"
+leading + parts-only part-listing wording: subject-list 38s, MIME part-listing 44s, Sent-check
+44s. MIME clean: multipart/mixed > related > alternative(text/plain+text/html) + image/png
+Content-ID=<scorecard> inline + application/pdf attachment. Reported UID matched (no bogus-ID
+self-correction needed). Sent-check = 4 hits, all old em-dash-era sends (06/30-07/03), zero
+today = no leak.
+DATA: 165 opened ROs scanned, **2 menus / $200.25** ($121.45 labor + $78.80 parts), both
+Gustavo Alatorre (RO 398771 TEK50000BNM 2025 Camry; RO 398800 TEK10000BNM 2016 Tacoma).
+Second consecutive non-zero opened day after the six-day $0 streak — trend is recovering.
+JSON QUIRK: `records` array in `tol-menu-sales-opened-<date>.json` can be EMPTY (0) while
+`totals` and the companion `tol-menu-sales-api-<date>.json` (`record_count`, per-RO lines in
+the run log) carry the real rows — read the per-advisor detail from the API JSON / run log,
+not from `opened.records`. Also `totals.parts_price` ($180.02) != `parts_gross` ($78.80);
+the scorecard and email use GROSS.
+Drafts stack tiny (7): 08/21-08/26 hyphen-subject Opened drafts + the perennial 08/02 em-dash
+one (UID 41547).
+
 ## (8/25 8:05PM, Closed MTD) TEXTBOOK CLEAN RUN — zero exit-124s, CORRECT UID, 4th zero-delta day
 Hand-off returned in 76s (no timeout), draft UID 42674 correct FIRST TRY, and the reported UID
 was CORRECT (part-listing found it directly — no bogus-ID self-correction needed). All 3
