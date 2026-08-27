@@ -1177,6 +1177,51 @@ Stacey's separate auto-sent Daily Opened reports, 14573 + 14592).
 the 5pm run picked up 7 more menus and four additional advisors — normal intraday behavior,
 the noon run is a partial-day cut and the 5pm run supersedes it.
 
+## 2026-08-26 6:17pm Closed MTD run — clean data + perfect draft, but NEW harness trap: `execute_code` has its OWN 300s cap
+188 menus, $28,721.28 labor / $18,740.65 parts = $47,461.93 (Aug 1-26). Advisors:
+Juan Ramirez 43 / $13,023.61, Houa Moua 36 / $8,200.99, Humberto Dominguez 31 /
+$9,202.58, Dimetri Reynoso 24 / $5,575.90, Jacob Debussey 19 / $2,976.72, Michael
+Reyes 18 / $3,501.72, Erik Mercado 11 / $3,656.53, Jeremia Navarro 6 / $1,323.88.
+Master asof was 2026-08-25 → default append; 68 closed ROs → 14 carried TEK menu
+opcodes → master 188 rows; `✓ all candidate ROs scanned`. Pull via
+`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
+Vision KPI band (crop 460px + 2x LANCZOS) matched JSON exactly; master `_gross`
+sums matched the emitted report `totals` exactly.
+**NEW TRAP — `execute_code` itself times out at 300s and KILLS the wrapper, but
+NOT the Stacey child process.** The documented pattern (`execute_code` +
+`subprocess.run([...,"timeout","600",ask,...])`) assumes the 600s ceiling is the
+binding constraint — it is NOT. `execute_code` has its own hard **300s** script
+cap; when it fires you get `Script timed out after 300s and was killed` with
+**zero stdout**, so you never see Stacey's DONE line. Critically, the
+`hermes chat` child **keeps running detached** and completes the append normally.
+DO NOT re-fire the ask on this error — that is exactly how duplicates are born.
+Recovery that worked:
+1. `terminal()` → `pgrep -af 'hermes chat'` to confirm her process is still alive
+   (the full prompt text shows in the pgrep output, so you can confirm it's YOUR ask).
+2. Poll for the draft with the dedupe grep every ~30-60s; draft 42712 appeared
+   ~7 min after the ask fired, while her process was still running (she stays busy
+   in her post-append verification/em-dash-search step long after the APPEND lands).
+3. Once the draft exists, **stop waiting on her reply entirely** and verify it
+   yourself with the stdlib-`email` parser method — her DONE line is only a hint
+   and was never needed here. (Her process was still running when I finished
+   verifying and closed out; that's fine and harmless.)
+Better pattern going forward: fire the ask-agent call via top-level
+`terminal(command=..., background=true, notify_on_complete=true)` +
+`process(action="wait")` (repeat waits) so neither the 180s foreground cap nor
+the 300s `execute_code` cap can decapitate it — same reasoning already documented
+for the data pull. Use `execute_code`+`subprocess.run` ONLY when you expect the
+build to finish under ~4 min, and build the message as an argument list either way.
+Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe,
+Subject auto-decoded with em-dashes, inline PNG **byte-for-byte identical**
+(1,493,435 bytes), PDF **byte-for-byte identical** (88,008 bytes), all 11 figures
+present exactly once, `<b>$47,461.93</b>` bold, greeting + footer present, zero
+' dollars'/USD leftovers (checked after stripping the data URI), all 11
+leading-digit-stripped variants ($461.93, $7,461.93, $721.28, $740.65, $023.61,
+$200.99, $202.58, $575.90, $976.72, $501.72, $656.53, $323.88) = 0. Exactly 1 MTD
+8/26 draft (42712), no duplicate despite the harness timeout, MTD Sent count 0.
+Left the sibling Daily Closed 8/26 draft (42711) untouched — different report type.
+25th consecutive clean "N dollars" build.
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
