@@ -505,6 +505,106 @@ Wait for any running instance to exit (`pgrep -f cron-pipeline`) before touching
 A pipeline run already in flight can take several minutes (it pages through hundreds of
 orders per store), so check `pgrep` rather than assuming the pause took effect instantly.
 
+## 🔴 SYNTHETIC-CLICK RECIPE — `/mouse` silently fails on ant-v5 + react-select options (BC 1251, UCFBRAKE/UCRBRAKE 2026-08-26)
+
+The single biggest time sink on the UCFBRAKE build: `/mouse {action:"click"}` at an option's
+correct center coordinate returns `{"success":true}` and **does nothing**. I burned ~8 rounds
+re-opening the Default Pay Type dropdown, confirming the leaf existed at `y=584`/`y=613`, and
+clicking it — the field stubbornly stayed `CP - Default customer pay`. The coords were right;
+the synthetic OS-level click just isn't accepted by these widgets.
+
+**FIX — dispatch the full pointer+mouse event sequence on the element itself:**
+```js
+const r = o.getBoundingClientRect();
+const cx = r.x+r.width/2, cy = r.y+r.height/2;
+const op = {bubbles:true, cancelable:true, clientX:cx, clientY:cy, view:window};
+o.dispatchEvent(new PointerEvent('pointerdown', op));
+o.dispatchEvent(new MouseEvent('mousedown', op));
+o.dispatchEvent(new PointerEvent('pointerup', op));
+o.dispatchEvent(new MouseEvent('mouseup', op));
+o.dispatchEvent(new MouseEvent('click', op));
+```
+`pointerdown`/`pointerup` are **required** — a plain `.click()` or a bare `MouseEvent('click')`
+is not enough for ant-v5. This worked first-try on every dropdown afterwards. Reusable helper:
+
+```python
+def pick(label):                      # label match is exact, lowercased
+    return ev("""(()=>{const vis=e=>e.offsetParent!==null;
+     const o=[...document.querySelectorAll('[class*=react-select][class*=option],[class*=select-item-option],[class*=select-tree-title]')]
+      .filter(vis).find(e=>(e.innerText||'').trim().toLowerCase()==='"""+label.lower()+"""');
+     if(!o)return 'notfound'; o.scrollIntoView({block:'center'});
+     /* dispatch sequence above */ return 'ok';})()""")
+```
+**Keep `/mouse` for OPENING a control** (that works fine) and use the dispatch recipe for
+PICKING the option. Open → `time.sleep(2.2)` → dispatch-pick → `time.sleep(2)` → verify.
+
+### Default Pay Type is NOT always a tree-select
+
+This skill previously said it's an ant-v5 **tree**-select (`.ant-v5-select-tree-title`). On the
+UCFBRAKE build the very same field rendered as a **grouped flat list** — group headers
+`ant-v5-select-item-group` (`Customer Pay` / `Internal Pay` / `Warranty Pay`) with
+`ant-v5-select-item-option` children. Searching only for `select-tree-title` returned `noleaf`
+and looked like the option didn't exist. **Query BOTH** (`[class*=select-item-option]` and
+`[class*=select-tree-title]`) — the `pick()` helper above already does.
+
+### Customer Type multi-select is a TOGGLE — clicking "All" twice clears everything
+
+The row's Customer Type (`[class*=dropdown-trigger]`, x≈475) options `All / Individual /
+Business` toggle rather than replace. Sequence observed:
+- click `All` → reads `All, Individual, Business` ✅ (this is the goal state)
+- then clicking `Individual` → **un-toggles** it, leaving just `Business` ❌
+
+Click `All` **once**, verify the trigger reads `All, Individual, Business`, then STOP and close
+the menu (`/mouse` a neutral spot like `950,230`). Do not "also select Individual".
+
+### Standard Opcode Mapping grid (GM stores)
+
+`FBRAKE`/`RBRAKE` at BC carry 3 warranty mapping rows: `gm | chevrolet | 0300`,
+`gm | cadillac | 0300`, `gm | gmc | 0300`. Joe's ruling 2026-08-26: **copy them onto UC* clones.**
+Grid columns: **OEM** x≈188 · **Make** x≈388 · **Opcode** (plain text input) x≈588.
+Rows are at y≈494 / 535 / 576 (41px pitch) and a **blank row auto-appends** after each is filled —
+no Add button. OEM list at BC contains only `gm`; Make list is `chevrolet / cadillac / gmc`.
+Fill loop (verified, 3/3 first pass):
+```python
+def row(make, y, tag):
+    click(188,y); pick("gm"); click(388,y); pick(make)
+    tag_input_at(y, x>500, width>140); type("0300")
+```
+
+### `input[placeholder="Type Here"]` — filter by Y, not by document order
+
+Tagging the first three `Type Here` inputs grabbed the **global "Search here..." nav box**
+(y=18) as `f0`, so the opcode went into Tekion's search bar and the real Opcode field stayed
+empty. Anchor on the header row's y (BC: `y≈284`, labels Opcode/Opcode/Description at `y≈253`):
+```js
+[...document.querySelectorAll('input')].filter(vis)
+ .filter(e=>e.placeholder==='Type Here')
+ .filter(e=>Math.abs(e.getBoundingClientRect().y-284)<15)
+ .sort((a,b)=>a.getBoundingClientRect().x-b.getBoundingClientRect().x)
+```
+Symptom to watch for: `location.pathname` still `/ro/opcode/add` but a `No results found`
+overlay covers the form, and `elementFromPoint` on your dropdown coords returns
+`root_listSection_imageContainer`. That's the global search overlay — press `Escape`, reload,
+re-tag by Y.
+
+### `/goto` does not exist — the endpoint is `/navigate`
+
+`call("goto", {...})` → **HTTP 404**. Use `/navigate`. (Full valid set: `/navigate`, `/eval`,
+`/type`, `/mouse`, `/press`, GET `/screenshot`.)
+
+### Verification bounce
+
+Reload-verify by navigating to `/home`, waiting ~7s, THEN to `/ro/opcode/edit/<CODE>` (~13s).
+Navigating edit→edit can serve cached React Query state. Both UCFBRAKE and UCRBRAKE were
+confirmed this way. Unlike Create-with-no-toast noted above, **BC 1251 DID fire a clean toast**:
+`Success / Opcode 'UCFBRAKE' has been created successfully` — scan toast text but still reload.
+
+### Timing that worked (don't shorten these)
+
+open dropdown → `2.2s` · after dispatch-pick → `2.0s` · after `Create` → `5–6s` ·
+after `/navigate` → `12–13s`. Wrap `/eval` in the retry helper; it 500s transiently and a
+bare call will crash the whole `execute_code` block mid-build.
+
 ## Pitfalls / notes
 - Opcodes are **store-specific** — create only at the store(s) needed (Joe-confirmed);
   don't replicate across all 7 unless asked.
