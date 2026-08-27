@@ -44,6 +44,35 @@ On `/core/reports` → Advisor Performance Report, set the **Status filter to in
 BOTH `INVOICED` and `CLOSED`** (or clear it). Save it as the default view so the
 store stops re-running the INVOICED-only version. Then the number stops "dropping."
 
+## CAUSE #2 — CVSC (and warranty) hidden by the Pay Type View dropdown
+Toyota service-contract work bills to `payType=CUSTOMER_PAY` with
+**`subPayType=CVSC`**, on a SEPARATE invoice from the plain Customer Pay one — and
+the plain CP invoice is then **$0.00**. With Pay Type View = Customer Pay the report
+reads that $0 invoice and shows **zero gross on a ticket that clearly has gross**.
+Verified SCT 2026-08-27: RO 577046 (true GP $575.40) and RO 577056 (true GP
+$1,478.50) both displayed $0. Scale for ONE advisor in one month: **60 of 226 ROs /
+$11,478.92 sat in CVSC.** Fix = Pay Type View → **All**. Tekion books this
+correctly; whether CVSC *should* count toward advisor gross/pay plan is a business
+decision for the VP, not a Tekion bug — raise it, don't assume.
+Warranty-only ROs disappear the same way under a CP-filtered view.
+
+## CAUSE #3 — "Pay Type Closed Date = yesterday" silently drops ROs (UNRESOLVED)
+SCT 2026-08-27, user-confirmed on his own screen (not OCR): filtering closed-date to
+8/25–8/26 returned **19 ROs — all 18 that closed 8/25, but only 1 of the 10 that
+closed 8/26.** RO 581233 (all pay types closed 8/26 18:10) was absent while RO 581311
+(closed 8/26 18:13) was present — 3 minutes apart, both CLOSED, both 2 fully-closed
+invoices, same advisor. No API field distinguishes them. $2,282 of gross missing that
+day. NOT yet proven a platform defect: Advisor Performance refreshes only every 4-6h
+and the report was pulled 6:35 AM, so **always have the user hit Refresh and re-run
+before escalating**, then reproduce at a second store.
+
+## THE DURABLE ANSWER — stop fighting the report, build it from the API
+Joe's response to all three causes was **"can you build a report for me via the API?"**
+That is the expected deliverable once a native report is shown unreliable. See skill
+**`tekion-advisor-closed-gross-api-report`** — `~/tekion-reports/advisor_closed_gross.py`
+keys on true per-invoice pay-type close time and counts ALL pay types, so causes #1-#3
+cannot bite. It found 9 ROs / $2,763.75 on 8/26 where Tekion showed 1 / $481.74.
+
 ## Diagnostic procedure (do it in this order)
 1. **Sweep the RO# across all 7 dealers first** — RO numbers are NOT unique.
    Beware typos in the complaint: "851311" was really **581311** (851311 matched

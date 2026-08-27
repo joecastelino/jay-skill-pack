@@ -1,6 +1,6 @@
 {
- "generated": "2026-08-27T08:00:05",
- "skill_count": 199,
+ "generated": "2026-08-27T08:15:06",
+ "skill_count": 200,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -999,6 +999,14 @@
    "path": "automotive/local-nemotron-stt-fleet",
    "category": "automotive",
    "description": "Stand up NVIDIA Nemotron 3.5 ASR (streaming, CPU ONNX) as the shared speech-to-text backend for every Hermes agent on this machine, replacing the broken faster-whisper/libcublas path. Use when voice messages arrive untranscribed or when asked to enable local speech recognition for the agent fleet.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-advisor-closed-gross-api-report",
+   "path": "automotive/tekion-advisor-closed-gross-api-report",
+   "category": "automotive",
+   "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
    "times_used": 0,
    "last_used": null
   },
