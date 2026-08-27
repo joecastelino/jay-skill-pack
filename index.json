@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-27T13:30:09",
+ "generated": "2026-08-27T13:45:26",
  "skill_count": 201,
  "skills": [
   {
@@ -183,8 +183,8 @@
    "path": "automotive/tekion-ro-close-blocked-triage",
    "category": "automotive",
    "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
-   "times_used": 18,
-   "last_used": "2026-08-25"
+   "times_used": 19,
+   "last_used": "2026-08-27"
   },
   {
    "name": "tekion-opcode-overrides",
@@ -299,6 +299,14 @@
    "last_used": "2026-08-27"
   },
   {
+   "name": "tekion-roles-permissions",
+   "path": "automotive/tekion-roles-permissions",
+   "category": "automotive",
+   "description": "Create/duplicate a Tekion custom ROLE and toggle its PERMISSIONS via the Roles admin page (/core/roles). Verified live at Blackstone Chevrolet 2026-07-10 (created \"Concierge\" cloned from ServiceAdvisor + enabled deal viewing). Covers the no-duplicate-button trap, permission pill mechanics, and save/verify flow.",
+   "times_used": 10,
+   "last_used": "2026-08-27"
+  },
+  {
    "name": "tekion-vi-stock-number-rules-fix",
    "path": "automotive/tekion-vi-stock-number-rules-fix",
    "category": "automotive",
@@ -321,14 +329,6 @@
    "description": "Build the DealerDetail Tekion API-driven data pipeline (replacing the email/Excel prototype) by acting as PM and delegating tickets to Claude Code, then verifying independently. Covers the ticket workflow, the live infra (Supabase project, branch, creds), and the hard-won gotchas (Supabase shadow-DB, server-only smoke tests, git credential path, Tekion app-scope 403 on user lookups).",
    "times_used": 9,
    "last_used": "2026-08-11"
-  },
-  {
-   "name": "tekion-roles-permissions",
-   "path": "automotive/tekion-roles-permissions",
-   "category": "automotive",
-   "description": "Create/duplicate a Tekion custom ROLE and toggle its PERMISSIONS via the Roles admin page (/core/roles). Verified live at Blackstone Chevrolet 2026-07-10 (created \"Concierge\" cloned from ServiceAdvisor + enabled deal viewing). Covers the no-duplicate-button trap, permission pill mechanics, and save/verify flow.",
-   "times_used": 9,
-   "last_used": "2026-08-25"
   },
   {
    "name": "tekion-writer-handoff-report",
@@ -899,6 +899,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-reopen-closed-ro",
+   "path": "automotive/tekion-reopen-closed-ro",
+   "category": "automotive",
+   "description": "Reopen a CLOSED Tekion repair order (RO) when the UI shows no \"Reopen\" option. Verified live at VW of Clovis (dealer 1891) on RO 141673, 2026-08-27 \u2014 flipped CLOSED \u2192 READY_FOR_INVOICE via the internal reopen endpoint.",
+   "times_used": 1,
+   "last_used": "2026-08-27"
+  },
+  {
    "name": "tekion-tech-clock-time-by-opcode",
    "path": "automotive/tekion-tech-clock-time-by-opcode",
    "category": "automotive",
@@ -1071,14 +1079,6 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tekion-reopen-closed-ro",
-   "path": "automotive/tekion-reopen-closed-ro",
-   "category": "automotive",
-   "description": "Reopen a CLOSED Tekion repair order (RO) when the UI shows no \"Reopen\" option. Verified live at VW of Clovis (dealer 1891) on RO 141673, 2026-08-27 \u2014 flipped CLOSED \u2192 READY_FOR_INVOICE via the internal reopen endpoint.",
    "times_used": 0,
    "last_used": null
   },
