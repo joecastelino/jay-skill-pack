@@ -71,31 +71,75 @@ payer at all, check whether the button is genuinely disabled before hunting perm
 // → {dis:true, pe:"none"}
 ```
 
-**Root cause when it's disabled: the payer records are already CLOSED/invoiced.**
-Tekion locks the ENTIRE Manage Splits modal read-only once payers close — not just the
-button. Tell: dump every input in the modal and they're ALL `disabled:true`
-(`splitType`, the AMOUNT/PERCENTAGE radios, `postTaxPayableAmount-payer_N_M`,
-`percentageSplit-payer_N_M`, `primaryPayerId`). If only *some* fields are disabled you
-have a different problem.
+Tekion locks the ENTIRE Manage Splits modal read-only, not just the button. Tell: dump
+every input in the modal and they're ALL `disabled:true` (`splitType`, the
+AMOUNT/PERCENTAGE radios, `postTaxPayableAmount-payer_N_M`, `percentageSplit-payer_N_M`,
+`primaryPayerId`). If only *some* fields are disabled you have a different problem.
+(Cost-center `description` inputs unlock independently — ignore them as a signal.)
 
-Corroborate in **Payers View** (kebab → Payers View): every payer row reads `Closed`
-and Invoice / Print PDF / Resync Payer checkboxes are all `disabled:true`.
-⚠ Do NOT confuse this with the Step 3b DESYNC bug in `tekion-ro-close-blocked-triage`
-— there the payer is **Open** with disabled controls. Here the payer is **Closed**.
-Closed + disabled = normal lock. Open + disabled = desync.
+### ⚠️ THE LOCK IS JOB-LEVEL, NOT PAYER-LEVEL — I got this wrong once, don't repeat it
 
-**The trap that creates it**: a job left in `PARTIALLY_INVOICED` while both payer
-invoices close at `invoiceAmount: 0`. On 398856 job 1 (TSC2, $61.37) had a
-**Deductible column at $21.01 / 100.00% with the payer name blank (`-`)** — someone
-built the deductible split but never picked the payer, then closed both invoices at
-$0.00. The money has no payer, and the UI is now locked so nobody can assign one.
-RO sits at READY_FOR_INVOICE forever.
+My first read on 398856 was "the payer records are Closed, so reopen the payer invoices
+and the grid unlocks." **That was WRONG and I had to retract it to Joe.** What actually
+happened when Joe reopened:
 
-Read the payer column labels from the grid header, not the amounts alone — a `-` where
-a payer name belongs is the smoking gun.
+| | before reopen | after reopen |
+|---|---|---|
+| Payers View rows | both `Closed`, all checkboxes `disabled` | both **`Ready for Invoice`**, checkboxes **enabled + checked** |
+| Jobs 2–7 (Internal $0) | `Closed`, 0 Need Attention | `Completed`, **2 Need Attention each** |
+| Job 1 TSC2 | `PARTIALLY_INVOICED` | **`PARTIALLY_INVOICED` (unchanged)** |
+| Add New Payer | `disabled:true, pe:none` | **`disabled:true, pe:none` (unchanged)** |
 
-**Fixing it requires reopening the payer invoices first** (accounting-reversing) —
-STOP and get Joe's call; do not reopen unilaterally. See `tekion-reopen-closed-ro`.
+So payers fully unlocked and the split grid **stayed hard-locked**. The gate is the JOB
+sitting in `PARTIALLY_INVOICED` — not payer status. Verify after a full remount
+(`/home` → back to the job URL), not off a stale DOM.
+
+**Corollary: don't send the user hunting for a "payer-level unlock."** Read Payers View
+FIRST and report actual row status before recommending anything — I told Joe to go
+unlock the payer level when it was already unlocked.
+
+### The orphaned-payer tell: header chip count ≠ Payers View row count
+
+Job header chip read **"3 Payers"** while Payers View listed only **2**
+(`94227 Toyota of Lancaster`, `166920 Amir Baig`). That third payer is the phantom —
+the split grid showed a **Deductible column at $21.01 / 100.00% with the payer name
+blank (`-`)**: somebody built the deductible split, never picked the payer, then both
+`ro-invoices` closed at `invoiceAmount: 0`. Money assigned 100% to a payer that doesn't
+resolve → job can't leave PARTIALLY_INVOICED → grid locked → nobody can assign one.
+
+**Always diff the chip count against the Payers View row count.** A mismatch is the
+cheapest possible detection of an orphaned payer record.
+
+Read payer column LABELS from the grid header, not amounts alone — a `-` where a payer
+name belongs is the smoking gun.
+
+### What to try, in order (UNRESOLVED as of 2026-08-27 — do not fabricate a fix)
+
+There is **no "reopen job" anywhere in the RO kebab**. Full TL kebab enumeration:
+`Add/Edit Coupon · Add/Edit Fee · Audit Logs · Cashier · Hold · Invoice Pdf Preview ·
+Media (N) · Payers View · Profit/Loss View · RO Bulk Action · RO Clocked Time ·
+Update Estimate Amounts · Vehicle Update · View Posting Preview · View RO PDF`.
+Same shape as the hidden Reopen gate in `tekion-reopen-closed-ro`.
+
+1. **`Resync Payer`** on the affected payer row (enabled once payers reopen).
+   Non-destructive, and it is literally the tool for payer records desynced from the RO.
+   Cheapest shot at clearing the phantom. TRY THIS FIRST.
+2. **Cashiering** (kebab → Cashier) — if the deductible was cashiered against the
+   phantom payer, reversing that receipt is what releases the job. **Financial screen —
+   get Joe's explicit go before clicking.**
+3. If neither moves job 1 off PARTIALLY_INVOICED → **Tekion support ticket**. An
+   orphaned invoiced payer is not fixable from the UI. Say that plainly rather than
+   keeping the store clicking.
+
+⚠ **Reopening is not free.** It flipped jobs 2–7 from `Closed`/0 flags to
+`Completed`/**2 Need Attention each** (TL enforces both Cause AND Storyline — see
+`tekion-ro-close-blocked-triage` Step 3e §6). Those must be cleared before the RO can
+close again. Warn about this cost BEFORE recommending a reopen.
+
+Warnings in Payers View on this RO (`Cost Amount for the job is going to be zero`,
+`The cost center description is empty`) are **warnings, not blockers** — the payers were
+`Ready for Invoice` with enabled checkboxes while showing them. Don't report them as the
+root cause.
 
 ## Step 0 — locate the RO and the right JOB (zero quota, no browser)
 
@@ -211,9 +255,34 @@ change to Joe rather than explaining it away.
   `document.querySelectorAll('[id*="pendo"],[class*="ant-notification"],[class*="notification"],[class*="toast"]').forEach(e=>e.remove())`
 - **`/eval` can return the previous page's DOM** — poll until
   `document.body.innerText.length > 1800` AND the URL contains `/jobs/` before acting.
+- **A kebab/menu item at `x > 1280` is OFF-VIEWPORT and `/mouse` silently misses.**
+  The RO kebab `.icon-overflow` reported `x:1252` in one layout and `x:1366` in another
+  (Payers panel open shifts it). `/mouse` returns `success:true` and nothing happens.
+  **FIX: prefer `element.click()` via `/eval`** for menu items —
+  `document.querySelector('.icon-overflow').click()` worked at both x positions. Same
+  for the menu leaves: filter to `textContent.trim()==='Payers View'` and `.click()`
+  rather than computing coordinates.
+- **Menu-item text matching needs `===`, not regex.** `/Payers View/.test(...)` matched
+  a stale node after the panel had already opened and returned `{"none":1}` on the
+  retry, which reads as "the click failed" when it actually succeeded. Re-check
+  `location.href` and the panel's innerText before concluding anything failed.
+- **Panels can render with ZERO checkboxes mid-load.** Reading
+  `input[type=checkbox]` right after opening Payers View returned `[]`; the same query
+  seconds later returned all 5 rows with correct `disabled` flags. Never conclude
+  "controls are missing" from one read — re-poll.
+- **The Payers View `Warnings` accordion is COLLAPSED by default** and its contents are
+  absent from innerText until clicked. Click it before reporting "no warnings."
 - Job-level `Pay Type*` radios collapse from `CP W I` to just `CP` once a split exists.
   That's expected, not a permissions problem.
 - There is **no OpenAPI write path** for payer splits — browser only.
+- **OpenAPI 429s hard on repeated `repair-orders:search`.** A 4× retry loop with 20s
+  sleeps still returned 429 every time and burned 80s. When the API is drained, the
+  BROWSER is ground truth for RO/job/payer status anyway — switch immediately instead of
+  retrying (and per the thundering-herd rule, don't stack retry loops).
+- **`opcode_preflight.py` can report `NOT SAFE TO BUILD: dealer` after waiting out the
+  pipeline** — it pauses cron but does NOT switch dealers. Switch via the dealer pill
+  yourself (scrollIntoView the leaf row, `/mouse` its center, verify
+  `localStorage.currentActiveDealerId`), then proceed.
 
 ## Ask Joe before doing it when
 
