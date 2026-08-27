@@ -15,10 +15,16 @@ triggers:
   - edit service overrides parts
   - BGCVTF override
   - menu included opcode part swap
-trigger: >
-  included services, edit service, service menu parts override, menu-included
-  opcode, BGCVTF, override parts row builder, service-menu-setups included-service,
-  E-TAF override, CVT fluid override, /ro/service-menu-setups/included-service
+  - included services
+  - edit service
+  - service menu parts override
+  - menu-included opcode
+  - bgcvtf
+  - override parts row builder
+  - service-menu-setups included-service
+  - e-taf override
+  - cvt fluid override
+  - /ro/service-menu-setups/included-service
 ---
 
 # Tekion Included-Service PARTS Override (Service Menu Setups)

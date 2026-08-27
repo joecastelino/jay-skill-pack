@@ -11,7 +11,9 @@ triggers:
   - sct menu sales closed
   - closed mtd scorecard
   - menu sales closed report
-trigger: SCT menu sales closed, closed MTD, daily closed performance report, sct_menu_sales_closed_mtd
+  - closed mtd
+  - daily closed performance report
+  - sct_menu_sales_closed_mtd
 ---
 
 # SCT Menu Sales CLOSED MTD Scorecard (LIVE source, incremental)

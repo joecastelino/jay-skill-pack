@@ -11,7 +11,11 @@ triggers:
   - sct menu sales scorecard
   - menu sales daily report
   - sct menu sales api
-trigger: SCT menu sales, menu sales scorecard, daily opened performance report, sct_menu_sales_api, live OpenAPI menu sales
+  - sct menu sales
+  - menu sales scorecard
+  - daily opened performance report
+  - sct_menu_sales_api
+  - live openapi menu sales
 ---
 
 # SCT Menu Sales API Scorecard (LIVE source)

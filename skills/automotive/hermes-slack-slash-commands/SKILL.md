@@ -15,7 +15,15 @@ triggers:
   - slack slash command
   - set home slack
   - app did not respond
-trigger: /sethome, sethome failed, the app did not respond, slack home channel, set home, slack slash command, /hermes subcommand, slack command not responding, sending messages to this app has been turned off, can't talk to agent on slack, messages tab disabled
+  - /sethome
+  - the app did not respond
+  - slack home channel
+  - set home
+  - /hermes subcommand
+  - slack command not responding
+  - sending messages to this app has been turned off
+  - can't talk to agent on slack
+  - messages tab disabled
 ---
 
 # Hermes Slack Slash Commands

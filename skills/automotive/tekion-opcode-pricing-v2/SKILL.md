@@ -8,13 +8,17 @@ description: >
   need the full historical detail: complete dealer-switch code, Puppeteer scripts,
   every selector quirk, and the session-by-session debugging archaeology behind the
   verified recipes.
-trigger: >
-  Tekion deep reference, opcode archaeology, full dealer switch code, Puppeteer
-  opcode script, opcode selector history, why does opcode save fail, V1 vs V2 opcode
 triggers:
   - opcodeManagementV2 internals
   - opcode pricing deep reference
   - opcode selector archive
+  - tekion deep reference
+  - opcode archaeology
+  - full dealer switch code
+  - puppeteer opcode script
+  - opcode selector history
+  - why does opcode save fail
+  - v1 vs v2 opcode
 ---
 
 # Tekion Opcode Pricing (V2 — opcodeManagementV2) — DEEP REFERENCE / ARCHIVE

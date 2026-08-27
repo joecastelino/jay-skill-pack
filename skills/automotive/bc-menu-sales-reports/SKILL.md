@@ -7,7 +7,6 @@ description: >
   (Restrada@blackstonegm.com). This is the GM-store sibling of the SCT/Kevin
   pipeline (sct-menu-sales-api-scorecard). Use for any "BC menu report",
   "Blackstone Chevy/Cadillac menu sales", or Ruben report request.
-trigger: BC menu sales, Blackstone Chevrolet Cadillac menu report, Ruben menu report, BC daily closed, BC closed MTD, blackstonegm report
 triggers:
   - run the bc menu sales report
   - bc daily closed report
@@ -17,6 +16,12 @@ triggers:
   - gm store menu sales scorecard
   - bc menu opcode numbers
   - ruben wants the menu report
+  - bc menu sales
+  - blackstone chevrolet cadillac menu report
+  - ruben menu report
+  - bc daily closed
+  - bc closed mtd
+  - blackstonegm report
 ---
 
 # BC (Blackstone Chevrolet & Cadillac) Menu Sales Reports

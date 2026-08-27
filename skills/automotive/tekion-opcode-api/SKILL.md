@@ -10,10 +10,17 @@ triggers:
   - opcode override audit
   - verify opcode rows
   - opcode pricing api
-trigger: >
-  Tekion API, opcode API, verify overrides, audit overrides, override row count,
-  committed rows, override read-back, RACF row count, confirm persistence,
-  service-module opcode endpoint, override JSON schema
+  - tekion api
+  - opcode api
+  - verify overrides
+  - audit overrides
+  - override row count
+  - committed rows
+  - override read-back
+  - racf row count
+  - confirm persistence
+  - service-module opcode endpoint
+  - override json schema
 ---
 
 # Tekion Opcode Override — Backend API Read / Audit / Verify

@@ -10,7 +10,10 @@ triggers:
   - set up a pipeline with another agent
   - agent needs to talk to me
   - install bridge into another agent
-trigger: agent pipeline, autumn talk to jay, bridge another agent, peer agent communication
+  - agent pipeline
+  - autumn talk to jay
+  - bridge another agent
+  - peer agent communication
 ---
 
 # Install the Agent Bridge INTO a Peer Agent's Profile

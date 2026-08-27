@@ -5,12 +5,19 @@ description: >
   IMAP, navigate to modules, switch dealerships, and update opcode pricing (Fixed
   Price labor rates, add parts, save). Covers Ant Design dropdown patterns,
   scrollable containers, and the complete opcode edit workflow.
-trigger: Tekion login, Tekion browser, opcode management, opcode pricing, Fixed Price, Tekion OTP, dealer switching, Tekion puppeteer
 triggers:
   - tekion browser login
   - puppeteer tekion
   - ant design dropdown opcode
   - switch dealership browser
+  - tekion login
+  - tekion browser
+  - opcode management
+  - opcode pricing
+  - fixed price
+  - tekion otp
+  - dealer switching
+  - tekion puppeteer
 ---
 
 # Tekion Browser Automation

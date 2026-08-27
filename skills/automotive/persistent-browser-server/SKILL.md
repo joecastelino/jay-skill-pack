@@ -9,7 +9,10 @@ triggers:
   - persistent browser
   - browser server port 9223
   - playwright server
-trigger: persistent browser, browser session, long-running browser, Playwright server, HTTP browser API, browser persistence
+  - browser session
+  - long-running browser
+  - http browser api
+  - browser persistence
 ---
 
 # Persistent Browser Server

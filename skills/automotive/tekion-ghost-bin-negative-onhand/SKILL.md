@@ -19,7 +19,15 @@ triggers:
   - ghost bin / legacy bin / CDK bin 5005
   - where did the negative come from
   - bin 5005 negative
-trigger: negative on-hand, ghost bin, CDK migration bin, 5005, phantom bin balance, why is on hand negative, auto replenishment not working, bin consolidation, physical inventory missed
+  - negative on-hand
+  - ghost bin
+  - cdk migration bin
+  - 5005
+  - phantom bin balance
+  - why is on hand negative
+  - auto replenishment not working
+  - bin consolidation
+  - physical inventory missed
 ---
 
 # Tekion Ghost-Bin Negative On-Hand Diagnosis

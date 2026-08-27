@@ -7,15 +7,22 @@ description: >
   via react-select (bare-number-first search), and the incremental Save Draft
   pattern that the browser tool requires. This is the SIMPLE common case — for
   vehicle/part override rows use tekion-opcode-overrides.
-trigger: >
-  Tekion opcode pricing, opcode labor rate, set opcode price, BGFINJ, BGMAF,
-  fixed price labor, add part to opcode, opcode flag time, opcodeManagementV2,
-  default tab pricing, update opcode labor
 triggers:
   - set opcode labor price
   - add parts to opcode
   - opcode default pricing
   - fixed price labor rate
+  - tekion opcode pricing
+  - opcode labor rate
+  - set opcode price
+  - bgfinj
+  - bgmaf
+  - fixed price labor
+  - add part to opcode
+  - opcode flag time
+  - opcodemanagementv2
+  - default tab pricing
+  - update opcode labor
 ---
 
 # Tekion Opcode Default Pricing (V2 — Labor + Parts)

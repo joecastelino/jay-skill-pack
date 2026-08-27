@@ -9,7 +9,12 @@ triggers:
   - tekion login
   - tekion session
   - tekion otp
-trigger: Tekion login, Tekion OTP, autonomous login, session token, login.py, tekion-auth, OTP staleness, headless Tekion
+  - autonomous login
+  - session token
+  - login.py
+  - tekion-auth
+  - otp staleness
+  - headless tekion
 ---
 
 # Tekion Autonomous Login

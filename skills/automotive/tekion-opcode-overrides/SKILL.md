@@ -7,15 +7,24 @@ description: >
   Trim/Part per row, driven by the __buildRow() helper toolkit. Covers the
   real-click trim rule, the Save Changes confirmation modal, and mandatory
   reload+API verification. The most complex Tekion workflow we run.
-trigger: >
-  Tekion override, opcode override, vehicle override, part override, cabin air
-  filter, RACF, cabin filter, add override row, Overrides tab, override pricing,
-  batch overrides, __buildRow, Toyota cabin filter overrides
 triggers:
   - opcode override rows
   - cabin filter overrides
   - vehicle part override batch
   - overrides tab opcode
+  - tekion override
+  - opcode override
+  - vehicle override
+  - part override
+  - cabin air filter
+  - racf
+  - cabin filter
+  - add override row
+  - overrides tab
+  - override pricing
+  - batch overrides
+  - __buildrow
+  - toyota cabin filter overrides
 ---
 
 # Tekion Opcode Overrides — Vehicle/Part Override Rows (VERIFIED BATCH METHOD)

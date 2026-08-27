@@ -5,13 +5,18 @@ description: >
   Playwright browser server (port 9223) as the interaction layer and Claude Sonnet 4
   (via OpenRouter) as the vision/decision-making brain. Claude sees page snapshots,
   decides what to click/type, and the agent executes via HTTP API calls.
-trigger: >
-  tekion computer use, vision browser, autonomous tekion, tekion cu, browser agent,
-  update opcode pricing, navigate tekion, tekion automation
 triggers:
   - vision guided tekion automation
   - claude clicks tekion
   - autonomous browser tekion
+  - tekion computer use
+  - vision browser
+  - autonomous tekion
+  - tekion cu
+  - browser agent
+  - update opcode pricing
+  - navigate tekion
+  - tekion automation
 ---
 
 # Tekion Computer-Use Agent

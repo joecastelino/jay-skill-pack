@@ -383,6 +383,56 @@ didn't drop — the rebuild merges rather than resets, but a bad edit can wipe c
 **Second known gap: only 95 of 198 skills declare `triggers:`** — the strongest matching
 signal. When creating or patching a skill, add a `triggers:` list.
 
+### ⚠️ Legacy singular `trigger:` key — FIXED 2026-08-26
+
+Separate from the folded-description bug, **18 automotive skills carried a legacy singular
+`trigger:` key** (a comma-separated string) alongside or instead of the plural `triggers:`
+list. `rebuild-skill-index.sh` only ever reads `triggers:` — so those phrases were dead
+weight, and in several cases the singular key held the RICHER phrasing:
+
+```yaml
+trigger: >                       # ← invisible to the indexer
+  tekion computer use, vision browser, autonomous tekion, tekion cu
+triggers:                        # ← the only one actually indexed
+  - vision guided tekion automation
+```
+
+All 18 merged (singular phrases folded into the plural list, singular key deleted).
+Notable gains: `tekion-opcode-overrides` 4→17, `tekion-opcode-default-pricing` 4→15,
+`tekion-ghost-bin-negative-onhand` 6→15, `bc-menu-sales-reports` 8→14.
+
+**PITFALL that bit me during the merge:** some files write `trigger: >` as a FOLDED BLOCK,
+not a single line. A regex that deletes only the `^trigger:` line orphans the indented body
+into the *description* block, silently corrupting it. Deletion must be **block-aware** —
+remove the key line PLUS all following indented non-blank lines. Always assert
+`description` is byte-identical before/after and write only if it passes.
+
+### Standing invariants — assert all four after ANY skill-index work
+```bash
+/home/itadmin/.hermes/hermes-agent/venv/bin/python3.11 -c "
+import json,yaml,glob,re
+root='/home/itadmin/.hermes/profiles/jay/skills'
+m=json.load(open(root+'/manifest.json'))
+print('broken desc :',len([s for s in m['skills'] if s['description'].strip() in ('>','|','>-','|-','')]))
+a=[s for s in m['skills'] if s['category']=='automotive']
+print('auto no-trig:',len([s for s in a if not s['triggers']]),'of',len(a))
+p=[]
+for f in glob.glob(root+'/**/SKILL.md',recursive=True):
+    mm=re.match(r'^---\s*\n(.*?)\n---',open(f).read(),re.S)
+    if not mm: p.append(f); continue
+    try: d=yaml.safe_load(mm.group(1))
+    except Exception: p.append(f); continue
+    if not isinstance(d,dict) or 'trigger' in d or str(d.get('description','')).strip() in ('>','|',''): p.append(f)
+print('yaml probs  :',len(p))
+"
+```
+Expect `broken desc: 0`, `auto no-trig: 0`, `yaml probs: 0`, and the `usage-stats.json`
+`times_used` sum must not drop. Back up `usage-stats.json` to /tmp before rebuilding.
+
+**State as of 2026-08-26:** 198 skills, 0 broken descriptions, 125/125 automotive skills
+have triggers, 131/198 overall (the 67 without are generic bundled skills — creative,
+mlops, github — not AMG work).
+
 Files under `/home/itadmin/.hermes/profiles/jay/skills/`:
 - `manifest.json` — enriched: per skill {name, skill_name, path, **description**, **triggers**,
   category, size_bytes, modified}. Regenerate with `/home/itadmin/bin/rebuild-skill-index.sh`

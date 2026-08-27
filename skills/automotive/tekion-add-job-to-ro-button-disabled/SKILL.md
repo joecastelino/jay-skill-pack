@@ -9,7 +9,13 @@ triggers:
   - Add To RO button disabled
   - Add To RO greyed out
   - PORTMAJOR can't be added
-trigger: Add To RO disabled, cannot add job to repair order, add job greyed out, opcode won't add to RO, Tekion approval flow paytype, Approval Workspace still work, /core/approval-workspace
+  - add to ro disabled
+  - cannot add job to repair order
+  - add job greyed out
+  - opcode won't add to ro
+  - tekion approval flow paytype
+  - approval workspace still work
+  - /core/approval-workspace
 ---
 
 # "Add To RO" button disabled — Tekion

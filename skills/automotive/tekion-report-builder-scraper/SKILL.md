@@ -10,7 +10,10 @@ triggers:
   - scrape tekion report
   - report builder
   - sct menu sales
-trigger: report builder, custom report, menu sales report, Tekion report scrape, scorecard, SCT Menu Sales
+  - custom report
+  - menu sales report
+  - tekion report scrape
+  - scorecard
 ---
 
 # Tekion Report Builder Scraper

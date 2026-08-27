@@ -12,7 +12,13 @@ triggers:
   - service menu setups
   - tekion service menu
   - find a service menu
-trigger: service menu, service menu setup, service menu setups, menu builder, menu tier, menu tag, interval menu, included services, /ro/service-menu-setups
+  - service menu
+  - menu builder
+  - menu tier
+  - menu tag
+  - interval menu
+  - included services
+  - /ro/service-menu-setups
 ---
 
 # Tekion Service Menu Setups
