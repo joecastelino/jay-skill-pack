@@ -435,6 +435,33 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   again. Also: her PARTS list included zero-size structural parts
   (`multipart/mixed:0, multipart/alternative:0`) — those are container parts, NOT the
   note-13 zero-byte-PDF trap; only a zero-size `application/pdf` part is a failure.
+  **Confirmed again 2026-08-26 (16th consecutive clean night) — NEW TRAP: `DRAFTS_COUNT=2`
+  from a LOOSE "dated today" match is a FALSE duplicate alarm:** OPS probe 200 (same validated
+  RO/job pair, unchanged since 8/3); no same-day index pre-run. Index 3,751 closed ROs (up 237),
+  1,248 candidates, 0 failed, ~55 min (19:01→19:56 — longest of the month, late-month window
+  ballooning as expected). Window end advanced 1787727599999 → 1787813999999 and index grew
+  484,759 → 515,615 B (both fresh-index confirmations). 333 alignments (300 dedicated + 33
+  bundled), 333 ROs, 16 advisors. **Three-way tie at #1 again: Jaime Sanchez, Chris Mai,
+  Cristian Gonzalez, 35 each** (Artist Battle 33) — phrase as a tie per the 8/24 note.
+  Stacey's build clean on the FIRST ask (78s) with paths + on-disk sizes baked in; HTML part
+  130,060B cleared PNG*4/3 (129,304) by only **756 bytes** (tight pass = PASS, note 13) and
+  PDF part 324,005B was an EXACT on-disk match.
+  **The trap:** the terse dated-today ask returned `DRAFTS_COUNT=2`, which looks exactly like
+  the note-6 duplication norm — but there was only ONE draft for tonight. Two follow-ups timed
+  out (exit 124) before the resolution; the ask that settled it definitively was a **date-free
+  subject-substring enumeration**: "Gmail Drafts, subject substring 'SCT Alignment Sales by
+  Advisor'. Reply one line per match: SUBJECT=<full subject> DATE=<date>" → returned 14 matches,
+  one per night (8/14 through 8/26 plus the July MTD leftover), each with a DISTINCT through-date
+  in the subject and its own date. Only one said "(through 8/26)". Lesson: Stacey's "dated today"
+  filter is unreliable and can pull in the adjacent night's draft, inflating DRAFTS_COUNT by one.
+  **Before deduping on a count of 2, ALWAYS run the date-free SUBJECT+DATE enumeration and check
+  the through-date in each subject** — the through-date is the authoritative per-night
+  discriminator (stronger than DRAFTS_COUNT, stronger than UIDs per note 17). Deleting on a bare
+  count of 2 here would have destroyed the previous night's draft. Also note the count-versus-
+  enumeration disagreement is the same family as notes 12/15/17: trust the enumeration, not the
+  aggregate. Final verify: `TO_HEADER=Kevin Stapp <kstapp@sctoyota.com>` (raw-header form per
+  note 8/24) and `SENT_TODAY=0`. Timeout pattern held to note 11 — 60s pause then a ONE-number
+  ask answered every time.
   **Confirmed again 2026-08-16 (6th consecutive clean night, quota fully healthy):**
   pre-flight OPS probe (same validated RO/job pair) returned 200. Index built 2,364
   closed ROs, 771 candidates, 0 failed, ~30 min scan (19:01→19:31, no backoff
