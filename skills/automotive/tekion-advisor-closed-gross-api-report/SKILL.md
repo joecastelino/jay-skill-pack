@@ -94,10 +94,13 @@ python3 render_advisor_perf_style.py out/advisor_closed_gross_st_<from>_<to>.jso
 ```
 Launch with `terminal(background=true, notify_on_complete=True)` — it runs ~90 min.
 
-### "Now build the same for <other store>" — ONE-SHOT RUNNER (proven 2026-08-27, BC)
+### "Now build the same for <other store>" — ONE-SHOT RUNNER (proven 2026-08-27, BC then TL)
 Joe's follow-up after any store's pair of reports is *"can you build the same for
-X?"* — expect it and do the whole pair (Daily Closed + Closed MTD) in a **single
-background bash script**, not four separate foreground calls:
+X?"* — this has now repeated three stores running (BT → BC → TL). Expect it, and
+do the whole pair (Daily Closed + Closed MTD) in a **single background bash
+script**, not four separate foreground calls. The fastest path is to **copy the
+previous store's `_<store>_advisor_run.sh` and swap the two-letter code** — the
+template is stable:
 ```bash
 # /home/itadmin/tekion-reports/_<store>_advisor_run.sh
 cd /home/itadmin/tekion-reports
@@ -115,9 +118,17 @@ to Joe immediately while the MTD keeps scanning — don't make him wait for both
 the previous store's pair, so reuse the same `--date` / `--from/--to`.
 
 **Store volume reference (Aug 2026 MTD, 1st–26th):** SCT ≈ 3,750 ROs / ~90 min ·
-BC ≈ 1,529 ROs / ~25–30 min (14,416 calls, 37 429s) · BT ≈ same order as BC.
-Index pass alone is ~60s. Use these to give an ETA instead of guessing. BC ran
-essentially clean at 900/8 — that rate is comfortable for a mid-volume store.
+**TL ≈ 3,270 ROs (index pass 153s / 293 calls) — TL is a HIGH-volume store, on par
+with SCT, roughly 2x BC** · BC ≈ 1,529 ROs / ~25–30 min (14,416 calls, 37 429s) ·
+BT ≈ same order as BC. Daily single-day counts: TL ≈ 169 ROs / $45.2K, SCT ≈ 134,
+BC = 68. Use these to give an ETA instead of guessing. BC ran essentially clean at
+900/8 — that rate is comfortable for a mid-volume store.
+
+**Don't quote the scanner's own printed ETA to the user.** `advisor_closed_gross_mtd.py`
+prints `[work] N to fetch (~N*5 calls, ~Xh)` from a naive worst-case divide — it
+said **~3.2h** for TL's 3,270 ROs while SCT's 3,750 actually finished in 91 min at
+the same 900/8. Estimate from the volume table above (≈ 40–45 ROs/min observed),
+not from that line, or you'll scare Joe off a run that's an hour.
 
 **Cross-validation is cheap here — always do it.** The MTD JSON is
 `{"meta":..., "rows":[...]}` with per-RO `closed_days`, `gross`, `ro`. Slice it on
@@ -298,6 +309,21 @@ run unless he says otherwise.
   HTML fragments (e.g. the logo `<img>`) with `%` formatting on a prior line.
 - A full-store day scan with jobs/ops/parts fan-out runs ~3+ min → launch with
   `terminal(background=true, notify_on_complete=True)`, not the 300s code tool.
+- **Flag the missing logo BEFORE the run, not after.** Joe's answer on 2026-08-27
+  (TL) was simply *"that is fine"* — he does not want an unbranded report withheld.
+  Say it once up front in the "starting the run" message, then ship. Do NOT repeat
+  the logo nag on every subsequent delivery. On disk today: `logo_st.png` and
+  `logo_0.png` (which IS the SCT mark — never use it as a fallback).
+- **Post the DAILY the moment it lands.** The pair is deliberately split: daily ≈
+  2–4 min, MTD 30–90 min. Poll with `terminal("sleep 90; tail -25 <log>")` (a
+  foreground sleep in `terminal` is fine — it's the 300s `execute_code` cap that
+  bites), and as soon as the render lines appear, read
+  `out/<stem>_perf.csv`, cut at the `RO DETAIL` section break, and post the top-8
+  table + PNG. Then say the MTD RO count + ETA and let notify_on_complete wake you.
+- **Add 2–3 outlier callouts to every delivery.** Joe reacts to the anomalies, not
+  the table: an advisor with very high Hrs/RO (heavy repair lane), very low Hrs/RO
+  with high RO count (express flow), or near-zero parts sale (internal/warranty
+  queue). This is what turned the BC and TL deliveries into conversations.
 - Logo: `render_advisor_perf_style.py` loads `logo_<store>.png` from
   `/home/itadmin/tekion-reports/` keyed off `META["store"]`, and renders **text-only
   with a stderr warning** when that file is missing. It used to hardcode `logo_0.png`

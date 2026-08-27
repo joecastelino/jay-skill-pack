@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-27T15:00:21",
+ "generated": "2026-08-27T15:16:18",
  "skill_count": 201,
  "skills": [
   {
@@ -163,6 +163,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-ro-close-blocked-triage",
+   "path": "automotive/tekion-ro-close-blocked-triage",
+   "category": "automotive",
+   "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
+   "times_used": 23,
+   "last_used": "2026-08-27"
+  },
+  {
    "name": "tekion-declined-deferred-services-report",
    "path": "automotive/tekion-declined-deferred-services-report",
    "category": "automotive",
@@ -177,14 +185,6 @@
    "description": "Migrate the Vehicle Inventory (\"The Goods\") browser scraper to the Tekion OpenAPI (vehicle-inventory:search) producing per-store JSON that byte-matches the legacy schema. Covers field mapping, the SOLD-pending rule, Pacific-tz dates, rate-limit discipline, and the Don coordination/cutover handoff.",
    "times_used": 22,
    "last_used": "2026-07-12"
-  },
-  {
-   "name": "tekion-ro-close-blocked-triage",
-   "path": "automotive/tekion-ro-close-blocked-triage",
-   "category": "automotive",
-   "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
-   "times_used": 21,
-   "last_used": "2026-08-27"
   },
   {
    "name": "tekion-opcode-overrides",
@@ -259,6 +259,14 @@
    "last_used": "2026-08-18"
   },
   {
+   "name": "jay-gmail-draft-verification",
+   "path": "automotive/jay-gmail-draft-verification",
+   "category": "automotive",
+   "description": "Independently verify a Gmail draft/send that Stacey (email-agent) reports she created \u2014 confirm it's actually in Drafts/Sent with correct recipients, body, and attachments, without trusting her self-report alone. Use whenever Joe asks to \"chase\" or double-check an email Jay routed through Stacey, or when Jay's own Gmail-dependent flow (himalaya/Google API) throws auth errors.",
+   "times_used": 12,
+   "last_used": "2026-08-27"
+  },
+  {
    "name": "amg-wip-monthly-column-fill",
    "path": "automotive/amg-wip-monthly-column-fill",
    "category": "automotive",
@@ -289,14 +297,6 @@
    "description": "Pull Tekion Standard Reports from the REPORTS module (/core/reports) via the :9223 authenticated browser \u2014 especially the fixed-ops performance suite (Advisor Performance, Tech Performance / proficiency = assigned-billed vs attendance hours). Covers the filter funnel (Flag Date range, Make filter), Group By, and Export. Use when Joe wants advisor/tech performance numbers, or ANY report that is NOT a custom Report Builder report.",
    "times_used": 11,
    "last_used": "2026-08-03"
-  },
-  {
-   "name": "jay-gmail-draft-verification",
-   "path": "automotive/jay-gmail-draft-verification",
-   "category": "automotive",
-   "description": "Independently verify a Gmail draft/send that Stacey (email-agent) reports she created \u2014 confirm it's actually in Drafts/Sent with correct recipients, body, and attachments, without trusting her self-report alone. Use whenever Joe asks to \"chase\" or double-check an email Jay routed through Stacey, or when Jay's own Gmail-dependent flow (himalaya/Google API) throws auth errors.",
-   "times_used": 10,
-   "last_used": "2026-08-27"
   },
   {
    "name": "tekion-roles-permissions",
@@ -395,6 +395,14 @@
    "last_used": "2026-08-27"
   },
   {
+   "name": "tekion-ro-payer-split-sunbit",
+   "path": "automotive/tekion-ro-payer-split-sunbit",
+   "category": "automotive",
+   "description": "Add a second payer (Sunbit / third-party financier, insurance, another customer) to a Tekion repair-order JOB and split the dollars to them. Covers the \"I added the payer but it stays at $0.00 / 0%\" trap, the exact Manage Splits click path, and the Tekion global-hotkey trap that hijacks the browser mid-flow. Use for any \"split job X to <payer>\" or \"can't get the Sunbit split to work\" ticket.",
+   "times_used": 7,
+   "last_used": "2026-08-27"
+  },
+  {
    "name": "tekion-source-code-parts-scrub",
    "path": "automotive/tekion-source-code-parts-scrub",
    "category": "automotive",
@@ -409,6 +417,14 @@
    "description": "Run the SCT (Stevens Creek Toyota) Menu Sales CLOSED Month-To-Date scorecard pipeline from the LIVE Tekion OpenAPI (incremental design) and email the PDF to Joe via Stacey. This is the daily 6 PM companion to the noon/5pm \"Opened\" report (see sct-menu-sales-api-scorecard). Covers the incremental master-file design, the ongoing DEALER_QUOTA outage caveat, and the ask-agent send-confirmation timeout workaround.",
    "times_used": 6,
    "last_used": "2026-08-18"
+  },
+  {
+   "name": "tekion-advisor-closed-gross-api-report",
+   "path": "automotive/tekion-advisor-closed-gross-api-report",
+   "category": "automotive",
+   "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
+   "times_used": 6,
+   "last_used": "2026-08-27"
   },
   {
    "name": "tekion-api-upgrade-audit",
@@ -507,28 +523,12 @@
    "last_used": "2026-08-26"
   },
   {
-   "name": "tekion-ro-payer-split-sunbit",
-   "path": "automotive/tekion-ro-payer-split-sunbit",
-   "category": "automotive",
-   "description": "Add a second payer (Sunbit / third-party financier, insurance, another customer) to a Tekion repair-order JOB and split the dollars to them. Covers the \"I added the payer but it stays at $0.00 / 0%\" trap, the exact Manage Splits click path, and the Tekion global-hotkey trap that hijacks the browser mid-flow. Use for any \"split job X to <payer>\" or \"can't get the Sunbit split to work\" ticket.",
-   "times_used": 5,
-   "last_used": "2026-08-27"
-  },
-  {
    "name": "hermes-slack-token-recovery",
    "path": "automotive/hermes-slack-token-recovery",
    "category": "automotive",
    "description": "Fix an AMG Hermes agent that is silent on Slack because its SLACK_BOT_TOKEN/SLACK_APP_TOKEN are missing or wrong in the profile .env \u2014 including recovering LOST tokens from old session transcripts without asking Joe to regenerate them at api.slack.com. Use when an agent's service is running but it never answers Slack messages (Autumn case, 2026-07-14).",
    "times_used": 4,
    "last_used": "2026-07-14"
-  },
-  {
-   "name": "tekion-advisor-closed-gross-api-report",
-   "path": "automotive/tekion-advisor-closed-gross-api-report",
-   "category": "automotive",
-   "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
-   "times_used": 4,
-   "last_used": "2026-08-27"
   },
   {
    "name": "tekion-journal-entry-error-diagnosis",
