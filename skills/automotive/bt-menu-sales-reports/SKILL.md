@@ -181,6 +181,18 @@ MASTER JSON SHAPE (for ad-hoc per-day math): `records` is a **dict** keyed `"<ro
 not a list — `json.load(...)["records"].values()`, each row has `date` as `MM/DD/YY`,
 `labor_gross`, `parts_gross`, `total_gross`, `advisor`. A bare `recs[0]` raises KeyError.
 
+### (8/27 run, for Tue 8/26) TEXTBOOK CLEAN — biggest single-day add of the month
+200 closed ROs, 19 prefilter hits, 19 new menu rows, `all candidate ROs scanned`. MTD moved
+270 rows/$69,653.28 -> **289 rows / $76,813.08** ($56,350.27 labor + $20,462.81 parts).
+8/26-dated rows alone = 15 menus / $4,105.19 (the rest of the +$7,159.80 delta is the store
+closing older invoiced ROs) — state both numbers in the body like the 8/26 run.
+.sh-wrapper + quoted-heredoc + DO-NOT-DOUBLE-SEND paragraph: one-attempt send in **101s**,
+zero SMTP errors; Stacey pre-checked Sent Mail for a same-day duplicate BEFORE sending on her
+own initiative (the CRITICAL paragraph is now producing a proactive pre-send dup check, not
+just a post-error one — good). IMAP Sent-check returned in **32s** first try, 7 hits, exactly
+one carrying today's subject (Aug 1-26); other 6 all prior sends (Jul 1-28, Jul 1-30, Aug 1-8,
+Aug 1-18, Aug 1-24, Aug 1-25) — usual token-match trap. 8/22 duplicate pair absent again.
+
 ### Verification ask wording that works first try
 Lead with `IMPORTANT: print the answer as plain text IN THIS REPLY` AND
 `Use himalaya / raw IMAP against "[Gmail]/Sent Mail" (NOT the Gmail API)` — the
