@@ -12,6 +12,10 @@ description: >
   recommendation opcode set", "where do return-RO / comeback tags come from").
 triggers:
   - service settings tekion
+  - turn off duplicate tag warning
+  - restrict entry of duplicate tag
+  - warning when checking in customers
+  - setting not in check-in setup
   - flag tech on
   - recommendation opcode
   - default service advisor setting
@@ -380,6 +384,73 @@ Working recipe (avoids every trap in this file):
 Row `y` can be ~8000px (full-page scroll) — `/mouse` coords are useless here; use
 `/click` with `data-jay`. `/eval` must be an IIFE `(function(){...})()`; a bare
 `function out(){}; out()` throws `SyntaxError: Unexpected identifier`.
+
+## General Setup TOGGLES — the reliable flip recipe (verified TL 1092, 2026-08-27)
+
+Ticket shape: *"is there a setting to turn off the warning for duplicate tags when
+checking in customers? I don't see it in Check-In Setup."* → **it is NOT in Check-In
+Setup.** `Restrict entry of duplicate Tag#` lives in **General Setup** on
+`/service/settings/ro-settings`, in the toggle block right after *"Allow technicians to
+clock-in to multiple ROs/Jobs at the same time"*. Generalize: when a store says a
+service-workflow warning isn't in the screen they expected, **grep the whole
+`ro-settings` innerText for the keyword before believing it doesn't exist** — the page
+renders ~4,000 innerText lines with every section expanded, so one grep finds any toggle:
+
+```js
+(function(){var t=document.body.innerText.split('\n'),o=[];
+for(var i=0;i<t.length;i++) if(/duplicat|Tag#/i.test(t[i]))
+  o.push(i+':'+t.slice(Math.max(0,i-2),i+3).join(' | '));
+return JSON.stringify({url:location.href,hits:o.slice(0,20),len:t.length});})()
+```
+
+These toggles are **`button.ant-switch`**, NOT `input[type=checkbox]` — the `.rt-td`
+checkbox recipe from the validation-rule sections does not apply. Find one by label:
+
+```js
+// leaf element whose text == the label, then walk UP <=6 parents to the first
+// ancestor containing a button.ant-switch; tag it, don't trust coordinates
+var els=[].slice.call(document.querySelectorAll('*')),lab=null;
+for(var i=0;i<els.length;i++){var e=els[i];
+  if(e.children.length===0 && /Restrict entry of duplicate Tag/i.test(e.textContent||'')){lab=e;break;}}
+var p=lab,box=null;
+for(var k=0;k<6;k++){p=p.parentElement; if(!p)break; if(p.querySelector('button.ant-switch')){box=p;break;}}
+var sw=box.querySelector('button.ant-switch'); sw.setAttribute('data-jay','duptag');
+sw.scrollIntoView({block:'center'});
+return sw.getAttribute('aria-checked');   // "true"/"false" — read this, NOT .checked
+```
+
+Full sequence that worked first try (~8 calls, no flailing):
+1. `opcode_preflight.py --dealer <ID>` — it will FAIL on dealer drift; that's the point.
+2. Switch dealer: nav `/home` → `/mouse` the pill at **(1130,32)** → `scrollIntoView` the
+   `[class*="root_dealerInfoItem_container"]` row matching the store name, **re-read its
+   rect after scrolling** (TL moved y 428→352), `/mouse` it → sleep 12 → assert
+   `localStorage.currentActiveDealerId`.
+3. Nav `/service/settings/ro-settings`, **sleep 15**.
+4. Tag the switch (above) → `/click '[data-jay="duptag"]'` → re-read `aria-checked` flipped.
+5. Tag the page **Submit** (only one on the page, ~x1166 y673) → `/click`.
+6. **TRUE REMOUNT verify**: nav `/home` (sleep 8) → nav back (sleep 16) → re-read
+   `aria-checked`. Same-URL re-read is the SAVE-VERIFY TRAP and proves nothing.
+7. `opcode_preflight.py --restore`.
+
+⚠ **Toast polling is useless on this page.** The generic
+`[class*=toast],[class*=notification],[class*=snackbar]` scan returns the header clock
+and notification badge (`"11:14 AM"`, `"99+"`, `"70"`) and never the success toast — the
+"require a toast" rule from the Pre-Invoice section does NOT transfer here. Rely on the
+true-remount read as the sole proof of persistence.
+
+Toggle is **store-scoped** — flipping TL does nothing for the other 6. Always tell Joe
+which store you changed and offer the fleet sweep.
+
+### opcode_preflight.py --restore was BROKEN (fixed 2026-08-27)
+`restore_cron()` replayed `/tmp/cron_orig_opcode.txt`. If a prior session died before
+`--restore`, the next run's `pause_cron()` reads an ALREADY-PAUSED crontab, writes that
+paused text into the backup (`n==0` → "already paused / no pipeline line"), and then
+`--restore` reinstalls the paused line → permanent
+`RESTORE FAILED  JAYPAUSE lines remaining = 1`. Now it strips the `#JAYPAUSE ` marker
+from the LIVE crontab instead — idempotent and self-healing. If you see that FAIL on an
+older copy, unpause by hand: `crontab -l` → strip the marker → write with a **trailing
+newline** (crontab refuses `"new crontab file is missing newline before EOF"`) →
+`crontab <file>`. Never `crontab -l | sed | crontab -`.
 
 ## Pitfalls
 - Several behaviors are gated by **"when enabled by support"** (e.g. Select Default Service
