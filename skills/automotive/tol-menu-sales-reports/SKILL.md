@@ -973,6 +973,31 @@ A bare `set(json.load(...))` raises `TypeError: unhashable type: 'dict'`.
 Drafts stack tiny (6): 08/21-08/25 hyphen-subject Opened drafts + the perennial 08/02 em-dash
 one (UID 20).
 
+## (8/27 12:05PM, Opened) TEXTBOOK CLEAN RUN — best opened day since the $0 streak
+Zero exit-124s across ALL 4 ask-agent calls. Hand-off produced a correct draft FIRST TRY, no
+dedupe needed (0 prior drafts with today's exact subject). All 3 verification asks returned
+FIRST try and fast with "use raw IMAP, NOT the Gmail API" leading + parts-only part-listing
+wording. MIME clean: multipart/mixed > related > alternative(text/plain+text/html) +
+image/png Content-ID=<scorecard> inline + application/pdf attachment.
+BOGUS-UID VARIANT — INVERTED THIS RUN: her save confirmation said "Draft ID 42729", the
+subject-list said UID 88, and the part-listing said "UID 88 doesn't exist for that subject.
+Actual UID is 42729" and resolved by subject. So the SUBJECT-LIST's UID can be the wrong one,
+not just her reported id. Lesson unchanged and reinforced: never trust ANY reported numeric
+id — always carry the `UID N (subject "<exact>") ... if that UID is wrong, find it by that
+exact subject instead` wording, which self-healed it again.
+UNPROMPTED CAVEAT: Stacey volunteered a warning that "CID images typically get stripped in
+Gmail draft preview, fallback is Imgur hosted URL." Ignore it — the part-listing proved a real
+image/png cid=scorecard part exists. Don't order an Imgur rebuild over her speculative note.
+DATA: 105 opened ROs scanned, **3 menus / $647.20** ($433.64 labor + $213.56 parts) — the
+strongest opened day since the six-day $0 streak (8/23-8/25) broke on 8/26. Gustavo Alatorre
+2 menus/$251.06; 1 menu ($396.14, RO 398946 TEK30000BNM 2025 Camry) landed on the
+"Any Service Advisor" placeholder, which the renderer shows as **"Unassigned"** — normal,
+that's an unassigned-advisor RO, not a rendering bug. Note again `totals.parts_price`
+($452.82) != `parts_gross` ($213.56); scorecard + email use GROSS.
+Sent-check = 6 hits, ALL old em-dash-era sends (06/29-07/03), zero today = no leak.
+Drafts stack = 15 TOL total (08/21-08/27 Opened & Closed pairs + the perennial 08/02 em-dash
+pair UIDs 19/20) — no true dupes.
+
 ## (8/26 12:05PM, Opened) TEXTBOOK CLEAN RUN — $0 streak BROKEN at 6 days
 Hand-off returned in 189s (no exit-124), draft correct FIRST TRY, no dedupe needed (0 prior
 drafts with today's exact subject). All 3 verification asks returned FIRST try and FAST with
