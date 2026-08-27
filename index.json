@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-27T15:16:18",
+ "generated": "2026-08-27T15:30:25",
  "skill_count": 201,
  "skills": [
   {
@@ -47,8 +47,8 @@
    "path": "automotive/tol-menu-sales-reports",
    "category": "automotive",
    "description": "Run the Toyota of Lancaster (TOL/TL, dealer 1092) Menu Sales scorecards \u2014 Daily Opened and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Sean Preston (spreston@tol-av.com). The Toyota-store sibling of the SCT/Kevin (sct-menu-sales-api-scorecard) and BC/Ruben (bc-menu-sales-reports) pipelines. Use for any \"TOL/TL/Toyota of Lancaster menu report\" or \"Sean Preston report\" request.",
-   "times_used": 56,
-   "last_used": "2026-08-17"
+   "times_used": 57,
+   "last_used": "2026-08-27"
   },
   {
    "name": "bt-tony-menu-rebuild",
@@ -363,6 +363,14 @@
    "last_used": "2026-08-18"
   },
   {
+   "name": "tekion-advisor-closed-gross-api-report",
+   "path": "automotive/tekion-advisor-closed-gross-api-report",
+   "category": "automotive",
+   "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
+   "times_used": 7,
+   "last_used": "2026-08-27"
+  },
+  {
    "name": "tekion-apc-docs-scraper",
    "path": "automotive/tekion-apc-docs-scraper",
    "category": "automotive",
@@ -417,14 +425,6 @@
    "description": "Run the SCT (Stevens Creek Toyota) Menu Sales CLOSED Month-To-Date scorecard pipeline from the LIVE Tekion OpenAPI (incremental design) and email the PDF to Joe via Stacey. This is the daily 6 PM companion to the noon/5pm \"Opened\" report (see sct-menu-sales-api-scorecard). Covers the incremental master-file design, the ongoing DEALER_QUOTA outage caveat, and the ask-agent send-confirmation timeout workaround.",
    "times_used": 6,
    "last_used": "2026-08-18"
-  },
-  {
-   "name": "tekion-advisor-closed-gross-api-report",
-   "path": "automotive/tekion-advisor-closed-gross-api-report",
-   "category": "automotive",
-   "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
-   "times_used": 6,
-   "last_used": "2026-08-27"
   },
   {
    "name": "tekion-api-upgrade-audit",
