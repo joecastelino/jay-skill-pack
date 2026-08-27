@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-27T11:45:39",
+ "generated": "2026-08-27T12:00:33",
  "skill_count": 200,
  "skills": [
   {
@@ -23,7 +23,7 @@
    "path": "automotive/agent-to-agent-bridge",
    "category": "automotive",
    "description": "Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine.",
-   "times_used": 102,
+   "times_used": 103,
    "last_used": "2026-08-27"
   },
   {
@@ -31,7 +31,7 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 84,
+   "times_used": 85,
    "last_used": "2026-08-27"
   },
   {
@@ -291,6 +291,14 @@
    "last_used": "2026-08-03"
   },
   {
+   "name": "jay-gmail-draft-verification",
+   "path": "automotive/jay-gmail-draft-verification",
+   "category": "automotive",
+   "description": "Independently verify a Gmail draft/send that Stacey (email-agent) reports she created \u2014 confirm it's actually in Drafts/Sent with correct recipients, body, and attachments, without trusting her self-report alone. Use whenever Joe asks to \"chase\" or double-check an email Jay routed through Stacey, or when Jay's own Gmail-dependent flow (himalaya/Google API) throws auth errors.",
+   "times_used": 10,
+   "last_used": "2026-08-27"
+  },
+  {
    "name": "tekion-vi-stock-number-rules-fix",
    "path": "automotive/tekion-vi-stock-number-rules-fix",
    "category": "automotive",
@@ -313,14 +321,6 @@
    "description": "Build the DealerDetail Tekion API-driven data pipeline (replacing the email/Excel prototype) by acting as PM and delegating tickets to Claude Code, then verifying independently. Covers the ticket workflow, the live infra (Supabase project, branch, creds), and the hard-won gotchas (Supabase shadow-DB, server-only smoke tests, git credential path, Tekion app-scope 403 on user lookups).",
    "times_used": 9,
    "last_used": "2026-08-11"
-  },
-  {
-   "name": "jay-gmail-draft-verification",
-   "path": "automotive/jay-gmail-draft-verification",
-   "category": "automotive",
-   "description": "Independently verify a Gmail draft/send that Stacey (email-agent) reports she created \u2014 confirm it's actually in Drafts/Sent with correct recipients, body, and attachments, without trusting her self-report alone. Use whenever Joe asks to \"chase\" or double-check an email Jay routed through Stacey, or when Jay's own Gmail-dependent flow (himalaya/Google API) throws auth errors.",
-   "times_used": 9,
-   "last_used": "2026-08-26"
   },
   {
    "name": "tekion-roles-permissions",
@@ -691,6 +691,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-advisor-closed-gross-api-report",
+   "path": "automotive/tekion-advisor-closed-gross-api-report",
+   "category": "automotive",
+   "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
+   "times_used": 2,
+   "last_used": "2026-08-27"
+  },
+  {
    "name": "tekion-apc-quota-usage-investigation",
    "path": "automotive/tekion-apc-quota-usage-investigation",
    "category": "automotive",
@@ -809,14 +817,6 @@
    "description": "Retarget an AMG store's Hermes cron report deliveries to a new Slack thread when Joe says \"can this thread be <store> reports only?\", and sweep the whole fleet for dead channel_not_found cron deliveries.",
    "times_used": 1,
    "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-advisor-closed-gross-api-report",
-   "path": "automotive/tekion-advisor-closed-gross-api-report",
-   "category": "automotive",
-   "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
-   "times_used": 1,
-   "last_used": "2026-08-27"
   },
   {
    "name": "tekion-appointment-source-audit",
