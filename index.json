@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-27T15:30:25",
+ "generated": "2026-08-27T15:45:28",
  "skill_count": 201,
  "skills": [
   {
@@ -339,6 +339,14 @@
    "last_used": "2026-07-15"
   },
   {
+   "name": "tekion-advisor-closed-gross-api-report",
+   "path": "automotive/tekion-advisor-closed-gross-api-report",
+   "category": "automotive",
+   "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
+   "times_used": 8,
+   "last_used": "2026-08-27"
+  },
+  {
    "name": "tekion-menu-missing-services-diagnosis",
    "path": "automotive/tekion-menu-missing-services-diagnosis",
    "category": "automotive",
@@ -361,14 +369,6 @@
    "description": "Reference for the AMG project to replace Tekion's native Lyft transportation/ride-fee integration with Uber. Load when asked about Uber API integration, swapping Lyft for Uber in Tekion, or prepping for Uber engineering team talks.",
    "times_used": 8,
    "last_used": "2026-08-18"
-  },
-  {
-   "name": "tekion-advisor-closed-gross-api-report",
-   "path": "automotive/tekion-advisor-closed-gross-api-report",
-   "category": "automotive",
-   "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
-   "times_used": 7,
-   "last_used": "2026-08-27"
   },
   {
    "name": "tekion-apc-docs-scraper",
