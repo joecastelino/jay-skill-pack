@@ -22,6 +22,11 @@ triggers:
   - invoice checkbox greyed out
   - causes must not be empty
   - storyline text must not be blank
+  - partially invoiced
+  - job stuck partially invoiced
+  - i need to add a new payer
+  - split shows zero percent
+  - invoice closed at zero dollars
 ---
 
 # Tekion "Cannot Close RO" Triage
@@ -352,6 +357,76 @@ in from an APPROVED recommendation, which populates both), while `PORT2` had
 `causes:null, corrections:null`. **The recommendation-sourced op is complete; the
 menu/base op is the empty one.** Job-level `causes` being null while an op has one
 is normal — don't read job-level alone.
+
+## Step 3f — PARTIALLY_INVOICED job with a ZEROED payer split (verified TL RO 398856, 2026-08-27)
+
+Fourth distinct shape, and the one that fools you because **every other check comes
+back clean**. Do not burn time hunting for Need Attention strings here — there are none.
+
+**Symptom shape:** RO `READY_FOR_INVOICE`; all Internal jobs `CLOSED`; exactly one
+CP job at **`PARTIALLY_INVOICED`**; `ro-invoices` DOES return records (unlike Step 3d/3e
+where it's `{}`) — but every one has **`invoiceAmount: 0`** and `status: CLOSED`.
+
+### The tells, in order of speed
+
+1. **RO `tags` give it away for free** in the search result — look for
+   `{'field':'JOB','value':'STATUS_PARTIALLY_INVOICED'}` alongside
+   `STATUS_CLOSED`. That single tag distinguishes this mode from 3d/3e before you
+   fetch anything else.
+2. **`/jobs`**: 6 INTERNAL/CLOSED + `jobNumber 1, CUSTOMER_PAY, PARTIALLY_INVOICED`.
+3. **`/ro-invoices` closed at $0** for BOTH payTypes (CUSTOMER_PAY and INTERNAL).
+   Invoices that exist, are CLOSED, and total $0 while the job carries real money =
+   the money was never assigned to a payer.
+4. **Job-detail `innerText` — no modal needed.** The `Pay Split By Payer` panel
+   renders inline (see `tekion-ro-payer-split-sunbit` READ section):
+   ```
+   Pay Split By Payer
+   Payer            Split Amount   Split Percentage
+   166920 - Amir Baig   CP   $0.00   0 %
+   -                    CP   Deductible   -   %
+   ```
+   **CP payer at `$0.00 / 0 %` + a blank second row = nobody is holding the charge.**
+   Meanwhile the job row above it shows the real sale: `0.50 hrs  $21.01  $61.37`
+   (cost | sale), and every job row ends in `0 Need Attention`.
+5. Reconcile the sale from `/operations` + parts so you can quote the exact stuck
+   dollar figure: labor `saleAmount: 2909` (**cents** → $29.09) + billed parts
+   $32.28 = **$61.37**. Quoting the number is what makes the diagnosis land.
+
+### Root cause & the fix
+The job cannot finish invoicing because its charge has no payer. Fix = **Manage Splits
+→ Add New Payer → assign the amount** (full write path in
+`tekion-ro-payer-split-sunbit`). Note the inverse relationship between the two skills:
+that skill's #1 write-side trap is *"the payer you ADDED stays at $0.00/0%"*; here the
+*ORIGINAL* payer is the one sitting at $0.00/0%. Same grid, same root behaviour —
+the grid back-solves and somebody must hold 100%.
+
+⚠ **STOP before choosing the payer record.** On a prepaid-maintenance opcode
+(`TSC2` = Toyota Service Care 2) the correct payer is plausibly a Toyota/TSC
+third-party account rather than the customer — but "plausibly" is a guess on a live
+customer RO. Per the never-guess rule: report the stuck amount, show the split table,
+and ask **which payer**. Everything up to that point is read-only and Jay does it
+autonomously; the payer identity is the only handoff.
+
+### API response-shape gotchas that cost real calls here
+- **`repair-orders:search` results have NO `id` key.** `it['id']` → `KeyError` and
+  your control-RO loop dies. The RO id is only reachable via the sub-resource links:
+  `it['jobs']['id']` (or parse `it['jobs']['link']` = `/repair-orders/<rid>/jobs`).
+  `documentNumber`, `status`, `modifiedTime`, `tags` are top-level and safe.
+- **Every collection uses a DIFFERENT data key.** A generic
+  `data.results or data.jobs or data` parser silently returns `[]` and prints
+  nothing (looks like "no operations exist"):
+  | endpoint | key |
+  |---|---|
+  | `repair-orders:search` | `data.results` |
+  | `/jobs` | `data` is a **bare list** |
+  | `/operations` | `data.roOperations` |
+  | `/ro-invoices` | `data.roInvoices` |
+  When a fan-out returns empty, dump `json.dumps(resp)[:2000]` before concluding
+  the data isn't there.
+- **A 429 burst can hit all 7 dealers at once and then clear on its own.** The
+  opening cross-store sweep returned `HTTP 429` for ar/bc/bt/st/sv/tl/vc; the same
+  query succeeded minutes later after the preflight ran. Don't launch a retry
+  storm (thundering-herd rule) — do the browser-side prep work, then retry once.
 
 ## Step 4 — Advise (don't guess — per Joe's never-guess rule)
 

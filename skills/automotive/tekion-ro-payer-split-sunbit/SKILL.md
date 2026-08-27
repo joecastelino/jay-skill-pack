@@ -45,11 +45,57 @@ customer get charged the deductible," read first — don't touch anything:
   `"Collapse All Operations"` to get the payer rows, amounts, percentages — plus
   a **Contract Information** panel (Contract No. / Company / Deductible / Expiry)
   when the payer is a service contract.
+- **A CP payer sitting at `$0.00 / 0 %` is not cosmetic — it BLOCKS invoicing.**
+  (TL RO 398856, 2026-08-27: job 1 `TSC2` carrying $61.37 showed
+  `166920 - Amir Baig  CP  $0.00  0 %` plus a blank `CP Deductible` row → job stuck
+  `PARTIALLY_INVOICED`, both `ro-invoices` closed at `invoiceAmount: 0`, and **zero**
+  Need Attention flags anywhere on the RO.) This is the mirror image of the write-side
+  trap above: there the payer you ADDED stays at 0%, here the ORIGINAL payer is at 0%
+  and nobody holds the charge. Same grid, same back-solve behaviour — somebody must
+  total 100%. Full triage of that symptom = `tekion-ro-close-blocked-triage` Step 3f.
 - The CP payer row is labelled **`Deductible`** on VSC jobs. That field is native
   and contract-bound — see `tekion-vsc-deductible-vs-fee-code` before anyone
   builds a fee code for a deductible or hardware overage.
 - Loop EVERY covered job. One deductible per claim is normal: the deductible
   lands on one job and sibling covered jobs correctly show `$0.00 / 0 %`.
+
+## ⚠️ "I CAN'T ADD A PAYER" — Add New Payer is DISABLED (verified TL RO 398856, 2026-08-27)
+
+Different ticket from "the split won't take." If the store says they *can't add* the
+payer at all, check whether the button is genuinely disabled before hunting permissions:
+
+```js
+[].slice.call(document.querySelectorAll('*')).filter(function(e){
+  return e.offsetParent&&e.children.length===0&&/Add New Payer/.test(e.textContent)})
+ .map(function(e){var b=e.closest('button');return {dis:b.disabled,pe:getComputedStyle(b).pointerEvents}});
+// → {dis:true, pe:"none"}
+```
+
+**Root cause when it's disabled: the payer records are already CLOSED/invoiced.**
+Tekion locks the ENTIRE Manage Splits modal read-only once payers close — not just the
+button. Tell: dump every input in the modal and they're ALL `disabled:true`
+(`splitType`, the AMOUNT/PERCENTAGE radios, `postTaxPayableAmount-payer_N_M`,
+`percentageSplit-payer_N_M`, `primaryPayerId`). If only *some* fields are disabled you
+have a different problem.
+
+Corroborate in **Payers View** (kebab → Payers View): every payer row reads `Closed`
+and Invoice / Print PDF / Resync Payer checkboxes are all `disabled:true`.
+⚠ Do NOT confuse this with the Step 3b DESYNC bug in `tekion-ro-close-blocked-triage`
+— there the payer is **Open** with disabled controls. Here the payer is **Closed**.
+Closed + disabled = normal lock. Open + disabled = desync.
+
+**The trap that creates it**: a job left in `PARTIALLY_INVOICED` while both payer
+invoices close at `invoiceAmount: 0`. On 398856 job 1 (TSC2, $61.37) had a
+**Deductible column at $21.01 / 100.00% with the payer name blank (`-`)** — someone
+built the deductible split but never picked the payer, then closed both invoices at
+$0.00. The money has no payer, and the UI is now locked so nobody can assign one.
+RO sits at READY_FOR_INVOICE forever.
+
+Read the payer column labels from the grid header, not the amounts alone — a `-` where
+a payer name belongs is the smoking gun.
+
+**Fixing it requires reopening the payer invoices first** (accounting-reversing) —
+STOP and get Joe's call; do not reopen unilaterally. See `tekion-reopen-closed-ro`.
 
 ## Step 0 — locate the RO and the right JOB (zero quota, no browser)
 

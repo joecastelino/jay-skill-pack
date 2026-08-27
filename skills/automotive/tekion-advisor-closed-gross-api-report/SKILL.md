@@ -94,6 +94,35 @@ python3 render_advisor_perf_style.py out/advisor_closed_gross_st_<from>_<to>.jso
 ```
 Launch with `terminal(background=true, notify_on_complete=True)` — it runs ~90 min.
 
+### "Now build the same for <other store>" — ONE-SHOT RUNNER (proven 2026-08-27, BC)
+Joe's follow-up after any store's pair of reports is *"can you build the same for
+X?"* — expect it and do the whole pair (Daily Closed + Closed MTD) in a **single
+background bash script**, not four separate foreground calls:
+```bash
+# /home/itadmin/tekion-reports/_<store>_advisor_run.sh
+cd /home/itadmin/tekion-reports
+python3 advisor_closed_gross.py --store bc --date 2026-08-26
+python3 render_advisor_perf_style.py out/advisor_closed_gross_bc_2026-08-26.json
+CALLS_PER_MIN=900 WORKERS=8 python3 advisor_closed_gross_mtd.py --store bc --from 2026-08-01 --to 2026-08-26
+python3 render_advisor_perf_style.py out/advisor_closed_gross_bc_2026-08-01_2026-08-26.json
+```
+`bash -n` it, then `terminal(background=true, notify_on_complete=True)` with
+`/usr/bin/bash` (never bare `bash` — see the background-script memory note), logging
+to `data/_<store>_advisor_run.log`. The DAILY finishes in ~2 min so you can post it
+to Joe immediately while the MTD keeps scanning — don't make him wait for both.
+
+**Match the date window of the store you just did.** He wants apples-to-apples with
+the previous store's pair, so reuse the same `--date` / `--from/--to`.
+
+**Store volume reference (Aug 2026 MTD, 1st–26th):** SCT ≈ 3,750 ROs / ~90 min ·
+BC ≈ 1,529 ROs / ~25–30 min. Index pass alone is ~60s. Use these to give an ETA
+instead of guessing. BC ran with **zero 429s** at 900/8 — that rate is comfortable
+for a mid-volume store.
+
+**Polling pitfall:** do NOT poll the log from `execute_code` with `time.sleep()` —
+that tool has a hard 300s cap and the sleep burns it (happened 2026-08-27). Just
+call `terminal("tail -20 <log>")` directly; the notify_on_complete handles the rest.
+
 ### ⚠️ Rate-limit calibration (burned 2026-08-27 — don't repeat)
 I first set the limiter to a "safe" low rate and it delivered **50 ROs in 10 min =
 8+ hour ETA**. Killed and re-ran at `CALLS_PER_MIN=900 WORKERS=8` → **91 minutes,
@@ -218,6 +247,9 @@ run unless he says otherwise.
   — which is the **Stevens Creek Toyota** logo — so every BT/BC/TL/SV run was branded
   with the wrong dealership. Never reinstate a cross-store fallback. On disk today:
   `logo_st.png` only. Ask Joe for a store's logo rather than substituting one.
+  **Flag the missing logo to Joe in the same message you deliver the report** (BC ran
+  text-only on 2026-08-27) and offer to re-render once he sends it — don't silently
+  ship an unbranded page or quietly swap in another store's mark.
 - `send_report(inline_png=...)` **raises** unless the html contains `cid:scorecard` —
   always include `<img src="cid:scorecard">` in the body.
 - Reuse the house visual language: white bg, red `#EB0A1E` rule + hero KPI,
