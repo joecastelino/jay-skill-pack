@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-27T06:45:06",
+ "generated": "2026-08-27T07:00:28",
  "skill_count": 199,
  "skills": [
   {
@@ -235,6 +235,14 @@
    "last_used": "2026-08-05"
   },
   {
+   "name": "tekion-internal-cost-center-gl-routing",
+   "path": "automotive/tekion-internal-cost-center-gl-routing",
+   "category": "automotive",
+   "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
+   "times_used": 13,
+   "last_used": "2026-08-27"
+  },
+  {
    "name": "tekion-parts-sales-orders",
    "path": "automotive/tekion-parts-sales-orders",
    "category": "automotive",
@@ -249,14 +257,6 @@
    "description": "Diagnose why an AMG agent (Walter II, Don, Ralph, Stacey, etc.) is dead/unresponsive on an LLM-billing error, and switch it from OpenRouter to the ChatGPT-Team Codex OAuth provider. Use when an agent boots but can't reply, an ask-agent ping returns an HTTP 402 (out of credits) or 400 (unsupported model), or OpenRouter credits are exhausted. Covers the read_file API-key-masking landmine and how to discover the account's valid Codex model names.",
    "times_used": 12,
    "last_used": "2026-08-18"
-  },
-  {
-   "name": "tekion-internal-cost-center-gl-routing",
-   "path": "automotive/tekion-internal-cost-center-gl-routing",
-   "category": "automotive",
-   "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
-   "times_used": 12,
-   "last_used": "2026-08-26"
   },
   {
    "name": "amg-wip-monthly-column-fill",
@@ -435,6 +435,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-department-opcode-buildout",
+   "path": "automotive/tekion-department-opcode-buildout",
+   "category": "automotive",
+   "description": "Derive the complete opcode list a Tekion department (UCD/Used Car, PDI, Express, Body Shop) actually uses over a period, split it into already-correctly-tagged vs shared-with-other-departments, and produce a build sheet of new department-scoped opcodes so ONE Service-Type GL mapping row captures all of that department's internal spend.",
+   "times_used": 6,
+   "last_used": "2026-08-27"
+  },
+  {
    "name": "tekion-parts-sales-by-advisor-report",
    "path": "automotive/tekion-parts-sales-by-advisor-report",
    "category": "automotive",
@@ -487,14 +495,6 @@
    "path": "automotive/tekion-coupon-management",
    "category": "automotive",
    "description": "Create/edit service discount coupons in Tekion's Coupon Management app (e.g. tire promos like Bridgestone B3G1, $-off or %-off labor/parts coupons). Covers the real URLs, form mechanics (old antd calendar, react-select GL account), toggle defaults, GL split conventions, and verification. Verified live at SCT 2026-08-02.",
-   "times_used": 5,
-   "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-department-opcode-buildout",
-   "path": "automotive/tekion-department-opcode-buildout",
-   "category": "automotive",
-   "description": "Derive the complete opcode list a Tekion department (UCD/Used Car, PDI, Express, Body Shop) actually uses over a period, split it into already-correctly-tagged vs shared-with-other-departments, and produce a build sheet of new department-scoped opcodes so ONE Service-Type GL mapping row captures all of that department's internal spend.",
    "times_used": 5,
    "last_used": "2026-08-26"
   },
