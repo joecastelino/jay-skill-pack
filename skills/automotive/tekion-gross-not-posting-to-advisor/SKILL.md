@@ -39,6 +39,25 @@ Scale of the distortion at SCT for that one advisor, August MTD:
 
 **~88% of the advisor's real gross was invisible.**
 
+## THIRD failure mode: 8/26 cohort near-totally absent (2026-08-27, UNRESOLVED)
+After fixing Status and Pay Type View, a "Pay Type Closed Date = yesterday" run
+STILL undercounted. Joe confirmed off his own screen: 19 rows = **all 18 ROs that
+closed 8/25, plus exactly one from 8/26 (581311)**. Truth was 28 ROs / $14,631.70.
+
+Killer pair: **581233 closed 18:10, 581311 closed 18:13** — three minutes apart,
+both CLOSED, both 2 invoices fully closed, same advisor, same pay types. One shows,
+one doesn't. Every API date field (invoicedTime, modifiedTime, invoice created,
+invoice closed) is identical in shape. Eight ROs / $2,282.01 dropped that day.
+
+Legitimate exclusions found while checking (rule these out first):
+- **581255** — status still `INVOICED`; its Internal invoice never closed. Correct.
+- **580281** — warranty-only, excluded by Pay Type View = Customer Pay. Correct.
+
+**Still not proven a defect.** Untested: the report only refreshes every 4–6 hrs and
+Joe's run was 6:35 AM. Next step is Refresh + re-run, then reproduce at BT before
+filing with Tekion. Suspicious shape: missing ROs cluster 08:24–10:59 while the
+LATEST close of the day (18:13) is present — backwards for simple sync lag.
+
 ## THE FIX
 On `/core/reports` → Advisor Performance Report, set the **Status filter to include
 BOTH `INVOICED` and `CLOSED`** (or clear it). Save it as the default view so the
@@ -107,6 +126,18 @@ That conclusion was premature — it rested on an OCR'd ref list. Before filing 
 platform-defect ticket: (1) rebuild the expected set from the API, (2) have the user
 read the specific RO numbers off their own screen, (3) reproduce at a second store.
 Fleet-comparison-before-blaming-the-vendor is a standing rule.
+
+## ESCALATION PATH — where this ends up
+Once two of the three filters are shown wrong, Joe's move is **"can you build a
+report for me via the API?"** Don't keep diagnosing the screen — pivot to
+`tekion-advisor-closed-gross-api-report`, which is immune to all three failure
+modes. Anticipate this and offer it early.
+
+## Ask the user to read RO numbers off their screen
+The fastest disambiguation is not more API work — it's "read me these five RO
+numbers, are they present?" Joe's answer ("I have 581311 too, nothing else, 19
+tickets") instantly separated the complete 8/25 cohort from the broken 8/26 one,
+which no amount of my own OCR could establish.
 
 ## Pitfalls
 - **All Tekion $ are CENTS** — divide by 100 or you report $1.5M on one RO.

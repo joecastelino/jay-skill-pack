@@ -42,6 +42,40 @@ suffix the filename. Outputs PNG (page-1 summary), PDF (full RO detail), CSV
 - Resolves advisor names via `GET /users/{id}` (cached in-process).
 - Auto-flags **negative-gross** ROs and **partially-closed** ROs in a banner.
 
+## TWO RENDERERS — pick by what the user asked for
+- `render_advisor_closed_gross.py` — house scorecard style (hero KPI cards, ranked
+  advisor table with red bars). Good for a summary/exec read.
+- `render_advisor_perf_style.py` — **looks like Tekion's Advisor Performance
+  Report**. Use this when the user says "make it look like that report" / "the same
+  way it was in advisor performance report" (Joe, 2026-08-27). Outputs `<stem>_perf.{png,pdf,csv}`.
+
+### Advisor-Performance lookalike spec (matches the native screen)
+1500px page. **TOTAL row sits at the TOP** of the table (Tekion does this), then
+advisors ranked by total gross. Thirteen columns in this exact order:
+
+`Service Advisor · RO Count · Bill Hrs · ELR ($) · Hrs/RO · Labor Sale · Labor Cost ·
+Labor Gross · Parts Sale · Parts Cost · Parts Gross · Parts GP % · Total Gross`
+
+Styling: light `#f5f6f7` header (not the dark house header), right-aligned numerics,
+filter chips under the title showing the applied scope, then a **Pay Type Mix** table
+(Customer Pay / CVSC / Warranty / Internal / No Charge with RO counts + gross).
+Page 2 = per-advisor RO detail with a subtotal row per advisor.
+
+## ⭐ Billed hours / ELR / Hrs-per-RO ARE available (discovered 2026-08-27)
+`operation.labor.billDuration` is **SECONDS** — `2880` = 0.80 hr. Verified against
+the UI showing 0.80 hr on SMOG. So:
+- `bill_hrs = sum(billDuration)/3600`
+- `ELR = labor_sale / bill_hrs`
+- `Hrs/RO = bill_hrs / ro_count`
+`laborAllowanceDuration` sits alongside it (same units). This is what lets the API
+report reproduce the native report's hour columns — don't tell the user hours are
+unavailable.
+
+Coupons/fees are LINK stubs on the search result (`/ro-coupons`, `/ro-fees`);
+`ro-coupons` returned an empty `data` object at SCT, and `/ro-sublets` is **404**.
+So Coupon Labor / Coupon Part / Sublet columns can't be reproduced yet — omit them
+rather than showing zeros that look real.
+
 ## KNOWN GAP — be upfront about this
 An RO whose pay-type invoices are *partially* closed (e.g. CP closed, Internal
 still open → RO status stays `INVOICED`) is **excluded by Tekion's server-side
@@ -57,6 +91,40 @@ add a second pass over `status=INVOICED` ROs in the window and union the results
 3. `vision_analyze` the PNG for layout breakage (logo, KPIs, overlap, banners).
    Note: a banner that doesn't appear may mean the *data* lacks that case, not a
    render bug — check the data before "fixing" the template.
+4. **Do NOT trust vision on layout geometry.** On 2026-08-27 vision reported "logo
+   missing, only 12 of 13 columns, Total Gross cut off at the right edge" — all
+   false. Measure the DOM instead:
+   ```python
+   pg.evaluate("document.body.scrollWidth")            # vs page width
+   pg.evaluate("[...document.querySelectorAll('th')].map(h=>h.getBoundingClientRect().right)")
+   pg.evaluate("(document.querySelector('.hd img')||{}).naturalWidth")  # 0 = logo broken
+   ```
+   Table right edge < page width ⇒ nothing is clipped. Vision is for "does this look
+   like the right report", never for whether a column fits.
+
+## Delivering it by email
+Joe's usual ask is "email it to me." Route through **Stacey** (`~/bin/ask-agent`,
+argument-list form via `execute_code` — parens/quotes break the top-level terminal
+tool). Demand a **CID inline** PNG (`multipart/related`, `Content-ID: <scorecard>`,
+`<img src="cid:scorecard">`) and explicitly forbid `data:` URIs — Gmail blocks those
+and renders a broken image. Attach the PDF + CSV as regular attachments.
+
+**Verify in INBOX, never Sent** — and verify the MIME tree, not just that a message
+exists. Self-sends (From==To==Joe) can land only in Sent; and himalaya's `message
+read` shows the *text* part, so "cid:scorecard not found" there is a false alarm.
+Use imaplib and walk the parts:
+```python
+for p in msg.walk():
+    print(p.get_content_type(), p.get('Content-ID'), p.get('Content-Disposition'))
+```
+Expect: `multipart/mixed → multipart/related → multipart/alternative(text+html)`,
+an `image/png` with `CID=<scorecard>` + `disp=inline`, plus pdf/csv attachments,
+and `cid:scorecard in html == True` / `data:image in html == False`.
+
+## Cron vs one-off
+Don't assume a recurring job. Joe explicitly declined a cron here ("I dont want it
+on a cron job, just a 1 time report for now") — offer it, but default to a one-time
+run unless he says otherwise.
 
 ## Pitfalls
 - f-strings can't contain backslashes in the expression part — build conditional
