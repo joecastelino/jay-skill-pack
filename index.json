@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-27T08:45:06",
+ "generated": "2026-08-27T09:00:33",
  "skill_count": 200,
  "skills": [
   {
@@ -23,7 +23,7 @@
    "path": "automotive/agent-to-agent-bridge",
    "category": "automotive",
    "description": "Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine.",
-   "times_used": 100,
+   "times_used": 101,
    "last_used": "2026-08-27"
   },
   {
@@ -31,7 +31,7 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 82,
+   "times_used": 83,
    "last_used": "2026-08-27"
   },
   {
@@ -691,6 +691,14 @@
    "last_used": "2026-08-05"
   },
   {
+   "name": "tekion-gross-not-posting-to-advisor",
+   "path": "automotive/tekion-gross-not-posting-to-advisor",
+   "category": "automotive",
+   "description": "Diagnose \"advisor gross dropped / gross not posting to advisor\" complaints on the Tekion Advisor Performance Report. Usually the report's Status filter (INVOICED vs CLOSED), not a data loss or advisor-reassignment bug.",
+   "times_used": 2,
+   "last_used": "2026-08-27"
+  },
+  {
    "name": "tekion-labor-rate-create",
    "path": "automotive/tekion-labor-rate-create",
    "category": "automotive",
@@ -803,6 +811,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-advisor-closed-gross-api-report",
+   "path": "automotive/tekion-advisor-closed-gross-api-report",
+   "category": "automotive",
+   "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
+   "times_used": 1,
+   "last_used": "2026-08-27"
+  },
+  {
    "name": "tekion-appointment-source-audit",
    "path": "automotive/tekion-appointment-source-audit",
    "category": "automotive",
@@ -841,14 +857,6 @@
    "description": "Build a \"closed ROs where tech FLAGGED hours were below ACTUAL clocked time\" report (unpaid flat-rate tech time) for any Tekion store, per-tech per-RO grain. Uses two internal endpoints discovered 2026-07-30 - /ro/v1/{id} carries per-tech flag entries (flagTimesWithPayDay) and clockDetails/fetch carries per-tech actual punches. Also documents the repair-orders:search pageNumber-IGNORED pagination trap and its closedTime-bisection fix. Verified SV (826) Jul 1-15 2026.",
    "times_used": 1,
    "last_used": "2026-07-30"
-  },
-  {
-   "name": "tekion-gross-not-posting-to-advisor",
-   "path": "automotive/tekion-gross-not-posting-to-advisor",
-   "category": "automotive",
-   "description": "Diagnose \"advisor gross dropped / gross not posting to advisor\" complaints on the Tekion Advisor Performance Report. Usually the report's Status filter (INVOICED vs CLOSED), not a data loss or advisor-reassignment bug.",
-   "times_used": 1,
-   "last_used": "2026-08-27"
   },
   {
    "name": "tekion-labor-time-guide",
@@ -1007,14 +1015,6 @@
    "path": "automotive/local-nemotron-stt-fleet",
    "category": "automotive",
    "description": "Stand up NVIDIA Nemotron 3.5 ASR (streaming, CPU ONNX) as the shared speech-to-text backend for every Hermes agent on this machine, replacing the broken faster-whisper/libcublas path. Use when voice messages arrive untranscribed or when asked to enable local speech recognition for the agent fleet.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tekion-advisor-closed-gross-api-report",
-   "path": "automotive/tekion-advisor-closed-gross-api-report",
-   "category": "automotive",
-   "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
    "times_used": 0,
    "last_used": null
   },
