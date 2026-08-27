@@ -84,6 +84,54 @@ can't fire. Verified: RO 581255 (~$64) was missed while 9 of 10 others were caug
 Tell the user this rather than presenting the total as complete. To close the gap,
 add a second pass over `status=INVOICED` ROs in the window and union the results.
 
+## LONG WINDOWS (MTD / multi-week) — use the MTD scanner
+A single day at SCT is ~134 ROs. **MTD is ~3,750 ROs ≈ 42,000 API calls.** Do NOT
+run `advisor_closed_gross.py` for these — use:
+```bash
+cd /home/itadmin/tekion-reports
+CALLS_PER_MIN=900 WORKERS=8 python3 advisor_closed_gross_mtd.py --store st --from 2026-08-01 --to 2026-08-26
+python3 render_advisor_perf_style.py out/advisor_closed_gross_st_<from>_<to>.json
+```
+Launch with `terminal(background=true, notify_on_complete=True)` — it runs ~90 min.
+
+### ⚠️ Rate-limit calibration (burned 2026-08-27 — don't repeat)
+I first set the limiter to a "safe" low rate and it delivered **50 ROs in 10 min =
+8+ hour ETA**. Killed and re-ran at `CALLS_PER_MIN=900 WORKERS=8` → **91 minutes,
+3,750 ROs, 42,358 calls, 200 429s, all absorbed by backoff, zero stalls.**
+- **Start at 900 calls/min / 8 workers.** That is the proven-safe rate.
+- 429s are NORMAL at this rate and arrive in bursts of ~40. Backoff handles them;
+  the counter freezing (e.g. stuck at 160) means backoff is working, not broken.
+- The scanner **checkpoints** to `out/.ckpt_<store>_<from>_<to>.json` after each
+  batch and resumes on restart — so re-tuning the rate mid-run costs nothing.
+  Always check for the ckpt before assuming a restart means starting over.
+
+### Diagnosing "is it hung or backing off?"
+Progress can freeze for 7+ min during an OVERALL_RATELIMIT backoff (those run
+180–720s). Before killing anything:
+```bash
+for p in $(pgrep -f 'python3 advisor_closed_gross_mtd'); do
+  echo "pid $p state=$(awk '{print $3}' /proc/$p/stat) wchan=$(cat /proc/$p/wchan)"; done
+```
+Main thread in `futex_do_wait` + workers sleeping = **backoff, let it run**.
+Confirm the checkpoint count is advancing across a few minutes before intervening.
+
+### Cross-validate a long run against a known day
+A long scan is only trustworthy if a slice of it reproduces a verified day. Slice
+the output on `closed_days` and compare:
+```python
+sub=[r for r in rows if '2026-08-26' in r['closed_days']]
+# must equal the verified single-day run exactly: 134 ROs / $45,668.52
+```
+This caught nothing on 2026-08-27 (exact penny match) — which is precisely why it's
+worth doing before emailing.
+
+### ⚠️ Reconcile MTD against any earlier MTD figure you quoted
+"All August ROs" ≠ "ROs that CLOSED in August." On 2026-08-27 I'd told Joe Artist
+Battle was 226 ROs / $82,906.27 (every August RO, including 31 still INVOICED),
+then this report said 196 / $74,293.85 (pay-type actually closed in window). Both
+correct, different questions — but **if you don't explain the delta in the email,
+it reads as the report being wrong.** Always state which definition is in play.
+
 ## Validation protocol (do this before shipping any run)
 1. Hand-verify one day via the API and save the RO list to JSON.
 2. Diff the script output against it — **investigate every discrepancy**, don't
@@ -108,6 +156,17 @@ argument-list form via `execute_code` — parens/quotes break the top-level term
 tool). Demand a **CID inline** PNG (`multipart/related`, `Content-ID: <scorecard>`,
 `<img src="cid:scorecard">`) and explicitly forbid `data:` URIs — Gmail blocks those
 and renders a broken image. Attach the PDF + CSV as regular attachments.
+
+### Direct-send fallback (used successfully 2026-08-27)
+When Stacey is slow/unavailable, Jay can build and send the MIME himself — flag to
+Joe that the fallback was used. Working recipe:
+- Password: `re.search(r'raw\s*=\s*"([^"]+)"', <stacey himalaya config>).group(1).replace(" ","")`
+  at `/home/itadmin/.hermes/profiles/email-agent/home/.config/himalaya/config.toml`
+- `MIMEMultipart("related")` → `alternative`(html) + `MIMEImage` w/ `Content-ID: <scorecard>`
+  + `MIMEApplication` pdf/csv. SMTP_SSL smtp.gmail.com:465.
+- **Self-send dedup:** From==To==Joe means Gmail files it in Sent ONLY. You MUST
+  also `imaplib.append("INBOX", ...)` the same raw message or it never reaches his
+  inbox. Print `INBOX_COPY_OK` to prove it ran.
 
 **Verify in INBOX, never Sent** — and verify the MIME tree, not just that a message
 exists. Self-sends (From==To==Joe) can land only in Sent; and himalaya's `message
