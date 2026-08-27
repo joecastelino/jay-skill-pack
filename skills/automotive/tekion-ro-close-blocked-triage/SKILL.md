@@ -21,11 +21,16 @@ triggers:
   - we cant invoice
   - I need to add a new payer
   - can't add a payer
-  - add new payer greyed out
-  - partially invoiced stuck
+  - cannot invoice this ticket
+  - we cant invoice
   - invoice checkbox greyed out
   - causes must not be empty
   - storyline text must not be blank
+  - can't add a payer
+  - add new payer is disabled
+  - job stuck partially invoiced
+  - blank payer on the split
+  - payer count doesn't match
   - partially invoiced
   - job stuck partially invoiced
   - i need to add a new payer
@@ -461,6 +466,91 @@ enabled) and the split grid stayed hard-locked because the JOB was still
 Full triage, the disabled-`Add New Payer` diagnostic, and the escalation ladder
 (Resync Payer → Cashiering → Tekion ticket) live in
 **`tekion-ro-payer-split-sunbit`** § "I CAN'T ADD A PAYER".
+
+## Step 3f — "CAN'T INVOICE" where one job is PARTIALLY_INVOICED with an ORPHANED payer (verified TL RO 398856, 2026-08-27)
+
+Fourth distinct failure mode. Distinguish it from 3e immediately: in 3e the blocking job
+is `IN_PROGRESS` with **Need Attention** text. Here the job is **`PARTIALLY_INVOICED`
+with ZERO Need Attention flags anywhere on the RO**, and pre-invoice validation passes
+clean. Nothing tells you what's wrong.
+
+**Symptom shape:** `status: READY_FOR_INVOICE`; six jobs `CLOSED`; one CP job
+`PARTIALLY_INVOICED` holding real money; `/ro-invoices` shows BOTH payer invoices
+`CLOSED` at **`invoiceAmount: 0`**. RO search `tags` include
+`JOB: STATUS_PARTIALLY_INVOICED`.
+
+### The 3-second detection: header chip count ≠ Payers View row count
+Job header chip said **"3 Payers"**; Payers View listed **2**. That delta IS the
+orphaned payer. Corroborate in the split panel — slice innerText between
+`"Pay Split By Payer"` and `"Collapse All Operations"`:
+```
+166920 - Amir Baig   CP   $0.00    0 %
+-                    CP   Deductible   -   %      ← blank payer name, holds 100%
+```
+A `-` where a payer name belongs, on a row holding 100% of the money, = orphan.
+
+### Order of operations (learned the hard way — I did this backwards)
+1. **Audit Logs FIRST.** It contains the root cause, proves/kills the Cashiering theory,
+   and shows exactly which payers a reopen touched. Expand all `Show` links.
+2. Payers View — read actual row status before recommending anything.
+3. Only then consider Resync / Cashiering / ticket.
+
+I instead theorised payer-reopen → resync → Cashiering across several turns; Joe cut it
+off with **"IT WAS NEVER CASHIERED"** — a fact the audit log had already contained
+(`NA → Paid → Closed`, no cashiering step).
+
+### Root cause pattern: mid-stream opcode swap on a prepaid-maintenance job
+```
+Job Details - Job 1  07:34 AM  by <advisor>
+  Fees HW   Fees   : Deleted Fees → None
+  Operation Details  Opcode : TSC3 → TSC2
+```
+Opcode changed **after parts were filled** (07:32). Swapping a prepaid-maintenance
+opcode in place rebuilds the payer/deductible structure beneath a job that already has
+parts + a payer → deductible row orphaned. Not specific to TSC2/TSC3; any such pair.
+
+### Why a reopen does NOT fix it
+An RO reopen releases the **payers** (both went `Closed` → `Ready for Invoice`, all
+checkboxes enabled) but the **job stays `PARTIALLY_INVOICED`** and Manage Splits stays
+hard-locked. The orphaned payer has **zero audit entries in the RO's whole history** —
+never NA, never Paid, never Closed — so there is no record to reverse.
+⚠ The reopen is not free: jobs 2–7 flipped from `Closed`/0 flags to `Completed`/**2 Need
+Attention each** (TL enforces Cause AND Storyline, §3e). Warn before recommending it.
+
+### Everything is read-only once PARTIALLY_INVOICED
+`concern`, `causeText_*` (also `readOnly`), `storyLine_*`, all labor fields,
+`primaryPayerId`, job `Save`, `Mark as Complete` — all `disabled`. Job kebab offers only
+`Job Clocked Time · Job External Note · Tech Flag Hrs`. **You cannot edit the opcode to
+undo the swap.** Prove it by dumping input `disabled` flags, don't assert it.
+
+### Resync Payer: 200 ≠ fixed
+`POST /api/service-module/u/RO/<roId>/payer/resync` → `200 "Payer data resynced
+successfully."` and **nothing changed**. Its own confirm modal states the scope —
+"update attributes like the cost center, pay type and labor rate … based on their latest
+Customer Management profile." Attribute refresh only; it cannot recreate a missing payer.
+
+### Outcome: Tekion support ticket (no UI fix exists)
+```
+TL (dealer 1092) RO 398856, job 1 (TSC2, $61.37) — orphaned payer, job frozen in
+Partially Invoiced. At 07:34 the advisor changed the job opcode TSC3 → TSC2 and deleted
+the HW fee in the same edit (audit log), after parts were filled at 07:32. Split grid
+shows a Deductible column at $21.01 / 100.00% with a BLANK payer (-). RO header reports
+3 Payers; Payers Consolidated View lists 2. Invoiced 08:54, closed 09:04, NEVER
+cashiered. RO since reopened — audit shows only I Status: Closed→NA and CP Status:
+Closed→NA; the third payer has ZERO audit entries, so there is no record to reverse.
+POST /payer/resync returns 200 with no effect. Job 1 remains Partially Invoiced with the
+full job panel read-only and Manage Splits locked (Add New Payer + all split fields
+disabled). Pre-invoice validation passes clean.
+Request: remove/repair the orphaned deductible payer on job 1 so the job can be invoiced.
+```
+
+### Before answering "how do I stop this recurring?" — fleet-scan first
+Free API sweep of the whole opcode family (250 TL ROs / 90 days across TSC1–TSC5)
+returned **zero** other `PARTIALLY_INVOICED`. So it is NOT an opcode config defect and
+there is nothing to "fix" in the opcodes. Prevention that is actually true: once parts
+are filled, **void the job and re-add under the correct opcode** rather than editing the
+opcode in place. No Tekion setting was found that gates opcode changes (approval rules
+exist for labor hours and pay type only) — say so rather than inventing a toggle.
 
 ## Step 4 — Advise (don't guess — per Joe's never-guess rule)
 

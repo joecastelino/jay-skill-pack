@@ -113,7 +113,49 @@ cheapest possible detection of an orphaned payer record.
 Read payer column LABELS from the grid header, not amounts alone — a `-` where a payer
 name belongs is the smoking gun.
 
-### What to try, in order (UNRESOLVED as of 2026-08-27 — do not fabricate a fix)
+### ⭐ GO TO AUDIT LOGS FIRST — it holds the entire root cause
+
+I burned several turns theorising (payer reopen → resync → Cashiering) before opening
+Audit Logs, and Joe shut down the Cashiering theory with **"IT WAS NEVER CASHIERED."**
+The audit log had already answered everything. **Open it as step 1 on any orphaned-payer
+or stuck-job ticket.**
+
+Kebab → `Audit Logs`, then expand every collapsed entry:
+```js
+[].slice.call(document.querySelectorAll('*')).filter(function(e){
+  return e.offsetParent&&e.children.length===0&&e.textContent.trim()==='Show'})
+ .forEach(function(e){try{e.click()}catch(x){}});
+```
+Then slice `document.body.innerText` up to `"Jobs ("` — that segment is the whole log.
+
+**What it produced on 398856 (the actual root cause):**
+```
+Job Details - Job 1   Today at 07:34 AM   by ERICK BRAVO
+  1. Fees HW
+     Fees   : Deleted Fees → None
+  2. Operation Details
+     Opcode : TSC3 → TSC2
+```
+The advisor swapped the **opcode TSC3 → TSC2 and deleted the HW fee in the same edit**,
+at 07:34 — *after* parts were filled at 07:32. Changing a prepaid-maintenance opcode in
+place rebuilds the payer/deductible structure under a job that already has parts and a
+payer attached; the deductible row was left bound to the old opcode's payer → blank `-`
+holding $21.01 / 100%. Invoiced 08:54 (`NA → Paid`), closed 09:04. **Never cashiered** —
+the log shows a straight NA→Paid→Closed with no cashiering step, which is how you
+*prove* the Cashiering theory dead instead of asking the user.
+
+**The reopen only touched 2 of 3 payers**, also visible in the log:
+```
+RO Details - 398856   Today at 02:25 PM   by Joe Castelino
+  1. I  Status : Closed → NA
+  2. CP Status : Closed → NA
+```
+No third status line. **The orphaned payer has ZERO audit entries in the RO's entire
+history** — never set NA, never Paid, never Closed. That is the definitive proof it was
+never a real record, so there is nothing to reverse and no amount of reopening will fix
+it.
+
+### What to try, in order (RESOLVED 2026-08-27 — this failure mode has NO UI fix)
 
 There is **no "reopen job" anywhere in the RO kebab**. Full TL kebab enumeration:
 `Add/Edit Coupon · Add/Edit Fee · Audit Logs · Cashier · Hold · Invoice Pdf Preview ·
@@ -121,15 +163,73 @@ Media (N) · Payers View · Profit/Loss View · RO Bulk Action · RO Clocked Tim
 Update Estimate Amounts · Vehicle Update · View Posting Preview · View RO PDF`.
 Same shape as the hidden Reopen gate in `tekion-reopen-closed-ro`.
 
-1. **`Resync Payer`** on the affected payer row (enabled once payers reopen).
-   Non-destructive, and it is literally the tool for payer records desynced from the RO.
-   Cheapest shot at clearing the phantom. TRY THIS FIRST.
-2. **Cashiering** (kebab → Cashier) — if the deductible was cashiered against the
-   phantom payer, reversing that receipt is what releases the job. **Financial screen —
-   get Joe's explicit go before clicking.**
-3. If neither moves job 1 off PARTIALLY_INVOICED → **Tekion support ticket**. An
-   orphaned invoiced payer is not fixable from the UI. Say that plainly rather than
-   keeping the store clicking.
+1. **`Resync Payer`** — ⚠ **TRIED, RETURNS 200, DOES NOTHING FOR THIS.** Worth one shot
+   because it's free and non-destructive, but set expectations honestly.
+   - Button is per-row and can be **enabled on one payer and `disabled` on another**
+     (TOL row enabled, Amir Baig row `disabled:true`). Click the enabled one.
+   - Fires a confirmation modal first — *"This will update attributes like the cost
+     center, pay type and labor rate on all jobs linked to <payer> based on their latest
+     Customer Management profile."* That sentence IS the scope limit: it refreshes
+     **attributes from a customer profile**. It cannot rebuild a payer row whose customer
+     record does not exist.
+   - `POST /api/service-module/u/RO/<roId>/payer/resync` → `200 {"data":"Payer data
+     resynced successfully."}` — and after a full remount job 1 was **still**
+     PARTIALLY_INVOICED, split still blank-payer, chip still "3 Payers", Add New Payer
+     still disabled. **A 200 here does not mean it worked.** Verify state, not status code.
+2. **Cashiering** — ✋ **usually a dead end; confirm from the audit log before proposing
+   it.** If the log shows NA→Paid→Closed with no cashiering step, there is no receipt to
+   reverse. Don't send the user to a financial screen on a hunch.
+3. **Tekion support ticket.** An orphaned payer on a frozen job is not fixable from the
+   UI. Say that plainly rather than keeping the store clicking — Joe accepts "I've hit
+   the wall," he does not accept confident wrong answers.
+
+### The job is READ-ONLY once PARTIALLY_INVOICED — you cannot edit the opcode either
+
+Joe's follow-up was "I can't edit the opcode, can you?" Answer: **no**, and prove it
+rather than guessing. Dump every visible input and check `disabled`/`readOnly`:
+
+| Field | State on a PARTIALLY_INVOICED job |
+|---|---|
+| `concern` | `disabled` |
+| `causeText_0` | `disabled` + `readOnly` |
+| `storyLine_0` / `storyLine_1` | `disabled` |
+| `laborAmount_*`, `laborTimeInSeconds_*`, `billingTimeInSeconds_*` | `disabled` |
+| `primaryPayerId` | `disabled` |
+| job `Save`, `Mark as Complete`, `Collapse All Operations` | `disabled` |
+| **`Manage Splits`** | **enabled** (but opens the locked grid) |
+
+The **job-level kebab** (`.icon-overflow` with `150 < y < 300`) offers only
+`Job Clocked Time · Job External Note · Tech Flag Hrs` — no Edit Opcode, no Void Job,
+no Change Service. The advisor could swap the opcode at 07:34 because the job was still
+In Progress; it froze at Paid/Closed. An RO-level reopen does **not** thaw it.
+
+### Before blaming the opcode config — RUN THE FLEET COMPARISON
+
+Joe's next question is always "how do I stop this happening again?" Do NOT answer until
+you've checked whether it's systemic. Free, ~14s, zero browser:
+
+```python
+for oc in ["TSC1","TSC2","TSC3","TSC4","TSC5"]:
+    post("/repair-orders:search", {"filters":[
+      {"field":"opcode","operator":"IN","values":[oc]},
+      {"field":"creationTime","operator":"BTW","values":[str(lo),str(now)]}],"pageSize":100})
+    # Counter(x["status"] for x in results)
+```
+Result across 250 TL ROs / 90 days: **zero `PARTIALLY_INVOICED` on any of TSC1–TSC5.**
+So it is a workflow accident, not an opcode defect — and the honest answer is "there's
+nothing broken inside the TSC opcodes to fix." Same discipline as the memory rule about
+killing a Tekion-defect ticket with a fleet scan.
+
+The real trigger is **timing, not the specific opcode**: any prepaid-maintenance opcode
+swapped in place *after parts are filled* can orphan the payer. Prevention advice that
+is actually true: once parts are filled, **void the job and re-add it under the correct
+opcode** instead of editing the opcode in place.
+
+⚠ I could **not** find a Tekion setting that gates opcode changes on an in-progress job.
+TL Service Settings has `Enable RO Approval flow`, `Labor Hour Rules → Additional labor
+hour changes will need approval`, and `Add Approvers for Labor Hour and Paytype` (unset
+at TL) — those cover **labor hours and pay type, not opcode**. Per the never-guess rule,
+say so and offer to search the KB or ask Tekion; do not invent a toggle.
 
 ⚠ **Reopening is not free.** It flipped jobs 2–7 from `Closed`/0 flags to
 `Completed`/**2 Need Attention each** (TL enforces both Cause AND Storyline — see

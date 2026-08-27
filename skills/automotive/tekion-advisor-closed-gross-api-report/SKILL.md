@@ -115,9 +115,19 @@ to Joe immediately while the MTD keeps scanning — don't make him wait for both
 the previous store's pair, so reuse the same `--date` / `--from/--to`.
 
 **Store volume reference (Aug 2026 MTD, 1st–26th):** SCT ≈ 3,750 ROs / ~90 min ·
-BC ≈ 1,529 ROs / ~25–30 min. Index pass alone is ~60s. Use these to give an ETA
-instead of guessing. BC ran with **zero 429s** at 900/8 — that rate is comfortable
-for a mid-volume store.
+BC ≈ 1,529 ROs / ~25–30 min (14,416 calls, 37 429s) · BT ≈ same order as BC.
+Index pass alone is ~60s. Use these to give an ETA instead of guessing. BC ran
+essentially clean at 900/8 — that rate is comfortable for a mid-volume store.
+
+**Cross-validation is cheap here — always do it.** The MTD JSON is
+`{"meta":..., "rows":[...]}` with per-RO `closed_days`, `gross`, `ro`. Slice it on
+the daily run's date and assert an exact match on count, dollars, AND the RO id set:
+```python
+sub = [r for r in mtd["rows"] if "2026-08-26" in r["closed_days"]]
+assert {r["ro"] for r in sub} == {r["ro"] for r in daily["rows"]}
+```
+BC 2026-08-27: 68 ROs / $30,586.90 both ways, empty symmetric difference. Report
+that reconciliation to Joe — it is what makes the MTD number credible.
 
 **Polling pitfall:** do NOT poll the log from `execute_code` with `time.sleep()` —
 that tool has a hard 300s cap and the sleep burns it (happened 2026-08-27). Just
@@ -192,6 +202,53 @@ JM.send_report(subject="SCT Advisor Performance — ...",
 message is confirmed in the inbox. Never hand-roll smtplib/imaplib again.
 Regression suite: `python3 /home/itadmin/tekion-reports/test_jay_mail.py` (14 tests,
 includes a live round trip) — run it if you touch the mail path.
+
+### Building the email body FROM the `_perf.csv` — it has TWO sections (trap, 2026-08-27)
+`render_advisor_perf_style.py`'s CSV is **not** a flat table. It is the summary
+table, then a **blank row**, then a `RO DETAIL` marker row, then a second header
+(`RO,Advisor,PayTypes,...`) and the per-RO rows. Naively iterating `rows[1:]` to
+build the HTML summary table throws `IndexError: list index out of range` on the
+blank row. Stop at the section break:
+```python
+c = list(csv.reader(open(stem + "_perf.csv")))
+hdr, body = c[0], []
+for r in c[1:]:
+    if len(r) < 13 or r[0] in ("RO DETAIL", "RO"): break
+    body.append(r)
+keep = [0, 1, 2, 3, 4, 12]   # Advisor, ROs, Bill Hrs, ELR, Hrs/RO, Total Gross
+```
+Six columns is the right density for an email body — the full 13 belong in the
+PNG/PDF/CSV, not squeezed into HTML.
+
+Also: `%`-format these HTML fragments, don't f-string them. Nested quotes inside
+an f-string expression (`{"left" if i==0 else "right"}`) fight the surrounding
+quoting and the `width:100%` literals need `%%` escaping under `%`-format.
+
+### Independently re-verifying a `send_report` after the fact
+`send_report` already prints `DELIVERED (inbox append) <message-id> labels={'inbox'}`
+and raises otherwise — **capture that Message-ID**, it is the only reliable handle.
+
+To re-open the message yourself, reuse jay_mail's own credentials rather than
+re-deriving them. The module exposes `JM.JOE` and `JM._password()`; there is **no
+`APP_PW` constant** and regexing the source for a hardcoded password finds nothing
+(it reads Stacey's config). Check `[k for k in dir(JM) if not k.startswith('__')]`
+if the API surface shifts.
+
+**Search by Message-ID, never by subject.** These subjects contain em-dashes/en-dashes,
+and `imaplib` encodes commands as ASCII → `UnicodeEncodeError: 'ascii' codec can't
+encode character '\u2014'` before the command even leaves the client. The
+`CHARSET UTF-8` prefix does not save you here.
+```python
+M.select('"[Gmail]/All Mail"', readonly=True)          # All Mail — see Trap 2
+t, d = M.uid('search', None, 'X-GM-RAW', 'rfc822msgid:%s' % bare_msgid)
+```
+
+**A delivered report can still land `\Seen`.** On 2026-08-27 one of the two BC
+emails came back `FLAGS (\Seen)` while its twin was unread — pre-read means Joe
+scrolls past it. Clear the flag from INBOX (not All Mail):
+```python
+M.select('INBOX'); M.uid('store', uid, '-FLAGS', '(\\Seen)')
+```
 
 ### ⚠️ The 2026-08-27 delivery incident — two traps, both now handled
 **Trap 1 — self-send dedup + read flag.** From==To==Joe with the SAME Message-ID
