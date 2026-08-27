@@ -321,6 +321,39 @@ Also strip tags from the HTML (`re.sub(r'<[^>]+>',' ',html)`) and assert the gre
 headline total, and any required caveat text are literally present — a structurally perfect
 draft can still be missing a requested sentence.
 
+## 🚨 X-GM-LABELS OMITS THE SELECTED MAILBOX'S OWN LABEL (burned 2026-08-27)
+`X-GM-LABELS` is ground truth **only if you read it from All Mail.** Gmail IMAP
+omits the label corresponding to the mailbox you currently have SELECTed. Same
+message, three different answers:
+```
+SELECT INBOX               -> X-GM-LABELS ("\\Sent")
+SELECT "[Gmail]/All Mail"  -> X-GM-LABELS ("\\Inbox" "\\Sent")   <-- THE TRUTH
+SELECT "[Gmail]/Sent Mail" -> X-GM-LABELS ("\\Inbox")
+```
+Reading labels with INBOX selected made me tell Joe a message he HAD received was
+"\Sent-only, never delivered" — **a wrong diagnosis I had to retract to him.**
+**ALWAYS `M.select('"[Gmail]/All Mail"')` before fetching X-GM-LABELS.**
+
+Two more rules from the same incident:
+- **Match on a PARSED SET, never a substring.** `"\\Sent"` vs `"\\Inbox"` inside an
+  escaped IMAP string will happily fool `in`. Parse to `{'inbox','sent'}` and test
+  membership.
+- **`SEARCH HEADER Message-ID "..."` gives FALSE NEGATIVES on Gmail** — it returned
+  zero hits for a message that was demonstrably present. Use
+  `M.search(None, "X-GM-RAW", f"rfc822msgid:{bare_id}")`.
+
+## Sending mail to Joe: use `jay_mail.py`, never hand-rolled smtplib/imaplib
+`/home/itadmin/tekion-reports/jay_mail.py` → `send_report(subject, html, inline_png,
+attachments, to=None)`. Raises `DeliveryError` unless delivery is positively
+confirmed. Regression suite `test_jay_mail.py` (14 tests incl. live round trip).
+
+**Self-send trap it solves:** From==To==Joe with the SAME Message-ID on both an
+SMTP send and an IMAP append → Gmail dedups into ONE message labeled both `\Inbox`
+and `\Sent` and marked `\Seen`. It's technically in the inbox but pre-read and
+buried in the Sent thread, so Joe never sees it and reports "I don't see it."
+Fix = **append-only, fresh Message-ID, left UNREAD.** External recipients are
+unaffected (SMTP, verify `\Sent`).
+
 ## Pitfalls
 - **A "missing" draft may just be Joe trashing it himself** (2026-08-18) — when
   Joe says "I don't see it in Drafts," don't assume Stacey's bridge call failed

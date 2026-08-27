@@ -150,23 +150,45 @@ it reads as the report being wrong.** Always state which definition is in play.
    Table right edge < page width ⇒ nothing is clipped. Vision is for "does this look
    like the right report", never for whether a column fits.
 
-## Delivering it by email
-Joe's usual ask is "email it to me." Route through **Stacey** (`~/bin/ask-agent`,
-argument-list form via `execute_code` — parens/quotes break the top-level terminal
-tool). Demand a **CID inline** PNG (`multipart/related`, `Content-ID: <scorecard>`,
-`<img src="cid:scorecard">`) and explicitly forbid `data:` URIs — Gmail blocks those
-and renders a broken image. Attach the PDF + CSV as regular attachments.
+## Delivering it by email — USE `jay_mail.py`, NOTHING ELSE
+```python
+import sys; sys.path.insert(0, "/home/itadmin/tekion-reports")
+import jay_mail as JM
+JM.send_report(subject="SCT Advisor Performance — ...",
+               html=html,                       # must reference cid:scorecard
+               inline_png="/path/scorecard.png",
+               attachments=[pdf, csv])          # to=None => self-send to Joe
+```
+`/home/itadmin/tekion-reports/jay_mail.py` raises `DeliveryError` unless the
+message is confirmed in the inbox. Never hand-roll smtplib/imaplib again.
+Regression suite: `python3 /home/itadmin/tekion-reports/test_jay_mail.py` (14 tests,
+includes a live round trip) — run it if you touch the mail path.
 
-### Direct-send fallback (used successfully 2026-08-27)
-When Stacey is slow/unavailable, Jay can build and send the MIME himself — flag to
-Joe that the fallback was used. Working recipe:
-- Password: `re.search(r'raw\s*=\s*"([^"]+)"', <stacey himalaya config>).group(1).replace(" ","")`
-  at `/home/itadmin/.hermes/profiles/email-agent/home/.config/himalaya/config.toml`
-- `MIMEMultipart("related")` → `alternative`(html) + `MIMEImage` w/ `Content-ID: <scorecard>`
-  + `MIMEApplication` pdf/csv. SMTP_SSL smtp.gmail.com:465.
-- **Self-send dedup:** From==To==Joe means Gmail files it in Sent ONLY. You MUST
-  also `imaplib.append("INBOX", ...)` the same raw message or it never reaches his
-  inbox. Print `INBOX_COPY_OK` to prove it ran.
+### ⚠️ The 2026-08-27 delivery incident — two traps, both now handled
+**Trap 1 — self-send dedup + read flag.** From==To==Joe with the SAME Message-ID
+on both the SMTP send and the IMAP append → Gmail collapses them into one message
+labeled BOTH `\Inbox` and `\Sent` and marked `\Seen`. Technically in the inbox,
+but pre-read and merged into the Sent conversation, so Joe never sees it.
+**Fix: self-sends go IMAP-APPEND ONLY, fresh Message-ID, appended UNREAD.**
+
+**Trap 2 — Gmail omits the SELECTED mailbox's own label from X-GM-LABELS.**
+Same message, three different answers:
+```
+SELECT INBOX              -> X-GM-LABELS ("\\Sent")
+SELECT "[Gmail]/All Mail" -> X-GM-LABELS ("\\Inbox" "\\Sent")   <-- the truth
+SELECT "[Gmail]/Sent Mail"-> X-GM-LABELS ("\\Inbox")
+```
+Reading labels while INBOX is selected made me tell Joe a delivered message was
+"Sent-only, never delivered" — **a wrong diagnosis I had to retract.**
+**Fix: ALWAYS `SELECT "[Gmail]/All Mail"` before fetching labels.**
+
+Also: `SEARCH HEADER Message-ID ...` gives FALSE NEGATIVES on Gmail — use
+`SEARCH X-GM-RAW rfc822msgid:<bare-id>`. And existence ≠ delivery: finding the
+message proves nothing, only the parsed label set does. Match on a SET, never a
+substring (`"\\Sent"` contains neither more nor less than what you parse).
+
+External recipients (Kevin/Tony/Sean) are unaffected — those go SMTP and verify
+`\Sent`. `jay_mail` routes automatically on whether `to` is Joe.
 
 **Verify in INBOX, never Sent** — and verify the MIME tree, not just that a message
 exists. Self-sends (From==To==Joe) can land only in Sent; and himalaya's `message
