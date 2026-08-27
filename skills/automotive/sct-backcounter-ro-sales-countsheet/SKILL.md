@@ -253,6 +253,18 @@ Pipeline (all under /home/itadmin/tekion-reports/):
 units / $6,843.77 ext.
 
 ### 5. Daily automation (live 2026-07-04)
+**⏸ STATUS 2026-08-27: cron `14e6387de450` is PAUSED (disabled) at Joe's request.**
+The upstream snapshot job `d372a20d2889` (8PM) was left RUNNING so bin snapshots keep
+accumulating — re-enabling the count sheet needs no backfill. Joe was asked whether to
+pause the snapshot job too; no answer yet. Do NOT silently re-enable — confirm with Joe.
+
+TWO PAIRED CRONS (know the difference before answering "is this you?"):
+- `d372a20d2889` — SCT Back Counter (5000-section) Daily Bin Check, 8:00 PM. Upstream
+  bin snapshot + its own Slack summary. Feeds the roster the count sheet needs.
+- `14e6387de450` — SCT Back Counter Count Sheet, 8:15 PM. The emailed count sheet.
+Because it's a self-send (From==To==Joe) with an IMAP INBOX append, it can look odd in
+Gmail — that's expected, not a bug.
+
 Cron `14e6387de450` "SCT Back Counter Count Sheet — daily 8:15PM email" — runs
 AFTER the 8PM bin-snapshot job (d372a20d2889): background scan for today →
 build_and_send → on exit-2 refresh headers (prefer refresh_withpart_headers.py; :9223 recipe is the fallback) → Slack summary

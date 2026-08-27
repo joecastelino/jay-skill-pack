@@ -100,6 +100,19 @@ data/bc-menu-sales-opened-<date>.json paths and can overwrite/pollute with
 synthetic zeros (quarantine dir: data/quarantine-synthetic/). Jay's own noon/5pm
 Daily Closed + 6:15pm MTD cron jobs are separate and draft-only.
 
+### "Is this report from Jay or Stacey?" — ownership split + Opened recipient list (answered 2026-08-27)
+Joe periodically asks who sent a given BC menu email and who is on it. Canonical answer:
+- **Daily OPENED** ("Menu Sales — Daily Opened Performance Report — BC m/d/yy") = **STACEY's**,
+  **AUTO-SENT** (~12:04 PM) by her own SMTP pipeline via skill `email/bc-menu-sales-report-email`.
+  **To:** Ruben Estrada `Restrada@blackstonegm.com`. **CC (12, all @blackstonegm.com):** Art
+  Markarian, Joe Castelino, Jesse Navarro, Humberto Dominguez, Victor Nolasco, Luis Paris,
+  Erick Mercado, Houa Moua, James DeBussey, Dimetri Reynoso, Juan Ramirez, Michael Reyes
+  (i.e. the whole BC advisor line-up is CC'd on the Opened report).
+- **Daily CLOSED** (noon + 5pm, cron `ea75e889579a`) and **Closed MTD** (6:15pm, cron
+  `35800c950401`) = **JAY's**, and both are **DRAFT-ONLY** — Jay never sends.
+So a *sent* BC menu email is always Stacey/Opened; a *draft* is always Jay/Closed. Recipient or
+CC-list edits to the Opened report must be made in **Stacey's** skill, not this one.
+
 ## Quota exhaustion (429 OVERALL_QUOTA) — hit 2026-07-08, ~12h outage
 `repair-orders:search` can return
 `429 ... "Limit exhausted for type : OVERALL_QUOTA"` — this is an **ORG-WIDE

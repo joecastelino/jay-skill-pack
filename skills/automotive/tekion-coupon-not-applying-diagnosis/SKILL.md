@@ -55,6 +55,11 @@ directly. Also free here: `payType` (must be a pay type the coupon covers) and
 `status`. Grab the customer/vehicle too (`/ro-vehicle`, `/ro-customers/{id}`) so the
 report to Joe is concrete.
 
+**A job can hold MULTIPLE operations — check the flag on ALL of them.** Don't stop at
+the first/most-descriptive opcode. On TL RO 397670 the job held `CONCERN` ($0 labor)
+and `REC` ($1,706.60 labor); `REC` was the blocker. Iterate every entry in
+`roOperations` and note which ones actually carry `labor.saleAmount > 0`.
+
 ## Step 2 — Read the OPCODE's discount flag (API, still no clicking)
 
 `POST /api/service-module/u/opcode/search` in the authenticated :9223 page returns
@@ -208,6 +213,7 @@ end state at TL: CP `true`, INT `false`, WAR `false` on all 15.
 `CABIN` + `AIRFILTER` (Joe did these himself), plus the 15 Jay flipped:
 `4ALIGN` `BALANCE` `WIPER` `BATT` `RBRAKE` `BELT` `ATFX` `BFX` `FUELINJ` `HVAC`
 `DETAIL` `MAJORP` `MAJORV` `INTERV` `4X4SERVC`.
+Plus **`REC`** — Joe flipped it himself 2026-08-27 09:06 (RO 397670 / coupon `MILI`).
 Joe **deliberately deferred** `TIRE3` `TIRE4` `FLAT` `SMOG` out of the 19-item
 revenue bucket — he trimmed the list I proposed. Don't flip them unprompted; offer
 tires/value-packages as an explicit next batch.
@@ -251,10 +257,37 @@ alphabetically — he only cares about the ones a coupon would realistically hit
 | Value packages | 23 | every `*KV` (10KV…120KV) |
 | Prepaid maintenance | 23 | all `TAC*`, all `TSC*`, UVAC, BUY3 |
 | Diag / inspection | 8 | ENGDIAG, MECDIAG, TRANSDIAG, HVACDIAG, BRAKEINSP, CHECK, ALIGN, TPS |
-| Admin / internal (leave alone) | 20 | MISC, REC, RECALL, SUBLET, RENT*, PDI, QC, UVI, MPVI, DUE, LYFT, BODY, LOTD, PARTSHOLD, SAFECAT |
+| Admin / internal (leave alone) | 20 | MISC, ~~REC~~ (**WRONG — see below**), RECALL, SUBLET, RENT*, PDI, QC, UVI, MPVI, DUE, LYFT, BODY, LOTD, PARTSHOLD, SAFECAT |
 
 Diag/inspect and admin codes being false is arguably CORRECT (you don't discount a
 recall or a sublet). Say so — don't hand Joe a 93-line "everything is broken" list.
+
+### ⚠️ `REC` IS NOT AN ADMIN OPCODE — I got this wrong and it cost a second ticket
+
+**TL RO 397670, 2026-08-27** (2005 Camry Solara, Carole Lee, $2,394.65): Joe tried to
+apply coupon `MILI` ($100 off) and it refused. Root cause = **`REC` had Discount
+Eligible OFF on Customer Pay** — the exact opcode I had bucketed as "admin/internal,
+leave alone" in the 8/25 sweep two days earlier. Joe fixed it himself before I
+finished. Coupon `MILI` was innocent (ACTIVE, no expiry, 10% capped at $100,
+Labor & Parts, CP, opcode scope empty). After the flip: coupon attached,
+`effectiveDiscount = 10000` cents = **$100**.
+
+`REC` = "recommended services" — it is where advisors park sold/recommended work. It
+carries **real customer-pay labor dollars on a huge share of ROs** (on 397670 it held
+all $1,706.60 of the job's labor while the sibling `CONCERN` op was $0). Anything a
+coupon could realistically touch, `REC` touches.
+
+**Rules that follow from this:**
+1. **Never bucket an opcode by its name or assumed purpose.** Classify by *evidence* —
+   sum actual closed-RO Customer-Pay labor $ per opcode over the last 90 days and flag
+   any discount-ineligible opcode carrying material CP labor. A name like REC / MISC /
+   DUE tells you nothing about whether money flows through it.
+2. **Check EVERY operation on the job, not just the headline opcode.** A job can hold
+   several ops; the one blocking the coupon is whichever carries the labor, which is
+   often not the first or the most descriptively-named one. Iterate all of
+   `roOperations` and read the flag on each.
+3. Re-run the evidence-based sweep at the other stores — the same trap almost certainly
+   exists at SCT/BC/BT. Bring Joe the trimmed list before flipping anything (he trims).
 There is no bulk toggle in the UI; each is `/ro/opcode/edit/<CODE>` → Default →
 Discount Eligible → Update.
 

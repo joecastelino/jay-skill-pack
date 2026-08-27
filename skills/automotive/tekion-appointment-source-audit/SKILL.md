@@ -120,6 +120,18 @@ Note SV carries BOTH `ai_bdc` and `open_api` — two different AI/integration ve
 coexist there; do not assume a single vendor owns "the AI appointments" fleet-wide.
 `open_api` first appearances: BT Nov 2022, SV Aug 2024, ST Mar 2025, TL Aug 2025.
 
+## Known AMG case: MIA (asked again 2026-08-27)
+Joe: "appointments made through MIA come over as Integration — can we set that up or
+does MIA need to change it?" **Answer given: MIA must fix it on their end.** MIA books
+through the generic public Open API → `OPEN_API` → Integration. No dealer-side toggle.
+Ask = MIA opens a ticket with Tekion to be onboarded as an AI-class source
+(`AI_BDC`/`MARKETING_AI`); cc the AMG Tekion rep since it's a partner-registration change.
+Interim: at ST/BT/TOL `open_api` is the ONLY Integration source, so
+"Integration" already == MIA there; use the Appointments **List** view columns.
+Still open: get one known MIA appointment number to confirm `OPEN_API` definitively
+rather than by inference, then build a standing MIA-attributed appointment/conversion
+report off that filter (offered to Joe, not yet built).
+
 ## Pitfalls
 - Dealer switcher popover row coords go stale fast; the popover auto-closes. For
   read-only cross-store work **skip the switcher entirely** — swap the two headers.

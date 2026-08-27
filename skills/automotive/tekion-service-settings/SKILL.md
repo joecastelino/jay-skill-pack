@@ -357,6 +357,13 @@ the popup. There is a SECOND, DIFFERENT rule with a similar name — **Pre-Invoi
 Always enumerate both before changing anything; only disable the one matching the modal
 title in the screenshot.
 
+**Joe's ruling 2026-08-26: leave `CP Amount Exceeds Estimate Amount` (Pre-Invoice) ON** —
+he wants it as a cashier-side guardrail. Do NOT offer to turn it off again; only the
+Pre-Job Completion `Estimate Amount Validation` rule was disabled (SCT 876). Neither rule
+had Applicable Job Types / Pay Types set (both "Select..."), which is why the Pre-Job one
+fired on every RO indiscriminately — scoping is an alternative to disabling if Joe ever
+wants the warning back for a subset (e.g. Warranty only).
+
 Working recipe (avoids every trap in this file):
 ```python
 # 1. dealer pill (1130,32) -> /mouse the store leaf row; assert localStorage.currentActiveDealerId

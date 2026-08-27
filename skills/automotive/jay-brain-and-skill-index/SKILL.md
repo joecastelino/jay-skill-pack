@@ -380,8 +380,9 @@ print('broken:',len(b),'of',m['count'])"
 Must print `broken: 0`. Back up `usage-stats.json` first and confirm the `times_used` sum
 didn't drop — the rebuild merges rather than resets, but a bad edit can wipe counters.
 
-**Second known gap: only 95 of 198 skills declare `triggers:`** — the strongest matching
-signal. When creating or patching a skill, add a `triggers:` list.
+**Second known gap (RESOLVED 2026-08-26 — was 95/198 with `triggers:`, now 131/198 and
+125/125 automotive).** `triggers:` is the strongest matching signal, so when creating or
+patching ANY skill, always include a `triggers:` list of 6-9 natural-language phrases.
 
 ### ⚠️ Legacy singular `trigger:` key — FIXED 2026-08-26
 

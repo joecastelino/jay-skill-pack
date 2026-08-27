@@ -69,7 +69,8 @@ Service Settings → General Setup → scroll to **Enable RO Approval flow**:
   with the pay types that should be addable (e.g. Customer Pay, Internal, Warranty),
   keeping approval governance. This is what BT/1249 does.
 - **Option B** — toggle *Enable RO Approval flow* OFF entirely (what ST, BC, SV,
-  VC, AR run with).
+  VC, AR run with for **RO job-adds** — note SV/AR still run a *different*
+  approval workflow, see "Two independent approval flags" below).
 
 Then **Submit** (button bottom-right). Requires a success toast — re-navigate
 away and back to verify, a hash-only nav does NOT remount the SPA.
@@ -79,6 +80,35 @@ Re-read `approvalSetting` and confirm `metaData[0].modifiedTime` ADVANCED to the
 moment of the change. TL 2026-08-26: flipped-on 8/25 15:10 PT → fixed 8/26 10:59 PT.
 Joe's fix set BOTH `roApprovalFlowEnabled:false` AND populated
 `jobsAllowedToAdd:[CUSTOMER_PAY,WARRANTY,INTERNAL]` — either alone unblocks it.
+
+## Two independent approval flags — do NOT collapse them (corrected 2026-08-27)
+I got this wrong once and Joe caught it: `roApprovalFlowEnabled` is **not** a
+master switch. `approvalSetting` carries at least two independent toggles:
+
+| Field | Governs | Request type |
+|---|---|---|
+| `roApprovalFlowEnabled` + `jobsAllowedToAdd` | Adding a job / changing paytype on an existing RO | (the disabled-button gate above) |
+| `recApprovalEnabled` + `recApprovalByPayType` | Converting a **Recommendation → Job** | `RECOMMENDATION_TO_JOB` |
+
+`recApprovalByPayType` is scoped, e.g. `{WARRANTY: true}` = only warranty recs route
+for approval.
+
+**Consequence:** a store can show `roApprovalFlowEnabled: false` and *still* run a
+live approval workflow. Never tell Joe a store "has approvals off" from the RO flag
+alone — read both flags. SV/AR are exactly this case.
+
+## Fleet baseline (read 2026-08-27)
+| Store | RO job-add approvals | Rec→Job approvals | Approvers configured |
+|---|---|---|---|
+| SV 826 | off | **ON** (warranty) | 1 |
+| AR 6195 | off | **ON** (warranty) | 1 |
+| BT 1249 | **ON** (paytypes populated) | off | 5 |
+| TL 1092 | **ON** (re-flipped 8/27 11:27) | off | **0** ⚠ |
+| BC 1251 / ST 876 / VC 1891 | off | off | 0 |
+
+TL note: `jobsAllowedToAdd` is now `[CUSTOMER_PAY, WARRANTY, INTERNAL]`, so job-adds
+work even though the flow got re-enabled. The toggle state drifts — **re-read it live,
+don't trust this table.**
 
 ## "Does Approval Workspace still break if I turn the flow off?" — NO
 Expect this as the immediate follow-up question. Answer, verified live:
@@ -135,5 +165,10 @@ Bonus recon: the left sidebar's 2-letter codes DO carry real hrefs. Map them wit
 - ALWAYS run the 7-store fleet comparison before calling it a Tekion defect. If
   6 stores are fine, it is store config, not a platform bug.
 - `metaData[0].modifiedTime` is gold: correlate it against when the store started
-  complaining.
+  complaining. It also catches **someone re-flipping the toggle mid-investigation** —
+  TL read `false` at 10:59 and `true` at 11:27 the same day. Re-read before every
+  conclusion; don't cite a stale read.
+- **Don't collapse the two approval flags.** Answering "approvals are off at that
+  store" from `roApprovalFlowEnabled` alone is wrong if `recApprovalEnabled` is true.
+  Joe will catch it — he knows which stores run approvals.
 - Strip Pendo overlays before any `/mouse` click on Tekion settings pages.

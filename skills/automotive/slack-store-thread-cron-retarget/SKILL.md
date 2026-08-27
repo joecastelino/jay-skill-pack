@@ -38,8 +38,14 @@ Joe abandons/recreates threads. The old channel or thread becomes invalid, and H
 | BT (Blackstone Toyota, 1249) | BT Menu Sales Closed MTD `7d023e4565a0` (6am, auto-sends to Tony Garcia agarcia@blackstonetoyota.com, CC Joe) |
 
 ## Dead channels/threads (history)
-- BC: `C0BGTDMP9U2` (dead) → `C0BR7FHMF17:1787111034.827789` (dead 2026-08-19) → current
-- BT: `C0BGTDR158S:1783876504.495759` went `channel_not_found` by 2026-08-19
+- BC: `C0BGTDMP9U2` (dead) → `C0BR7FHMF17:1787111034.827789` (dead; all 3 BC crons still pointed at it and were retargeted again 2026-08-27) → current
+- BT: `C0BGTDR158S:1783876504.495759` went `channel_not_found` by 2026-08-19 and was STILL dead 2026-08-27 — BT Menu Sales `7d023e4565a0` emails Tony fine but never posts to Slack. Needs a new BT thread from Joe.
+
+## Follow-up question Joe always asks: "did you do this for yesterday?"
+After a retarget, Joe's next question is whether the missed runs actually EXECUTED. They almost always did — only the Slack leg failed. Answer with proof, not reassurance:
+1. Pull each store job's last run(s) from its log / the Gmail draft or Sent copy it produced.
+2. Report a per-report table: report name + schedule, the actual numbers, and the delivery artifact (email ID / draft ID).
+3. Re-surface any business flags buried in those missed runs (e.g. BC warranty closings done by CASHIERS instead of warranty admins) — that's the value Joe lost while Slack was dark.
 
 ## Pitfalls
 - A `channel_not_found` cron looks HEALTHY in its own run log if it also emails — check the Slack post result specifically.
