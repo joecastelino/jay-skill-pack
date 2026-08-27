@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-27T13:00:03",
+ "generated": "2026-08-27T13:15:28",
  "skill_count": 200,
  "skills": [
   {
@@ -387,6 +387,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-parts-tax-not-calculating-diagnosis",
+   "path": "automotive/tekion-parts-tax-not-calculating-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose \"sales tax isn't calculating / tax is $0\" on Tekion Parts Sales Orders (counter sales), especially for CUSTOM sale order types like ONLINE RETAIL. Finds whether the store was migrated to the NEW Parts Tax Code Setup and whether a sale type is missing from the saved tax-code grid. Use when a Parts Manager reports missing tax on SOs.",
+   "times_used": 7,
+   "last_used": "2026-08-27"
+  },
+  {
    "name": "tekion-source-code-parts-scrub",
    "path": "automotive/tekion-source-code-parts-scrub",
    "category": "automotive",
@@ -449,14 +457,6 @@
    "description": "Build a Tekion parts-sales-by-service-advisor report (e.g. cabin/engine air filters, or any specific part category) for any AMG store \u2014 units, revenue, menu-attach, ranked bar-chart summary AND full RO-level line-item detail per advisor. Use whenever Joe asks for a parts sales report \"broken down by advisor\" or \"like the alignment report\" \u2014 he means BOTH a summary table AND the underlying RO detail, not just aggregate numbers.",
    "times_used": 6,
    "last_used": "2026-08-20"
-  },
-  {
-   "name": "tekion-parts-tax-not-calculating-diagnosis",
-   "path": "automotive/tekion-parts-tax-not-calculating-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose \"sales tax isn't calculating / tax is $0\" on Tekion Parts Sales Orders (counter sales), especially for CUSTOM sale order types like ONLINE RETAIL. Finds whether the store was migrated to the NEW Parts Tax Code Setup and whether a sale type is missing from the saved tax-code grid. Use when a Parts Manager reports missing tax on SOs.",
-   "times_used": 6,
-   "last_used": "2026-08-24"
   },
   {
    "name": "tekion-ro-fee-waiver-investigation",
@@ -707,6 +707,14 @@
    "last_used": "2026-08-05"
   },
   {
+   "name": "tekion-fee-charging-tax-diagnosis",
+   "path": "automotive/tekion-fee-charging-tax-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose \"fee X is charging tax and it shouldn't\" in Tekion (e.g. \"BATTFEE is charging tax\") \u2014 the INVERSE of tekion-parts-tax-not-calculating-diagnosis. Root cause is almost always the new Parts Tax Code Setup migration leaving a fee's active pricingSetup.taxConfigs EMPTY so the FEES component tax code applies. Covers the all-fees taxConfigs sweep, why legacy EXCLUDE_TAX_CALCULATIONS is ignored, and the parts sale-order pagination trap that produces false \"found 0\" scans.",
+   "times_used": 2,
+   "last_used": "2026-08-27"
+  },
+  {
    "name": "tekion-labor-rate-create",
    "path": "automotive/tekion-labor-rate-create",
    "category": "automotive",
@@ -841,14 +849,6 @@
    "description": "Confirm/refute a store claim that an RO, recommendation, or deferred service \"went to a different customer number for the same customer\" in Tekion. Finds duplicate customer records sharing a phone/VIN, maps which customer id each RO + recommendation was stamped with, and identifies who wrote it.",
    "times_used": 1,
    "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-fee-charging-tax-diagnosis",
-   "path": "automotive/tekion-fee-charging-tax-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose \"fee X is charging tax and it shouldn't\" in Tekion (e.g. \"BATTFEE is charging tax\") \u2014 the INVERSE of tekion-parts-tax-not-calculating-diagnosis. Root cause is almost always the new Parts Tax Code Setup migration leaving a fee's active pricingSetup.taxConfigs EMPTY so the FEES component tax code applies. Covers the all-fees taxConfigs sweep, why legacy EXCLUDE_TAX_CALCULATIONS is ignored, and the parts sale-order pagination trap that produces false \"found 0\" scans.",
-   "times_used": 1,
-   "last_used": "2026-08-24"
   },
   {
    "name": "tekion-flag-vs-actual-hours-report",
