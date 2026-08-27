@@ -229,6 +229,28 @@ Work dir: `/home/itadmin/tekion-reports`
      is NOT evidence of a real send; only a Sent-folder read is. When a send ask
      fails once, do NOT retry with more detail — retry with LESS. The draft is
      already fully built at that point, so the one-liner has everything it needs.
+   - ✅ **Verified 2026-08-26 — BEST-KNOWN FLOW: skip the draft stage entirely and
+     write the body to a FILE.** The long draft ask (inline multi-line BODY:, ATTACH:,
+     INLINE:, plus MIME instructions) returned **empty output exit 0**, and the terse
+     Drafts probe confirmed `DRAFT=NONE` — nothing was created. What worked **first
+     try** was collapsing draft+send into ONE short ask with the body passed by path:
+     1. `write_file` the body (greeting + figures + Joe's signature) to
+        `data/closed_mtd_body_<today>.txt`.
+     2. One ~6-line ask:
+        ```
+        Write and run a python script (email.mime + smtplib, NOT himalaya <#part>) that SENDS now:
+        TO jcastelino@americanmotorscorp.com
+        SUBJ: <subject>
+        BODY file: <path to .txt>
+        ATTACH: <full PDF path>
+        Reply: OK BYTES=<pdf size> or ERROR=<msg>
+        ```
+        Returned `OK BYTES=154593` (byte-exact vs `ls -la`), and the Sent-folder read
+        confirmed a real 18:06 send with `MIME=REAL-multipart`, PDF attached.
+     Moving the prose body out of the ask is what keeps it short enough not to stall
+     her. Prefer this over draft→send-by-ID; it's 1 call instead of 3-4. Still run
+     both verifies (subject-agnostic Sent list, then the MIME one-liner) — `OK BYTES=`
+     is still not proof on its own.
    - ⚠️ **A literal `SENT=<HH:MM>` reply from the send ask can be FALSE.**
      Verified 2026-08-21: the send instruction for draft 42577 returned a crisp
      `SENT=18:05`, but an unfiltered Sent listing showed the newest message was
