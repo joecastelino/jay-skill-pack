@@ -505,6 +505,57 @@ Wait for any running instance to exit (`pgrep -f cron-pipeline`) before touching
 A pipeline run already in flight can take several minutes (it pages through hundreds of
 orders per store), so check `pgrep` rather than assuming the pause took effect instantly.
 
+## 🔴 THE PREFLIGHT MISSES A SECOND BROWSER CONSUMER — check `cron-tekion.sh` too (2026-08-28)
+
+`opcode_preflight.py` only knows about **`cron-pipeline.sh`** (15-min). There is a SECOND
+:9223 consumer it does not check: **`cron-tekion.sh`** — the nightly Caliber RO-dollars
+scraper (`scripts/tekion-scraper.ts`). It starts ~1:16 AM, works ~2,971 invoices at ~15s
+each, and therefore **owns :9223 for 12+ hours into the business day**. It also drives the
+browser to OTHER dealers (it was on *Toyota of Lancaster* mid-build), so it can flip
+`currentActiveDealerId` out from under you as well as navigate your half-filled form away.
+
+Preflight can pass GREEN (`no pipeline in flight`, `dealer=1251`) while this is running.
+Symptom: mid-build your `pick()` calls start returning `notfound:` / `notfound:DROP OFF`,
+and `location.href` shows an RO/invoice page you never navigated to.
+
+**Always check BOTH before a build:**
+```bash
+pgrep -af "[c]ron-pipeline"
+pgrep -af "[c]ron-tekion|tekion-scraper.ts"      # the long one
+tail -3 /home/itadmin/caliber-ops/logs/tekion-nightly.log   # shows [N/2971] progress
+```
+
+**If `cron-tekion.sh` is running, do NOT kill it and do NOT wait it out — move to :9225.**
+Clone the live session across in ~15s (no OTP, lands on the same dealer):
+```python
+ls = eval9223("JSON.stringify(Object.fromEntries(Object.entries(localStorage)))")
+inject = {k:v for k,v in json.loads(ls).items() if not k.startswith("amplitude")}  # amplitude keys 413
+post9225("/navigate", {"url":"https://app.tekioncloud.com/login"})
+for k,v in inject.items():
+    post9225("/eval", {"js": f"localStorage.setItem({json.dumps(k)},{json.dumps(v)});'ok'"})
+post9225("/navigate", {"url":"https://app.tekioncloud.com/home"})
+# verify: {u:/home, d:1251, w:true(Welcome), lg:false(no Username)}
+```
+Then just point the build client's base URL at `http://127.0.0.1:9225`. Verified end-to-end
+on the UCTIRE2 + UCTIRE1 builds — zero interference, all dropdowns behaved identically.
+
+### The "Add" button can produce TWO blank rate rows — remove the extra before Create
+
+On one UCTIRE2 attempt an earlier Add had already fired, so clicking Add again left **two**
+blank rows (y≈491 and y≈532). Fill the top one, then delete the spare via its row kebab at
+**x≈1197**. The kebab menu (`Remove` / `View Audit Logs`) renders at x≈1197, ~29px below the
+row. **`pick("Remove")` fails** — the generic option-scan doesn't match these menu items, and
+a scoped scan can grab a stale/duplicate node. Working form: filter for `innerText==='Remove'`
+AND `getBoundingClientRect().x > 900`, take the LAST match, and dispatch the pointer sequence
+on it. Re-read the row list afterward to confirm only one row remains.
+
+### Always readback the cost center against BOTH header positions
+
+`Warranty Default Cost Center` and `Internal Default Cost Center` render as sibling blocks
+(headers ~190px apart). A y-range readback can silently report the wrong one. Anchor on both
+header y values and assert the Warranty block is still `Select` (blank) while the Internal
+block reads `Used Car INV 240`.
+
 ## 🔴 SYNTHETIC-CLICK RECIPE — `/mouse` silently fails on ant-v5 + react-select options (BC 1251, UCFBRAKE/UCRBRAKE 2026-08-26)
 
 The single biggest time sink on the UCFBRAKE build: `/mouse {action:"click"}` at an option's
