@@ -264,6 +264,29 @@ convention deliberately and stay on it.
 one field where the fixed/inherited split wasn't obvious from the first four builds; one
 short question to Joe is far cheaper than 26 opcodes mapped to the wrong GLAM account.
 
+**→ CATEGORY IS SETTLED (Joe, 2026-08-28, verbatim: *"I want it to stay in tire"*).**
+Category **stays the source opcode's work type** on every UCD clone — Tire, Brakes, etc.
+Do NOT re-ask this per opcode and do NOT normalize it to Maintenance. Rationale confirmed:
+Service Type carries the UCD GL routing; Category feeds GLAM and should stay truthful to
+the work performed. This is now an INHERITED field with no ambiguity remaining.
+
+### Progress log — BC 1251 UCD (26 total)
+
+| # | Opcode | Source | Cat | Hrs | Internal rate | Map | Status |
+|---|---|---|---|---|---|---|---|
+| 1 | UCALIGN | ALIGN | — | — | — | — | ✅ (skill fixed post-hoc) |
+| 2 | UC4ALIGN | 4ALIGN | — | — | — | — | ✅ |
+| 3 | UCFBRAKE | FBRAKE | Brakes | 2.00 | Hourly $150 | 0300 | ✅ |
+| 4 | UCRBRAKE | RBRAKE | Brakes | 2.00 | Hourly $150 | 0300 | ✅ |
+| 5 | UCTIRE4 | TIRE4 | **Tire** | 1.60 | **Fixed $120** | **0400** | ✅ 2026-08-28, ~20 calls |
+
+Next per build sheet: UCTIRE2 (0.8 / $60), UCCADTIRE2, UCCADTIRE4, UCTIRE1, UCCADTIRE3,
+UCCADTIRE1, UCAIR. **The 6 remaining tire ops are the same shape as UCTIRE4** — same
+Category/rate type/mapping opcode, only hours + flat price change. Once one opcode of a
+family is verified, offer Joe a **batched build of the rest of that family** reported
+together; he approved single-at-a-time as a *safety* measure for novel shapes, not as a
+per-opcode ceremony for proven clones.
+
 ### ⚠️ Verify `currentActiveDealerId` before EVERY write, not just at session start
 
 `:9223` drifts between turns (cron jobs, other agents, other sessions). BC 1251 drifted to

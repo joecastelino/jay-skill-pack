@@ -605,6 +605,130 @@ open dropdown → `2.2s` · after dispatch-pick → `2.0s` · after `Create` →
 after `/navigate` → `12–13s`. Wrap `/eval` in the retry helper; it 500s transiently and a
 bare call will crash the whole `execute_code` block mid-build.
 
+## ✅ THE CLEAN 20-CALL SEQUENCE — verified end-to-end (UCTIRE4, BC 1251, 2026-08-28)
+
+First build that hit the ~10 min / ~25 call budget with **zero misfires**. Every dropdown
+landed first try. Reproduce this exact order; the wins are (a) `activeElement` tagging,
+(b) one batched `execute_code` per section, (c) one-eval full-form readback before commit.
+
+**Setup — write a 6-function helper to `/tmp/jb.py` once, `sys.path.insert` it in every
+later call.** (Same primitives as `jay_opcode.py`; a local file is fine and is what was
+actually used.) It needs: `post/ev` (retrying `/eval`), `click`, `typ`, `nav`, and `pick()`
+built on the pointer-event dispatch recipe below. Keep `pick()` doing
+`sleep(2.2) → dispatch → sleep(2.0)` internally so call sites stay one-liners.
+
+`pick()` option matcher that worked for **every** widget type on the form (react-select,
+ant-v5 flat list, ant-v5 tree) — one query, exact match then prefix fallback:
+```js
+document.querySelectorAll('[class*=option],[class*=select-tree-title]')
+  .filter(visible).filter(e => e.children.length <= 1)
+```
+`children.length<=1` is what keeps it off wrapper divs. Return `'notfound:'+all option
+texts` on miss so a failure is self-diagnosing instead of costing another round trip.
+
+### Section order (one `execute_code` per numbered step)
+
+1. `/navigate` to `/ro/opcode/add`, wait 14s, assert `currentActiveDealerId`.
+2. **Header inputs** — tag by Y-band, fill all three, read all three back:
+   ```js
+   input[placeholder='Type Here'] filtered to Math.abs(rect.y - 284) < 15, sorted by x
+   → setAttribute('data-jay','h0'/'h1'/'h2')
+   ```
+3. **Locate all controls in one shot** before touching any of them:
+   `getElementById('CATEGORY_FIELD')` / `('SERVICE_TYPE_FIELD')` give reliable centers,
+   plus a dump of every visible `[class*=singleValue],[class*=placeholder]` as
+   `[text, cx, y]`. That single eval is the map for the whole rest of the build.
+4. **Category**, 5. **Service Type**, 12. **Cost Center** — all three use the identical
+   recipe (see `activeElement` section below).
+6. **Labor hours** — `input[placeholder='0']`, `scrollIntoView` the first, tag both, type
+   + Tab each.
+7. **Default Pay Type** — find it by its *value text*
+   (`[class*=selection-item],[class*=singleValue]` matching `/Default (customer|internal)
+   pay/`), `scrollIntoView`, re-read rect, click, `pick("I - Default internal pay")`.
+8. **Labor Rate Add button** — locate relative to the `Labor Rate Configuration` header in
+   page coords (`|pageY - headerY| < 260`), then `scrollIntoView` it and **re-read the
+   rect** (page coords 720 became viewport 414). Click → new blank row appears.
+9. **Rate row** — Pay Type (x≈275) → Customer Type (x≈475, click `All` ONCE) → Labor Rate
+   (x≈627) → price input appears at x≈818. Re-read the row's cell list after each pick.
+10. **Price** — tag `input[placeholder~=/price/i]`, type, Tab, read back.
+11. **Checkbox audit** (free, one eval — see below).
+13. **Standard Opcode Mapping** — three rows via a reusable `mapping_row(make, y, tag)`
+    function; rows at y 494 / 535 / 576, blank auto-appends at +41px.
+14. **Full readback** (see below) → eyeball → `Create` → verify bounce.
+
+### 🔑 `document.activeElement` — the universal react-select filter-input tag
+
+Supersedes hunting for `#rc_select_N` ids or guessing container inner inputs. Clicking any
+react-select focuses its hidden search input, so:
+```python
+click(cx, cy); time.sleep(1.5)
+ev("(function(){var a=document.activeElement;"
+   "if(!a||a.tagName!=='INPUT')return 'noinput';"
+   "a.setAttribute('data-jay','cat');return 'ok';})()")
+typ("[data-jay='cat']", "Tire"); time.sleep(1.8)
+pick("Tire")
+```
+Worked identically for Category, Service Type, and Internal Default Cost Center. If it
+returns `noinput`, the click didn't open the control — retry the click, don't proceed.
+
+**Verification gotcha:** `getElementById('CATEGORY_FIELD').innerText` returns the a11y
+string `"option Tire, selected.\nTire"`, not just `"Tire"`. Match with *contains*, never
+equality.
+
+### 🔑 Negative Y coordinates are NORMAL after `scrollIntoView`
+
+Post-scroll, elements above the viewport report negative `getBoundingClientRect().y`
+(e.g. `-1052`). Don't treat that as an error or filter them out as invalid — it just means
+"scrolled past". Only filter on negatives when you're deliberately scoping to the visible
+band.
+
+### 🔑 Cost Center: don't scope by a narrow band under its header
+
+Scanning `y > headerY && y < headerY + 120` for the Internal Default Cost Center select
+returns **`[]`**. After `scrollIntoView` the header lands at y≈405 and its select sits at
+y≈542 — 137px below. Use a ≥160px window, or query
+`[class*=ant-v5-select-selector]` below the header. Placeholder text is `Select`, and there
+are TWO such rows (Warranty above, Internal below) — take the lower one.
+
+### 🔑 Checkbox ids give a free full-form audit
+
+Every meaningful toggle has a stable id. One eval dumps the entire state:
+```js
+{}; document.querySelectorAll('input[type=checkbox]').filter(visible)
+   .forEach(e => { if (e.id) map[e.id] = e.checked });
+```
+Expected on a correct BC UCD internal op:
+```
+CLOCK_IN_MANDATORY_FIELD                              false
+ELIGIBLE_FOR_CP_SPECIAL_LABOR_PRICING_FIELD           true
+ALLOW_OVERRIDE_undefined / DISCOUNT_ELIGIBLE_undefined true   (the rate row)
+ELIGIBLE_FOR_PARTS_PREPARATION_FIELD                  true
+CUSTOMER_PART_PRICING_ENABLED_FIELD                   true
+PARTS_PRICING_CAP_ENABLED_FIELD                       false
+WARRANTY_/INTERNAL_DEFAULT_COST_CENTER_ALLOW_OVERRIDE_FIELD_ID  true
+SUBLET_OP_CODE_FIELD_ID false · AUTO_DISPATCH_FIELD_ID true · AUTO_COMPLETE_FIELD_ID false
+```
+All of those are form defaults — **verify, don't click.**
+
+### 🔑 One-eval pre-commit readback (do this before EVERY `Create`)
+
+```js
+{ selects: [class*=singleValue],[class*=selection-item],[class*=dropdown-trigger]
+             → innerText, filtered to length < 40,
+  inputs : all visible input where type!=='checkbox' && value → value,
+  checks : the id→checked map above }
+```
+Returns the whole opcode as three short arrays — diff it against the source opcode's
+identical dump. This catches a missed field for ~1 call instead of a post-commit Update
+cycle. Then run the SAME eval after the verification bounce; the two should match
+(the reloaded form adds one extra input: description renders twice).
+
+### Commit + verify (unchanged, confirmed again)
+
+`Create` at `1211,688` → URL flips to `/ro/opcode/edit/<CODE>` + toast
+`Opcode '<CODE>' has been created successfully` (fires ~6× in the toast scan, that's normal).
+Then bounce `/home` (8s) → `/ro/opcode/edit/<CODE>` (14s) and re-read. Never edit→edit.
+
 ## Pitfalls / notes
 - Opcodes are **store-specific** — create only at the store(s) needed (Joe-confirmed);
   don't replicate across all 7 unless asked.
