@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-28T08:45:07",
+ "generated": "2026-08-28T09:01:02",
  "skill_count": 201,
  "skills": [
   {
@@ -167,8 +167,8 @@
    "path": "automotive/tekion-ro-close-blocked-triage",
    "category": "automotive",
    "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
-   "times_used": 23,
-   "last_used": "2026-08-27"
+   "times_used": 24,
+   "last_used": "2026-08-28"
   },
   {
    "name": "tekion-declined-deferred-services-report",
@@ -191,7 +191,7 @@
    "path": "automotive/tekion-opcode-create",
    "category": "automotive",
    "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
-   "times_used": 17,
+   "times_used": 18,
    "last_used": "2026-08-28"
   },
   {
@@ -207,7 +207,7 @@
    "path": "automotive/tekion-internal-cost-center-gl-routing",
    "category": "automotive",
    "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
-   "times_used": 15,
+   "times_used": 16,
    "last_used": "2026-08-28"
   },
   {
@@ -363,6 +363,14 @@
    "last_used": "2026-08-18"
   },
   {
+   "name": "tekion-parts-tax-not-calculating-diagnosis",
+   "path": "automotive/tekion-parts-tax-not-calculating-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose \"sales tax isn't calculating / tax is $0\" on Tekion Parts Sales Orders (counter sales), especially for CUSTOM sale order types like ONLINE RETAIL. Finds whether the store was migrated to the NEW Parts Tax Code Setup and whether a sale type is missing from the saved tax-code grid. Use when a Parts Manager reports missing tax on SOs.",
+   "times_used": 8,
+   "last_used": "2026-08-28"
+  },
+  {
    "name": "tekion-uber-lyft-transportation-swap",
    "path": "automotive/tekion-uber-lyft-transportation-swap",
    "category": "automotive",
@@ -401,14 +409,6 @@
    "description": "Diagnose \"the store can't see / isn't getting charged fee X\" in Tekion \u2014 e.g. \"SCT isn't seeing fees 1TIRE 2TIRE 3TIRE 4TIRE\". Covers the Fee Management v3 API (list + per-fee detail), the ADD_TO_RO (\"Allow to Add at RO Level\") flag that controls whether a fee appears in the RO fee dropdown, opcode\u2192fee attachment, and how to prove whether a fee is actually landing on real ROs. Use for any Tekion fee visibility, fee-not-auto-applying, or fee-attach-rate question.",
    "times_used": 7,
    "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-parts-tax-not-calculating-diagnosis",
-   "path": "automotive/tekion-parts-tax-not-calculating-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose \"sales tax isn't calculating / tax is $0\" on Tekion Parts Sales Orders (counter sales), especially for CUSTOM sale order types like ONLINE RETAIL. Finds whether the store was migrated to the NEW Parts Tax Code Setup and whether a sale type is missing from the saved tax-code grid. Use when a Parts Manager reports missing tax on SOs.",
-   "times_used": 7,
-   "last_used": "2026-08-27"
   },
   {
    "name": "tekion-ro-payer-split-sunbit",
