@@ -214,6 +214,28 @@ a partial flag is visible rather than looking like a discrepancy.
   applied BT 512 showed 4.30 flag hrs; without it, 7.80. If your native total doesn't
   match what the user sees, this filter is why — capture `__post_body` and match it.
 
+## PITFALL — never let a report fall back to another store's logo
+
+`logo_0.png` and `logo_st.png` in `~/tekion-reports/` are **both Stevens Creek Toyota**,
+despite the neutral-looking `logo_0` name. Many older renderers hardcode `logo_0.png`
+as a generic default. On 2026-08-28 a Blackstone Chevrolet Tech Performance report
+went to Joe with the Stevens Creek Toyota logo in the header — he caught it immediately.
+
+Rules:
+- SCT is the ONLY store with a verified logo asset on disk. There is no BC/BT/TL/SV/VC/AR
+  logo file, and the AMG signature asset `amg-dealer-logos.jpg` only holds generic
+  MANUFACTURER marks (Chevy bowtie, Toyota oval), not dealership logos.
+- Dealer websites are Cloudflare-403'd to both curl and the browser tool — you cannot
+  scrape a logo at run time.
+- So: render a **text wordmark in the store's brand colors** for every non-SCT store.
+  `render_tech_perf.py` has a `_brand(store)` helper returning
+  `(line1, line2, color1, accent)` and builds `MARK` (img when SCT, wordmark otherwise).
+  The accent color also drives the header rule and `h2` bars via a `--accent` CSS var.
+- CSS is injected with `.replace("__ACCENT__", ACCENT)`, **not** `%`-formatting —
+  the stylesheet contains `width:100%` which breaks `%` substitution.
+- Always `vision_analyze` the rendered PNG and explicitly ask "what dealership branding
+  is in the header?" before emailing. The numbers being right does not make the report right.
+
 ## Method
 
 1. **Refresh session + headers** (captures die ~2h): run
@@ -252,6 +274,37 @@ a partial flag is visible rather than looking like a discrepancy.
    `POST /api/rosearchservice/u/visibility-dashboard/lookup/resolve-by-id`
    body `{"lookupByIds":[{"lookUpAsset":"TECH_ID","ids":[...]}]}` (same headers).
 5. Rank by gap; present per-tech summary table + per-RO detail with opcodes.
+
+## ★ TURNKEY — the generic package builder (built BC 2026-08-28, use this first)
+
+Stop writing a bespoke `<store><emp>_flag_gap.py` per request. One script assembles
+the complete package JSON both renderers consume, for ANY store / tech / date range:
+
+```bash
+cd /home/itadmin/tekion-reports
+python3 build_tech_perf_package.py --dealer 1251 --tech-emp 5576 \
+        --from 2026-08-16 --to 2026-08-27 --store-name "Blackstone Chevrolet"
+# -> data/tech-<dealer>-<emp>-<from>_<to>.json
+```
+
+It does all four sources in order: resolve employee# → tech UUID, `/reporting/technician`
+(native), `/breakdown` (index ledger), TECH_CLOCK by roNo, then the RO-document sweep
+(punched ROs ∪ OpenAPI `modifiedTime` window) and prints the `NOT IN INDEX` table.
+Requires `/tmp/tekion_tech_headers_<dealer>.json` from `capture_tech_report_headers.py`.
+
+Then render — the renderer takes an **optional 5th arg = END date** for a range:
+
+```bash
+python3 render_tech_perf.py data/tech-1251-5576-2026-08-16_2026-08-27.json \
+        "Victor Tafolla" 5576 2026-08-16 2026-08-27
+# -> out/tech_perf_<dealer>-<emp>-<from>_<to>.{png,pdf,csv}
+```
+
+Range mode adds a **Daily Summary** table (entries / ROs / flag hrs / labor sale / tech
+pay per flag date), switches the header chip to "Flag Dates", and stamps `%m/%d %H:%M`
+on every ledger row instead of bare time. Single-date behaviour is unchanged when the
+5th arg is omitted. The output stem is derived from the package filename, so two techs
+never overwrite each other.
 
 ## Turnkey scripts
 **Any-store header capture (built 2026-08-28, use this — the `_sv` ones are
