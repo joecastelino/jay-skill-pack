@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-28T08:00:07",
+ "generated": "2026-08-28T08:15:36",
  "skill_count": 201,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 155,
-   "last_used": "2026-08-26"
+   "times_used": 156,
+   "last_used": "2026-08-28"
   },
   {
    "name": "agent-to-agent-bridge",
@@ -187,6 +187,14 @@
    "last_used": "2026-07-12"
   },
   {
+   "name": "tekion-opcode-create",
+   "path": "automotive/tekion-opcode-create",
+   "category": "automotive",
+   "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
+   "times_used": 17,
+   "last_used": "2026-08-28"
+  },
+  {
    "name": "tekion-opcode-overrides",
    "path": "automotive/tekion-opcode-overrides",
    "category": "automotive",
@@ -195,11 +203,11 @@
    "last_used": "2026-07-12"
   },
   {
-   "name": "tekion-opcode-create",
-   "path": "automotive/tekion-opcode-create",
+   "name": "tekion-internal-cost-center-gl-routing",
+   "path": "automotive/tekion-internal-cost-center-gl-routing",
    "category": "automotive",
-   "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
-   "times_used": 16,
+   "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
+   "times_used": 15,
    "last_used": "2026-08-28"
   },
   {
@@ -209,14 +217,6 @@
    "description": "Set Default-tab labor pricing and add parts to a Tekion opcode in the opcodeManagementV2 UI. Covers reaching the edit page, the V2 flat-form layout, setting the dollar rate via the Customer/Manufacturer spinbuttons, adding parts via react-select (bare-number-first search), and the incremental Save Draft pattern that the browser tool requires. This is the SIMPLE common case \u2014 for vehicle/part override rows use tekion-opcode-overrides.",
    "times_used": 15,
    "last_used": "2026-08-21"
-  },
-  {
-   "name": "tekion-internal-cost-center-gl-routing",
-   "path": "automotive/tekion-internal-cost-center-gl-routing",
-   "category": "automotive",
-   "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
-   "times_used": 14,
-   "last_used": "2026-08-28"
   },
   {
    "name": "tekion-part-sales-ledger-report",

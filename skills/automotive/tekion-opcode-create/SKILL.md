@@ -505,6 +505,58 @@ Wait for any running instance to exit (`pgrep -f cron-pipeline`) before touching
 A pipeline run already in flight can take several minutes (it pages through hundreds of
 orders per store), so check `pgrep` rather than assuming the pause took effect instantly.
 
+## 🔴 STANDARD OPCODE MAPPING: rows 2/3 silently overwrite row 1 (2026-08-28, UCBELT)
+
+Two independent bugs bite the 3-row GM mapping grid. Both cost ~15 wasted calls on UCBELT.
+
+**Bug 1 — stale option portals.** react-select leaves the PREVIOUS row's option nodes in the DOM
+(still `offsetParent!==null`). A `pick()` that matches by text grabs the OLD node, so the
+selection lands on row 1 again. You see `["gm|gmc","gm|cadillac","gm|Select..."]` — row 1 keeps
+changing while the row you clicked stays empty.
+**FIX:** mark-then-pick. Before opening the dropdown, tag every existing option `data-stale='1'`;
+after typing the filter, click only the first option WITHOUT that attribute.
+```js
+// mark_stale(): document.querySelectorAll('[class*=option]').forEach(n=>n.setAttribute('data-stale','1'))
+// pick_fresh(t): first visible [class*=option] with !getAttribute('data-stale') and innerText===t
+```
+
+**Bug 2 — coordinate drift.** The page re-scrolls between `/eval` calls, so a y-coordinate read in
+call N points at a different row in call N+1. Rows appeared at y=494/535/576, then 275/316/357.
+**FIX:** never click mapping rows by coordinate. Target by DOM index:
+```js
+var g = [...document.querySelectorAll('.rt-tr-group')].filter(vis)[IDX];
+var ins = [...g.querySelectorAll('input')];  // [0]=OEM search, [1]=Make search, [2]=opcode text
+```
+Visible `.rt-tr-group` indices for the 3 mapping rows are **3, 4, 5** (index 6 = blank template row).
+Verify with a rowstate dump after every field:
+```js
+[...document.querySelectorAll('.rt-tr-group')].filter(vis).map(g =>
+  g.innerText.replace(/\n/g,'|') + ' :: ' + ([...g.querySelectorAll('input')][2]||{}).value)
+// target: ["gm|chevrolet :: 0900","gm|cadillac :: 0900","gm|gmc :: 0900","Select...|Select... :: "]
+```
+
+**Bug 3 — the opcode text input rejects `/type`.** On the LAST mapping row the helper's type path
+leaves the value empty (returns None). Use the native value-setter directly, then Tab:
+```js
+var setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set;
+setter.call(inp,'0900');
+inp.dispatchEvent(new Event('input',{bubbles:true}));
+inp.dispatchEvent(new Event('change',{bubbles:true}));
+```
+
+## 🔴 SOURCE OPCODES DIFFER IN SHAPE — always read the source first
+
+Do NOT assume the tire pattern. Read the source record before building:
+- **BELT**: Category `Maintenance`, mapping opcode **0900**, **0.00 hrs and NO labor-rate row at all** →
+  hours and price must come from the build sheet, not from a copy.
+- **AGMBATTERY**: Category `Filters`, Service Type `XPRESS SERVICE`, skill `Xpress Lube`, mapping **0700**,
+  **three** rate rows (CP Fixed / Internal Labor Price Guide $229 per hr / Warranty LPG $240.37 per hr)
+  **plus an attached part** (`AGM BATTERY`). This shape needs an explicit decision from Joe on whether
+  the UC clone gets the part and which rate model — do not guess.
+
+**Warranty mapping opcode by work type (confirmed at BC):** brakes `0300` · tires `0400` ·
+belts/maintenance `0900` · battery/electrical `0700`.
+
 ## 🔴 THE PREFLIGHT MISSES A SECOND BROWSER CONSUMER — check `cron-tekion.sh` too (2026-08-28)
 
 `opcode_preflight.py` only knows about **`cron-pipeline.sh`** (15-min). There is a SECOND
