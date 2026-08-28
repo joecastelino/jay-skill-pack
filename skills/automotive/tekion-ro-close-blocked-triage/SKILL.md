@@ -706,6 +706,28 @@ problem than the customer's).
 - `/repair-orders/<rid>/operations` returned **`data: None`** on this RO — the browser
   Payers View breakdown was the only source of per-op amounts and tax codes.
 - Job concern is a dict: `jb["concern"]["text"]`.
+- **Cross-store sweep loop must guard the response shape.** `r["data"]["results"]` when
+  `data` is not a dict = TypeError that kills the whole 7-store loop on the first bad
+  store. Wrap per-store in try/except and `isinstance` the payload.
+
+### ⚠ Process lesson from this ticket (Joe's automation mandate)
+Joe's messages were `PAYMENT ERROR when I try and input the insurance split` → `can you
+revert it` → `I HAVE A PAYMENT OF 1679.46 IN CREDIT CARD FO THE INSURANCE SPLIT`. He was
+**not** asking for analysis — he wanted the payment recorded.
+
+What I should have done in turn 1, and what to do next time: **go straight to Cashiering
+and drive the actual form.** Typing an amount is free and non-destructive; it falsified
+my overpayment theory in one call. Instead I spent two turns building a confident,
+wrong, arithmetic-based story off the Payers View, and had to retract it. Order of
+operations for any "payment error / can't cashier" ticket:
+
+1. Audit Logs — did something get un-invoiced? (`Invoiced → NA` is the tell)
+2. Cashier panel — read existing transactions, then **type an amount and watch
+   `collectBtn.disabled` at several values** before forming any theory
+3. Payers View expanded — owed per payer + tax codes
+4. Only then explain, and separate the BLOCKER from incidental $ discrepancies
+
+Never present the amount-mismatch theory until step 2 has ruled it in.
 
 ## Step 4 — Advise (don't guess — per Joe's never-guess rule)
 

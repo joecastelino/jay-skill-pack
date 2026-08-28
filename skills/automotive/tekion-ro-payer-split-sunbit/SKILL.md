@@ -81,7 +81,33 @@ customer get charged the deductible," read first — don't touch anything:
 - Loop EVERY covered job. One deductible per claim is normal: the deductible
   lands on one job and sibling covered jobs correctly show `$0.00 / 0 %`.
 
-## ⚠️ "I CAN'T ADD A PAYER" — Add New Payer is DISABLED (verified TL RO 398856, 2026-08-27)
+### ⚠ A COLLECTED PAYMENT also locks the grid — even at READY_FOR_INVOICE
+
+Second confirmed lock trigger, distinct from the PARTIALLY_INVOICED job gate above
+(BC RO 99491, 2026-08-28). Joe asked "can you revert it" on a split he'd changed that
+morning and **the grid was hard read-only** despite:
+
+- RO status merely `READY_FOR_INVOICE` (no PARTIALLY_INVOICED job anywhere)
+- all 4 jobs `Completed`
+- all 3 payers `Ready for Invoice` with **enabled** Invoice checkboxes
+- split totalling a healthy 100% (`$1,660.44 / 76.09%` + `$521.54 / 23.91%`)
+
+Everything that mattered was `disabled`: `splitType`, `Deductible Split`,
+`payableAmount-payer_0_0`, `payableAmount-payer_1_0`, `percentageSplit-payer_*`,
+`addNewPayer`, and the modal `btnSalesSetupSave`. Only the cost-center row inputs
+(`value`, `description`, `rc_select_*`) were live — **a red herring; ignore them as a
+signal**, same as the `description` caveat above.
+
+**What was different: $1,981.03 had already been collected** on the CP payer (credit
+card, weeks earlier). Tekion will not let you re-split a job whose money is already
+taken. Likely unlock = void/refund the transaction in Cashiering first — unverified,
+and it's a live customer card, so confirm with Joe before attempting.
+
+**Tell Joe plainly you cannot revert**, with the disabled-flag dump as proof. Don't
+promise a revert you can't deliver. Full ticket walkthrough =
+`tekion-ro-close-blocked-triage` §3h.
+
+## ⚠ "I CAN'T ADD A PAYER" — Add New Payer is DISABLED (verified TL RO 398856, 2026-08-27)
 
 Different ticket from "the split won't take." If the store says they *can't add* the
 payer at all, check whether the button is genuinely disabled before hunting permissions:
