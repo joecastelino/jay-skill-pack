@@ -544,6 +544,40 @@ inp.dispatchEvent(new Event('input',{bubbles:true}));
 inp.dispatchEvent(new Event('change',{bubbles:true}));
 ```
 
+## ✅ USE THE BUILDER MODULE — `/home/itadmin/tekion-reports/lib/jb2_opcode_builder.py`
+
+Persisted 2026-08-28 after it built UCBALANCE/UCLOF/UCAIR/UCCABIN at ~3 calls each
+(vs ~20 calls hand-driving the first tire opcode). Copy to /tmp and import:
+```python
+import sys; sys.path.insert(0,"/tmp")
+from jb2 import *          # needs jb.py (jb_browser.py) alongside it for post/ev/click/typ/nav/ctr
+fresh_form()                                   # -> ('1251','/ro/opcode/add')
+header("UCLOF","CHANGE ENGINE OIL & FILTER - UC")
+field("CATEGORY_FIELD","Oil Change","Oil Change")
+c=ctr("document.getElementById('SERVICE_TYPE_FIELD')"); click(*c); time.sleep(2.2)
+pickopt("Used Car Department")                 # see WARNING below
+hours("0.50"); default_paytype_internal()
+rate_row("fixed","114.50")                     # or rate_row("lpg","$ 229 / hr | INTERNAL")
+rate_row_check()                               # assert both CB:true and the price/guide
+cost_center(); map_rows("0200"); map_check()
+ev(READ); commit("UCLOF"); verify("UCLOF")
+```
+Three-call rhythm: (1) header+category+service type+hours+pay+rate, (2) cost center+mapping,
+(3) precommit READ + commit + verify.
+
+**WARNING — `field("SERVICE_TYPE_FIELD",...)` is unreliable.** The type-to-filter path returned
+`notfound:` on UCBALANCE and silently left Service Type unset (would have shipped an opcode with
+NO UCD routing — the whole point of the build). The Service Type list is short and unfiltered;
+just open it and pick directly:
+```python
+c=ctr("document.getElementById('SERVICE_TYPE_FIELD')"); click(*c); time.sleep(2.2)
+pickopt("Used Car Department")
+```
+BC's full list: Sublet · Service Contract · PDI · Main Service · Maintenance Service ·
+Service Interval Menu · XPRESS SERVICE · ACCESSORIES · MPVI · **Used Car Department** ·
+Service Catalog · Service Menu · Cadillac Express Shop.
+**ALWAYS `ev(READ)` before commit and eyeball that `Used Car Department` is present.**
+
 ## 🔴 PAY TYPE is an ant TREE-select, not react-select (2026-08-28, UCBATTERY)
 
 The Labor Rate row's **Pay Type** cell renders `ant-v5-tree-select`, whose options are
