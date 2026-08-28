@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-28T15:15:40",
+ "generated": "2026-08-28T15:30:30",
  "skill_count": 201,
  "skills": [
   {
@@ -131,20 +131,20 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-ro-close-blocked-triage",
+   "path": "automotive/tekion-ro-close-blocked-triage",
+   "category": "automotive",
+   "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
+   "times_used": 28,
+   "last_used": "2026-08-28"
+  },
+  {
    "name": "tekion-scheduling",
    "path": "automotive/tekion-scheduling",
    "category": "automotive",
    "description": "Tekion Service Scheduling Settings \u2014 appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the \"lowest ceiling wins\" capacity model, shop top-down matching, the daily overnight scheduler + \"Run Scheduler\" button, parts-on-appointment notifications, and the concierge mobile write-up flow. Load for any appointment/scheduling/capacity setup or troubleshooting in Tekion.",
    "times_used": 28,
    "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-ro-close-blocked-triage",
-   "path": "automotive/tekion-ro-close-blocked-triage",
-   "category": "automotive",
-   "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
-   "times_used": 27,
-   "last_used": "2026-08-28"
   },
   {
    "name": "tekion-service-menu-setups",
@@ -195,20 +195,20 @@
    "last_used": "2026-08-28"
   },
   {
+   "name": "tekion-internal-cost-center-gl-routing",
+   "path": "automotive/tekion-internal-cost-center-gl-routing",
+   "category": "automotive",
+   "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
+   "times_used": 17,
+   "last_used": "2026-08-28"
+  },
+  {
    "name": "tekion-opcode-overrides",
    "path": "automotive/tekion-opcode-overrides",
    "category": "automotive",
    "description": "Add vehicle/part override rows to a Tekion opcode (Overrides tab) using the verified browser-tool cascading react-select method. This is the batch workflow used for cabin-filter part overrides (RACF etc.) \u2014 Make/Model/Year/ Trim/Part per row, driven by the __buildRow() helper toolkit. Covers the real-click trim rule, the Save Changes confirmation modal, and mandatory reload+API verification. The most complex Tekion workflow we run.",
    "times_used": 17,
    "last_used": "2026-07-12"
-  },
-  {
-   "name": "tekion-internal-cost-center-gl-routing",
-   "path": "automotive/tekion-internal-cost-center-gl-routing",
-   "category": "automotive",
-   "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
-   "times_used": 16,
-   "last_used": "2026-08-28"
   },
   {
    "name": "tekion-opcode-default-pricing",
