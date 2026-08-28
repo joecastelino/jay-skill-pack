@@ -1017,6 +1017,23 @@ the scorecard/KPI + email use PARTS GROSS — use gross, not price.
 Drafts stack = 13 TOL total (08/21-08/26 Opened & Closed pairs + the perennial 08/02 em-dash
 pair UIDs 19/20) — no true dupes.
 
+## (8/27 8:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, TRUE dedupe first try
+Hand-off returned in 220s (no timeout), draft correct FIRST TRY, dedupe TRUE (noon draft
+UID 88 actually deleted; subject-list showed exactly one 08/27 hit at UID 42748). All 3
+verification asks returned FIRST try and FAST with "use raw IMAP, NOT the Gmail API"
+leading + parts-only part-listing wording: subject-list 32s, part-listing 50s, Sent-check
+30s. MIME clean: multipart/mixed > related > alternative(text/plain 502B + text/html 812B)
++ image/png Content-ID=<scorecard> 63,910B inline + application/pdf 53,197B; bolded total
+$1,159.78 confirmed in body.
+BOGUS-UID recurred in MILD form: save confirmation said "UID 91" (she self-explained it as
+post-expunge Gmail renumbering) but the real IMAP UID was 42748 — the standing "if that UID
+is wrong, find it by that exact subject" wording resolved it silently. Verify by SUBJECT.
+Sent-check = 4 hits, all old em-dash-era sends (06/30-07/03), zero today = no leak.
+DATA: 171 opened ROs, 6 menus / $1,159.78 ($732.78 labor + $427.00 parts) — best opened day
+in weeks. Gustavo Alatorre 4/$515.20, Unassigned 1/$328.88, Mauricio Orellana 1/$315.70.
+The 8/26 empty-`records` JSON quirk did NOT recur — `rows` was fully populated (6 rows).
+Opened drafts stack = 8 (08/21-08/27 hyphen + perennial 08/02 em-dash UID 41547), no dupes.
+
 ## (8/26 8:05PM, Opened) Clean draft, TRUE dedupe; only the INITIAL hand-off exit-124'd
 Initial hand-off hit exit-124 at 235s — but per the 8/19-EOD lesson, a subject-search right
 after showed the draft HAD saved correctly (UID 42714) AND true dedupe had happened (the noon
@@ -1105,46 +1122,22 @@ hits, so MTD stayed flat at 28 rows / $7,101.35 (identical to 8/22). Zero-delta 
 normal on Sundays; state it explicitly in the email body so Sean isn't confused by an
 unchanged total. Closed-append ran FOREGROUND in ~10s.
 
-## (8/21 8:05PM, Closed MTD) Clean one-shot, zero exit-124s; bogus-ID variant recurred again
-Hand-off returned in 157s (no timeout), draft correct FIRST TRY. All 3 verification asks
-returned FIRST try with "use raw IMAP, NOT the Gmail API" leading: subject-list 40s, MIME
-part-listing 102s, Sent-check 37s. MIME clean: text/plain 530B + text/html 954B + image/png
-Content-ID=<scorecard> 135,044B + application/pdf 105,256B; bolded total $6,645.14 confirmed
-in the body (keep asking her to quote the bolded total in the part-listing reply — free
-content check). No dedupe needed (only the old 08/02 em-dash draft UID 41546 also matched
-the stem; different subject, left alone per policy).
-BOGUS-ID VARIANT recurred: her save confirmation said "draft_uid: 58 (himalaya ID 42581)"
-and the subject-list showed `42581 | ...`, but the part-listing ask replied "UID 42581 not
-found. The actual IMAP UID is 58." She self-corrected off the exact subject and listed the
-right MIME — confirming the standing wording `UID N (subject "<exact>") ... if that UID is
-wrong, find it by that exact subject instead` is what makes this self-heal. NOTE the IDs in
-her SUBJECT-LIST output can ALSO be himalaya numbering, not IMAP UIDs (same as 8/20).
-Sent-check = 2 hits, both the old June 1-29 em-dash emails (token trap, item 5b) — no leak;
-\Draft-flag follow-up skipped per the 8/17 note. Data: 117 closed ROs scanned, 2 prefilter
-hits, 26 MTD rows / $6,645.14; closed-append ran FOREGROUND in ~8s (confirms the
-foreground-with-generous-timeout pattern).
+## (8/21 8:05PM, Closed MTD) Clean one-shot, zero exit-124s; bogus-ID variant recurred
+Draft correct first try; all 3 verification asks first try with "use raw IMAP, NOT the Gmail
+API" leading. MIME clean (text/plain + text/html + image/png cid=scorecard + application/pdf);
+bolded total $6,645.14 confirmed — keep asking her to quote the bolded total, it's a free
+content check. Bogus-ID recurred (her reported id and the subject-list id were both himalaya
+numbering, not IMAP UIDs) and self-healed off the exact subject. Sent-check = 2 old June
+em-dash hits (token trap, item 5b), no leak. Data: 117 closed ROs, 2 hits, 26 rows/$6,645.14;
+closed-append ran FOREGROUND in ~8s.
 
-## (8/20 8:05PM, Closed MTD) Clean one-shot; hyphen-subject made the OLD em-dash draft invisible to search
-Hand-off returned in 114s (no exit-124), draft correct FIRST TRY (multipart/related >
-alternative(text/plain+html) + image/png Content-ID=<scorecard> 135KB + application/pdf 103KB).
-All 3 verification asks returned FIRST try with "use raw IMAP, NOT the Gmail API" leading:
-subject-list 28s, MIME part-listing 37s, Sent-check 72s.
-NEW WRINKLE from the hyphen tactic: a literal-hyphen subject search on
-"TOL Menu Sales - Closed MTD" only matched 2 of the stacked drafts — the current one plus an
-old em-dash "August 1-2" one that Stacey flagged herself; the other prior-day em-dash drafts
-didn't surface. That's the expected consequence of mixing hyphen and em-dash subjects across
-days, and it's harmless (dedupe only cares about TODAY's exact subject), but don't read a
-small draft count as "Joe cleared the backlog" — search the SHORT stem "TOL Menu Sales Closed"
-if you actually want the full stack count.
-BOGUS-UID VARIANT recurred (same as 8/20 Opened): her save confirmation and the subject-list
-both said UID 98, but the part-listing ask replied "UID 98 was wrong — the draft lives at
-actual IMAP UID 42551" and listed the correct MIME anyway. Phrasing the part-listing ask as
-`UID N (subject "<exact subject>")` + "if that UID is wrong, find it by that exact subject
-instead" lets her self-correct in one shot — keep using that wording.
-Stacey also self-checked the numbers against the JSON before building, and noted the
-"MASTER file is stale (0 menus)" while doing so — that's her looking at the wrong master
-(she checks a different path); the real
-`data/tol-menu-closed-mtd-MASTER-2026-08.json` was fine. Ignore that remark.
+## (8/20 8:05PM, Closed MTD) Clean one-shot; hyphen-subject hid OLD em-dash drafts from search
+Draft correct first try; all 3 verification asks first try with "use raw IMAP, NOT the Gmail
+API" leading. Wrinkle: a literal-hyphen subject search only matched hyphen-era drafts — old
+em-dash drafts didn't surface. Harmless (dedupe only cares about TODAY's exact subject), but
+don't read a small count as "Joe cleared the backlog"; search the short stem "TOL Menu Sales
+Closed" for the true stack size. Bogus-UID variant recurred and self-healed via the
+`UID N (subject "<exact>") ... if that UID is wrong, find it by that exact subject` wording.
 
 ## Backgrounding the CLOSED daily-append run — don't over-engineer (learned 2026-08-14 8:05PM)
 The default (non-`--seed`) `tol_menu_sales_closed_mtd.py` run is a light daily-append —
