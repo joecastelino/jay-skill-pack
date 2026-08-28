@@ -911,22 +911,9 @@ also carries the 429 backoff) and copy `scan_ro`'s exact key path from
 Drafts stack tiny (5): 08/21-08/24 hyphen-subject Opened drafts plus the perennial 08/02
 em-dash one (UID 20) — single copy, not a true duplicate, still flag-don't-delete.
 
-## (8/24 8:05PM, Opened) TEXTBOOK CLEAN RUN — 4th consecutive genuine $0 day
-Zero exit-124s, zero corrections, CORRECT UID (73) reported by the subject-list and it worked
-first try on the part-listing. Hand-off returned in 78s, draft correct FIRST TRY with TRUE
-dedupe (noon draft with identical subject found and deleted on her own). MIME clean:
-multipart/mixed > related > alternative(text/plain+text/html) + image/png Content-ID=<scorecard>
-+ image/jpeg <amglogos> (sig logo, normal) + application/pdf. Verification asks with "use raw
-IMAP, NOT the Gmail API" leading: subject-list 30s, part-listing 26s, Sent-check 214s (slow but
-returned first try, no 124) = 4 hits all old em-dash-era sends (06/30-07/03), zero today = no leak.
-DATA: 129 opened ROs scanned, 0 menus / $0.00 — FOURTH straight $0 day (8/23 noon, 8/23 EOD,
-8/24 noon, 8/24 EOD). Sanity scan confirmed genuine: 16 TEK ops present, ALL numeric-suffix
-(TEK09050103/TEK09040104/TEK09030103/TEK09010103/TEK02050308/TEK09070103), zero overlap with the
-212 TEK<mileage><tier> menu set; classic real-$0 prefix histogram (SUR/INV/FLO 65, TPS 61, MPV 56,
-TXM 32, CON 30, LOF 15). Four straight $0 days on a store with 60-130 ROs/day is worth FLAGGING TO
-JOE as a possible menu-presentation/process issue at the store, but it is not a pipeline bug.
-Drafts stack tiny (5): 08/21-08/24 hyphen-subject Opened drafts + the perennial 08/02 em-dash one
-(UID 20).
+## (8/24 8:05PM, Opened) Clean run — 4th consecutive genuine $0 day
+Zero exit-124s, correct UID, TRUE dedupe, MIME clean. 129 opened ROs, 0 menus / $0.00.
+Sanity scan confirmed genuine (16 TEK ops, all numeric-suffix, zero menu-set overlap).
 
 ## (8/25 12:05PM, Opened) TEXTBOOK CLEAN RUN — 5th consecutive genuine $0 day
 Zero exit-124s across ALL 4 calls. Hand-off returned in 116s, draft correct FIRST TRY

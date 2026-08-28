@@ -298,6 +298,24 @@ BEFORE flagging it as a missed transfer:
   itself is benign, yet the stale companion negative (2418 = −2) was still sitting there
   uncorrected from prior runs. Report the recurrence count and the unresolved companion, not the
   increase.
+- **STATUS UPDATE 2026-08-27 — 04500-1 REGRESSION IS NOW THE HEADLINE (3rd straight day post-correction).**
+  **04500-1** (5005, single-bin, 5005 IS Primary): −26 → **−27**. Timeline: −120 (8/24) → +97 correction
+  landed 8/25 (−23) → −26 (8/26) → −27 (8/27). Three consecutive deepening days immediately after the
+  first correction in 7 weeks — the fix was cosmetic, the underlying off-book consumption never stopped.
+  Frame this as "correction failed to hold," not "improving." **31532** (5001) FLAT at −58 (2nd flat day)
+  but its SP-ORD Primary dropped **32 → 28** (a sale off Primary) while 5001 stayed −58; Total Inventory
+  Qty now **−30**. The bin-vs-Total divergence noted 8/26 persists — someone is selling off the received
+  SP-ORD stock while the 5001 negative sits untouched. **17801-F4010 recurrence #11** — 5006 flat at 6
+  (Primary), companion 2418 STILL −2, Total Inventory Qty=**4** vs bin 6; unmoved **17 days** since 8/11
+  and again NO diff on 5006 (bin-vs-Total tell only). Flat: 87139-42040 −12 (8th flat day), 87139-YZZ09
+  −22 (day 20 flat). 87139-YZZ93 5007 42→36 reconciled clean (36 Primary + 4111=30 → Total 66 ✓).
+  Negatives held at **26 for a 10th consecutive day** with an IDENTICAL per-bin mix every single day
+  (5000:2, 5001:1, 5002:1, 5004:2, 5005:11, 5006:2, 5007:7) — 5007 still owns 4 of the 6 deepest (−235
+  combined). Session state: :9223 alive/authenticated, single clean tab on `/service/settings/ro-settings`,
+  parked on **TL/1092** — recovery was `/navigate /home` (welcome:true, no login.py) → dealer pill
+  x1130,y32 → SCT leaf x1074,y344 → 876 in ONE 4s poll (~15s total). 7/7 bins tagged+clicked first try via
+  "500" filter + `data-jaybin`, zero scrolling, Apply at x306,y689, 4 pages clean, 2 diffs / 174 rows,
+  67/174 with 24h activity.
 - **STATUS UPDATE 2026-08-26 — TWO ESCALATIONS RESUMED DEEPENING + a NEW wrinkle on 31532.**
   **04500-1 (5005, single-bin, 5005 IS Primary) RESUMED: −23 → −26** — only ONE day after the +97
   correction landed on 8/25. The correction did NOT fix the underlying process; the part is
