@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-28T11:15:04",
+ "generated": "2026-08-28T11:31:00",
  "skill_count": 201,
  "skills": [
   {
@@ -31,8 +31,8 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 85,
-   "last_used": "2026-08-27"
+   "times_used": 86,
+   "last_used": "2026-08-28"
   },
   {
    "name": "tekion-sitemap",
@@ -339,6 +339,14 @@
    "last_used": "2026-08-11"
   },
   {
+   "name": "tekion-clock-time-by-opcode",
+   "path": "automotive/tekion-clock-time-by-opcode",
+   "category": "automotive",
+   "description": "Build an \"actual tech clocked time vs billed time BY OPCODE\" report (over-clock / unapplied-time-at-opcode-grain) for any Tekion store. Uses the internal rosearchservice visibility-dashboard TECH_CLOCK datasource (the engine behind the custom \"Ro Actual Time Report\"), which carries opcode on every clock punch \u2014 something the standard Tech Performance report cannot do (its Unapplied Hours is per-technician only). Verified SV (826) 2026-07-20.",
+   "times_used": 9,
+   "last_used": "2026-08-28"
+  },
+  {
    "name": "tekion-writer-handoff-report",
    "path": "automotive/tekion-writer-handoff-report",
    "category": "automotive",
@@ -387,12 +395,12 @@
    "last_used": "2026-08-10"
   },
   {
-   "name": "tekion-clock-time-by-opcode",
-   "path": "automotive/tekion-clock-time-by-opcode",
+   "name": "tekion-customer-pay-ro-count",
+   "path": "automotive/tekion-customer-pay-ro-count",
    "category": "automotive",
-   "description": "Build an \"actual tech clocked time vs billed time BY OPCODE\" report (over-clock / unapplied-time-at-opcode-grain) for any Tekion store. Uses the internal rosearchservice visibility-dashboard TECH_CLOCK datasource (the engine behind the custom \"Ro Actual Time Report\"), which carries opcode on every clock punch \u2014 something the standard Tech Performance report cannot do (its Unapplied Hours is per-technician only). Verified SV (826) 2026-07-20.",
+   "description": "Produce the TRUE count + CP dollars + revenue/RO of customer-pay repair orders for a store per month OR per week (incl. prior-4-week trend averages) via Tekion OpenAPI \u2014 CP invoice dollars > $0.01, not the misleading CUSTOMER_PAY tag. Verified SCT June 2026 (1,928 of 5,381) and BC weekly 2026-07-05 (226 of 604).",
    "times_used": 7,
-   "last_used": "2026-07-30"
+   "last_used": "2026-08-28"
   },
   {
    "name": "tekion-department-opcode-buildout",
@@ -449,14 +457,6 @@
    "description": "How to get RO approval information / approval notes (additional warranty hours approvals, warranty job approvals, recommendation approvals) to print on a Tekion RO / invoice PDF. Covers the prerequisite Service Settings + support ticket, the PDF Configurator toggle, and where the live UI differs from the KB article. Use when Joe or a store asks \"how do I get the approval notes on the RO PDF\" or \"approvals aren't printing on the warranty invoice\".",
    "times_used": 6,
    "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-customer-pay-ro-count",
-   "path": "automotive/tekion-customer-pay-ro-count",
-   "category": "automotive",
-   "description": "Produce the TRUE count + CP dollars + revenue/RO of customer-pay repair orders for a store per month OR per week (incl. prior-4-week trend averages) via Tekion OpenAPI \u2014 CP invoice dollars > $0.01, not the misleading CUSTOMER_PAY tag. Verified SCT June 2026 (1,928 of 5,381) and BC weekly 2026-07-05 (226 of 604).",
-   "times_used": 6,
-   "last_used": "2026-07-08"
   },
   {
    "name": "tekion-deferred-by-advisor-daily",
@@ -617,6 +617,14 @@
    "description": "Pull declined/deferred service data (recommendations customers didn't buy) for any Tekion store via the internal Deferred Services report API \u2014 service name, counts, dollar estimates, customer/vehicle/advisor detail. Zero OpenAPI quota; works when OVERALL_QUOTA is exhausted. Use for marketing campaign lists (Autumn) or lost-sales analysis.",
    "times_used": 3,
    "last_used": "2026-08-18"
+  },
+  {
+   "name": "tekion-flag-vs-actual-hours-report",
+   "path": "automotive/tekion-flag-vs-actual-hours-report",
+   "category": "automotive",
+   "description": "Build a \"closed ROs where tech FLAGGED hours were below ACTUAL clocked time\" report (unpaid flat-rate tech time) for any Tekion store, per-tech per-RO grain. Uses two internal endpoints discovered 2026-07-30 - /ro/v1/{id} carries per-tech flag entries (flagTimesWithPayDay) and clockDetails/fetch carries per-tech actual punches. Also documents the repair-orders:search pageNumber-IGNORED pagination trap and its closedTime-bisection fix. Verified SV (826) Jul 1-15 2026.",
+   "times_used": 3,
+   "last_used": "2026-08-28"
   },
   {
    "name": "tekion-generic-placeholder-part-swap",
@@ -849,14 +857,6 @@
    "description": "Confirm/refute a store claim that an RO, recommendation, or deferred service \"went to a different customer number for the same customer\" in Tekion. Finds duplicate customer records sharing a phone/VIN, maps which customer id each RO + recommendation was stamped with, and identifies who wrote it.",
    "times_used": 1,
    "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-flag-vs-actual-hours-report",
-   "path": "automotive/tekion-flag-vs-actual-hours-report",
-   "category": "automotive",
-   "description": "Build a \"closed ROs where tech FLAGGED hours were below ACTUAL clocked time\" report (unpaid flat-rate tech time) for any Tekion store, per-tech per-RO grain. Uses two internal endpoints discovered 2026-07-30 - /ro/v1/{id} carries per-tech flag entries (flagTimesWithPayDay) and clockDetails/fetch carries per-tech actual punches. Also documents the repair-orders:search pageNumber-IGNORED pagination trap and its closedTime-bisection fix. Verified SV (826) Jul 1-15 2026.",
-   "times_used": 1,
-   "last_used": "2026-07-30"
   },
   {
    "name": "tekion-labor-time-guide",
