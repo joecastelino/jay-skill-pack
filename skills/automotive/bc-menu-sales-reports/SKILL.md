@@ -1263,6 +1263,33 @@ draft (42730), Daily-Closed Sent count 0 (the single `BC 8/27` Sent hit was Stac
 separate auto-sent Daily Opened report, 14629). No stale prior 8/27 draft (noon = first
 run of the day).
 
+## 2026-08-27 5pm Daily Closed run — textbook one-shot, 27th consecutive clean "N dollars" build
+14 menus, $2,475.31 labor / $1,826.11 parts = $4,301.42 (Humberto Dominguez 4 / $2,359.58,
+Jacob Debussey 3 / $320.45, Houa Moua 3 / $284.80, Juan Ramirez 2 / $325.94, Michael Reyes
+1 / $772.26, Dimetri Reynoso 1 / $238.39 — six advisors, best Daily total since 8/21 5pm).
+90 closed ROs → 14 carried TEK menu opcodes; `✓ all candidate ROs scanned`; vision-verified
+KPI band (crop 460px + 2x LANCZOS) matched JSON exactly. Pull via
+`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
+**Confirms the 8/27-noon write_file→background-terminal ask pattern as the new default**:
+wrote the Stacey ask to `/tmp/bc_ask_0827_5pm.py` via `write_file` (message as a Python
+literal, `subprocess.run` argument list, `timeout 560`), fired it with top-level
+`terminal(command="/usr/bin/python3 ...", background=true, notify_on_complete=true)` +
+`process wait`. Needed TWO 180s waits (build took ~4-5 min) — note this would have been
+decapitated by `execute_code`'s 300s cap, so the pattern earned its keep on this run.
+Returned cleanly with the terse DONE line (`TOTAL=$4,301.42`). Her reported id was **90**
+vs himalaya's **42745** — the documented Gmail APPENDUID/All-Mail vs Drafts-local UID
+mismatch (intermittent; always grep). No self-correction text → no duplicate.
+Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
+auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (206,037 bytes), PDF
+**byte-for-byte identical** (56,861 bytes), all 9 figures present exactly once,
+`<b>$4,301.42</b>` bold, greeting + footer present, zero ' dollars'/USD leftovers (checked
+after stripping the data URI), leading-digit-stripped variants ($301.42, $475.31, $826.11,
+$359.58, $,301.42, $4.42) all 0. Deleted the stale noon draft (42730) per the twice-daily
+cadence rule, kept 42745 → exactly 1 draft. Daily-Closed Sent count 0 (the single `BC 8/27`
+Sent hit was Stacey's separate auto-sent Daily Opened report, 14640).
+**Noon→5pm delta**: noon showed 7 menus / $1,699.51 with five advisors; the 5pm run doubled
+to 14 menus and added Michael Reyes — normal intraday behavior.
+
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
