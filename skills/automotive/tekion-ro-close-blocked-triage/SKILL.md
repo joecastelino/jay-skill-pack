@@ -36,6 +36,12 @@ triggers:
   - i need to add a new payer
   - split shows zero percent
   - invoice closed at zero dollars
+  - payment error
+  - cannot be cashiered
+  - can't cashier this RO
+  - payment error when I input the insurance split
+  - credit card payment error
+  - overpayment on the RO
 ---
 
 # Tekion "Cannot Close RO" Triage
@@ -514,6 +520,97 @@ there is nothing to "fix" in the opcodes. Prevention that is actually true: once
 are filled, **void the job and re-add under the correct opcode** rather than editing the
 opcode in place. No Tekion setting was found that gates opcode changes (approval rules
 exist for labor hours and pay type only) — say so rather than inventing a toggle.
+
+## Step 3h — "PAYMENT ERROR when I input the insurance split" / can't CASHIER (verified BC RO 99491, 2026-08-28)
+
+Fifth distinct shape. **Nothing is stuck and nothing is orphaned** — the RO is
+`READY_FOR_INVOICE`, all jobs `COMPLETED`, every Invoice checkbox is ENABLED, the split
+grid is healthy and totals 100%. Do NOT go hunting Need Attention strings or orphaned
+payers here; you'll find only the harmless
+`Cost Amount for the job is going to be zero` / `The cost center description is empty`
+warnings and waste the turn.
+
+**The block is money already collected vs. a payer amount that CHANGED underneath it.**
+
+### Symptom shape
+- `status: READY_FOR_INVOICE`, `/ro-invoices` → `{}` (invoice still **Open**)
+- audit log shows a **same-day split edit**, e.g.
+  `Job Details - Job 4 · Warranty Insurance · Split Type: INSURANCE → PAY_SPLIT`
+  immediately followed by `I Status: Invoiced → NA` and `CP Status: Paid → NA`
+- Cashier screen shows a **prior transaction** on the CP payer at the OLD amount
+
+### THE MOVE: open Cashier and diff paid-vs-owed
+This is the one screen that holds the answer and it's two clicks. Kebab
+(`.icon-overflow`) → **`Cashier`**. Like the Invoice button, it does **NOT navigate** —
+the panel is appended to the SAME page and `location.href` is unchanged. Slice
+`document.body.innerText` from `"Invoice - <ro#>"`:
+
+```
+1317936 - JORGE Toledo
+Deposit Amount            $1,981.03
+Transactions (1)
+Amount Paid - Credit/Debit Card   $1,981.03
+Received By  NANCY TORRES
+Transaction Date & T...  Aug 4 2026 5:38 PM
+```
+Per payer you get: Deposit Amount, enabled Modes of Payment, Transactions(N), and for
+each transaction the amount / card-vs-cash / who took it / when / payee. A payer with
+`Mode of Payment: No payment modes are setup` is the internal/house account — normal.
+
+Then diff against the CURRENT owed amount from the expanded Payers View (below):
+
+| Payer | Owed now | Already paid | Δ |
+|---|---|---|---|
+| INSURANCE AUTO PROTECTIVE POLICY (CVSC) | $1,679.44 | $0.00 | — |
+| JORGE Toledo (CP + deductible) | **$1,975.10** | **$1,981.03** | **−$5.93 OVERPAID** |
+
+**Applied payment > invoice amount ⇒ Tekion refuses to cashier that payer.** That is the
+"payment error." Quote the exact delta — that's what makes the diagnosis land.
+
+### Why the amount moved: split type changes TAX ALLOCATION
+Expand every payer row in Payers Consolidated View to get per-line tax codes:
+```js
+[].slice.call(document.querySelectorAll('.icon-caret-right'))
+  .filter(function(e){return e.offsetParent})
+  .forEach(function(e){try{e.click()}catch(x){}});   // 5 carets on a 3-payer RO
+```
+On 99491 the customer's deductible lines came back **`NO TAX *`** while the same parts
+on the insurance payer carried **`8.35% Tax`**:
+`$33.75 + $37.72 = $71.47 × 8.35% = $5.93` — exactly the delta. Flipping
+`INSURANCE → PAY_SPLIT` pushed the parts tax wholly onto the insurance side, dropping
+the customer's balance $5.93 below what was already run on the card in a prior billing
+cycle (Aug 4) — weeks before today's split edit.
+
+⚠ The `*` suffix on a tax code in the payer breakdown means "tax moved/exempted on this
+payer" — read the tax code column, not just the amounts.
+
+⚠ Also note the job panel's **Contract Information → Deductible** field flickers between
+the real value and `$0.00` on re-render. Read the deductible off the split grid row
+(`1317936 - JORGE Toledo  CP  Deductible  $521.54  23.91 %`), not the contract box.
+
+### The two fixes — present both, let Joe pick
+1. **Revert Split Type on that job back to INSURANCE.** CP balance returns to the exact
+   figure already on the card, existing payment reconciles, no refund, no customer
+   contact. Then `Invoice Selected Payer(s)` → cashier the insurance side.
+2. **Keep PAY_SPLIT** and refund/adjust the delta on the CP payer first, then re-invoice.
+
+Option 1 is almost always right when the delta is small and the card is already run.
+**Do not flip the split or post/refund anything without explicit go** — it's a live
+customer card. Also ask for the **exact error text** and **which payer** they were
+cashiering (running the insurance company's share on a credit card is a different
+problem than the customer's).
+
+### API notes specific to this shape
+- `repair-orders:search` on ONE ro# hit **6 of 7 stores** (only AR missed) — every store
+  has a 99491. Disambiguate purely on `status` + recent `modifiedTime`; the live one was
+  BC `READY_FOR_INVOICE modifiedTime today`, the rest CLOSED 2021–2025.
+- ⚠ **Correction to the data-key table in §3f:** `/repair-orders/<rid>/jobs` returned
+  **`data.jobs`** (a dict) here, not a bare list — `jb.get(...)` on a str = AttributeError.
+  The key is NOT stable across stores/versions. Always
+  `d = r["data"]; rows = d["jobs"] if isinstance(d, dict) else d`.
+- `/repair-orders/<rid>/operations` returned **`data: None`** on this RO — the browser
+  Payers View breakdown was the only source of per-op amounts and tax codes.
+- Job concern is a dict: `jb["concern"]["text"]`.
 
 ## Step 4 — Advise (don't guess — per Joe's never-guess rule)
 

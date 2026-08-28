@@ -28,6 +28,28 @@ the new payer. Zeroing Alfredo → SUNBIT instantly flipped to `1,299.50 / 100.0
 
 If a manager says "I added Sunbit and it won't split," this is almost certainly it.
 
+## ⚠️ CHANGING SPLIT TYPE ON AN ALREADY-PAID RO CREATES A CASHIERING BLOCK (BC 99491, 2026-08-28)
+
+Read this before touching Split Type on any RO where money has already been collected.
+
+Flipping a job's **Split Type** (audit log: `Warranty Insurance · Split Type:
+INSURANCE → PAY_SPLIT`) **re-allocates TAX between the payers**, which silently moves
+each payer's total. If the CP payer already has a card transaction on file at the OLD
+total, the new total can land BELOW what was collected → applied payment > invoice
+amount → **"payment error" and the payer cannot be cashiered.**
+
+On 99491 the customer's deductible part lines flipped to `NO TAX *` while the same parts
+on the insurance payer kept `8.35% Tax`: `$71.47 × 8.35% = $5.93`. CP owed dropped
+$1,981.03 → $1,975.10 against a card payment of $1,981.03 run three weeks earlier.
+The split edit also reset the payers `Invoiced/Paid → NA`, so the invoice reopened too.
+
+**Before changing Split Type on a paid RO:** open kebab → **Cashier** and read each
+payer's `Transactions (N)` / `Amount Paid`. If any payment exists, compute the new
+per-payer totals first. Cheapest fix for a small negative delta is usually to **revert
+the Split Type** so the existing payment reconciles exactly — refunding a live customer
+card over a few dollars of moved tax is worse. Full diagnosis recipe:
+`tekion-ro-close-blocked-triage` Step 3h.
+
 ## READING an existing split (added 2026-08-26)
 
 This skill is the WRITE side. If the question is "was this already split / did the
