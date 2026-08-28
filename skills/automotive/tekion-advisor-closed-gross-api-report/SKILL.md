@@ -323,6 +323,31 @@ it reads as the report being wrong.** Always state which definition is in play.
    dealership's mark / wrong store name", distrust it on geometry and digits.
 
 ## Delivering it by email — USE `jay_mail.py`, NOTHING ELSE
+
+### 🚨 2026-08-28: IMAP APPEND IS NOT DELIVERY — always SMTP, even to Joe
+Joe: *"I don't see them in my email"* about 7 reports that IMAP had confirmed were in
+INBOX with the `\Inbox` label. **They were appended, never delivered.** An APPENDed
+message is placed directly into the mailbox and never traverses Gmail's delivery
+pipeline, so it has:
+- **NO `Received:` header** ← the definitive tell
+- no notification, no push, no filter processing
+- sometimes `\Answered \Seen` already set
+
+It is *in the mailbox* and *invisible to the human*. `jay_mail.send_report` now sends
+**everything via SMTP** (self-sends included) and asserts a `Received` header via
+`_has_received()` before claiming success. The old "self-sends go append-only to dodge
+Gmail's same-Message-ID dedup" rule is **REVERSED** — SMTP self-send verified clean:
+labels `("\Inbox" "\Sent")`, `FLAGS ()`, exactly 1 Received header.
+
+**Verification checklist — a label alone proves nothing:**
+```python
+inbox    = bool(uid_search('X-GM-RAW', 'rfc822msgid:%s' % bare))   # in INBOX
+unread   = b'\\Seen' not in flags                                   # will surface as new
+received = count of headers starting 'received:' >= 1               # ACTUALLY DELIVERED
+```
+All three, or it wasn't delivered. Report the count honestly (`5/7 delivered`), never
+"verified" off the label.
+
 ```python
 import sys; sys.path.insert(0, "/home/itadmin/tekion-reports")
 import jay_mail as JM
