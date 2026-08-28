@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-28T07:00:06",
+ "generated": "2026-08-28T07:15:23",
  "skill_count": 201,
  "skills": [
   {
@@ -283,6 +283,14 @@
    "last_used": "2026-08-03"
   },
   {
+   "name": "tekion-advisor-closed-gross-api-report",
+   "path": "automotive/tekion-advisor-closed-gross-api-report",
+   "category": "automotive",
+   "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
+   "times_used": 11,
+   "last_used": "2026-08-28"
+  },
+  {
    "name": "tekion-parts-appointments-recalls-only",
    "path": "automotive/tekion-parts-appointments-recalls-only",
    "category": "automotive",
@@ -297,14 +305,6 @@
    "description": "Scrape any Tekion Report Builder CUSTOM report (e.g. \"SCT Menu Sales Opened\") headlessly \u2014 find the report id, open it under the right dealer, expand grouped rows, parse to JSON, render a manager-ready scorecard (PNG+PDF), and email it via Stacey. Use whenever Joe/managers want recurring Tekion report data without downloading PDFs from Tekion's emailed reports.",
    "times_used": 11,
    "last_used": "2026-08-03"
-  },
-  {
-   "name": "tekion-advisor-closed-gross-api-report",
-   "path": "automotive/tekion-advisor-closed-gross-api-report",
-   "category": "automotive",
-   "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
-   "times_used": 10,
-   "last_used": "2026-08-28"
   },
   {
    "name": "tekion-roles-permissions",
