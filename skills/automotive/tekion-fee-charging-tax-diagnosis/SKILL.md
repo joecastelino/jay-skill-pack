@@ -22,6 +22,12 @@ Related: `tekion-fee-not-showing-diagnosis` (fee invisible / not applying).
 
 ## TL;DR root cause
 
+**Read the "FOUND 2026-08-28" section under *The fix* before diagnosing** — the
+exemption is driven by a **FEES tax-exempt product group** on the Service tax
+setup, and that is the surgical fix. The `taxConfigs` analysis below is still the
+right *detection* tool (it's how you spot the outlier fee), but an empty array is
+a **symptom of non-membership**, not the fix surface.
+
 After a store is flipped to the **new Parts Tax Code Setup**, taxability of a fee
 is decided by the fee's **active pricing setup `taxConfigs[]`**. If that array is
 **empty**, the fee falls through to the parts tax setup's **`FEES` component tax
@@ -129,7 +135,57 @@ Verified on `/core/fees/edit/BATTFEE` at VC 1891 (screenshots):
 - Tekion KB search returns nothing (`kb_search_scrape.py search "Parts Tax Code
   Setup fee component"` → `results: []`).
 
-### The two real fix paths (neither is a clean per-fee UI edit)
+### ✅ FOUND 2026-08-28: the REAL exemption surface is a FEES tax-exempt PRODUCT GROUP
+The 8/24 conclusion below ("no path exists, open a Tekion ticket") was **wrong /
+incomplete**. There IS a surgical mechanism, and it is not on the fee record at
+all — it's a **named tax-exempt product group** on the **Service** tax setup:
+
+```
+id:   any_customer_pay_internal_warranty_sales_tax_fees_tax_exempt
+cat:  FEES
+fees: [ Rent, WTAX, SMOGCERTIFCATE, LOFDIS ]        # VC 1891, verified by API
+```
+
+That component is mapped **NO TAX across every pay type** in
+`/service/settings/ro-settings/tax-code-settings`. **A fee is exempt iff its fee
+code is a member of that group.** This is what actually explains the
+BATTFEE-vs-WTAX puzzle that derailed the 8/24 pass: WTAX and LOFDIS are on the
+list, BATTFEE isn't — same store, same screens, and the fee-edit screen renders
+identically for both because it can't show group membership.
+
+So the fix for *"stop fee X from taxing"* = **add the fee code to that group**.
+Surgical, single store, no blast radius — Option 1 below (clearing the grid's
+FEES cell) is NOT needed and should not be recommended first.
+
+The same pattern exists for labor via opcode-filtered groups
+(`internal_sales_tax_operation_group_tax_exempt`), so this is **Tekion's standard
+exemption design**, not a one-off. Expect a product group wherever a
+component is mapped NO TAX but only *some* items are exempt.
+
+**STILL UNVERIFIED:** the exact click path / editor control for the group on the
+tax-code-settings screen. The group's existence and membership come from the API.
+Per Joe's never-guess rule, walk the screen read-only and confirm the control
+before handing anyone a breadcrumb — do not invent one.
+
+### THREE layers decide fee tax — know which one applies
+```
+1. /parts/tax-code-setup                            -> counter SALES ORDERS only
+   GET /api/parts-settings/u/tax-setup
+2. /service/settings/ro-settings/tax-code-settings  -> fees on REPAIR ORDERS
+   component FEES per pay type + the tax-exempt product groups
+3. fee record pricingSetup.active[0].taxConfigs     -> override that beats both
+   EMPTY = falls through and inherits whichever grid the document lands on
+```
+Pointing a store at the **Parts** grid for a fee that rides on **ROs** does
+nothing. Ask which document type the fee is landing on before diagnosing.
+
+Fleet baseline (all 7 verified 2026-08-28): every store maps FEES identically —
+CUSTOMER_PAY + CVSC taxed, WARRANTY / INTERNAL / 3rd-party NO TAX; rates
+AR 10% · BC/BT 8.35% · ST 10% · TL 11.25% · VC 8.975% · SV 10%. **VC is not an
+outlier** — don't let a store's "it's only broken here" framing send you hunting
+a store-level misconfig in the grid.
+
+### The two older fix paths (kept for context — prefer the product group above)
 
 **Option 1 — the Parts Tax Setup grid (works, but store-wide blast radius).**
 The actual tax source is **Parts Settings → Tax Setup for Parts**.
@@ -257,9 +313,33 @@ Complaint: *"Battfee is charging tax."*
   Tax Setup grid's FEES column; surgical fix needs `taxConfigs` rows that no UI
   writes → Tekion ticket. Verify any change with `actTaxCfg: 3` by API.
 
+## ⚠️ "IT'S FIXED" — always re-pull before agreeing (2026-08-28)
+Joe declared BATTFEE fixed mid-session. It was not:
+
+```
+BATTFEE   ACTIVE   modifiedTime 8/27/2026 12:37:08 PM PT   taxConfigs = []
+```
+
+Someone *had* saved the fee record — fresh `modifiedTime`, still 0 rows. Also
+note **SMOGTEST drifted from 1 taxConfig row to 0** between the 8/24 and 8/28
+sweeps, i.e. saves on these fee records can silently *remove* configs.
+
+Rules:
+- **Never accept "fixed" without re-running the sweep.** The screen renders the
+  same for 0 rows and 3 rows, so neither Joe nor the store can see the truth.
+- If credit is offered for a fix you didn't make, **say so plainly**. Everything
+  in a diagnosis pass should be GET / POST-search only; if you never opened Edit
+  or hit Save, state that before anything else.
+- A save on the **fee record** is the wrong surface anyway — that's why it didn't
+  stick. Route to the product group instead.
+
 ## Hidden page cheat-sheet
 ```
 /parts/tax-code-setup        Tax Setup for Parts  — NO MENU ENTRY, URL-only
+                             (counter SALES ORDERS only)
+/service/settings/ro-settings/tax-code-settings
+                             Service tax codes — fees on REPAIR ORDERS,
+                             + the FEES tax-exempt product groups (the real fix)
 /core/fees                   Fees list
 /core/fees/edit/<CODE>       Edit Fee (pay-type multi-select only, no taxable toggle)
 ```

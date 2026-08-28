@@ -119,10 +119,44 @@ the previous store's pair, so reuse the same `--date` / `--from/--to`.
 
 **Store volume reference (Aug 2026 MTD, 1st–26th):** SCT ≈ 3,750 ROs / ~90 min ·
 **TL ≈ 3,270 ROs (index pass 153s / 293 calls) — TL is a HIGH-volume store, on par
-with SCT, roughly 2x BC** · BC ≈ 1,529 ROs / ~25–30 min (14,416 calls, 37 429s) ·
-BT ≈ same order as BC. Daily single-day counts: TL ≈ 169 ROs / $45.2K, SCT ≈ 134,
-BC = 68. Use these to give an ETA instead of guessing. BC ran essentially clean at
+with SCT, roughly 2x BC** · **BT = 2,980 ROs / 76 min (35,971 calls, 184 429s) — BT
+is ALSO high-volume; an earlier version of this skill guessed "BT ≈ same order as
+BC" and that was WRONG by 2x, don't guess a store's volume** · BC ≈ 1,529 ROs /
+~25–30 min (14,416 calls, 37 429s). Daily single-day counts (8/26): **BT = 200 ROs /
+$43,554.65**, TL ≈ 169 / $45.2K, SCT = 134 / $45,668.52, BC = 68 / $30,586.90.
+Use these to give an ETA instead of guessing. BC ran essentially clean at
 900/8 — that rate is comfortable for a mid-volume store.
+
+**High-volume stores hit MULTIPLE long backoffs.** BT froze at exactly 1000 rows
+for ~8 min, then again around 2300 and 2950 (429 counter stepping 64→104→144→184 in
++40 bursts). Every one resolved itself. The `/proc/<pid>/wchan == futex_do_wait`
+check below is the only thing you need before deciding to wait rather than kill.
+
+**Cheap cross-store sanity check on the MTD total:** BT 2,980 ROs / $686,627.84
+(labor $542,746.55 + parts $143,881.29), 1,662.52 bill hrs, ELR $134.82, 1.56 hrs/RO,
+parts GP 38.16%. An ELR far outside ~$130–140 or hrs/RO outside ~1.4–1.7 on a Toyota
+store means check the run, not the store.
+
+**BC (1251) MTD baseline, Aug 1–26 2026:** 1,529 ROs / **$602,594.15** total gross
+(labor sale $510,787 / parts sale $391,955), 11 advisors, leader Michael Reyes
+164 ROs / $77,938.52. GM store ELRs run HIGHER than Toyota — BC advisors sit
+$166–$254 (fleet-normal there), so do NOT apply the Toyota $130–140 ELR sanity
+band to BC/Cadillac. Same-day 8/26 daily = 68 ROs / $30,586.90, reproduced exactly
+by the MTD slice (empty symmetric RO-set difference).
+
+**TL (1092) MTD baseline, Aug 1–26 2026:** 3,265 ROs / **$654,247.09** total gross
+(labor $470,759 / parts $183,488), 22 advisors, leader Sean Preston 199 ROs /
+$89,323.85 (2.65 Hrs/RO — he's the *service manager*, heavy-repair lane, worth asking
+Joe whether he belongs in the advisor ranking). Run cost: **52,432 calls, 240 429s,
+106 min** at 900/8 — longer than the 40–45 ROs/min rule of thumb because the 429
+backoffs ate ~20 min of wall clock. On a high-volume store quote **~70–110 min**, not
+the low end. Same-day 8/26 daily = 169 ROs / $45,161.18. TL ELRs $152–$215 (Toyota
+store but higher than SCT/BT — don't apply the $130–140 band store-blind).
+
+**Outliers that made the BC delivery land well** (pattern to reuse): the advisor
+with ~3.2 Hrs/RO on low RO count = heavy-repair lane; the advisor with ~$254 ELR
+and near-zero parts sale ($25 across 78 ROs) = dedicated internal/warranty queue.
+Call these out and ask whether they're intentional.
 
 **Don't quote the scanner's own printed ETA to the user.** `advisor_closed_gross_mtd.py`
 prints `[work] N to fetch (~N*5 calls, ~Xh)` from a naive worst-case divide — it
@@ -139,6 +173,18 @@ assert {r["ro"] for r in sub} == {r["ro"] for r in daily["rows"]}
 ```
 BC 2026-08-27: 68 ROs / $30,586.90 both ways, empty symmetric difference. Report
 that reconciliation to Joe — it is what makes the MTD number credible.
+
+**⚠️ An exact match is NOT guaranteed, and a mismatch is usually CORRECT.** The two
+runs legitimately differ by exactly the ROs whose pay-type invoices closed across
+**two business dates**. TL 2026-08-28: daily 8/26 = 169 ROs / $45,161.18 vs the MTD
+slice = 170 / $58,183.50. The single delta was **RO 392344** (Mauricio Orellana,
+$13,022.32) with invoices closing on both 8/26 *and* 8/27 — the same-day run
+correctly excludes it, the MTD correctly includes it, and **all 169 shared ROs
+matched to the penny**. So don't `assert` blindly: diff the RO sets, pull the
+offending RO's `closed_days`, and if it spans dates outside the daily window, name
+the RO and call it the known partial-close behavior rather than a bug. One
+big-ticket RO can move a single day's total 25%+ — always explain the delta in the
+delivery or it reads as the report being wrong.
 
 **Polling pitfall:** do NOT poll the log from `execute_code` with `time.sleep()` —
 that tool has a hard 300s cap and the sleep burns it (happened 2026-08-27). Just
@@ -199,6 +245,12 @@ it reads as the report being wrong.** Always state which definition is in play.
    ```
    Table right edge < page width ⇒ nothing is clipped. Vision is for "does this look
    like the right report", never for whether a column fits.
+5. **Ignore vision's "the date 2026 is in the future / invalid" complaint.** It fires
+   on every one of these renders because the model's own sense of "now" predates the
+   real system date. Confirm with `date` and move on — it is never a render bug.
+6. **Vision IS the right tool for branding.** It correctly caught that a BT report
+   was wearing the Stevens Creek logo (2026-08-27). Trust it on "is this the wrong
+   dealership's mark / wrong store name", distrust it on geometry and digits.
 
 ## Delivering it by email — USE `jay_mail.py`, NOTHING ELSE
 ```python
@@ -302,7 +354,62 @@ and `cid:scorecard in html == True` / `data:image in html == False`.
 ## Cron vs one-off
 Don't assume a recurring job. Joe explicitly declined a cron here ("I dont want it
 on a cron job, just a 1 time report for now") — offer it, but default to a one-time
-run unless he says otherwise.
+run unless he says otherwise. **As of 2026-08-28 this report is still on NO cron** —
+all 15 Hermes crons are menu-sales / alignment / warranty-closings / deferred /
+bin-check / gbrain. Every run of this report is manual, on-demand, for all 4 stores
+built so far (SCT, BT, BC, TL).
+
+## ⚠️ ARCHITECTURE DEBT — it re-scrapes the whole window every run (Walter II asked, 2026-08-28)
+`advisor_closed_gross_mtd.py` is **stateless**: it hits the OpenAPI live for the
+full window on every invocation. TL Aug 1–26 = 3,265 ROs → 52,432 calls → 106 min.
+The only persistence is the crash-resume checkpoint `out/.ckpt_*.json` plus the
+output JSON/PNG/PDF/CSV. Nothing carries between runs, so tomorrow's MTD re-pulls
+Aug 1 again from scratch. If asked "is this in a DB", the honest answer is no —
+**but the right DB already exists and is unwired:**
+
+- `dealer-detail` (Postgres/Supabase + Prisma) has **`RawRepairOrder`** — full RO
+  payload incl. nested jobs/operations/parts, natural key `[storeId, documentId]`,
+  content-hashed for idempotent upsert.
+- **`SyncRun.cursor` = a `modifiedTime` watermark**, i.e. incremental sync is
+  already designed in.
+- `AdvisorDailyMetrics` / `AdvisorDailyCommodity` = per-advisor per-business-date
+  rollups.
+- Blocker: the nightly sync cron (11 PM) still runs **SCT only**
+  (`cron-sct-sync.sh`); the all-7 `sync:all` lives on the **unmerged**
+  `feature/multi-store-api` branch.
+
+Wiring these reports to that DB turns a ~106-minute scrape into a ~5-second query.
+**Before merging the two data paths, resolve the close-date definition conflict:**
+dealer-detail buckets on `businessDate` derived from
+`modifiedTime`/`deriveCloseTime`, while this report keys on true per-invoice
+`closedTime` from `/ro-invoices`. They disagree on partially-closed ROs (see the
+RO 392344 case above), so totals will NOT tie until one definition is picked.
+
+**Overlap with fixedopsreports.com ≈ 70%** — same Tekion `repair-orders:search`
+fan-out, same RO population, same advisor dimension. What each side uniquely has:
+
+| | dealer-detail DB | this report |
+|---|---|---|
+| Labor/parts gross by advisor by day, RO count | ✅ | ✅ |
+| Menu / ALA / REC classification | ✅ | ❌ |
+| Commodity (tires, alignment) | ✅ | ❌ |
+| Recommendations sold $ | ✅ | ❌ |
+| Bill Hrs / ELR / Hrs per RO | ❌ | ✅ |
+| Labor + parts **cost** (true gross, not sale) | ❌ | ✅ |
+| Parts GP % | ❌ | ✅ |
+| Pay-type mix (CP/CVSC/warranty/internal) | ❌ | ✅ |
+
+## "send them to me" — the standard closeout
+After the pair lands, Joe's next message is usually **"send them to me"** (BC,
+2026-08-27). That means: BOTH reports, **two separate emails** (one Daily, one MTD
+— do not merge), each with the scorecard PNG inline via CID + the PDF + the CSV
+attached, delivered through `JM.send_report(..., to=None)` (append-only self-send,
+fresh Message-ID, UNREAD). Then verify per the delivery section: select
+`[Gmail]/All Mail`, search `X-GM-RAW rfc822msgid:`, parse the label SET, walk the
+MIME tree, assert `data:image` absent, and clear any `\Seen` from INBOX. Report the
+verification result in one line — Joe has been burned by "verified" that wasn't.
+Subjects that worked: `<STORE> Advisor Performance — Closed MM/DD/YYYY` and
+`<STORE> Advisor Performance — Closed MTD (Month D–D, YYYY)`.
 
 ## Pitfalls
 - f-strings can't contain backslashes in the expression part — build conditional
@@ -313,7 +420,11 @@ run unless he says otherwise.
   (TL) was simply *"that is fine"* — he does not want an unbranded report withheld.
   Say it once up front in the "starting the run" message, then ship. Do NOT repeat
   the logo nag on every subsequent delivery. On disk today: `logo_st.png` and
-  `logo_0.png` (which IS the SCT mark — never use it as a fallback).
+  `logo_0.png` (which IS the SCT mark — never use it as a fallback). Branded
+  re-renders are still owed for **BC and TL** if Joe ever sends those logos.
+- **Store order Joe has walked so far: SCT → BT → BC → TL.** Each time he said
+  "can you do the same for <next store>". Remaining un-built: SV, AR, VC. When he
+  names one, copy `_tl_advisor_run.sh`, swap the code, keep the same date window.
 - **Post the DAILY the moment it lands.** The pair is deliberately split: daily ≈
   2–4 min, MTD 30–90 min. Poll with `terminal("sleep 90; tail -25 <log>")` (a
   foreground sleep in `terminal` is fine — it's the 300s `execute_code` cap that

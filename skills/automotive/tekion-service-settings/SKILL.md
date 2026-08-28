@@ -441,6 +441,12 @@ true-remount read as the sole proof of persistence.
 Toggle is **store-scoped** — flipping TL does nothing for the other 6. Always tell Joe
 which store you changed and offer the fleet sweep.
 
+**Known `Restrict entry of duplicate Tag#` state (as of 2026-08-28):**
+- **TL 1092 = OFF** (flipped 2026-08-27 at Joe's request; true-remount verified).
+- **BC 1251 = ON** (read live, not changed).
+- ST / BT / SV / AR / VC = **unread** — fleet sweep offered to Joe, not yet run.
+Re-read live before quoting these; they drift.
+
 ### opcode_preflight.py --restore was BROKEN (fixed 2026-08-27)
 `restore_cron()` replayed `/tmp/cron_orig_opcode.txt`. If a prior session died before
 `--restore`, the next run's `pause_cron()` reads an ALREADY-PAUSED crontab, writes that

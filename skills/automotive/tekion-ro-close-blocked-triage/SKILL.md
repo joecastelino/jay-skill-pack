@@ -437,59 +437,22 @@ autonomously; the payer identity is the only handoff.
   query succeeded minutes later after the preflight ran. Don't launch a retry
   storm (thundering-herd rule) — do the browser-side prep work, then retry once.
 
-## Step 3f — "can't invoice" with ZERO Need Attention flags = payer split, not validation (TL RO 398856, 2026-08-27)
+## Step 3g — the ORPHANED-payer deep dive: root cause, escalation, prevention (same RO 398856)
 
-Step 3e assumes the blocker is a Need Attention validation string. **If the job list
-shows `0` Need Attention on every job and it still won't invoice, stop looking at
-validation** — the blocker is the payer split on the money-carrying job.
+Step 3f above detects the symptom. This section is what to DO about it.
 
-Symptom shape: `status: READY_FOR_INVOICE`, one job `PARTIALLY_INVOICED` carrying real
-dollars, every other job Internal/$0.00/Closed, and **both `ro-invoices` closed at
-`invoiceAmount: 0`**. That last one is the giveaway — a job worth $61.37 cannot have
-produced two $0.00 invoices unless nobody is holding the charge.
-
-Read the split off the job page innerText (no modal needed), between
-`Pay Split By Payer` and `Collapse All Operations`:
-```
-166920 - Amir Baig   CP  $0.00   0 %
--                    CP  Deductible  -  %      ← blank payer name
-```
-A `-` where a payer name belongs = orphaned payer. Confirm by diffing the **header chip
-count vs Payers View row count** ("3 Payers" chip vs 2 listed rows).
-
-**Do NOT recommend reopening as the fix without reading Payers View first.** On 398856
+⚠ **Do NOT recommend reopening as the fix without reading Payers View first.** On 398856
 the reopen unlocked the payers completely (`Closed`→`Ready for Invoice`, checkboxes
 enabled) and the split grid stayed hard-locked because the JOB was still
-`PARTIALLY_INVOICED`. The lock is job-level. It also flipped 6 clean jobs from
-`Closed`/0 flags to `Completed`/**2 Need Attention each**, creating new work.
-
-Full triage, the disabled-`Add New Payer` diagnostic, and the escalation ladder
-(Resync Payer → Cashiering → Tekion ticket) live in
-**`tekion-ro-payer-split-sunbit`** § "I CAN'T ADD A PAYER".
-
-## Step 3f — "CAN'T INVOICE" where one job is PARTIALLY_INVOICED with an ORPHANED payer (verified TL RO 398856, 2026-08-27)
-
-Fourth distinct failure mode. Distinguish it from 3e immediately: in 3e the blocking job
-is `IN_PROGRESS` with **Need Attention** text. Here the job is **`PARTIALLY_INVOICED`
-with ZERO Need Attention flags anywhere on the RO**, and pre-invoice validation passes
-clean. Nothing tells you what's wrong.
-
-**Symptom shape:** `status: READY_FOR_INVOICE`; six jobs `CLOSED`; one CP job
-`PARTIALLY_INVOICED` holding real money; `/ro-invoices` shows BOTH payer invoices
-`CLOSED` at **`invoiceAmount: 0`**. RO search `tags` include
-`JOB: STATUS_PARTIALLY_INVOICED`.
+`PARTIALLY_INVOICED`. The lock is job-level, not payer-level — I told Joe to go find a
+"payer-level unlock" that was already unlocked, and had to retract it.
 
 ### The 3-second detection: header chip count ≠ Payers View row count
 Job header chip said **"3 Payers"**; Payers View listed **2**. That delta IS the
-orphaned payer. Corroborate in the split panel — slice innerText between
-`"Pay Split By Payer"` and `"Collapse All Operations"`:
-```
-166920 - Amir Baig   CP   $0.00    0 %
--                    CP   Deductible   -   %      ← blank payer name, holds 100%
-```
-A `-` where a payer name belongs, on a row holding 100% of the money, = orphan.
+orphaned payer — the cheapest possible confirmation that the blank `-` row in the split
+grid is a real orphaned record and not a rendering artifact. Always diff the two.
 
-### Order of operations (learned the hard way — I did this backwards)
+### Order of operations
 1. **Audit Logs FIRST.** It contains the root cause, proves/kills the Cashiering theory,
    and shows exactly which payers a reopen touched. Expand all `Show` links.
 2. Payers View — read actual row status before recommending anything.

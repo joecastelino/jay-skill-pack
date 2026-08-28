@@ -643,6 +643,53 @@ for (const s of stores) {
 Run with the usual `set -a && . ./.env && set +a && npx tsx --conditions=react-server ./_check.ts`
 from `apps/web`, then `rm` it. Good post-merge/post-fix sanity check across all 7 stores at once.
 
+## OPEN OPPORTUNITY (raised by Walter II 2026-08-28) — back the advisor-gross reports with this DB
+`~/tekion-reports/advisor_closed_gross_mtd.py` (skill
+`tekion-advisor-closed-gross-api-report`) is **stateless**: it re-scrapes the entire
+window from the OpenAPI on every run — TL Aug 1–26 = 3,265 ROs → 52,432 calls → **106
+minutes**, and nothing persists between runs (only a crash-resume checkpoint). This
+pipeline's `RawRepairOrder` (nested jobs/ops/parts, natural key `[storeId,documentId]`,
+content-hashed idempotent upsert) + `SyncRun.cursor` modifiedTime watermark already
+hold exactly that data, so the same report becomes a ~5-second query. Walter flagged
+this as a "rethink after the current task" item; Joe has not yet ruled on it.
+
+**Overlap is ~70%** — same `repair-orders:search` fan-out, same RO population, same
+advisor dimension. What each side uniquely has today:
+
+| | this DB | advisor-gross report |
+|---|---|---|
+| Labor/parts gross by advisor by day, RO count | ✅ | ✅ |
+| Menu / ALA / REC classification | ✅ | ❌ |
+| Commodity (tires, alignment) | ✅ | ❌ |
+| Recommendations sold $ | ✅ | ❌ |
+| Bill Hrs / ELR / Hrs per RO | ❌ | ✅ |
+| Labor + parts **cost** (true gross, not sale) | ❌ | ✅ |
+| Parts GP % | ❌ | ✅ |
+| Pay-type mix (CP/CVSC/warranty/internal) | ❌ | ✅ |
+
+Adding the report's columns is cheap — `operation.labor.billDuration` is **SECONDS**
+(2880 = 0.80 hr) and it's already inside the stored payload, so Bill Hrs/ELR/Hrs-per-RO
+and cost-based gross are derivable from `RawRepairOrder` with **zero new API calls**.
+
+### ⚠️ BLOCKER before unifying: the two use DIFFERENT close-date definitions
+This pipeline buckets on `businessDate` derived from `modifiedTime` /
+`deriveCloseTime()` (see the 2026-07-08 audit, fix #2). The advisor report keys on the
+**true per-invoice `closedTime` from `/repair-orders/{id}/ro-invoices`**. They disagree
+on **partially-closed ROs** — an RO whose CP invoice closed 8/26 and internal invoice
+closed 8/27 lands on one date here and spans two there (verified TL RO 392344,
+$13,022.32, 2026-08-28). Totals will NOT tie until one definition is chosen. Do not
+present a DB-backed advisor report as reconciling to the script's numbers before
+settling this; pick a definition, then re-verify against the known baselines
+(TL MTD 3,265 ROs / $654,247.09; BT 2,980 / $686,627.84; BC 1,529 / $602,594.15).
+
+### Verify which stores the nightly sync actually covers before quoting coverage
+`sync:all` and the 11 PM cron were built on `feature/multi-store-api` (merged
+2026-08-11), but I have separately observed the host cron invoking
+**`cron-sct-sync.sh` (SCT only)**. These two claims conflict — `crontab -l` and
+`ls ~/dealer-detail/logs/` are the ground truth, and per the "recurring finding #0"
+note a missing log dir means the job never ran at all. Check both before telling
+anyone the fleet is synced nightly.
+
 ## Verification standard
 Post each ticket: re-run smoke/query live DB yourself; confirm prototype tables untouched (additive);
 typecheck clean. RO counts should roughly match store appointment volume; amounts integer-cents-derived.

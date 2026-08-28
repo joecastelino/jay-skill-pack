@@ -816,6 +816,18 @@ check checkpoint mtime (advances every ~20 ROs) before assuming it's stuck. Esta
 To flip it to AUTO-SEND to Kevin later: update the cron prompt to have Stacey SEND (SMTP
 template-send) instead of draft-only, and drop the DRAFT-ONLY hard-stop language.
 
+## STALE BACKGROUND-NOTIFICATION REPLAY AFTER THE DAILY RESET (2026-08-28)
+The daily ~4 AM session reset can RE-DELIVER the previous night's
+`Background process ... completed (exit code 0)` message for `sct_align_mtd.py` into the
+fresh morning session, making it look like a scan just finished and needs rendering +
+a Stacey handoff. It does not. **Before acting on any align-scan completion notice,
+check the clock and the file mtimes:**
+`ls -la --time-style='+%m-%d %H:%M' data/ | grep -E 'sct-mtd-<date>|SCT-Alignment'`.
+If the by-advisor JSON + PNG/PDF are already stamped ~19:50 the PRIOR evening, the run
+already shipped — do NOTHING. Re-running rebuilds the whole index and burns OpenAPI
+quota for identical data. Cross-check this skill's own dated confirmation notes too: if
+the night in question is already written up here with matching totals, it's a replay.
+
 ## Pitfalls recap
 - Opcode set is SCT-specific (ALIGN/OKAL/ALIGN00BRA). Other stores differ — see
   `tekion-alignment-by-advisor-report` + `tol-alignment-by-advisor-report`.
