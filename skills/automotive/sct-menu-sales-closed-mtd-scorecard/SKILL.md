@@ -248,7 +248,11 @@ Work dir: `/home/itadmin/tekion-reports`
         Returned `OK BYTES=154593` (byte-exact vs `ls -la`), and the Sent-folder read
         confirmed a real 18:06 send with `MIME=REAL-multipart`, PDF attached.
      Moving the prose body out of the ask is what keeps it short enough not to stall
-     her. Prefer this over draft→send-by-ID; it's 1 call instead of 3-4. Still run
+     her. Prefer this over draft→send-by-ID; it's 1 call instead of 3-4.
+     ✅ **Re-confirmed 2026-08-27: same body-file + one short send ask worked first try**
+     (`OK BYTES=155444`, byte-exact; Sent showed 18:03, `MIME=REAL-multipart`, PDF
+     attached). Three calls total for the whole email stage (send, Sent list, MIME check).
+     This is now the default flow — do not build a draft first. Still run
      both verifies (subject-agnostic Sent list, then the MIME one-liner) — `OK BYTES=`
      is still not proof on its own.
    - ⚠️ **A literal `SENT=<HH:MM>` reply from the send ask can be FALSE.**
