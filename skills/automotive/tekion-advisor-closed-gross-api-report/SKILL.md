@@ -42,6 +42,36 @@ suffix the filename. Outputs PNG (page-1 summary), PDF (full RO detail), CSV
 - Resolves advisor names via `GET /users/{id}` (cached in-process).
 - Auto-flags **negative-gross** ROs and **partially-closed** ROs in a banner.
 
+## ⭐ NEVER RE-SCRAPE MTD — APPEND THE DAILY (Joe's directive 2026-08-28)
+Joe asked for this explicitly to cut runtime and tokens: **`MTD(1..N) = MTD(1..N-1) + daily(N)`**.
+A full MTD re-scrape is ~42,000 calls / ~90 min; a daily is ~2–4 min. Use:
+```bash
+cd /home/itadmin/tekion-reports
+python3 advisor_closed_gross.py --store st --date 2026-08-27          # ~3 min
+python3 mtd_append.py --base out/advisor_closed_gross_st_2026-08-01_2026-08-26.json \
+                      --add  out/advisor_closed_gross_st_2026-08-27.json
+python3 render_advisor_perf_style.py out/advisor_closed_gross_st_2026-08-01_2026-08-27.json
+```
+`mtd_append.py` merges keyed on RO number, **daily row WINS on collision** (a partially-
+closed RO seen again later has more invoices closed = more complete). It writes
+`meta.assembled="incremental"` + `assembled_from[]` for provenance, and hard-**exits on a
+gap** in the date window (run the missing day first) or a store mismatch. `--dry-run`
+previews. Verified 2026-08-28: 3,750 ROs/$897,279.40 + 225/$49,554.21 → 3,975/$946,833.61,
+exact to the penny, zero duplicate ROs.
+
+**When you still MUST do a full re-scrape:** (a) first build of a month, (b) a gap in the
+daily chain, (c) restating days <T-3 where late invoices may still be landing. For (c)
+just re-run those individual days and `--add` them — the merge restates them in place
+(it prints `N restated`).
+
+## ⚠️ NATIVE ADVISOR PERFORMANCE REPORT LAGS ~3 DAYS (measured SCT 2026-08-28)
+Don't compare the API report to the native one on a recent day and think you have a bug.
+The native report is a batch-generated index and backfills over ~3 days: 8/27 at 1 day old
+showed **55 of 225 ROs (24%, $36,905 missing)**; 8/26 at 2 days = 76%; 8/25 at 3 days and
+everything older = **100%, penny-exact**. Full aging curve + the XHR-replay repro method
+lives in `tekion-gross-not-posting-to-advisor`. This is the strongest justification for the
+API report existing — lead with it when delivering a recent-day run.
+
 ## TWO RENDERERS — pick by what the user asked for
 - `render_advisor_closed_gross.py` — house scorecard style (hero KPI cards, ranked
   advisor table with red bars). Good for a summary/exec read.

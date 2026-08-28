@@ -58,6 +58,48 @@ Joe's run was 6:35 AM. Next step is Refresh + re-run, then reproduce at BT befor
 filing with Tekion. Suspicious shape: missing ROs cluster 08:24–10:59 while the
 LATEST close of the day (18:13) is present — backwards for simple sync lag.
 
+## ✅ CAUSE #3 RESOLVED 2026-08-28 — it is INDEX LAG, not a filter defect
+Reproduced head-to-head at SCT. The native report is a **batch-generated ES index**
+("Last Generated On" in the header — 3:31 AM the morning of the test) and recent
+close-days **backfill in over ~3 days**. Aging curve (API truth vs native, same exact
+RO sets, roNo IN probe with a full-year date window so the date filter can't be the
+variable):
+
+| Close day | age | API ROs | Native | % found | Missing $ |
+|---|---|---|---|---|---|
+| 8/20 | 8d | 18 | 18 | 100% | $0 |
+| 8/24 | 4d | 257 | 257 | 100% | $88 |
+| 8/25 | 3d | 270 | 270 | 100% | $0 |
+| 8/26 | 2d | 134 | 102 | **76%** | $10,156 |
+| 8/27 | 1d | 225 | **55** | **24%** | $36,905 |
+
+**Yesterday's number on the native report is ~1/4 of reality.** ≥3 days old is exact.
+The missing ROs are NOT clustered by pay type (INTERNAL dominates both the present and
+the missing buckets in equal proportion), which kills the pay-type-filter theory.
+**Practical rule: never read the native Advisor Performance Report for a day newer
+than T-3.** Use the API report for anything recent.
+
+**Residual (watch):** 577056 / 580281 / 581233 (closed 8/26) were still absent from a
+full-year native query at 2 days old. If they're still missing at T-4, that IS a real
+index drop worth a Tekion ticket — re-probe before claiming it.
+
+### How to reproduce the comparison (the method that settled it)
+Capture the report's own XHR and replay it — a bare fetch 500s ("Token doesn't exist").
+1. Preflight `:9223` (`opcode_preflight.py --dealer <ID>`; `--restore` after).
+2. Hook `XMLHttpRequest` open/send/setRequestHeader, stash any call to
+   `/api/rosearchservice/u/visibility-dashboard/generate-summary-report` **with its
+   headers**, then SPA-nav (`history.pushState` + `PopStateEvent`) to `/core/reports`
+   and `/mouse`-click the report name to fire it.
+3. Replay in-page with mutated filters: the date filter is
+   `field:"payTypeFirstClosedTime"` `operator:"BTW"` `[startMs,endMs]` (Pacific).
+   Add `{key:"roNo",field:"roNo",values:[...],operator:"IN"}` to scope to an exact set.
+   Do NOT change `groups` (replacing the group tree → `unexpected.error`).
+4. Advisor IDs come back raw — resolve via
+   `POST /visibility-dashboard/lookup/resolve-by-id` `{lookupByIds:[{lookUpAsset:"PRIMARY_ADVISOR_ID",ids:[...]}]}`.
+5. To find WHICH ROs are missing, recursive-bisect the RO list on the returned
+   `Ro Count` (~5 min for 225 ROs). `:9223 /eval` takes `{"js": ...}`, **not**
+   `{"expression": ...}` (400 otherwise), and results must be sliced ≤15,000 chars.
+
 ## THE FIX
 On `/core/reports` → Advisor Performance Report, set the **Status filter to include
 BOTH `INVOICED` and `CLOSED`** (or clear it). Save it as the default view so the
