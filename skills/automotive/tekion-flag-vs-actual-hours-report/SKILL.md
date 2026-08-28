@@ -98,6 +98,46 @@ separately: (a) ROs punched in-window with zero/low flag, (b) ROs flagged
 in-window with no in-window punch. Reporting only the net hides offsetting
 errors (BC Tafolla: net −7.45 hid 26.2 unpaid + 30.1 over-flagged).
 
+## FAILURE MODE 2 — the flag INDEX silently drops entries (BT 1249, tech 512, 2026-08-28)
+
+When a tech says "RO X, Y, Z are MISSING from my flag hours", it is often NOT a
+data-entry problem and NOT the payDay-timing effect. Tekion has two stores of
+flag data and they can disagree:
+
+| | source | used by |
+|---|---|---|
+| INDEX | `POST /api/service-module/u/reporting/technician/breakdown` (ES) | Tech Performance (beta), Flag Time Report — **what pays the tech** |
+| TRUTH | `GET /api/service-module/u/ro/v1/{roId}` → `.jobs[].operations[].techIdWithBillingTimes[].flagTimesWithPayDay[]` | the RO document itself |
+
+Flag entries that exist on the RO document but never made it into the ES index
+are invisible to the report — the tech worked, the flag posted on the RO, and
+the report never pays it.
+
+**Reconcile them.** Match on the 4-tuple `(roId, operationId, payDay, flagTimeInSeconds)`;
+use a `collections.Counter` and decrement, because a single operation legitimately
+carries multiple flag entries (including 0-second reversals). Anything left over
+on the TRUTH side is a dropped entry.
+
+Scripts: `bt512_flag_index_gap.py` (clock-driven RO discovery) and
+`bt512_flag_index_gap_wide.py` (adds OpenAPI `repair-orders:search` on
+`modifiedTime GTE` so ROs the tech never PUNCHED on are still checked).
+
+**PITFALL — clock-driven RO discovery misses flag-only ROs.** The first pass only
+inspected ROs the tech had TECH_CLOCK punches on, which hid RO 151197 (1.80 h
+flagged, zero punches by that tech). Always union the punched-RO set with an
+OpenAPI `repair-orders:search` sweep of the window.
+
+**PITFALL — `/breakdown` 500s on a `roNo` filter.** Only `payDay` + `techId`
+filters are accepted. To check one RO, pull the tech's whole window and filter
+client-side.
+
+Diagnostic tell that it is an index drop and not timing: the missing entries are
+interleaved in time with entries that DID index (so it is not a cutoff), they are
+all `AUTO_ADDED`, and re-reading the RO document shows the flag present with a
+valid `payDay` inside the report window. Nothing in the UI can fix this — the
+flag is already correct on the RO. It needs a Flag Hours Report adjustment to
+pay the tech, plus a Tekion ticket for the indexing defect.
+
 ## Method
 
 1. **Refresh session + headers** (captures die ~2h): run
