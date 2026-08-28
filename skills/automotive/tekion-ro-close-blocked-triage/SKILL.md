@@ -530,7 +530,14 @@ payers here; you'll find only the harmless
 `Cost Amount for the job is going to be zero` / `The cost center description is empty`
 warnings and waste the turn.
 
-**The block is money already collected vs. a payer amount that CHANGED underneath it.**
+**The block is that the split edit silently UN-INVOICED the RO.** `Collect Payment` is
+dead because there is nothing invoiced to collect against — not because of any amount.
+
+> ⚠ **I GOT THIS WRONG THE FIRST TIME AND HAD TO RETRACT IT TO JOE.** My initial call was
+> "the customer overpaid by $5.93 / you're 2¢ over on the insurance card, that's the
+> payment error." **False.** See the falsification test below — `Collect Payment` is
+> disabled at *every* amount including the exact balance. The overpayment is real but it
+> is a **second, separate** problem, not the block. Do not repeat this.
 
 ### Symptom shape
 - `status: READY_FOR_INVOICE`, `/ro-invoices` → `{}` (invoice still **Open**)
@@ -539,7 +546,55 @@ warnings and waste the turn.
   immediately followed by `I Status: Invoiced → NA` and `CP Status: Paid → NA`
 - Cashier screen shows a **prior transaction** on the CP payer at the OLD amount
 
-### THE MOVE: open Cashier and diff paid-vs-owed
+### ⭐ THE FALSIFICATION TEST — run this BEFORE theorising about amounts
+
+Typing an amount into Cashiering is **free and non-destructive** (nothing posts until
+`Collect Payment`). So don't theorise — drive it and watch `collectBtn.disabled`.
+
+Kebab (`.icon-overflow`) → **`Cashier`** (does NOT navigate; panel appends to the same
+page). Click the payer's **`Credit/Debit Card`** mode to render the entry form, then:
+
+```python
+ev("document.getElementById('amountPayable').setAttribute('data-jay','amt');'ok'")
+for amt in ["1679.46","1679.44","1679.45","1000.00"]:
+    api("/type","POST",{"selector":"[data-jay='amt']","text":amt}); time.sleep(2.5)
+    ev("""var c=document.getElementById('collectBtn'),a=document.getElementById('amountPayable');
+           JSON.stringify({typed:a.value,dis:c.disabled})""")
+```
+
+BC 99491 result — **disabled at ALL FOUR amounts**, including the exact balance:
+
+| Amount | `collectBtn` |
+|---|---|
+| $1,679.46 (what the store ran) | disabled |
+| $1,679.44 (exact invoice) | disabled |
+| $1,679.45 | disabled |
+| $1,000.00 | disabled |
+
+**Invariant across amounts ⇒ the amount is irrelevant ⇒ stop blaming the money.**
+If it had been an overpayment guard, $1,679.44 would have enabled the button.
+
+Field ids on the Cashiering payment form: `amountPayable` (placeholder
+`Add amount to be paid`), `collectBtn`, `controlNumberTwo`, `postingDescription`,
+`isShowPaymentNotes`, checkbox valued `isPayeeCustomer`, plus a
+`Log a Completed Transaction` button (that's the path for a card already run on an
+outside terminal). **Clear the field and re-navigate when done** so you leave no
+unsaved state on a live RO.
+
+### The real root cause: `Invoiced → NA`
+
+Audit Logs (kebab → Audit Logs, click every `Show`) had it the whole time:
+```
+RO Details - 99491 · Today 02:16 PM · by Joe Castelino
+  I  Status : Invoiced → NA
+  CP Status : Paid     → NA
+```
+The split edit **backed both invoices out**. Invoice header reads **Open**, all payers
+sit at `Ready for Invoice` (not `Invoiced`), so Cashiering has no invoice to collect
+against. Fix order is therefore **Invoice FIRST, cashier SECOND** — the store (and I)
+had it backwards.
+
+### THE OTHER MOVE: open Cashier and diff paid-vs-owed
 This is the one screen that holds the answer and it's two clicks. Kebab
 (`.icon-overflow`) → **`Cashier`**. Like the Invoice button, it does **NOT navigate** —
 the panel is appended to the SAME page and `location.href` is unchanged. Slice
@@ -564,8 +619,27 @@ Then diff against the CURRENT owed amount from the expanded Payers View (below):
 | INSURANCE AUTO PROTECTIVE POLICY (CVSC) | $1,679.44 | $0.00 | — |
 | JORGE Toledo (CP + deductible) | **$1,975.10** | **$1,981.03** | **−$5.93 OVERPAID** |
 
-**Applied payment > invoice amount ⇒ Tekion refuses to cashier that payer.** That is the
-"payment error." Quote the exact delta — that's what makes the diagnosis land.
+**Applied payment > invoice amount ⇒ that payer will not cashier cleanly.** Real, worth
+flagging — but on 99491 it was NOT what disabled the button. Treat it as the *second*
+problem you'll hit after invoicing, not the presenting one.
+
+⚠ **Don't over-claim the arithmetic.** I told Joe the $5.93 "is" the moved parts tax.
+Check it: $71.47 × 8.35% = **$5.97**, but the actual delta is **$5.93**. Four cents
+unexplained. Close enough to identify the mechanism, NOT close enough to assert as exact
+— say "this accounts for most of it, 4¢ unexplained" rather than presenting a clean
+number you can't reconcile. Joe checks arithmetic.
+
+### ⚠ New warnings can APPEAR on a later open — re-read, don't cache
+On the first Payers View open the Warnings accordion held only the two harmless
+strings. After the Cashiering round-trip, re-opening it produced a **new blocker**:
+```
+Payer can ONLY be Invoiced after All Jobs in RO are Completed
+For the following Payers: 1317936 - JORGE Toledo .
+```
+…even though all four jobs *display* `Completed` and all three Invoice checkboxes are
+`enabled + checked`. So an enabled+checked checkbox does **not** guarantee the batch
+invoice will succeed. Re-expand Warnings immediately before advising, and warn that
+`Invoice Selected Payer(s)` may reject that payer.
 
 ### Why the amount moved: split type changes TAX ALLOCATION
 Expand every payer row in Payers Consolidated View to get per-line tax codes:
@@ -587,6 +661,27 @@ payer" — read the tax code column, not just the amounts.
 ⚠ Also note the job panel's **Contract Information → Deductible** field flickers between
 the real value and `$0.00` on re-render. Read the deductible off the split grid row
 (`1317936 - JORGE Toledo  CP  Deductible  $521.54  23.91 %`), not the contract box.
+
+### ⚠ Manage Splits is LOCKED once money is collected — you may not be able to revert
+Joe said "can you revert it" and I could not. On 99491 the Job 4 split grid came up
+**hard read-only** even though the RO was merely `READY_FOR_INVOICE` (NOT
+`PARTIALLY_INVOICED` as in §3f) and the payers were unlocked:
+
+| Control | State |
+|---|---|
+| `splitType` | disabled |
+| `Deductible Split` toggle | disabled |
+| `payableAmount-payer_0_0` / `payer_1_0` | disabled |
+| `percentageSplit-payer_*` | disabled |
+| `addNewPayer` | disabled |
+| modal `btnSalesSetupSave` | disabled |
+| cost-center `value` / `description` / `rc_select_*` | **enabled** (red herring) |
+
+**So §3f's "the lock is job-level" is necessary but not sufficient — a COLLECTED PAYMENT
+also locks the grid.** Dump the input `disabled` flags and tell Joe plainly you can't
+revert, rather than promising a revert you can't deliver. Likely order to unlock:
+void/refund the collected transaction in Cashiering FIRST, then the grid should free up.
+Confirm before doing it — that's a live customer card.
 
 ### The two fixes — present both, let Joe pick
 1. **Revert Split Type on that job back to INSURANCE.** CP balance returns to the exact
