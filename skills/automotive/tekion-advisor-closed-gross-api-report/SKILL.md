@@ -324,7 +324,22 @@ it reads as the report being wrong.** Always state which definition is in play.
 
 ## Delivering it by email — USE `jay_mail.py`, NOTHING ELSE
 
-### 🚨 2026-08-28: IMAP APPEND IS NOT DELIVERY — always SMTP, even to Joe
+### ## 📧 MTD MAILER (built 2026-08-28)
+`mail_advisor_mtd.py --store <st|bt|bc|tl|sv|vc|ar> --start YYYY-MM-DD --end YYYY-MM-DD [--dry-run]`
+Reuses `mail_advisor_daily.py`'s CODE/OUT/money/summary_rows. Reads
+`out/advisor_closed_gross_<store>_<start>_<end>{,_perf}.{json,png,pdf,csv}`.
+Subject: `<STORE> Advisor Performance — Closed MTD (Aug 1–27, 2026)`.
+No index-lag callout block (MTD is mostly >T-3, so the warning is noise).
+PITFALL: the biggest store (SCT, ~4k ROs) can throw
+`smtplib.SMTPServerDisconnected: Connection unexpectedly closed` mid-send on the
+attachment push — just re-run that one store; it is not a data problem.
+PITFALL: Gmail re-marks self-addressed mail `\Seen` seconds after delivery —
+re-clear with `M.uid('store', u, '-FLAGS', '(\\Seen)')` AFTER the final verify pass,
+and re-check, because one clear can get re-stamped.
+PITFALL: `X-GM-RAW subject:(...)` multi-term searches return `BAD Could not parse
+command` from imaplib — verify per Message-ID with `rfc822msgid:<bare-id>` instead.
+
+🚨 2026-08-28: IMAP APPEND IS NOT DELIVERY — always SMTP, even to Joe
 Joe: *"I don't see them in my email"* about 7 reports that IMAP had confirmed were in
 INBOX with the `\Inbox` label. **They were appended, never delivered.** An APPENDed
 message is placed directly into the mailbox and never traverses Gmail's delivery
