@@ -462,6 +462,39 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   aggregate. Final verify: `TO_HEADER=Kevin Stapp <kstapp@sctoyota.com>` (raw-header form per
   note 8/24) and `SENT_TODAY=0`. Timeout pattern held to note 11 — 60s pause then a ONE-number
   ask answered every time.
+  **Confirmed again 2026-08-27 (17th consecutive clean night) — PUT THE THROUGH-DATE IN THE
+  VERIFY SUBSTRING and the note-26 DRAFTS_COUNT=2 trap never fires:** OPS probe 200 (same
+  validated RO/job pair, unchanged since 8/3); no same-day index pre-run; no competing
+  consumer. Index 3,975 closed ROs (up 224 from 8/26's 3,751), 0 failed, ~49 min
+  (19:01→19:50). Window end advanced 1787813999999 → 1787900399999 and index grew
+  515,615 → 544,982 B (both fresh-index confirmations). 345 alignments (312 dedicated + 33
+  bundled), 345 ROs, 16 advisors. **Two-way tie at #1: Jaime Sanchez and Chris Mai, 36 each**
+  (Cristian Gonzalez 35 — he has now slipped off the top spot entirely after a month of
+  leading); phrase ties as ties per the 8/24 note.
+  **Refinement that avoids the 8/26 false-duplicate entirely:** anchor the verify substring
+  with the FULL subject INCLUDING the through-date — `'SCT Alignment Sales by Advisor -
+  August MTD (through 8/27)'` — rather than the generic `'SCT Alignment Sales by Advisor -
+  August MTD'`. The through-date is the authoritative per-night discriminator (note 26), so
+  baking it into the substring makes DRAFTS_COUNT inherently per-night: returned a clean
+  `DRAFTS_COUNT=1` on the first ask with zero enumeration follow-up needed, where the
+  date-free form would have matched ~14 nights. Note the parens/dashes did NOT break the
+  search here because it was explicitly framed as a SUBSTRING match ("substring match, not
+  exact") — the note-11 exact-subject false zero is about EXACT matching, not punctuation
+  per se. Also fold `TO_HEADER` (note 8/24) and `SENT_TODAY` (note 8/18) into that same
+  first ask instead of `TO`/`SENT_FOLDER_COUNT` — both preempt their own false alarms in
+  one round-trip: `DRAFTSCOUNT=1 | TOHEADER=kstapp@sctoyota.com | SENT_TODAY=0`.
+  **Recommended verify ask #1 going forward:** subject substring WITH through-date →
+  `DRAFTS_COUNT=<n> | TO_HEADER=<exact To: header> | SENT_TODAY=<n>`.
+  Stacey's build clean on the FIRST ask (125s) with paths + on-disk sizes baked in. PARTS
+  ask (with PDF_FILENAME folded in per the 8/25 note) answered first-try after a 10s sleep:
+  `RAW_SIZE=633,032 | text/plain:430, text/html:131,922, application/pdf:329,436 |
+  PDF_FILENAME=SCT-Alignment-By-Advisor-MTD-2026-08-27.pdf`. HTML part cleared PNG*4/3
+  (131,145) by only **777 bytes** (third tight pass of the month — a tight pass is a PASS,
+  note 13), PDF part was an EXACT on-disk match, and the filename carried today's date
+  (strongest possible attachment confirmation). Her BUILD confirmation had reported the HTML
+  part as 178,305 vs the PARTS ask's 131,922 — the familiar two-reports-of-the-same-part
+  discrepancy (notes 8/9/8-23), both pass, not a duplicate signal. Short sleeps throughout
+  (15s then 10s), no timeouts. Underscore-stripped keys again.
   **Confirmed again 2026-08-16 (6th consecutive clean night, quota fully healthy):**
   pre-flight OPS probe (same validated RO/job pair) returned 200. Index built 2,364
   closed ROs, 771 candidates, 0 failed, ~30 min scan (19:01→19:31, no backoff
