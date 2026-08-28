@@ -138,6 +138,36 @@ valid `payDay` inside the report window. Nothing in the UI can fix this — the
 flag is already correct on the RO. It needs a Flag Hours Report adjustment to
 pay the tech, plus a Tekion ticket for the indexing defect.
 
+### ⭐ TWO RENDERERS — the clean one is usually what he actually wants
+Joe's follow-up to the corrected version was **"write it so it doesn't look like
+it's *corrected*"** (2026-08-28). A report headed "CORRECTED" with a
+Tekion-vs-Correction-vs-Corrected table is an *internal diagnostic* — it advertises
+that the DMS was wrong and it can't go to a tech, a manager, or a pay file.
+
+| script | output stem | use for |
+|---|---|---|
+| `render_tech_perf_corrected.py` | `tech_perf_corrected_bt_<emp>_<date>` | proving the gap, Tekion ticket evidence |
+| **`render_tech_perf.py`** | `tech_perf_bt_<emp>_<date>` | **the deliverable** — routine report, one set of numbers |
+
+Both read the SAME package JSON. The clean one merges `indexed` + `missing` into a
+single ledger and never mentions the distinction: native 13-column Tech Performance
+layout (TOTAL row on top), KPI cards = Flagged / Attendance / Proficiency /
+Efficiency, a Labor Summary, then the flag detail. Page 2 = flagged-vs-clocked by RO
+plus per-RO job detail with concerns. Zero words like *corrected / missing /
+recovered / defect*. Grep the HTML for those before sending.
+
+**Default to building the clean one** and keep the diagnostic version as backup
+evidence — don't wait to be asked twice.
+
+Two things the clean renderer must handle that the diagnostic one didn't:
+- **Labor cost is `$0` on entries read from the RO document** (no `laborCostDetail`).
+  Tekion derives it as `flag_hrs × wage`, so derive it the same way — otherwise labor
+  gross is overstated by the full tech-pay amount. Sanity check: **Labor Cost should
+  equal Tech Pay** ($490.09 vs $490.10, rounding).
+- **Concern text arrives mojibaked** (UTF-8 bytes read as latin-1): `â\x80\x93` for an
+  en-dash, `â\x80\x99` for a curly apostrophe. Round-trip with
+  `s.encode("latin-1").decode("utf-8")` inside a try/except.
+
 ## DELIVERABLE — the CORRECTED Tech Performance report (BT 512, 2026-08-28)
 
 Once you've proven an index drop, Joe's next message is **"can you generate a
