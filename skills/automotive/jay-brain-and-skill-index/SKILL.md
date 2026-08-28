@@ -673,7 +673,9 @@ To remove a stale brain page immediately (don't wait for 3 AM orphan-purge): `gb
 
 ## Pitfalls
 - **`UPGRADE_AVAILABLE` banner pollutes STDOUT on every command (seen 2026-08-21, installed 0.42.21.0,
-  offered 0.46.25.0).** Two lines (`UPGRADE_AVAILABLE 0.42.21.0 0.46.25.0` + `gbrain 0.42... available.
+  offered 0.46.25.0; the OFFERED version keeps advancing — 0.47.3.0 as of 2026-08-28 — so don't read a
+  specific version string here as canonical or as evidence the upgrade was taken; installed is still
+  0.42.21.0 and that is fine).** Two lines (`UPGRADE_AVAILABLE 0.42.21.0 0.46.25.0` + `gbrain 0.42... available.
   Run: gbrain self-upgrade`) are prepended to `gbrain link` / `get` / `orphans` output, so anything that
   parses the JSON (`{"status":"ok"}`) or the frontmatter must strip them: pipe through
   `| grep -v -i upgrade` (or `head`/`tail` past them). **Do NOT run `gbrain self-upgrade` from inside a
