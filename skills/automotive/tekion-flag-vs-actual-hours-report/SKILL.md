@@ -138,6 +138,15 @@ valid `payDay` inside the report window. Nothing in the UI can fix this — the
 flag is already correct on the RO. It needs a Flag Hours Report adjustment to
 pay the tech, plus a Tekion ticket for the indexing defect.
 
+**Corroborate across stores before calling it a Tekion defect** (the standing
+fleet-comparison rule — a single store's oddity has repeatedly turned out to be
+local config). Confirmed at **two of seven** stores so far: BT 1249 tech 512, and
+BC 1251 tech 5576 (Tafolla). Shared signature worth quoting in the ticket: both
+hour-bearing drops were **WARRANTY** pay type, both `AUTO_ADDED`, both flagged the
+**same day (08/26)**, both present on the RO document. Zero-hour entries drop too
+(Tafolla RO 101268, customer pay) — same index failure, no pay impact, so count
+entries dropped separately from hours dropped.
+
 ### ⭐ TWO RENDERERS — the clean one is usually what he actually wants
 Joe's follow-up to the corrected version was **"write it so it doesn't look like
 it's *corrected*"** (2026-08-28). A report headed "CORRECTED" with a
@@ -367,6 +376,19 @@ deduped to 100 and missed both targets). 375 users at BC = 4 pages.
 Note `employeeId` is inconsistent (`1251_192` vs a UUID) — key on
 `employeeDisplayNumber`.
 
+**Three more `/users` shape traps, all hit at BC 2026-08-28** (each one silently
+returns the wrong answer instead of erroring — budget a debug pass here):
+- **It is CURSOR-paginated, and `pageNumber` is accepted-and-ignored.** Sending
+  `pageInfo.pageNumber` 1,2,3… returns the identical first 100 users every time, so
+  the loop "succeeds" and both target techs are simply absent. The ONLY way forward
+  is `meta.nextFetchKey` → next request's `nextFetchKey`. Stop when it's absent.
+  Self-check: assert the deduped user count grows each page.
+- **`data` is a bare LIST at some dealers**, a `{"results":[...]}` dict at others.
+  Handle both: `rows = d if isinstance(d, list) else d.get("results", [])`.
+- **`completeNames` is a LIST of `{nameType, value}` at BC**, a dict elsewhere.
+  `completeNames["DISPLAY_NAME"]` throws `TypeError: list indices must be integers`.
+  Normalize before reading.
+
 **Step 1 — reproduce the report number first.** Pull
 `/reporting/technician` FLAG_TIME_REPORT for the window with a `techId` filter, then
 sum the `/breakdown` ledger independently. At BC both tied EXACTLY (63.50 and 56.10).
@@ -391,6 +413,39 @@ incl. one RO at 17.46) looks broken — same store, same settings, different WIP
 `flagTimeInSeconds` = someone clawed hours back by hand (BC: two −1.00 entries on
 8/18). Negative AUTO_ADDED rows are billing reversals. Joe wants both directions
 reported; negatives are the ones that start conversations.
+
+## ⭐ WHEN THE INDEX IS CLEAN — triage the leftover gap, don't force a defect
+
+Two techs at the same store, same window, same settings will NOT both have the
+index defect. At BC 2026-08-28: Tafolla was short 2.40 hrs / 4 dropped entries;
+**Barks tied EXACTLY — 85 entries for 85, 63.50 hrs for 63.50.** Say the clean
+result plainly and just as loudly as the defect. Joe's next question is then
+"so what discrepancy DOES he have?", because the Tech Performance screen still
+showed Barks 3.92 hrs unapplied (attendance 67.42 / clocked 62.33 / flagged 63.50).
+
+Walk the clocked-RO list and bucket every unflagged RO into one of four causes.
+Only ONE of them is a Tekion bug:
+
+| bucket | tell | verdict |
+|---|---|---|
+| **payDay just outside the window** | flag exists on the RO doc, `payDay` = day after `--to` | timing, not lost — lands next pay period |
+| **RO still open** | status `IN_PROGRESS`/`READY_FOR_INVOICE` | not billed yet; flags post at billing |
+| **closed with ZERO labor billed** | every op `billSec: 0`, `flags: []`, `laborSale: None` | **store-process** issue — nothing to flag against |
+| **flag on doc, absent from index** | doc has a valid in-window `payDay`, `/breakdown` doesn't | **the Tekion defect** |
+
+Barks: RO 101947 CLOSED 2.86 clocked → flagged 2.70 on 08/28 (one day late);
+RO 101249 IN_PROGRESS 1.34; RO 101304 CLOSED 0.49 with `TPS`/INTERNAL and
+`CONCERN`/WARRANTY both at `billSec 0` — the only genuine gap, and it belongs in a
+conversation with the store, not the Tekion ticket.
+
+Everything else was normal flat-rate outperformance (clocked 3.63 / flagged 5.50,
+12.95 / 14.50, 2.41 / 3.50 → 101.9% efficiency). **Beating flat rate is not a
+discrepancy** — label it so nobody chases it.
+
+Fetch the per-RO evidence with `clock_by("roId", …)` for the RO universe, then
+`GET /api/service-module/u/ro/v1/{roId}` per candidate. Note
+`POST /api/rosearchservice/u/ro/search` is a **404 — that endpoint does not exist**;
+RO lookup goes through the clock report + `/openapi/v4.0.0/repair-orders:search`.
 
 ## Pitfalls
 - **`/ro/v1/{id}` response shape**: RO header fields (`roNo`, `status`,

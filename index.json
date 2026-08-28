@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-28T13:45:03",
+ "generated": "2026-08-28T14:00:20",
  "skill_count": 201,
  "skills": [
   {
@@ -515,6 +515,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-flag-vs-actual-hours-report",
+   "path": "automotive/tekion-flag-vs-actual-hours-report",
+   "category": "automotive",
+   "description": "Build a \"closed ROs where tech FLAGGED hours were below ACTUAL clocked time\" report (unpaid flat-rate tech time) for any Tekion store, per-tech per-RO grain. Uses two internal endpoints discovered 2026-07-30 - /ro/v1/{id} carries per-tech flag entries (flagTimesWithPayDay) and clockDetails/fetch carries per-tech actual punches. Also documents the repair-orders:search pageNumber-IGNORED pagination trap and its closedTime-bisection fix. Verified SV (826) Jul 1-15 2026.",
+   "times_used": 5,
+   "last_used": "2026-08-28"
+  },
+  {
    "name": "tekion-gross-not-posting-to-advisor",
    "path": "automotive/tekion-gross-not-posting-to-advisor",
    "category": "automotive",
@@ -545,14 +553,6 @@
    "description": "Fix an AMG Hermes agent that is silent on Slack because its SLACK_BOT_TOKEN/SLACK_APP_TOKEN are missing or wrong in the profile .env \u2014 including recovering LOST tokens from old session transcripts without asking Joe to regenerate them at api.slack.com. Use when an agent's service is running but it never answers Slack messages (Autumn case, 2026-07-14).",
    "times_used": 4,
    "last_used": "2026-07-14"
-  },
-  {
-   "name": "tekion-flag-vs-actual-hours-report",
-   "path": "automotive/tekion-flag-vs-actual-hours-report",
-   "category": "automotive",
-   "description": "Build a \"closed ROs where tech FLAGGED hours were below ACTUAL clocked time\" report (unpaid flat-rate tech time) for any Tekion store, per-tech per-RO grain. Uses two internal endpoints discovered 2026-07-30 - /ro/v1/{id} carries per-tech flag entries (flagTimesWithPayDay) and clockDetails/fetch carries per-tech actual punches. Also documents the repair-orders:search pageNumber-IGNORED pagination trap and its closedTime-bisection fix. Verified SV (826) Jul 1-15 2026.",
-   "times_used": 4,
-   "last_used": "2026-08-28"
   },
   {
    "name": "tekion-notification-settings-audit",
