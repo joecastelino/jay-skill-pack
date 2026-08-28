@@ -63,6 +63,41 @@ Both need captured axios headers (see Session refresh below). Base
 Old note (superseded): "flags ONLY live inside `/ro/v1/{id}`" — false. Sibling
 guesses `/reporting/technician/detail` and `/drilldown` DO 404; `/breakdown` is real.
 
+## FASTEST PATH — the flag LEDGER endpoint (discovered BC 2026-08-28)
+
+Before fanning out over ROs, try this. It replaces steps 2-4 for flag data and is
+~100x cheaper (2 calls instead of 300):
+
+**`POST /api/service-module/u/reporting/technician/breakdown`** — same body as the
+Tech Performance aggregate (`reportName: FLAG_TIME_REPORT`, `reportGroup:
+FLAG_REPORT`, filter `payDay BTW [lo,hi]`, optional `techId IN [...]`,
+`pageInfo.rows` up to 1000). Returns **one row per individual flag entry** with:
+`roId, roNo, jobNumber, operationId, opcode, payType, make, payDay, flagTime,
+flagTimeInSeconds, flagHourType (AUTO_ADDED/MANUALLY_ADDED),
+flagHourAdjustmentReason, flaggedByUserId, referenceHoursForFlagging,
+assignedBillingTimeInSeconds, operationBillingTimeInSeconds, wagePerHour,
+laborSaleAmount/CostAmount/GrossAmount, jobConcern`.
+Sum of `flagTimeInSeconds` ties EXACTLY to the aggregate report's
+`flagTimeInSeconds` — use that as the self-check.
+`/detail` and `/drilldown` are 404; only `/breakdown` exists.
+
+The aggregate (`/reporting/technician`) is literally the endpoint the Tech
+Performance (beta) screen calls, so matching it is tautological — the real
+cross-check is `/breakdown` (ledger) + `/ro/v1/{id}` (RO documents) agreeing
+with it, which are different data paths.
+
+**referenceHoursForFlagging** tells you the store's flag policy. `BILL_HOURS`
+(BC) = auto-flag copies BILLED hours, so Flagged always == Assigned Billed and
+NEVER tracks the clock — do not report that identity as a bug. `ACTUAL_HOURS`
+(SV) = flags follow punches.
+
+**payDay ≠ work day.** A flag lands on the date it was flagged (usually
+invoice/close), so a Tech-Performance date range mixes flags for work clocked
+weeks earlier with punches from the window. ALWAYS quantify both leaks
+separately: (a) ROs punched in-window with zero/low flag, (b) ROs flagged
+in-window with no in-window punch. Reporting only the net hides offsetting
+errors (BC Tafolla: net −7.45 hid 26.2 unpaid + 30.1 over-flagged).
+
 ## Method
 
 1. **Refresh session + headers** (captures die ~2h): run
