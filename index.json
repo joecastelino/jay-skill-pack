@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-28T14:00:20",
+ "generated": "2026-08-28T14:16:42",
  "skill_count": 201,
  "skills": [
   {
@@ -235,6 +235,14 @@
    "last_used": "2026-08-07"
   },
   {
+   "name": "tekion-clock-time-by-opcode",
+   "path": "automotive/tekion-clock-time-by-opcode",
+   "category": "automotive",
+   "description": "Build an \"actual tech clocked time vs billed time BY OPCODE\" report (over-clock / unapplied-time-at-opcode-grain) for any Tekion store. Uses the internal rosearchservice visibility-dashboard TECH_CLOCK datasource (the engine behind the custom \"Ro Actual Time Report\"), which carries opcode on every clock punch \u2014 something the standard Tech Performance report cannot do (its Unapplied Hours is per-technician only). Verified SV (826) 2026-07-20.",
+   "times_used": 13,
+   "last_used": "2026-08-28"
+  },
+  {
    "name": "tekion-included-service-parts-override",
    "path": "automotive/tekion-included-service-parts-override",
    "category": "automotive",
@@ -307,14 +315,6 @@
    "last_used": "2026-08-03"
   },
   {
-   "name": "tekion-clock-time-by-opcode",
-   "path": "automotive/tekion-clock-time-by-opcode",
-   "category": "automotive",
-   "description": "Build an \"actual tech clocked time vs billed time BY OPCODE\" report (over-clock / unapplied-time-at-opcode-grain) for any Tekion store. Uses the internal rosearchservice visibility-dashboard TECH_CLOCK datasource (the engine behind the custom \"Ro Actual Time Report\"), which carries opcode on every clock punch \u2014 something the standard Tech Performance report cannot do (its Unapplied Hours is per-technician only). Verified SV (826) 2026-07-20.",
-   "times_used": 10,
-   "last_used": "2026-08-28"
-  },
-  {
    "name": "tekion-roles-permissions",
    "path": "automotive/tekion-roles-permissions",
    "category": "automotive",
@@ -353,6 +353,14 @@
    "description": "Build a Tekion \"repair orders that closed under a DIFFERENT service writer than they were opened/created with\" report for any AMG store from the LIVE OpenAPI. Produces RO#, dollar total, opened-by writer, closed-by writer, date opened, date closed. Use when Joe asks for a service-writer handoff / reassignment audit (\"ROs that started with one writer and ended with another\", \"who opened vs who closed\", writer-change report).",
    "times_used": 9,
    "last_used": "2026-07-15"
+  },
+  {
+   "name": "tekion-flag-vs-actual-hours-report",
+   "path": "automotive/tekion-flag-vs-actual-hours-report",
+   "category": "automotive",
+   "description": "Build a \"closed ROs where tech FLAGGED hours were below ACTUAL clocked time\" report (unpaid flat-rate tech time) for any Tekion store, per-tech per-RO grain. Uses two internal endpoints discovered 2026-07-30 - /ro/v1/{id} carries per-tech flag entries (flagTimesWithPayDay) and clockDetails/fetch carries per-tech actual punches. Also documents the repair-orders:search pageNumber-IGNORED pagination trap and its closedTime-bisection fix. Verified SV (826) Jul 1-15 2026.",
+   "times_used": 8,
+   "last_used": "2026-08-28"
   },
   {
    "name": "tekion-menu-missing-services-diagnosis",
@@ -513,14 +521,6 @@
    "description": "Create/edit service discount coupons in Tekion's Coupon Management app (e.g. tire promos like Bridgestone B3G1, $-off or %-off labor/parts coupons). Covers the real URLs, form mechanics (old antd calendar, react-select GL account), toggle defaults, GL split conventions, and verification. Verified live at SCT 2026-08-02.",
    "times_used": 5,
    "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-flag-vs-actual-hours-report",
-   "path": "automotive/tekion-flag-vs-actual-hours-report",
-   "category": "automotive",
-   "description": "Build a \"closed ROs where tech FLAGGED hours were below ACTUAL clocked time\" report (unpaid flat-rate tech time) for any Tekion store, per-tech per-RO grain. Uses two internal endpoints discovered 2026-07-30 - /ro/v1/{id} carries per-tech flag entries (flagTimesWithPayDay) and clockDetails/fetch carries per-tech actual punches. Also documents the repair-orders:search pageNumber-IGNORED pagination trap and its closedTime-bisection fix. Verified SV (826) Jul 1-15 2026.",
-   "times_used": 5,
-   "last_used": "2026-08-28"
   },
   {
    "name": "tekion-gross-not-posting-to-advisor",
