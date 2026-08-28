@@ -193,6 +193,18 @@ just a post-error one — good). IMAP Sent-check returned in **32s** first try, 
 one carrying today's subject (Aug 1-26); other 6 all prior sends (Jul 1-28, Jul 1-30, Aug 1-8,
 Aug 1-18, Aug 1-24, Aug 1-25) — usual token-match trap. 8/22 duplicate pair absent again.
 
+### (8/28 run, for Thu 8/27) TEXTBOOK CLEAN — biggest single-day add yet
+161 closed ROs, 28 prefilter hits, 27 new menu rows, `all candidate ROs scanned`. MTD moved
+289 rows/$76,813.08 -> **316 rows / $81,882.02** ($59,988.87 labor + $21,893.15 parts).
+8/27-dated rows alone = 14 menus / $2,483.77 (rest of the +$5,068.94 delta = store closing
+older invoiced ROs) — state both numbers in the body, same as 8/26-8/27 runs.
+.sh-wrapper + quoted-heredoc + DO-NOT-DOUBLE-SEND paragraph: one-attempt send in **178s**,
+zero SMTP errors. IMAP Sent-check returned in **32s** first try, 8 hits, exactly one carrying
+today's subject (Aug 1-27); other 7 all prior sends (Jul 1-28, Jul 1-30, Aug 1-8, Aug 1-18,
+Aug 1-24, Aug 1-25, Aug 1-26) — usual token-match trap. 8/22 duplicate pair absent again.
+MTD advisor leaders: Erick Villasenor Gonzalez 14/$19,961.69, Jon Lo 44/$12,842.09,
+Michael Rankin 41/$10,245.26.
+
 ### Verification ask wording that works first try
 Lead with `IMPORTANT: print the answer as plain text IN THIS REPLY` AND
 `Use himalaya / raw IMAP against "[Gmail]/Sent Mail" (NOT the Gmail API)` — the

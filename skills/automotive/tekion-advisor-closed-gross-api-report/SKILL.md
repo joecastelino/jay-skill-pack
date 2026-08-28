@@ -67,6 +67,21 @@ SV 32/$28,830.33 · VC 31/$12,383.44 · AR 4/$6,427.84. **Fleet 706 ROs / $221,4
 Note SV/VC/AR are LOW RO count but high $/RO (SV = $901/RO) — that's normal for those
 stores, not a scrape failure.
 
+**ALL 7 STORES now on a matching Aug 1–27 MTD** (backfilled 2026-08-28, one-time
+`_mtd_backfill_aug.sh`, sequential smallest-first w/ 5-min cooldowns, zero failures):
+SCT 3,975/$946,833.61 · TL 3,427/$686,274.10 · BT 3,141/$748,912.38 · BC 1,620/$632,576.09 ·
+VC 549/$187,101.70 · SV 513/$229,875.45 · AR 83/$115,539.47. **Fleet 13,308 ROs /
+$3,547,112.80.** From here the nightly cron keeps them current incrementally — this was
+the last full scrape.
+Aug 1–26 bases for reference: BT 2,980/$686,627.84 · BC 1,529/$602,594.15 ·
+TL 3,265/$654,247.09 · SV 481/$201,045.12 · VC 518/$174,718.26 · AR 79/$109,111.63.
+
+⚠️ **A 3-second "MTD OK" is not automatically a failure** — `advisor_closed_gross_mtd.py`
+reuses an existing output file for the same window. BC/BT/TL "finished" in 3–5s during the
+backfill because their Aug 1–26 files already existed from earlier builds. VERIFY rather
+than assume either way: check the file mtime, and assert `base.ro_count + daily.ro_count ==
+merged.ro_count` and the dollars sum exactly. All 7 passed that check.
+
 ## ⭐ NEVER RE-SCRAPE MTD — APPEND THE DAILY (Joe's directive 2026-08-28)
 Joe asked for this explicitly to cut runtime and tokens: **`MTD(1..N) = MTD(1..N-1) + daily(N)`**.
 A full MTD re-scrape is ~42,000 calls / ~90 min; a daily is ~2–4 min. Use:
