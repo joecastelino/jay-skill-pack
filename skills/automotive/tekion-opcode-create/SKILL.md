@@ -544,6 +544,54 @@ inp.dispatchEvent(new Event('input',{bubbles:true}));
 inp.dispatchEvent(new Event('change',{bubbles:true}));
 ```
 
+## 🔴 PAY TYPE is an ant TREE-select, not react-select (2026-08-28, UCBATTERY)
+
+The Labor Rate row's **Pay Type** cell renders `ant-v5-tree-select`, whose options are
+`[class*=select-tree-title]` — NOT `[class*=option]`. A picker that only queries `[class*=option]`
+returns `notfound` forever. Query BOTH:
+```js
+document.querySelectorAll('[class*=option],[class*=select-tree-title]')
+```
+Open it with a plain `click(x,y)` on the cell; the tree shows
+`["Customer Pay","Internal Pay","I - Default internal pay","Warranty Pay"]` — pick `Internal Pay`.
+
+## 🔴 LABOR PRICE GUIDE adds a SECOND dropdown to the rate row
+
+Choosing rate type `Labor Price Guide` (instead of `Fixed Price`) makes a **rate-guide selector**
+appear at **x≈790** in the same row, where Fixed Price would have put a price input at x≈801.
+BC's guide list:
+`$ 269 / hr | CP` · `$ 229 / hr | INTERNAL` · `$ 240.37 / hr | WARRANTY` ·
+`Dynamic Pricing | LABOR GRID` · `$ 200 / hr | Service Menu Pricing` · `$ 0 / Fixed | INTCOST`
+For UC* internal opcodes pick **`$ 229 / hr | INTERNAL`** (exact string, incl. spaces around `/`).
+Correct final row readback: `Internal P... | All, Individual, Business | Labor Price Guide | $ 229 / hr | INTERNAL`.
+
+## ✅ MAPPING ROWS: click the `.rt-td` CELL, don't focus the input
+
+Supersedes the focus-the-input approach. The make select does **not** filter on typed text
+("0 results available for search term chev") but DOES open on a cell click. Reliable recipe —
+one row at a time, all three fields, no stale-marking needed:
+```js
+// cellxy(idx, td): center of [...group.querySelectorAll('.rt-td')][td]
+click(*cellxy(idx,0)); pickopt("gm")          // OEM
+click(*cellxy(idx,1)); pickopt(make)          // Make — menu is already unfiltered
+setval(idx,2,"0700")                          // opcode via native value-setter + Tab
+```
+This landed all 3 rows first-try on UCBATTERY after the coordinate method fought me for ~10 calls.
+Visible `.rt-tr-group` indices for the mapping rows are **3, 4, 5**; re-read indices each row
+(they shift as rows fill).
+
+## ⚠️ Scope rows ("Location / Not in / <value>") CANNOT be set programmatically
+
+MISC is scoped `Location · Not in · Consumer Scheduling`. The scope VALUE control is a
+server-backed search panel: it only renders "Start typing to search", and a native-value-setter
+`input` event returns **"No results found"** — the query never fires. The panel also **closes
+between `/eval` calls**, so you cannot open-then-pick across two calls.
+**Consequence:** build the opcode with the default scope (`Location · In · <blank>`) and tell Joe
+the scope row is the one field left to set by hand. Do NOT leave the operator on `Not in` with a
+blank value — that is a different (and wrong) filter than the source. Reset it to `In`.
+Also note the first scope dropdown lists `Department, Sites, Engine Litre, ..., Mode, Location` —
+easy to mis-click `Mode`; verify the readback says `Location`.
+
 ## 🔴 SOURCE OPCODES DIFFER IN SHAPE — always read the source first
 
 Do NOT assume the tire pattern. Read the source record before building:
