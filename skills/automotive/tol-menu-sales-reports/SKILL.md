@@ -915,31 +915,14 @@ em-dash one (UID 20) — single copy, not a true duplicate, still flag-don't-del
 Zero exit-124s, correct UID, TRUE dedupe, MIME clean. 129 opened ROs, 0 menus / $0.00.
 Sanity scan confirmed genuine (16 TEK ops, all numeric-suffix, zero menu-set overlap).
 
-## (8/25 12:05PM, Opened) TEXTBOOK CLEAN RUN — 5th consecutive genuine $0 day
-Zero exit-124s across ALL 4 calls. Hand-off returned in 116s, draft correct FIRST TRY
-(multipart/related > alternative(text/plain+text/html) + image/png Content-ID=<scorecard>
-+ application/pdf). No dedupe needed (0 existing drafts with today's exact subject).
-Verification asks all FIRST try with "use raw IMAP, NOT the Gmail API" leading + parts-only
-part-listing wording: subject-list 31s, MIME part-listing 51s, Sent-check 31s.
-BOGUS-UID VARIANT recurred: save confirmation said "Draft ID 42661 / IMAP UID 42661" but the
-subject-list showed UID 76; the part-listing ask replied "UID 76 not found. Found by subject
-at UID 42661 instead" and listed correct MIME. The standing `UID N (subject "<exact>") ...
-if that UID is wrong, find it by that exact subject instead` wording self-heals every time.
-Sent-check = 4 hits, all old em-dash-era sends (06/30-07/03), zero today = no leak.
-DATA: 105 opened ROs scanned, 0 menus / $0.00 — FIFTH straight $0 opened day (8/23 noon
-through 8/25 noon). Sanity scan over the first 60 ROs confirmed genuine: only 7 TEK ops, ALL
-numeric-suffix (TEK09030103 x3, TEK09050103 x2, TEK09010103, TEK09010105), ZERO menu-set
-hits; classic real-$0 prefix histogram (FLO 46, TPS/SUR/INV 45, MPV 44, TXM 32, UCD 31,
-CON 18, REC 12, LOF 10). ESCALATE: five straight $0 opened days + three zero-delta closed
-days on a store running 60-215 ROs/day is a store-side menu-presentation/process problem,
-not a pipeline bug — keep telling Joe explicitly each run until it changes.
-Drafts stack = 11 TOL total (08/21-08/25 Opened & Closed pairs + the perennial 08/02
-em-dash pair UIDs 19/20) — no true dupes.
-SANITY-SCAN PROBE RECIPE THAT WORKED (reuse verbatim): build `_probe_<date>.py` that does
+## (8/25 12:05PM, Opened) Clean run — 5th consecutive genuine $0 day
+Zero exit-124s. Bogus-UID variant recurred (reported 42661, subject-list said 76; part-listing
+self-healed off the exact subject). 105 opened ROs, 0 menus / $0.00; sanity scan genuine.
+SANITY-SCAN PROBE RECIPE (reuse verbatim): build `_probe_<date>.py` that does
 `import tol_menu_sales_api as O`, `O.fetch_ros(ms0, ms1)`, then per RO
 `O.call("GET", f"/repair-orders/{rid}/jobs")` -> `jobs["data"]["jobs"]` ->
 `O.call("GET", f"/repair-orders/{rid}/jobs/{j['id']}/operations")` -> `ops["data"]["roOperations"]`.
-Cap it at ~60 ROs (full 105 would exceed the execute_code 300s budget; 60 took 149s).
+Cap at ~60 ROs (full 105 exceeds the execute_code 300s budget; 60 took 149s).
 
 ## (8/25 8:05PM, Opened) TEXTBOOK CLEAN RUN — 6th consecutive genuine $0 day
 Zero exit-124s across ALL 4 calls, CORRECT UID (78) reported and it worked first try on the
@@ -1041,6 +1024,30 @@ not from `opened.records`. Also `totals.parts_price` ($180.02) != `parts_gross` 
 the scorecard and email use GROSS.
 Drafts stack tiny (7): 08/21-08/26 hyphen-subject Opened drafts + the perennial 08/02 em-dash
 one (UID 41547).
+
+## (8/27 8:05PM, Closed MTD) TEXTBOOK CLEAN RUN — best closed day of August
+Zero exit-124s across ALL 4 ask-agent calls. Draft correct FIRST TRY, no dedupe needed (0 prior
+drafts with today's exact subject). All 3 verification asks FIRST try with "use raw IMAP, NOT
+the Gmail API" leading + parts-only part-listing wording. MIME clean: multipart/mixed > related
+> alternative(text/plain 784B + text/html 1178B) + image/png Content-ID=<scorecard> 103,819B
+inline + application/pdf 86,156B; bolded total $8,463.74 confirmed in body.
+BOGUS-UID recurred: save confirmation AND subject-list BOTH said UID 92; part-listing replied
+"UID 42749 — UID 92 was wrong" and resolved by exact subject. Standing `UID N (subject
+"<exact>") ... if that UID is wrong, find it by that exact subject instead` wording self-heals.
+Stacey again volunteered the UNPROMPTED "Gmail draft preview doesn't reliably render CID images,
+want a hosted-image version?" caveat (same as 8/27 noon) — IGNORE it, the part-listing proved a
+real image/png cid part; do NOT order an Imgur rebuild. Sent-check = 2 hits, both old June 1-29
+em-dash emails (token trap, item 5b) — no leak.
+NEW: her first build attempt hit a bytes-handling bug in her OWN dedupe loop and she
+self-recovered inside the SAME ask (reported "no partial state", then saved). Don't re-fire on
+a mid-reply error narration if the final line says the draft saved — verify by subject instead.
+DATA: 162 closed ROs scanned, 6 prefilter hits, 6 new menu rows -> MTD moved 31 rows /
+$7,344.56 to **37 rows / $8,463.74** ($5,742.74 labor + $2,721.00 parts). Today's +$1,119.18 is
+the biggest single-day closed add of August and the 2nd consecutive non-zero closed day after
+the 8/22-8/25 flat streak — the store-side menu-presentation escalation is easing; tell Joe.
+Top advisor Gustavo Alatorre (18 menus, $2,353.65); Michael Hachey 3/$2,096.36. Closed-append
+ran FOREGROUND in ~30s. Drafts stack (Closed stem) = 8: Aug 1-21..1-27 + perennial 08/02
+em-dash (UID 19) — no true dupes.
 
 ## (8/26 8:05PM, Closed MTD) TEXTBOOK CLEAN RUN — zero exit-124s, flat streak BROKEN
 Hand-off returned in 216s (no timeout), draft correct FIRST TRY, no dedupe needed (0 prior
