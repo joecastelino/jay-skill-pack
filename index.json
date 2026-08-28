@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-28T12:15:03",
+ "generated": "2026-08-28T12:30:22",
  "skill_count": 201,
  "skills": [
   {
@@ -307,6 +307,14 @@
    "last_used": "2026-08-03"
   },
   {
+   "name": "tekion-clock-time-by-opcode",
+   "path": "automotive/tekion-clock-time-by-opcode",
+   "category": "automotive",
+   "description": "Build an \"actual tech clocked time vs billed time BY OPCODE\" report (over-clock / unapplied-time-at-opcode-grain) for any Tekion store. Uses the internal rosearchservice visibility-dashboard TECH_CLOCK datasource (the engine behind the custom \"Ro Actual Time Report\"), which carries opcode on every clock punch \u2014 something the standard Tech Performance report cannot do (its Unapplied Hours is per-technician only). Verified SV (826) 2026-07-20.",
+   "times_used": 10,
+   "last_used": "2026-08-28"
+  },
+  {
    "name": "tekion-roles-permissions",
    "path": "automotive/tekion-roles-permissions",
    "category": "automotive",
@@ -337,14 +345,6 @@
    "description": "Build the DealerDetail Tekion API-driven data pipeline (replacing the email/Excel prototype) by acting as PM and delegating tickets to Claude Code, then verifying independently. Covers the ticket workflow, the live infra (Supabase project, branch, creds), and the hard-won gotchas (Supabase shadow-DB, server-only smoke tests, git credential path, Tekion app-scope 403 on user lookups).",
    "times_used": 9,
    "last_used": "2026-08-11"
-  },
-  {
-   "name": "tekion-clock-time-by-opcode",
-   "path": "automotive/tekion-clock-time-by-opcode",
-   "category": "automotive",
-   "description": "Build an \"actual tech clocked time vs billed time BY OPCODE\" report (over-clock / unapplied-time-at-opcode-grain) for any Tekion store. Uses the internal rosearchservice visibility-dashboard TECH_CLOCK datasource (the engine behind the custom \"Ro Actual Time Report\"), which carries opcode on every clock punch \u2014 something the standard Tech Performance report cannot do (its Unapplied Hours is per-technician only). Verified SV (826) 2026-07-20.",
-   "times_used": 9,
-   "last_used": "2026-08-28"
   },
   {
    "name": "tekion-writer-handoff-report",
@@ -539,6 +539,14 @@
    "last_used": "2026-07-14"
   },
   {
+   "name": "tekion-flag-vs-actual-hours-report",
+   "path": "automotive/tekion-flag-vs-actual-hours-report",
+   "category": "automotive",
+   "description": "Build a \"closed ROs where tech FLAGGED hours were below ACTUAL clocked time\" report (unpaid flat-rate tech time) for any Tekion store, per-tech per-RO grain. Uses two internal endpoints discovered 2026-07-30 - /ro/v1/{id} carries per-tech flag entries (flagTimesWithPayDay) and clockDetails/fetch carries per-tech actual punches. Also documents the repair-orders:search pageNumber-IGNORED pagination trap and its closedTime-bisection fix. Verified SV (826) Jul 1-15 2026.",
+   "times_used": 4,
+   "last_used": "2026-08-28"
+  },
+  {
    "name": "tekion-journal-entry-error-diagnosis",
    "path": "automotive/tekion-journal-entry-error-diagnosis",
    "category": "automotive",
@@ -617,14 +625,6 @@
    "description": "Pull declined/deferred service data (recommendations customers didn't buy) for any Tekion store via the internal Deferred Services report API \u2014 service name, counts, dollar estimates, customer/vehicle/advisor detail. Zero OpenAPI quota; works when OVERALL_QUOTA is exhausted. Use for marketing campaign lists (Autumn) or lost-sales analysis.",
    "times_used": 3,
    "last_used": "2026-08-18"
-  },
-  {
-   "name": "tekion-flag-vs-actual-hours-report",
-   "path": "automotive/tekion-flag-vs-actual-hours-report",
-   "category": "automotive",
-   "description": "Build a \"closed ROs where tech FLAGGED hours were below ACTUAL clocked time\" report (unpaid flat-rate tech time) for any Tekion store, per-tech per-RO grain. Uses two internal endpoints discovered 2026-07-30 - /ro/v1/{id} carries per-tech flag entries (flagTimesWithPayDay) and clockDetails/fetch carries per-tech actual punches. Also documents the repair-orders:search pageNumber-IGNORED pagination trap and its closedTime-bisection fix. Verified SV (826) Jul 1-15 2026.",
-   "times_used": 3,
-   "last_used": "2026-08-28"
   },
   {
    "name": "tekion-generic-placeholder-part-swap",

@@ -1117,28 +1117,11 @@ MTD Sent count 0 (the single `BC 8/25` Sent hit was Stacey's separate auto-sent
 Daily Opened report, 14517). Left the sibling Daily Closed 8/25 draft (42669)
 untouched — different report type, not a duplicate.
 
-## 2026-08-26 noon Daily Closed run — textbook one-shot, 23rd consecutive clean "N dollars" build
-7 menus, $640.84 labor / $490.65 parts = $1,131.49 (Jacob Debussey 4 / $352.46,
-Humberto Dominguez 3 / $779.03 — only two advisors on the board). 40 closed ROs → 7
-carried TEK menu opcodes; `✓ all candidate ROs scanned`; vision-verified KPI band
-(crop 460px + 2x LANCZOS) matched JSON exactly. Pull ran via
-`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
-Stacey's build: `execute_code` + `subprocess.run` argument list wrapped in
-`timeout 600` → returned cleanly in **59s** (fastest Daily build logged), no
-exit-124, no recovery probe, no self-correction text → no duplicate (pattern
-holds). Terse DONE line correct with `TOTAL=$1,131.49` and her reported id (42696)
-MATCHED himalaya's. Verified via the stdlib-`email` parser: To=Restrada, Cc real
-None, From=Joe, Subject auto-decoded with em-dashes, inline PNG **byte-for-byte
-identical** (118,981 bytes), PDF **byte-for-byte identical** (53,406 bytes), all 5
-figures present exactly once, `<b>$1,131.49</b>` bold, greeting + footer present,
-zero ' dollars'/USD leftovers (checked after stripping the data URI), and per the
-8/25 5pm `$037.72` lesson explicitly checked the leading-digit-stripped variants
-($131.49, $1.49): both zero. Exactly 1 draft, Daily-Closed Sent count 0 (the single
-`BC 8/26` Sent hit was Stacey's separate auto-sent Daily Opened report, 14573). No
-stale prior 8/26 draft to clean up (noon run = first of the day). The explicit
-"dollar sign goes before the FIRST digit including the thousands comma, verify the
-char after the $ is the digit 1" instruction is now standard on every ask where the
-total exceeds 1,000 — 2nd consecutive run with zero regex corruption since adding it.
+## 2026-08-26 noon Daily Closed run — textbook one-shot, 23rd consecutive clean build
+7 menus, $640.84 / $490.65 = $1,131.49 (Jacob Debussey 4, Humberto Dominguez 3). All
+byte-for-byte checks passed, no duplicate. Confirms the explicit "dollar sign goes before
+the FIRST digit including the thousands comma" ask instruction is now standard on every ask
+where the total exceeds 1,000.
 
 ## 2026-08-26 5pm Daily Closed run — textbook one-shot, 24th consecutive clean "N dollars" build
 14 menus, $1,963.54 labor / $1,107.98 parts = $3,071.52 (Humberto Dominguez 5 / $1,032.21,
@@ -1290,6 +1273,24 @@ Exactly 1 MTD 8/27 draft, MTD Sent count 0. Left the sibling Daily Closed 8/27 d
 older no-new-lessons "textbook clean" run entries (keep the one-line lesson, drop repeated
 byte counts/boilerplate) to free space. Prune the oldest purely-confirmatory entries first —
 never the trap/failure-mode sections.
+
+## 2026-08-28 noon Daily Closed run — textbook one-shot, 29th consecutive clean "N dollars" build
+5 menus, $962.84 labor / $425.43 parts = $1,388.27 (Dimetri Reynoso 3 / $893.88, Humberto
+Dominguez 1 / $350.87, Juan Ramirez 1 / $143.52). 55 closed ROs → 5 carried TEK menu opcodes;
+`✓ all candidate ROs scanned`; vision KPI band (crop 460px + 2x LANCZOS) matched JSON exactly.
+Pull via `terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
+**write_file→background-terminal ask pattern, 4th straight run, returned inside ONE 180s wait**
+(`/tmp/bc_ask_0828_noon.py`, `subprocess.run` argument list, `timeout 560`). Terse DONE line
+correct with `TOTAL=$1,388.27`, her reported id (42800) MATCHED himalaya's, no self-correction
+text → no duplicate. Verified via the stdlib-`email` parser: To=Restrada, Cc real None,
+From=Joe, Subject auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (113,261
+bytes), PDF **byte-for-byte identical** (53,639 bytes), all 6 figures present exactly once,
+`<b>$1,388.27</b>` bold, greeting + footer present, zero ' dollars'/USD/CORRECTION leftovers,
+leading-digit-stripped variants ($388.27, $1.27, $,388.27) all 0. Exactly 1 draft,
+Daily-Closed Sent count 0. No stale prior 8/28 draft (noon = first run of the day).
+**Skill-size housekeeping**: SKILL.md was at 99,644 chars pre-append (100k limit). Condensed
+the purely-confirmatory 2026-08-26 noon entry to a 5-line summary to free room, per the
+8/27-MTD pruning note. Continue pruning oldest confirmatory entries — never trap sections.
 
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.

@@ -571,18 +571,8 @@ today matches, no leak. Draft-list-by-subject search cleanly enumerated all 4 st
 Closed-MTD drafts (Aug 1-2, 1-7, 1-8, 1-9) with correct id|subject pairs on the first try
 — her self-reported "Draft ID: 41923" happened to be correct this time too, but keep
 verifying independently via subject search + drafts.get per the standing bogus-ID pitfall
-rather than trusting the reported id.
-the Gmail API token was expired again, Stacey successfully fetched the FULL MIME part
-listing (multipart/mixed > multipart/related > multipart/alternative(text/plain +
-text/html) + image/png Content-ID=scorecard,filename + application/pdf,filename) via
-raw IMAP against `[Gmail]/Drafts` (UID-based) and explicitly noted "fetched via IMAP
-... Gmail API token is expired ... Same MIME structure regardless." So during an OAuth
-outage, still ask her the part-listing question — she falls back to raw IMAP UID fetch
-and gets equivalent MIME detail; don't skip it as "can't check." Only real limitation:
-her own himalaya-numbered IDs are NOT the same as IMAP UIDs, so a self-reported numeric
-draft id during a token outage may not match what Gmail-side tools show — keep
-verifying by exact subject text rather than trusting any reported id (per the existing
-"bogus draft ID" pitfalls).
+rather than trusting the reported id. (Duplicate OAuth/IMAP-fallback paragraph removed here
+— see the CORRECTION (8/08 EOD) section above for the canonical version.)
 
 (8/11 EOD) Another fully clean one-shot on a genuine $0 opened day (170 ROs scanned, 0
 menus — real zero). Draft 42177 correct first try (multipart/related > alternative
@@ -986,6 +976,23 @@ escalation. Note the JSON's `totals.parts_price` ($130.43) differs from `parts_g
 the scorecard/KPI + email use PARTS GROSS — use gross, not price.
 Drafts stack = 13 TOL total (08/21-08/26 Opened & Closed pairs + the perennial 08/02 em-dash
 pair UIDs 19/20) — no true dupes.
+
+## (8/28 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, CORRECT UID reported
+Draft correct FIRST TRY at UID 95; reported UID was CORRECT (bogus-UID trap did NOT recur).
+No dedupe needed. Subject-list first try (17 stacked TOL drafts, 08/21-08/28 pairs + the
+perennial 08/02 em-dash pair UIDs 19/20).
+NEW MINOR TRAP: the full "list EVERY MIME part, one line each: mimeType | Content-ID |
+filename | size" wording TRUNCATED mid-reply ("Part 1: multipart/mixed | CID=" then stopped,
+RC=0 — a cut-off stream, NOT a timeout). Fix in ONE shot after `sleep 20`: collapse to a
+3-line numbered probe — "(1) image/png part w/ Content-ID scorecard? yes/no + byte size
+(2) any part w/ filename ending .pdf? yes/no + byte size (3) the bolded total". Returned
+"(1) yes, 78748 (2) yes, 66838 (3) $309.54" instantly. PREFER this 3-line form. Sizes are
+BASE64-encoded (57,544B PNG -> 78,748; 48,843B PDF -> 66,838) — don't flag vs on-disk sizes.
+Sent-check = 4 hits, all old em-dash-era sends (06/30-07/03), zero today = no leak.
+DATA: 99 opened ROs, **2 menus / $309.54** ($194.49 labor + $115.05 parts). Gustavo Alatorre
+1/$157.68 (RO 399030 TEK10000BNM 2023 Tundra 4WD); Michael Hachey 1/$151.86 (RO 399026
+TEK40000BNM 2024 GR Corolla). Third consecutive non-zero opened day after the 8/23-8/25 $0
+streak. `records` empty (0) while `rows` had both entries — the 8/26 quirk RECURS; read `rows`.
 
 ## (8/27 8:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, TRUE dedupe first try
 Hand-off returned in 220s (no timeout), draft correct FIRST TRY, dedupe TRUE (noon draft
