@@ -138,6 +138,52 @@ valid `payDay` inside the report window. Nothing in the UI can fix this — the
 flag is already correct on the RO. It needs a Flag Hours Report adjustment to
 pay the tech, plus a Tekion ticket for the indexing defect.
 
+## DELIVERABLE — the CORRECTED Tech Performance report (BT 512, 2026-08-28)
+
+Once you've proven an index drop, Joe's next message is **"can you generate a
+corrected version for me?"** — same shape as the advisor closed-performance
+reports. Build it, don't just describe the gap.
+
+```bash
+cd /home/itadmin/tekion-reports
+python3 render_tech_perf_corrected.py \
+    data/bt-<emp>-corrected-<YYYY-MM-DD>.json "<Tech Name>" <emp> <YYYY-MM-DD>
+```
+Outputs `out/tech_perf_corrected_bt_<emp>_<date>.{png,pdf,csv}`.
+
+Input JSON keys: `native` (the lineItem from `/reporting/technician`), `indexed`
+(that day's `/breakdown` rows), `missing` (recovered entries), `clock` (`{roNo: hrs}`
+from TECH_CLOCK), `store_name`, `wage_per_hour` (CENTS), `tech`, `date`.
+
+Layout: 4 KPI cards (Flagged-Tekion / Flagged-Corrected / Proficiency / **Tech Pay
+Impact in dollars** — that last one is what makes it actionable), a Tekion-vs-
+Correction-vs-Corrected metric table, the recovered-entries table with a **Fix Path**
+column, then page 2 = the full flag ledger with an `In Report? yes/NO — dropped`
+column plus clocked-vs-flagged by RO.
+
+**Fix Path rule:** RO status `INVOICED`/`CLOSED` → *Flag Hours Report adjustment*;
+anything else (`READY_FOR_INVOICE`, `IN_PROGRESS`) → *tech time modal on the RO*.
+
+### Two data traps that produced wrong numbers on the first render
+1. **Don't reuse a `payDay` you carried in from a hand-built dict.** RO 151197's
+   timestamp printed as 09:27 instead of the true 13:27. Re-read `payDay` from the
+   RO document's `flagTimesWithPayDay[]`, matching on `flagTimeInSeconds`.
+2. **PRORATE labor sale to the flagged share.** `sum(labor.preSplits[].amountToSplit)`
+   is the WHOLE operation's sale. RO 149531 flagged 0.10 hr of a 0.70 hr operation —
+   charging the full $169.83 overstated the recovery by $145. Use
+   `sale * flag_sec / op_billing_sec`. Correct total was $919.86, not $1,065.43.
+
+Report both `flagTimeInSeconds` and `operationBillingTimeInSeconds` in the ledger so
+a partial flag is visible rather than looking like a discrepancy.
+
+### Native metric definitions (confirmed against `/reporting/technician`)
+- Efficiency % = flag / clocked · Proficiency % = flag / attendance
+- Unapplied = attendance − flag (**goes negative when corrected flag > attendance** —
+  that is real and worth calling out, not a render bug)
+- **`departmentId NIN [<dealer>_department_5]` is the screen's DEFAULT filter.** With it
+  applied BT 512 showed 4.30 flag hrs; without it, 7.80. If your native total doesn't
+  match what the user sees, this filter is why — capture `__post_body` and match it.
+
 ## Method
 
 1. **Refresh session + headers** (captures die ~2h): run
