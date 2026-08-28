@@ -42,6 +42,31 @@ suffix the filename. Outputs PNG (page-1 summary), PDF (full RO detail), CSV
 - Resolves advisor names via `GET /users/{id}` (cached in-process).
 - Auto-flags **negative-gross** ROs and **partially-closed** ROs in a banner.
 
+## 🤖 FLEET AUTOMATION — all 7 stores, nightly, one email per store (live 2026-08-28)
+Joe asked for the whole fleet on a cron with **separate emails by store**. Wired:
+
+`/home/itadmin/tekion-reports/fleet_advisor_daily.sh` — cron **3:30 AM daily** (Joe is up
+by 4). For each of `st bt bc tl sv vc ar`, in order: scrape yesterday → render →
+`mtd_append.py` onto the running MTD → `mail_advisor_daily.py`. ~15 min end to end.
+- **SEQUENTIAL with 60s cooldowns.** Never parallelize — it drains the app-wide
+  OVERALL_QUOTA bucket and breaks every other Tekion consumer for hours.
+- **`flock -n` on `/tmp/advisor-fleet-daily.lock`** so a long run can't overlap the next.
+- Slot chosen to miss the 2 AM VI pull and the 11 PM dealer-detail sync.
+- Per-store failures are isolated (`continue`), and an MTD-append failure still ships the
+  daily. Takes an optional date arg for a manual backfill: `fleet_advisor_daily.sh 2026-08-27`.
+
+`mail_advisor_daily.py --store <s> --date <d>` builds the per-store email: 6-column summary
+(Advisor/ROs/Bill Hrs/ELR/Hrs/RO/Total Gross), the T-3 index-lag explainer, auto-generated
+**outlier callouts** (heavy-repair lane = Hrs/RO ≥2.5; internal/warranty queue = ≥8 ROs with
+<$250 parts; whale = ≥22% of store gross), CID inline PNG + PDF + CSV. `--dry-run` to preview,
+`--native "N ROs / $X"` to add a head-to-head line.
+
+**Fleet baseline, closed 8/27/2026** (use for sanity-checking future runs):
+SCT 225/$49,554.21 · BT 161/$62,284.54 · TOL 162/$32,027.01 · BC 91/$29,981.94 ·
+SV 32/$28,830.33 · VC 31/$12,383.44 · AR 4/$6,427.84. **Fleet 706 ROs / $221,489.31.**
+Note SV/VC/AR are LOW RO count but high $/RO (SV = $901/RO) — that's normal for those
+stores, not a scrape failure.
+
 ## ⭐ NEVER RE-SCRAPE MTD — APPEND THE DAILY (Joe's directive 2026-08-28)
 Joe asked for this explicitly to cut runtime and tokens: **`MTD(1..N) = MTD(1..N-1) + daily(N)`**.
 A full MTD re-scrape is ~42,000 calls / ~90 min; a daily is ~2–4 min. Use:
