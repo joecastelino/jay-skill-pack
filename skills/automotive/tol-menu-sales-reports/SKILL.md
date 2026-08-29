@@ -749,69 +749,23 @@ All 3 verification asks returned FIRST try with "use raw IMAP, NOT the Gmail API
 ("TOL Menu Sales - Opened", no date/parens, per the 8/18 tip) returned 4 hits, all old em-dash-era
 sends (06/30-07/03), zero today = no leak. Hyphen-instead-of-em-dash subject tactic held again.
 
-## (8/20 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, zero corrections
-Best-case run on record for the Opened pipeline. Hand-off returned in **74s** (no timeout),
-draft 42535 correct FIRST TRY: multipart/mixed > related > alternative(text/plain+html) +
-image/png Content-ID=<scorecard> (51,288 B) + application/pdf (45,013 B). All three
-verification asks returned FIRST try and FAST with "use raw IMAP, NOT the Gmail API"
-leading the ask: subject-list **14s**, MIME part-listing **25s**, Sent-check **33s** —
-markedly faster than the 30-70s typical, suggesting Gmail/IMAP was healthy. No dedupe
-needed (no prior draft with today's exact subject). Sent-check = 4 hits, all the old
-em-dash-era sends (06/30-07/03), zero today = no leak; \Draft-flag follow-up skipped as
-unnecessary per the 8/17 note. Hyphen-instead-of-em-dash subject tactic held again
-(now 5+ consecutive clean subjects). Opened draft stack down to just **2** (08/19, 08/20)
-— Joe has cleared the backlog, including the long-standing 08/02 duplicate pair.
-Running the verification asks via `execute_code` + `subprocess.run([...])` with an argv
-LIST (never a shell string) continues to sidestep every quoting/paren/`&` pitfall.
-
-## (8/20 8:05PM, Opened) Clean one-shot; reported UID was WRONG but Stacey self-corrected
-Hand-off returned in 100s (no exit-124), draft correct FIRST TRY with TRUE dedupe (noon draft
-found and deleted on her own). All 3 verification asks returned FIRST try with "use raw IMAP,
-NOT the Gmail API" leading: subject-list 59s, MIME part-listing 117s, Sent-check 27s.
-BOGUS-ID VARIANT: her save confirmation said "Draft UID: 97", and the subject-list ALSO showed
-`97 | TOL Menu Sales - Opened (08/20/2026)` — but when asked to part-list UID 97 she replied
-"UID 97 does not exist in [Gmail]/Drafts. The draft ... is actually UID 42550" and listed the
-correct MIME anyway (multipart/mixed > related > alternative(text/plain+html) + image/png
-Content-ID=<scorecard> + application/pdf). So even the ids in her SUBJECT-LIST output can be
-her own himalaya numbering rather than real IMAP UIDs — always phrase the part-listing ask as
-"UID N (subject '<exact subject>')" so she can self-correct off the subject when the id misses.
-Sent-check = 4 hits, all old em-dash-era sends (06/30-07/03), zero today = no leak.
-Draft stack back up to 22 (07/31-08/20), including the 08/02 true-duplicate pair (ids 21/23)
-which has REAPPEARED after looking cleared on 8/18/8/20-noon — flag to Joe, don't auto-delete.
-
-## (8/21 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, zero corrections, correct UID
-Hand-off returned in 136s (no timeout), draft UID 42573 correct FIRST TRY (multipart/mixed >
-related > alternative(text/plain 502B + text/html 962B) + image/png Content-ID=<scorecard>
-80,124B + application/pdf 69,108B). No dedupe needed. All 3 verification asks returned FIRST
-try with "use raw IMAP, NOT the Gmail API" leading: subject-list 47s, MIME part-listing 59s,
-Sent-check 35s. Notably the reported/listed UID 42573 was CORRECT this time (no bogus-ID
-self-correction needed) — but keep phrasing the part-listing ask as `UID N (subject "<exact>")`
-+ "if that UID is wrong, find it by that exact subject instead" since it costs nothing.
-Sent-check via the SHORT subject stem returned 4 hits, all old em-dash-era sends (06/30-07/03),
-zero today = no leak. Draft stack down to 3 total TOL drafts (08/20 Opened, 08/20 Closed MTD,
-08/21 Opened) — the 08/02 duplicate pair is gone again. Stacey noted mid-run that a raw
-"cid:scorecard byte search missed because the HTML body gets content-transfer-encoded" — that
-is a NORMAL false-negative on her own self-check (quoted-printable/base64 encoded HTML part),
-not a problem; the part-listing verification is what settles it.
-
-## (8/21 8:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, correct UID, no corrections
-Second consecutive textbook run. Hand-off returned in **69s** (no timeout), draft saved correct
-FIRST TRY. All 3 verification asks returned FIRST try with "use raw IMAP, NOT the Gmail API"
-leading the ask: subject-list 57s, MIME part-listing 42s, Sent-check 30s. MIME clean:
-multipart/related > alternative(text/plain 608B + text/html 1052B) + image/png
-Content-ID=<scorecard> 81,002B + application/pdf 70,082B; bold total $590.13 confirmed in body
-(good extra check — ask her to quote the bolded total in the part-listing reply, it verifies the
-body content matches today's data in the same call at zero cost). No dedupe needed (noon run's
-draft did not exist — noon draft absent, only today's EOD one). BOGUS-ID VARIANT recurred mildly:
-her save confirmation said "Gmail Drafts ID: 42580" but the real IMAP UID was 57; she self-noted
-"That ID doesn't match the draft" and switched to raw IMAP search on her own. Sent-check via the
-SHORT subject stem returned 6 hits, all old em-dash-era sends (06/29-07/03), zero today = no leak;
-\Draft-flag follow-up skipped per the 8/17 note. NOTE: the 08/02 em-dash draft (UID 20,
-"TOL Menu Sales — Opened (08/02/2026)") is BACK in the Drafts listing again — it keeps
-reappearing/disappearing across runs depending on whether the search stem is hyphen or em-dash.
-Only ONE copy showed this time (not the old 41542/41547 pair), so it is not a true duplicate;
-keep flagging, don't auto-delete.
-
+## (8/20-8/21, Opened) FOUR consecutive clean runs — condensed
+8/20 noon, 8/20 EOD, 8/21 noon, 8/21 EOD were all clean one-shots: draft correct FIRST TRY,
+MIME clean (multipart/mixed > related > alternative(text/plain+html) + image/png
+Content-ID=<scorecard> + application/pdf), all verification asks first try with "use raw
+IMAP, NOT the Gmail API" leading (14-117s each). Sent-checks = 4-6 hits, ALL old em-dash-era
+sends (06/29-07/03), zero today = no leak. Lessons distilled from these four:
+- BOGUS-UID recurs in a VARIANT where even the SUBJECT-LIST ids are her himalaya numbering,
+  not real IMAP UIDs (8/20 EOD: listed 97, real 42550; 8/21 EOD: reported 42580, real 57).
+  Always phrase the part-listing ask as `UID N (subject "<exact>") ... if that UID is wrong,
+  find it by that exact subject instead` — it self-heals every time.
+- Ask her to QUOTE THE BOLDED TOTAL in the part-listing reply: free body-content check.
+- Her own "cid:scorecard byte search missed" self-note is a NORMAL false negative (the HTML
+  part is content-transfer-encoded); the part-listing is what settles it.
+- The 08/02 em-dash draft keeps appearing/disappearing depending on whether the search stem
+  uses a hyphen or em-dash. Usually ONE copy = not a true dupe. Flag, never auto-delete.
+- Run verification asks via `execute_code` + `subprocess.run([...])` with an argv LIST (never
+  a shell string) — sidesteps every quoting/paren/`&` pitfall.
 ## (8/22 12:05PM, Opened) Clean one-shot; only the MIME part-listing needed retries
 Hand-off returned in 128s (no exit-124), draft UID 59 (himalaya id 42583) correct FIRST TRY:
 multipart/mixed > related > alternative(text/plain+html) + image/png Content-ID=<scorecard>
@@ -985,6 +939,27 @@ escalation. Note the JSON's `totals.parts_price` ($130.43) differs from `parts_g
 the scorecard/KPI + email use PARTS GROSS — use gross, not price.
 Drafts stack = 13 TOL total (08/21-08/26 Opened & Closed pairs + the perennial 08/02 em-dash
 pair UIDs 19/20) — no true dupes.
+
+## (8/29 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, all 4 asks first try
+Hand-off returned in 69s, draft correct FIRST TRY, no dedupe needed (0 prior drafts with
+today's exact subject). All 3 verification asks returned FIRST try with "use raw IMAP, NOT
+the Gmail API" leading + the 3-line numbered part probe (per the 8/28 truncation lesson):
+subject-list 40s, part-probe 39s, Sent-check 21s. MIME clean: image/png Content-ID
+scorecard 57,098B + .pdf 47,766B; bolded total $774.85 confirmed in body.
+BOGUS-UID variant recurred (mild): save confirmation said "Draft UID 42819", subject-list
+said UID 95 — the standing `UID N (subject "<exact>") ... if that UID is wrong, find it by
+that exact subject instead` wording self-healed it. Verify by SUBJECT, always.
+Sent-check = 4 hits, all old em-dash-era sends (06/30-07/03), zero today = no leak.
+CONFIRMED: the 3-line numbered probe ("(1) png+CID yes/no+size (2) any .pdf filename
+yes/no+size (3) bolded total") is now the PREFERRED part-verification form — second
+consecutive run where it returned fast with no truncation and no retry.
+DATA: 100 opened ROs scanned, **2 menus / $774.85** ($520.80 labor + $254.05 parts).
+Mauricio Orellana 1/$527.45 (RO 399209 TEK30000BNM 2020 GR Supra); Gustavo Alatorre
+1/$247.40 (RO 399208 TEK30000BNM 2023 Highlander). Fourth consecutive non-zero opened
+day after the 8/23-8/25 $0 streak. `records` empty (0) while `rows` had both entries —
+the 8/26 quirk now RECURS every run; ALWAYS read `rows`, never `records`.
+`totals.parts_price` ($570.87) != `parts_gross` ($254.05) — scorecard/email use GROSS.
+Opened drafts stack = 10 (08/21-08/29 + perennial 08/02 em-dash UID 19), no true dupes.
 
 ## (8/28 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, CORRECT UID reported
 Draft correct FIRST TRY at UID 95; reported UID was CORRECT (bogus-UID trap did NOT recur).
