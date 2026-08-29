@@ -324,7 +324,7 @@ it reads as the report being wrong.** Always state which definition is in play.
 
 ## Delivering it by email — USE `jay_mail.py`, NOTHING ELSE
 
-### ## 📧 MTD MAILER (built 2026-08-28)
+### 📧 MTD MAILER (built 2026-08-28)
 `mail_advisor_mtd.py --store <st|bt|bc|tl|sv|vc|ar> --start YYYY-MM-DD --end YYYY-MM-DD [--dry-run]`
 Reuses `mail_advisor_daily.py`'s CODE/OUT/money/summary_rows. Reads
 `out/advisor_closed_gross_<store>_<start>_<end>{,_perf}.{json,png,pdf,csv}`.
@@ -338,6 +338,13 @@ re-clear with `M.uid('store', u, '-FLAGS', '(\\Seen)')` AFTER the final verify p
 and re-check, because one clear can get re-stamped.
 PITFALL: `X-GM-RAW subject:(...)` multi-term searches return `BAD Could not parse
 command` from imaplib — verify per Message-ID with `rfc822msgid:<bare-id>` instead.
+
+**Delivered 2026-08-28, all 7 Aug 1–27 MTD packs** (advisor counts, useful as a
+roster sanity check): SCT 3,975/$946,833.61/19 adv · BT 3,141/$748,912.38/23 ·
+TOL 3,427/$686,274.10/22 · BC 1,620/$632,576.09/13 · SV 513/$229,875.45/9 ·
+VC 549/$187,101.70/4 · AR 83/$115,539.47/2. Joe's ask arrived as *"I need the 7
+month to date emails, you sent me the Dailey"* — i.e. once the dailies ship, the
+MTD pack is the expected follow-up. Send both, or say explicitly which you sent.
 
 🚨 2026-08-28: IMAP APPEND IS NOT DELIVERY — always SMTP, even to Joe
 Joe: *"I don't see them in my email"* about 7 reports that IMAP had confirmed were in
@@ -429,6 +436,9 @@ on both the SMTP send and the IMAP append → Gmail collapses them into one mess
 labeled BOTH `\Inbox` and `\Sent` and marked `\Seen`. Technically in the inbox,
 but pre-read and merged into the Sent conversation, so Joe never sees it.
 **Fix: self-sends go IMAP-APPEND ONLY, fresh Message-ID, appended UNREAD.**
+🚨 **SUPERSEDED 2026-08-28** — append-only was the WRONG fix; it made the mail
+invisible to Joe. Correct fix = SMTP with a **fresh Message-ID** (that alone defeats
+the dedup collapse) + clear any `\Seen` afterward.
 
 **Trap 2 — Gmail omits the SELECTED mailbox's own label from X-GM-LABELS.**
 Same message, three different answers:
@@ -462,12 +472,11 @@ an `image/png` with `CID=<scorecard>` + `disp=inline`, plus pdf/csv attachments,
 and `cid:scorecard in html == True` / `data:image in html == False`.
 
 ## Cron vs one-off
-Don't assume a recurring job. Joe explicitly declined a cron here ("I dont want it
-on a cron job, just a 1 time report for now") — offer it, but default to a one-time
-run unless he says otherwise. **As of 2026-08-28 this report is still on NO cron** —
-all 15 Hermes crons are menu-sales / alignment / warranty-closings / deferred /
-bin-check / gbrain. Every run of this report is manual, on-demand, for all 4 stores
-built so far (SCT, BT, BC, TL).
+**UPDATED 2026-08-28 — this report IS now on a cron.** `fleet_advisor_daily.sh` runs
+3:30 AM daily for all 7 stores (see the FLEET AUTOMATION section). Joe's earlier "I
+dont want it on a cron job" applied to the one-off SCT build only; he later escalated
+to the whole fleet on a schedule. MTD emails remain **manual/on-demand** —
+`mail_advisor_mtd.py` is not in the cron.
 
 ## ⚠️ ARCHITECTURE DEBT — it re-scrapes the whole window every run (Walter II asked, 2026-08-28)
 `advisor_closed_gross_mtd.py` is **stateless**: it hits the OpenAPI live for the
@@ -513,8 +522,10 @@ fan-out, same RO population, same advisor dimension. What each side uniquely has
 After the pair lands, Joe's next message is usually **"send them to me"** (BC,
 2026-08-27). That means: BOTH reports, **two separate emails** (one Daily, one MTD
 — do not merge), each with the scorecard PNG inline via CID + the PDF + the CSV
-attached, delivered through `JM.send_report(..., to=None)` (append-only self-send,
-fresh Message-ID, UNREAD). Then verify per the delivery section: select
+attached, delivered through `JM.send_report(..., to=None)` — **SMTP, fresh
+Message-ID, left UNREAD** (the older "append-only self-send" instruction elsewhere
+in this file is OBSOLETE; see the IMAP-APPEND-IS-NOT-DELIVERY section — an append
+has no `Received:` header and Joe cannot see it). Then verify per the delivery section: select
 `[Gmail]/All Mail`, search `X-GM-RAW rfc822msgid:`, parse the label SET, walk the
 MIME tree, assert `data:image` absent, and clear any `\Seen` from INBOX. Report the
 verification result in one line — Joe has been burned by "verified" that wasn't.

@@ -9,6 +9,9 @@ triggers:
   - GL account mapping
   - accounting error tekion
   - journal entry won't post
+  - SO going into JE error
+  - cost center not found
+  - imbalance transaction
 ---
 
 # Tekion Journal Entry ERROR Diagnosis
@@ -199,7 +202,12 @@ Before you go hunting mappings, split the error queue by **Balance** (header lin
 | Balance | Meaning | Fix owner |
 |---|---|---|
 | **$0.00** + one GL cell reads `"Select"` | **Mapping gap** — Tekion built a balanced entry but couldn't resolve one account | Jay (config) |
+| **$0.00** + **every GL resolved, no blank** | **Tekion posting-service defect** — nothing to fix, the entry is valid. Just repost | Joe (repost) — see §5d |
 | **Non-zero** (Dr ≠ Cr) | **Malformed entry** — lines are missing, not accounts. No mapping change will fix it | Accounting must rebuild |
+| `COST_CENTER_NOT_FOUND` + line-1 GL literally `null` | **Cost-centre not mapped** (internal ROs) — add the centre in Setup Fields → Cost Centre Setup, then Refresh + Submit each JE | Joe (config) |
+
+⚠️ **Do not assume mapping gap.** Two of the four buckets above look identical in the Error tab
+(both Balance $0.00). The discriminator is whether a GL cell is blank — check before diagnosing.
 
 Real example (SCT 8/24/2026) — 117 errors, 114 were the mapping gap, 2 were NOT:
 - `1686422` Warranty Credit Memo — Balance **−$236,238.16**: Dr `3001 A/P-TOYOTA` $261,581.49 vs only
@@ -325,6 +333,81 @@ Second confirmed instance of the same class of defect, different store/slot:
   `0 Result(s)` on a real SO. Results are prefix-ish and the previous rows stay below, so read only
   the first block after `Dep. Name`.
 
+## 5d. TL (Toyota of Lancaster, 1092) — SO 863805 / JE 877332, 2026-08-29 — the NON-defect bucket
+
+**This is the case that proves not every Error JE has anything wrong with it.** Joe asked about
+one SO going into JE error; the reflex was "another mapping gap like SCT/VC." It was not.
+
+JE `877332` — journal `32 - PARTS CASH SALES`, doc type `4 - Parts Invoice`,
+`WHOLESALE - Part Sale - 863805-1`, 8/28/26, Jorge Belmontes:
+```
+2100 ACCTS RCVBLE-CUST      +103.12   control 1322103
+4750 SLS-PARTS WHSL-MECH    -103.12
+6750 C/S-PARTS WHSL-MECH     +96.85
+2410 PARTS-TOYOTA (EX TIRES) -96.85
+Debit 199.97 = Credit 199.97 · Balance $0.00 · all 4 GLs resolved · NO blank line
+```
+
+**How it was ruled out as a defect (reuse this method):**
+1. **Diff against posted siblings with matching scope** — same customer control (`1322103`), same
+   day, same journal, same doc type. Found 7 posted twins (`877289 877291 877293 877299 877305
+   877329`) that are byte-for-byte the same shape, same accounts, same control type, same `count`
+   flags. If a posted twin exists with an identical structure, it is **not** a config gap.
+2. **Ask Tekion's own validator.** The Aug-2026 "Error Detection and Resolution" feature exposes an
+   **`/error-report`** endpoint on the JE — it returned **`errorCount: 0`** for 877332. Tekion itself
+   cannot name a defect on the record. Always hit this before writing a diagnosis; it's the fastest
+   discriminator between "bad record" and "failed to post."
+3. **Look at the posting-batch timeline.** Errors and successes were interleaved second-by-second:
+   `10:15:33 ERROR 877282 · 10:16:27 POSTED 877285 · 10:16:51 ERROR 877287 · 10:17:27 POSTED 877289
+   · 10:24:21 ERROR 877309 · 10:30:02 POSTED 877329 · 10:30:17 ERROR 877332`. Interleaving = a
+   per-transaction failure on Tekion's posting service, **not** an outage and **not** a config gap
+   (a config gap fails 100% of the matching sale type, deterministically). That day: 21 wholesale
+   parts JEs failed, 45 identical ones posted.
+
+**Conclusion + remedy:** the 21 are valid entries that fell over on Tekion's side → **just repost**.
+Open the JE → tick **"Perform action and move to next Journal Entry"** (bottom left) → Submit,
+which chains straight to the next error. **Change no GL account on these.** A repost that fails
+again on an untouched entry is the proof for the Tekion ticket.
+
+**Full TL error queue that day (29 open and still growing — 6 appeared during the session):**
+
+| # | Bucket | Real defect? |
+|---|---|---|
+| 21 | Wholesale parts sales, journal 32 (incl. 877332) | **No** — balanced, mapped, `errorCount 0` → repost |
+| 5 | `IMBALANCE_TRANSACTION` — ROs 398883, 397786, 398859, 396920 + Warranty Credit Memo 874332 ($125,525.71) | **Yes** — Dr ≠ Cr, lines truncated → accounting rebuilds |
+| 3 | `COST_CENTER_NOT_FOUND` — internal ROs 398649, 398467, 394780 | **Yes** — cost centre `66abf46265ab9216a9e72a0a` unmapped, line-1 GL is `null` |
+
+**Escalation packet for a Tekion ticket** (this framing is what makes it undeniable): pair
+**877332 (ERROR)** against **877329 (POSTED)** — same customer, same journal, same doc type, same
+four GL accounts, **15 seconds apart**, and Tekion's own error-report returns `errorCount: 0` on
+the failed one.
+
+### Pull the JE from the accounting API, not the DOM
+This whole diagnosis was done read-only against the accounting API (captured axios headers replay
+from plain urllib, same as the other internal Tekion endpoints). Much faster than the virtualized
+list + react-select scraping in §2–3, and it gives you `count` flags, control numbers, error codes
+(`IMBALANCE_TRANSACTION`, `COST_CENTER_NOT_FOUND`) and the `/error-report` result that the UI
+never surfaces. **Use the API for the diagnosis; use the UI only when Joe needs to click something.**
+
+---
+
+## 5e. HARD RULE — Joe owns the GL writes
+
+Established 2026-08-29 on this case: Jay offered to fire the 21 resubmits; Joe said **"don't want
+you to resubmit. What can I do on my end."**
+
+- **Never** resubmit/repost a journal entry, add a GL mapping row, or change accounting setup
+  without an explicit, unambiguous go-ahead. Reposting writes to the general ledger.
+- The general AUTOMATION MANDATE (run it yourself, ship automation) applies to **reports, scrapers,
+  opcodes** — **not** to posting to the GL.
+- Offer the action, state plainly that it's a real GL write, then **stop and wait**.
+- Default deliverable for accounting issues = **diagnosis + exact click-path Joe can execute**,
+  split by who owns each bucket (Joe / accounting / Tekion), plus an offer to draft the vendor ticket.
+- Read-only lookups (resolving a cost-centre ID to its name, pulling JE lines) are fine unprompted —
+  say "read-only, no changes" so he knows.
+
+---
+
 ## 6. Reporting to Joe
 
 He wants: the count, the pattern (grouped by order/creator/journal — not 10 unrelated bullets), the
@@ -332,6 +415,14 @@ exact blank line quoted against a working posted example, the one-sentence root 
 he could apply. Explicitly restate that you changed nothing. If an ID he gave doesn't resolve, say so
 and ask what it is rather than guessing (7-digit JE IDs prefix-match, so a 6-digit number will return
 a bogus 10-row "hit" — don't present that as the answer).
+
+**Split the queue by OWNER, not just by symptom** (§5d table is the model): which JEs Joe can repost
+himself, which need a config row, which accounting has to rebuild, and which are Tekion's defect.
+Lead with the largest bucket and its remedy. Offer to draft the vendor ticket text.
+
+**Do NOT lead with a mapping-gap story until you've confirmed a GL cell is actually blank** — SCT
+and VC were mapping gaps, TL was not, and pattern-matching to the previous store's root cause is
+exactly the kind of confident-wrong answer Joe rejects.
 
 ## Related skills
 - `tekion-sitemap` — nav base; Accounting URLs above are mirrored there

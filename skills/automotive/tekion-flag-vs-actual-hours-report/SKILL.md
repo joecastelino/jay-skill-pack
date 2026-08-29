@@ -140,12 +140,28 @@ pay the tech, plus a Tekion ticket for the indexing defect.
 
 **Corroborate across stores before calling it a Tekion defect** (the standing
 fleet-comparison rule — a single store's oddity has repeatedly turned out to be
-local config). Confirmed at **two of seven** stores so far: BT 1249 tech 512, and
-BC 1251 tech 5576 (Tafolla). Shared signature worth quoting in the ticket: both
-hour-bearing drops were **WARRANTY** pay type, both `AUTO_ADDED`, both flagged the
-**same day (08/26)**, both present on the RO document. Zero-hour entries drop too
+local config). Confirmed at **two of seven** stores, **3 of the first 4 techs
+checked** (2026-08-28, window Aug 16–27):
+
+| store | emp | tech | dropped entries | hours | $ @ wage |
+|---|---|---|---|---|---|
+| BT 1249 | 512 | Luis Vasquez Melchor | 4 | 3.80 | — |
+| BC 1251 | 5576 | Victor Tafolla | 4 | 2.40 | $124.80 @ $52 |
+| BC 1251 | 410 | Craig Holman | 2 | 3.40 | $176.80 @ $52 |
+| BC 1251 | 192 | Michael Barks | 0 | 0.00 | clean |
+
+**Signature to quote in the Tekion ticket — it has held for every hour-bearing
+drop across both stores:** pay type **WARRANTY**, `flagHourType AUTO_ADDED`,
+flagged in the **back half of the pay period** (08/26–08/27), present and valid
+on the RO document, absent from the ES index. Zero-hour entries drop too
 (Tafolla RO 101268, customer pay) — same index failure, no pay impact, so count
 entries dropped separately from hours dropped.
+
+**Drops are NOT confined to closed ROs** — Holman's 2.40 hr drop was on RO 101329
+`IN_PROGRESS`, his 1.00 hr drop on RO 100980 `INVOICED`. One tech's drop list can
+therefore need BOTH fix paths; always print the RO status per dropped entry and
+split the remediation list (tech-time modal vs Flag Hours Report adjustment)
+rather than assuming a single path per tech.
 
 ### ⭐ TWO RENDERERS — the clean one is usually what he actually wants
 Joe's follow-up to the corrected version was **"write it so it doesn't look like

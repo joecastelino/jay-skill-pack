@@ -859,6 +859,14 @@ If the by-advisor JSON + PNG/PDF are already stamped ~19:50 the PRIOR evening, t
 already shipped — do NOTHING. Re-running rebuilds the whole index and burns OpenAPI
 quota for identical data. Cross-check this skill's own dated confirmation notes too: if
 the night in question is already written up here with matching totals, it's a replay.
+**Recurred 2026-08-29 (~04:04 AM reset)** — the 8/27 run's completion message
+(`TOTALS {'dedicated': 312, 'bundled': 33, 'total': 345}`) was re-delivered TWO days later,
+so the replayed notice is not necessarily from the immediately-preceding night. The totals
+line in the replayed message is the fastest discriminator: match it against this skill's
+dated notes (8/27 = 345 / 312 + 33) — if it's already written up, it shipped. Correct
+response is a one-line "stale replay, nothing to do" plus the evidence (file mtimes,
+Stacey's verified `DRAFTS_COUNT=1 | TO_HEADER=... | SENT_TODAY=0`); do NOT re-render, do
+NOT re-ask Stacey (a second handoff would create a duplicate draft for that night).
 
 ## Pitfalls recap
 - Opcode set is SCT-specific (ALIGN/OKAL/ALIGN00BRA). Other stores differ — see

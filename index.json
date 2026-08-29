@@ -1,6 +1,6 @@
 {
- "generated": "2026-08-29T04:00:06",
- "skill_count": 201,
+ "generated": "2026-08-29T04:15:06",
+ "skill_count": 202,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -1039,6 +1039,14 @@
    "path": "automotive/tekion-browser-automation",
    "category": "automotive",
    "description": "Log into Tekion DMS via browser automation or Puppeteer, retrieve OTP from Gmail IMAP, navigate to modules, switch dealerships, and update opcode pricing (Fixed Price labor rates, add parts, save). Covers Ant Design dropdown patterns, scrollable containers, and the complete opcode edit workflow.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-cashier-other-payment-error",
+   "path": "automotive/tekion-cashier-other-payment-error",
+   "category": "automotive",
+   "description": "Diagnose a Tekion Cashiering failure \u2014 either the generic \"error something went wrong\" on an \"Other\" payment to a GL account, OR a greyed-out `Collect Payment` button / insurance-split payment error. Read-only diagnostic playbook \u2014 covers the Control type-ahead trap, open-job blockers, CVSC/contract payers, GL controlField config, and the Split-Type-change-un-invoices-the-RO trap. Use when a store says \"I can't cashier this RO\", \"payment error on the insurance split\", or \"Other close to <GL> errors out\".",
    "times_used": 0,
    "last_used": null
   },
