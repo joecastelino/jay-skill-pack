@@ -124,6 +124,15 @@ Stacey's drafts can silently come out wrong — always run a follow-up READ-ONLY
    EXACT subject + sent date and compare. Only an exact-subject, today-dated hit
    means the draft was sent.
 
+### DRAFT-CLEANUP COLLATERAL DAMAGE (2026-08-28)
+Deleting a stale duplicate draft "by UID N" is RISKY: Gmail Drafts resists IMAP delete so
+Stacey falls back to `himalaya message move`, and **himalaya IDs != IMAP UIDs**. On 8/28
+she moved a wrong ID first, sweeping a legit SCT report + ~30 inbox items into Trash.
+Fix: have her resolve the himalaya ID by matching SUBJECT in a Drafts listing; ALWAYS
+follow with a read-only "what moved to Trash in the last 15 min (subject + From)" ask and
+restore casualties via "move ID X back to INBOX". Em dashes break her IMAP search strings,
+so a delete may be reported failed when it actually worked — re-verify without the dash.
+
 ### COMPETING SEND CRONs in Stacey's own profile (discovered 2026-07-05 noon)
 The email-agent (Stacey) profile has its OWN cron jobs `TOL Menu Sales - 12:05 PM
 (Opened Only)` and `TOL Menu Sales - 8:05 PM (Opened & Closed)` (file
