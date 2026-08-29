@@ -495,6 +495,38 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   part as 178,305 vs the PARTS ask's 131,922 — the familiar two-reports-of-the-same-part
   discrepancy (notes 8/9/8-23), both pass, not a duplicate signal. Short sleeps throughout
   (15s then 10s), no timeouts. Underscore-stripped keys again.
+  **Confirmed again 2026-08-28 (18th consecutive clean night) — the note-27 through-date
+  substring anchor is NOT enough on its own; the ENUMERATION is:** OPS probe 200 (same
+  validated RO/job pair, unchanged since 8/3); no same-day index pre-run; no competing
+  consumer. Index 4,214 closed ROs (up 239 from 8/27's 3,975), 1,389 candidates, 0 failed,
+  ~51 min (19:01→19:52). Window end advanced 1787900399999 → 1787986799999 and index grew
+  544,982 → 579,593 B (both fresh-index confirmations); id diff new: 239, dropped: 0.
+  361 alignments (327 dedicated + 34 bundled), 361 ROs, 16 advisors. **Chris Mai is now
+  SOLO #1 with 40** (Jaime Sanchez 38; Artist Battle and Cristian Gonzalez tied 35) — the
+  multi-way tie at the top has broken.
+  **Trap refinement:** the note-27 recipe (bake the through-date into the verify substring)
+  did NOT prevent the false count this time — the ask used the full
+  `'SCT Alignment Sales by Advisor - August MTD (through 8/28)'` substring and STILL came
+  back `DRAFTS_COUNT=15`, i.e. she matched every August night despite the date being in
+  the substring. So the through-date anchor helps but is not reliable; **the date-free
+  SUBJECT+DATE enumeration (note 26) is the only trustworthy per-night discriminator.**
+  It resolved in 30s: 16 matches listed, each with a DISTINCT through-date, exactly ONE
+  reading "(through 8/28)". Never dedupe on a raw DRAFTS_COUNT — always enumerate first.
+  Also note that enumeration incidentally reveals Joe has 15 August drafts still sitting
+  unsent in Drafts (8/14 → 8/28) plus the July MTD leftover; that's his review backlog,
+  not a pipeline fault.
+  Stacey's build completed on the FIRST ask (119s) with paths + on-disk sizes baked in,
+  though her transcript showed several internal self-corrections (typo'd addheader, a
+  missed regex, "syntax mangling") before succeeding — internal retries do NOT imply
+  duplicate drafts (enumeration proved 1). Her build reply: HTML part 177,575B, PDF part
+  337,054B (exact on-disk). Final PARTS ask (162s, no timeout):
+  `RAW_SIZE=642,755 | text/plain:385 text/html:131,451 application/pdf:337,054 |
+  PDF_FILENAME=SCT-Alignment-By-Advisor-MTD-2026-08-28.pdf` — HTML cleared PNG*4/3
+  (130,731) by only **720 bytes** (fourth tight pass of the month, still a PASS per note
+  13), PDF part an exact on-disk match, filename carrying today's date. `SENT_TODAY=0`,
+  `TO_HEADER=kstapp@sctoyota.com`. Note again her build reply vs PARTS reply disagreed on
+  the HTML part size (177,575 vs 131,451) — the familiar two-reports-of-the-same-part
+  discrepancy, both pass, not a duplicate signal.
   **Confirmed again 2026-08-16 (6th consecutive clean night, quota fully healthy):**
   pre-flight OPS probe (same validated RO/job pair) returned 200. Index built 2,364
   closed ROs, 771 candidates, 0 failed, ~30 min scan (19:01→19:31, no backoff
