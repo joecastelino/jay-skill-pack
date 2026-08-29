@@ -205,6 +205,22 @@ Aug 1-24, Aug 1-25, Aug 1-26) — usual token-match trap. 8/22 duplicate pair ab
 MTD advisor leaders: Erick Villasenor Gonzalez 14/$19,961.69, Jon Lo 44/$12,842.09,
 Michael Rankin 41/$10,245.26.
 
+### (8/29 run, for Fri 8/28) CLEAN — DO-NOT-DOUBLE-SEND paragraph blocked a real SMTP-login failure retry
+236 closed ROs, 24 prefilter hits, 23 new menu rows, `all candidate ROs scanned`. MTD moved
+316 rows/$81,882.02 -> **339 rows / $90,251.64** ($66,624.36 labor + $23,627.28 parts).
+8/28-dated rows alone = 10 menus / $2,019.24 (rest of the +$8,369.62 delta = store closing
+older invoiced ROs) — state both numbers in the body, same as the 8/26-8/28 runs.
+Stacey's FIRST SMTP attempt failed at LOGIN ("connection closed before authentication").
+Per the CRITICAL paragraph she did NOT blind re-send: she IMAP-checked Sent Mail (empty),
+probed `openssl s_client -connect smtp.gmail.com:465`, confirmed reachable, then wrote
+`/tmp/send_bt_email.py` and sent once. Result: exactly ONE email (Message-ID
+<178800872946...>, 06:05:29 PDT, 565 KB). Hand-off ran ~3m31s (needed TWO `process(action=
+'wait')` calls — first 180s wait timed out, second 150s wait returned); verification 60s
+first try. IMAP Sent-check = 9 hits, exactly one with today's subject (Aug 1-28), other 8
+prior sends (Jul 1-28, Jul 1-30, Aug 1-8, 1-18, 1-24, 1-25, 1-26, 1-27) — usual token trap.
+MTD advisor leaders: Erick Villasenor Gonzalez 15/$21,868.08, Jon Lo 50/$14,351.96,
+Michael Rankin 42/$11,344.55, Jason Davis 69/$10,705.04.
+
 ### Verification ask wording that works first try
 Lead with `IMPORTANT: print the answer as plain text IN THIS REPLY` AND
 `Use himalaya / raw IMAP against "[Gmail]/Sent Mail" (NOT the Gmail API)` — the

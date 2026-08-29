@@ -123,8 +123,32 @@ plus `bc-/bt-/sct-/tol-advisor-cache.json`. Unknown → resolve via OpenAPI
 `GET /openapi/v4.0.0/users/{id}` with `dealer_id=americanmotorscorporation_<id>_0`.
 **Gotcha:** `r["data"]` is sometimes a LIST — use `r["data"][0] if isinstance(list)`.
 Name at `userNameDetails.completeNames[DISPLAY_NAME]`. Write new ids back to `advisor-name-cache.json`.
+**Working recipe (verified 2026-08-29, resolved `3fd74487-…` → Louie Vallejo Jr in ~1 min):**
+```python
+import sys; sys.path.insert(0, "/home/itadmin/tekion-api")   # NOT /home/itadmin/tekion-reports
+import tekion_client as tc
+cfg = tc.load_config()
+r = tc.api_get(cfg, f"/openapi/v4.0.0/users/{uid}", "americanmotorscorporation_1251_0", {})
+d = r["data"]; d = d[0] if isinstance(d, list) else d
+name    = d["userNameDetails"]["completeNames"][0]["value"]        # completeNames is a LIST of
+persona = d["userRoleDetails"]["primaryRole"]["persona"]           # {nameType,value} dicts
+```
+Two traps: `completeNames` is a **list of dicts**, not a dict keyed by DISPLAY_NAME —
+`.get("DISPLAY_NAME")` returns None. And persona is at `userRoleDetails.primaryRole.persona`;
+there is no top-level `personas`/`roles` key. After writing the cache, **re-run the pull** (not just
+the renderer) — the name is baked in at pull time.
 Note some ids resolve to non-advisor personas (e.g. BC `8c0d2da8…` = Dale Alexander, INVENTORY_MANAGER)
 — they still carry deferred lines as RO primary advisor; keep them but don't assume they're writers.
+
+## Reference run (BC / 1251, Fri 8/28/2026)
+31 declined lines · 16 ROs · $36,868.51 · 13 Critical — **trailing-7 peak**, above Mon 8/24's $35,836.63.
+Houa Moua #1 $9,380.40, Juan Ramirez $8,169.24, Michael Reyes $4,829.20, Jeremia Navarro $4,435.72,
+Humberto Dominguez $4,095.70, Dale Alexander $2,793.11, Jacob Debussey $1,932.49,
+Dimetri Reynoso $843.35, **Louie Vallejo Jr $389.30 (NEW id `3fd74487-…`)**. Draft UID 42817. PDF = 10 pages.
+New unresolved id resolution worked exactly as documented (see Advisor names) — note the OpenAPI
+persona lives at `userRoleDetails.primaryRole.persona`, NOT a top-level `personas` key. Louie Vallejo Jr
+= **SERVICE_MANAGER** (secondary role SERVICE_ADVISOR), i.e. a SECOND non-writer persona alongside
+Dale Alexander now appearing in the BC ranking — call both out when presenting.
 
 ## Reference run (BC / 1251, Tue 8/25/2026)
 36 declined lines · 11 ROs · $20,443.83 · **29 Critical (81% — unusually high vs 9/43 on Mon 8/24)**.
