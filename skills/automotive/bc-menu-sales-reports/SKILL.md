@@ -768,24 +768,34 @@ present, zero ' dollars'/USD leftovers (checked after stripping the data URI),
 exactly 1 draft (42574), Daily-Closed Sent count 0. The only `BC 8/21` Sent hit
 was Stacey's separate auto-sent Daily Opened report (14160) — not a leak.
 
-## 2026-08-21 5pm Daily Closed run — textbook one-shot, 9th consecutive clean "N dollars" build
-15 menus, $2,038.12 labor / $894.45 parts = $2,932.57 (Humberto Dominguez 4 /
-$1,296.21, Jacob Debussey 4 / $712.76, Houa Moua 2 / $174.46, Juan Ramirez 2 /
-$484.83, Michael Reyes 2 / $126.61, Dimetri Reynoso 1 / $137.70). 81 closed ROs →
-15 carried TEK menu opcodes; `✓ all candidate ROs scanned`; vision-verified KPI
-band matched JSON exactly. Pull ran via `terminal(background=true)` + a SINGLE
-`process(action="wait", timeout=180)`. Stacey's build: `execute_code` +
-`subprocess.run` argument list wrapped in `timeout 600` → returned cleanly in
-**95s**, no exit-124, no recovery probe, terse DONE line correct with
-`TOTAL=$2,932.57`. No self-correction text in her reply → no duplicate (pattern
-holds). Verified via the stdlib-`email` parser: To=Restrada, Cc real None,
-From=Joe, inline PNG **byte-for-byte identical** (212,280 bytes), PDF
-**byte-for-byte identical** (57,199 bytes), all 9 figures present exactly once,
-`<b>$2,932.57</b>` bold, greeting + footer present, zero ' dollars'/USD leftovers
-(checked after stripping the data URI). Deleted the stale noon draft (42574) per
-the twice-daily cadence rule, kept 42576 → exactly 1 draft. Sent folder's two
-`BC 8/21` hits were both Stacey's separate auto-sent Daily Opened reports
-(14160, 14184); Daily-Closed Sent count 0.
+## 2026-08-21 5pm Daily Closed run — textbook one-shot, 9th consecutive clean build
+15 menus, $2,038.12 / $894.45 = $2,932.57 (Humberto Dominguez 4, Jacob Debussey 4, Houa
+Moua 2, Juan Ramirez 2, Michael Reyes 2, Dimetri Reynoso 1). All byte-for-byte checks
+passed, no duplicate. Deleted the stale noon draft per the twice-daily cadence rule.
+
+## 2026-08-28 6:16pm Closed MTD run — textbook one-shot, 31st consecutive clean "N dollars" build
+212 menus, $32,664.44 labor / $21,424.29 parts = $54,088.73 (Aug 1-28). Advisors:
+Juan Ramirez 48 / $14,190.55, Houa Moua 40 / $8,541.14, Humberto Dominguez 36 /
+$11,913.03, Dimetri Reynoso 29 / $6,803.92, Jacob Debussey 23 / $3,385.70, Michael
+Reyes 19 / $4,273.98, Erik Mercado 11 / $3,656.53, Jeremia Navarro 6 / $1,323.88.
+Master asof was 2026-08-27 → default append (no seed/catch-up); 109 closed ROs → 10
+carried TEK menu opcodes → master 212 rows; `✓ all candidate ROs scanned`. Pull via
+`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`. Vision KPI
+band (crop 460px + 2x LANCZOS) matched JSON exactly; master `_gross` sums matched the
+emitted report `totals` exactly. **write_file→background-terminal ask pattern, 6th
+straight run, returned inside ONE 180s wait** (`/tmp/bc_ask_0828_mtd.py`,
+`subprocess.run` argument list, `timeout 560`). Terse DONE line correct with
+`TOTAL=$54,088.73`, her reported id (42812) MATCHED himalaya's, no self-correction text
+→ no duplicate. Verified via the stdlib-`email` parser: To=Restrada, Cc real None,
+From=Joe, Subject auto-decoded with em-dashes, inline PNG **byte-for-byte identical**
+(1,662,570 bytes), PDF **byte-for-byte identical** (91,609 bytes), all 11 figures present
+exactly once, `<b>$54,088.73</b>` bold, greeting + footer present, zero
+' dollars'/USD/CORRECTION leftovers, all 12 leading-digit-stripped variants = 0. Exactly
+1 MTD 8/28 draft, MTD Sent count 0 (the single `BC 8/28` Sent hit was Stacey's separate
+auto-sent Daily Opened report, 14727). Left the sibling Daily Closed 8/28 draft (42811)
+untouched — different report type.
+**Skill-size housekeeping**: condensed the 2026-08-21 5pm confirmatory entry to stay
+under the 100k limit. Keep pruning oldest confirmatory entries — never trap sections.
 
 ## 2026-08-21 6:16pm Closed MTD run — textbook one-shot, 10th consecutive clean "N dollars" build
 151 menus, $23,728.51 labor / $15,838.31 parts = $39,566.82 (Aug 1-21). Advisors:
