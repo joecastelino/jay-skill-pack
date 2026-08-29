@@ -703,22 +703,11 @@ duplicate (consistent with the 8/19 MTD lesson: duplicates track her "let me fix
 re-create" retry loop, not the ask itself). All byte-for-byte checks passed.
 
 ## 2026-08-20 5pm Daily Closed run — textbook one-shot, 6th consecutive clean "N dollars" build
-13 menus, $1,383.58 labor / $1,070.35 parts = $2,453.93 (Juan Ramirez 3 / $455.63,
-Houa Moua 2 / $603.09, Dimetri Reynoso 2 / $557.60, Jacob Debussey 2 / $324.90,
-Humberto Dominguez 2 / $291.80, Michael Reyes 1 / $134.45, Jeremia Navarro 1 /
-$86.46). 74 closed ROs → 13 carried TEK menu opcodes; `✓ all candidate ROs
-scanned`; vision-verified KPI band matched JSON exactly. Pull ran via
-`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
-Stacey's build: `execute_code` + `subprocess.run` argument list wrapped in
-`timeout 600` → returned cleanly in **90s**, no exit-124, no recovery probe,
-terse DONE line correct with `TOTAL=$2,453.93`. No self-correction text in her
-reply → no duplicate (pattern holds). Verified via the stdlib-`email` parser:
-To=Restrada, Cc real None, From=Joe, inline PNG **byte-for-byte identical**
-(205,216 bytes), PDF **byte-for-byte identical** (57,338 bytes), all 10 figures
-present exactly once, zero ' dollars'/'USD' leftovers, `<b>$2,453.93</b>` bold.
-Deleted the stale noon draft (42536) per the twice-daily cadence rule, kept
-42540 → exactly 1 draft. Sent folder showed two `BC 8/20` hits — both Stacey's
-separate auto-sent **Daily Opened** reports; `grep -i "Daily Closed"` = 0.
+13 menus, $1,383.58 / $1,070.35 = $2,453.93 (Juan Ramirez 3, Houa Moua 2, Dimetri
+Reynoso 2, Jacob Debussey 2, Humberto Dominguez 2, Michael Reyes 1, Jeremia Navarro 1).
+All byte-for-byte checks passed, no duplicate. Deleted the stale noon draft per the
+twice-daily cadence rule. Sent folder's two `BC 8/20` hits were Stacey's separate
+auto-sent Daily Opened reports; `grep -i "Daily Closed"` = 0.
 
 ## 2026-08-20 6:16pm Closed MTD run — textbook one-shot, 7th consecutive clean "N dollars" build
 134 menus, $21,559.91 labor / $14,824.10 parts = $36,384.01 (Aug 1-20). Advisors:
@@ -960,26 +949,10 @@ pipeline correctly produced nothing on a closed Sunday). Left the sibling Daily 
 draft (42597) untouched — different report type, not a duplicate.
 
 ## 2026-08-24 noon Daily Closed run — textbook one-shot, 17th consecutive clean "N dollars" build
-4 menus, $365.72 labor / $208.14 parts = $573.86 (Erik Mercado 1 / $218.69, Dimetri
-Reynoso 1 / $146.58, Humberto Dominguez 1 / $108.44, Jacob Debussey 1 / $100.15 —
-four advisors, one menu each). 50 closed ROs → 4 carried TEK menu opcodes;
-`✓ all candidate ROs scanned`; vision-verified KPI band (crop 460px + 2x LANCZOS)
-matched JSON exactly. Pull ran via `terminal(background=true)` + a SINGLE
-`process(action="wait", timeout=180)`. Stacey's build: `execute_code` +
-`subprocess.run` argument list wrapped in `timeout 600` → returned cleanly in
-**111s**, no exit-124, no recovery probe, terse DONE line correct with
-`TOTAL=$573.86`, and her reported id (42630) MATCHED himalaya's. Her reply DID
-contain the recurring em-dash IMAP-search wrinkle ("Em-dash breaks IMAP search.
-Let me just grab the most [recent]") — that's a post-append *verification* step,
-not a rebuild, so no duplicate resulted; dedupe grep confirmed exactly 1 draft.
-Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe,
-Subject auto-decoded with em-dashes, inline PNG **byte-for-byte identical**
-(110,512 bytes), PDF **byte-for-byte identical** (53,199 bytes), all 7 figures
-present exactly once, `<b>$573.86</b>` bold, greeting + footer present, zero
-' dollars'/USD leftovers (checked after stripping the data URI), Daily-Closed
-Sent count 0, no stale prior 8/24 draft to clean up. The single `BC 8/24` Sent
-hit was Stacey's separate auto-sent Daily Opened report (14415).
-**Renderer output path reminder held**: `render_scorecard_bc.py` prints both
+4 menus, $365.72 / $208.14 = $573.86 (Erik Mercado, Dimetri Reynoso, Humberto Dominguez,
+Jacob Debussey — one menu each). All byte-for-byte checks passed, no duplicate. Her reply had
+the recurring em-dash IMAP-search wrinkle — a POST-append verification step, not a rebuild, so
+no duplicate. **Renderer output path reminder held**: `render_scorecard_bc.py` prints both
 absolute output paths (in `data/`, not `out/`) on stdout — read those.
 
 ## 2026-08-24 5pm Daily Closed run — textbook one-shot, 18th consecutive clean "N dollars" build
@@ -1291,6 +1264,31 @@ Daily-Closed Sent count 0. No stale prior 8/28 draft (noon = first run of the da
 **Skill-size housekeeping**: SKILL.md was at 99,644 chars pre-append (100k limit). Condensed
 the purely-confirmatory 2026-08-26 noon entry to a 5-line summary to free room, per the
 8/27-MTD pruning note. Continue pruning oldest confirmatory entries — never trap sections.
+
+## 2026-08-28 5pm Daily Closed run — textbook one-shot, 30th consecutive clean "N dollars" build
+8 menus, $1,092.57 labor / $535.33 parts = $1,627.90 (Dimetri Reynoso 4 / $989.63, Humberto
+Dominguez 1 / $350.87, Juan Ramirez 1 / $143.52, Jacob Debussey 1 / $88.53, Houa Moua 1 /
+$55.35 — five advisors). 107 closed ROs → 8 carried TEK menu opcodes; `✓ all candidate ROs
+scanned`; vision KPI band (crop 460px + 2x LANCZOS) matched JSON exactly. Pull via
+`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
+**write_file→background-terminal ask pattern, 5th straight run, returned inside ONE 180s wait**
+(`/tmp/bc_ask_0828_5pm.py`, `subprocess.run` argument list, `timeout 560`). Terse DONE line
+correct with `TOTAL=$1,627.90`, her reported id (42811) MATCHED himalaya's. Her reply DID
+contain the recurring em-dash IMAP-search wrinkle ("the error was only in the post-append
+verification search") — POST-append verification, not a rebuild, so no duplicate; dedupe grep
+confirmed only 42811 + the expected stale noon draft. Verified via the stdlib-`email` parser:
+To=Restrada, Cc real None, From=Joe, Subject auto-decoded with em-dashes, inline PNG
+**byte-for-byte identical** (151,772 bytes), PDF **byte-for-byte identical** (55,083 bytes),
+all 8 figures present exactly once, `<b>$1,627.90</b>` bold, greeting + footer present, zero
+' dollars'/USD/CORRECTION leftovers, leading-digit-stripped variants ($092.57, $627.90, $1.57,
+$1.90, $,092.57, $,627.90) all 0. Deleted the stale noon draft (42800) per the twice-daily
+cadence rule, kept 42811 → exactly 1 draft. Daily-Closed Sent count 0 (both `BC 8/28` Sent
+hits were Stacey's separate auto-sent Daily Opened reports, 14693 + 14727).
+**Noon→5pm delta**: noon showed 5 menus / $1,388.27; the 5pm run added 3 menus but the total
+only rose ~$240 — a higher menu count does not always mean a proportionally higher total.
+**Skill-size housekeeping**: condensed the purely-confirmatory 2026-08-20 5pm and 2026-08-24
+noon entries to stay under the 100k limit. Keep pruning oldest confirmatory entries — never
+trap sections.
 
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
