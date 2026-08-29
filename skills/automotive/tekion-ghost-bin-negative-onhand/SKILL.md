@@ -298,6 +298,23 @@ BEFORE flagging it as a missed transfer:
   itself is benign, yet the stale companion negative (2418 = −2) was still sitting there
   uncorrected from prior runs. Report the recurrence count and the unresolved companion, not the
   increase.
+- **STATUS UPDATE 2026-08-28 — 04500-1 REGRESSION DAY 4; 31532 Primary REFILLED again.**
+  **04500-1** (5005, single-bin, 5005 IS Primary): −27 → **−28**. Four consecutive deepening days since
+  the 8/25 +97 correction (−23 → −26 → −27 → −28). The correction demonstrably did not hold; frame as
+  "regression day 4, underlying off-book consumption never stopped." On Order = 1. **31532** (5001) FLAT
+  at −58 for a 3rd day, but its SP-ORD Primary went **28 → 32** (refilled again after yesterday's sale);
+  Total Inventory Qty **−26**. The bin-vs-Total divergence persists — stock keeps cycling through SP-ORD
+  while the −58 in 5001 is never touched. **17801-F4010 recurrence #12** — 5006 dropped 6→4 (sale off its
+  own Primary), companion 2418 STILL −2, Total Inventory Qty **2** vs bin 4; unmoved **18 days** since
+  8/11. Flat: 87139-42040 −12 (9th flat day), 87139-YZZ09 −22 (day 21 flat). 87139-YZZ93 5007 36→24
+  reconciled clean (24 Primary + 4111=30 → Total 54 ✓). Negatives held at **26 for an 11th consecutive
+  day** with the IDENTICAL per-bin mix every single day (5000:2, 5001:1, 5002:1, 5004:2, 5005:11, 5006:2,
+  5007:7) — 5007 still owns 4 of the 6 deepest (−235 combined). Session state: :9223 alive/authenticated
+  but bound to a **ServiceNow KB tab** (`tekion.service-now.com/sp/en?id=index`, single tab) and parked on
+  **BC/1251** — recovery was simply `/navigate /home` (welcome:true, no `/pages/select` needed since only
+  one tab existed, no login.py) → dealer pill x1130,y32 → SCT leaf x1074,y344 → 876 in ONE 4s poll (~15s
+  total). 7/7 bins tagged+clicked first try via "500" filter + `data-jaybin`, zero scrolling, Apply at
+  x306,y689, Next at x880,y686, 4 pages clean, 3 diffs / 174 rows, 54/174 with 24h activity.
 - **STATUS UPDATE 2026-08-27 — 04500-1 REGRESSION IS NOW THE HEADLINE (3rd straight day post-correction).**
   **04500-1** (5005, single-bin, 5005 IS Primary): −26 → **−27**. Timeline: −120 (8/24) → +97 correction
   landed 8/25 (−23) → −26 (8/26) → −27 (8/27). Three consecutive deepening days immediately after the
