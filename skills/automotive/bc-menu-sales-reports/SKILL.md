@@ -869,35 +869,18 @@ because the figures are zero. Also worth writing an explicit sentence like "No r
 orders were closed at the store today" into the summary so Ruben reads it as a genuine
 closed-store Sunday rather than a broken feed.
 
-## 2026-08-23 5pm Daily Closed run — second zero-menu Sunday, 15th consecutive clean "N dollars" build
-0 menus, $0.00 labor / $0.00 parts = $0.00. **0 closed ROs** again (same Sunday as the
-noon run — BC service closed all day; both runs of the day were legitimately zero).
-`✓ all candidate ROs scanned`; renderer emitted the "No menu sales recorded yet for this
-period." empty-table variant; vision-verified all four KPI tiles at $0.00 / 0. Pull ran
-via `terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`,
-finished near-instantly.
-**Renderer output path gotcha**: `render_scorecard_bc.py` writes the PNG/PDF into
-`data/`, NOT an `out/` dir — a chained `ls out/BC-...` returns exit 2. The script prints
-the two absolute output paths on stdout; just read those instead of guessing a directory.
-Stacey's build: `execute_code` + `subprocess.run` argument list wrapped in `timeout 600`
-→ returned cleanly in **240s** (slowest clean build so far, still well inside 600 —
-confirms `timeout 600` is the right ceiling, 170/180 would have manufactured an
-exit-124). Her reply DID contain self-correction text ("I'm missing the `<b>` tag around
-the total figure... I'll replace my draft") occurring AFTER an append (draft 42596 had
-already landed) — per the 8/19 lesson that predicts a duplicate, but she used a genuine
-REPLACE (delete + re-append) rather than a blind re-append, so the dedupe grep found only
-42597 + the expected stale noon draft, no duplicate. Refines the heuristic further:
-post-append self-correction risks a duplicate but doesn't guarantee one — she sometimes
-cleans up after herself. Always grep; never assume either way.
-Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
-auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (52,569 bytes), PDF
-**byte-for-byte identical** (39,492 bytes), `<b>$0.00</b>` bold exactly once, greeting +
-footer present, zero ' dollars'/USD leftovers (checked after stripping the data URI).
-Deleted the stale noon draft (42594) per the twice-daily cadence rule, kept 42597 →
-exactly 1 draft. Sent count 0 for `BC 8/23` entirely (not even a Daily Opened hit —
-Stacey's auto-send pipeline correctly produced nothing on a closed Sunday).
-Explicit "the store was closed for Sunday, this is a genuine zero day not a data problem"
-sentence included in the body again per the zero-day note above.
+## 2026-08-23 5pm Daily Closed run — second zero-menu Sunday, 15th consecutive clean build
+0 menus / $0.00; 0 closed ROs (both runs that Sunday legitimately zero). All byte-for-byte
+checks passed; deleted the stale noon draft. Sent count 0 for `BC 8/23` entirely — Stacey's
+auto-send Opened pipeline correctly produced nothing on a closed Sunday.
+**Renderer output path gotcha**: `render_scorecard_bc.py` writes PNG/PDF into `data/`, NOT
+an `out/` dir — a chained `ls out/BC-...` returns exit 2. It prints both absolute output
+paths on stdout; read those instead of guessing a directory.
+**Timeout ceiling confirmed**: her build took 240s — clean, but 170/180 would have
+manufactured a needless exit-124. Use `timeout 600`/`560`.
+Her post-append self-correction ("missing the `<b>` tag... I'll replace my draft") used a
+genuine delete+re-append, so no duplicate resulted — post-append self-correction risks a
+duplicate but doesn't guarantee one. Always grep; never assume either way.
 
 ## 2026-08-23 6:16pm Closed MTD run — zero-activity Sunday, textbook one-shot, 16th consecutive clean "N dollars" build
 160 menus, $24,810.30 labor / $16,591.51 parts = $41,401.81 (Aug 1-23) — **identical to the
@@ -1092,32 +1075,45 @@ draft (42730), Daily-Closed Sent count 0 (the single `BC 8/27` Sent hit was Stac
 separate auto-sent Daily Opened report, 14629). No stale prior 8/27 draft (noon = first
 run of the day).
 
-## 2026-08-27 5pm Daily Closed run — textbook one-shot, 27th consecutive clean "N dollars" build
-14 menus, $2,475.31 labor / $1,826.11 parts = $4,301.42 (Humberto Dominguez 4 / $2,359.58,
-Jacob Debussey 3 / $320.45, Houa Moua 3 / $284.80, Juan Ramirez 2 / $325.94, Michael Reyes
-1 / $772.26, Dimetri Reynoso 1 / $238.39 — six advisors, best Daily total since 8/21 5pm).
-90 closed ROs → 14 carried TEK menu opcodes; `✓ all candidate ROs scanned`; vision-verified
-KPI band (crop 460px + 2x LANCZOS) matched JSON exactly. Pull via
-`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
-**Confirms the 8/27-noon write_file→background-terminal ask pattern as the new default**:
-wrote the Stacey ask to `/tmp/bc_ask_0827_5pm.py` via `write_file` (message as a Python
-literal, `subprocess.run` argument list, `timeout 560`), fired it with top-level
-`terminal(command="/usr/bin/python3 ...", background=true, notify_on_complete=true)` +
-`process wait`. Needed TWO 180s waits (build took ~4-5 min) — note this would have been
-decapitated by `execute_code`'s 300s cap, so the pattern earned its keep on this run.
-Returned cleanly with the terse DONE line (`TOTAL=$4,301.42`). Her reported id was **90**
-vs himalaya's **42745** — the documented Gmail APPENDUID/All-Mail vs Drafts-local UID
-mismatch (intermittent; always grep). No self-correction text → no duplicate.
-Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
-auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (206,037 bytes), PDF
-**byte-for-byte identical** (56,861 bytes), all 9 figures present exactly once,
-`<b>$4,301.42</b>` bold, greeting + footer present, zero ' dollars'/USD leftovers (checked
-after stripping the data URI), leading-digit-stripped variants ($301.42, $475.31, $826.11,
-$359.58, $,301.42, $4.42) all 0. Deleted the stale noon draft (42730) per the twice-daily
-cadence rule, kept 42745 → exactly 1 draft. Daily-Closed Sent count 0 (the single `BC 8/27`
-Sent hit was Stacey's separate auto-sent Daily Opened report, 14640).
-**Noon→5pm delta**: noon showed 7 menus / $1,699.51 with five advisors; the 5pm run doubled
-to 14 menus and added Michael Reyes — normal intraday behavior.
+## 2026-08-27 5pm Daily Closed run — textbook one-shot, 27th consecutive clean build
+14 menus, $2,475.31 / $1,826.11 = $4,301.42 (Humberto Dominguez 4, Jacob Debussey 3, Houa
+Moua 3, Juan Ramirez 2, Michael Reyes 1, Dimetri Reynoso 1). All byte-for-byte checks passed,
+no duplicate; deleted the stale noon draft. Needed TWO 180s `process wait`s (~4-5 min build)
+— **would have been decapitated by `execute_code`'s 300s cap**, so the
+write_file→background-terminal pattern earned its keep. Her reported id was **90** vs
+himalaya's **42745** — the documented APPENDUID mismatch (intermittent; always grep).
+**Noon→5pm delta**: noon 7 menus / $1,699.51 → 5pm doubled to 14 — normal intraday behavior.
+
+## 2026-08-30 noon Daily Closed run — zero-menu SUNDAY; NEW TRAP: re-APPENDing an edited .eml silently no-ops unless you change the Message-ID
+0 menus, $0.00/$0.00 = $0.00. **0 closed ROs** (Sunday, BC service closed — same as 8/23).
+`✓ all candidate ROs scanned`; empty-table variant; vision KPI band (crop 460px + 2x LANCZOS
+on a 1226x900 PNG) read all four tiles $0.00/0. Pull + write_file→background-terminal ask
+pattern (10th straight run) both returned inside ONE 180s wait. Stacey's DONE line correct
+(42831, TOTAL=$0.00), her id MATCHED himalaya's, no duplicate.
+**MY authoring error — always compute the weekday, never assume it**: my ask said "Saturday
+August 30" but 8/30/26 is a SUNDAY. Verify with `TZ=America/Los_Angeles date -d <YYYY-MM-DD>
++%A` BEFORE composing any ask that names the day of week (the zero-day sentence does).
+**NEW TRAP — Gmail IMAP APPEND deduplicates on Message-ID, so a corrected re-append is a
+silent no-op.** Fixing the body myself (stdlib `email` parse → `set_content` on the
+text/plain + text/html parts → `imaplib` APPEND) reported `OK [APPENDUID 6 42832] (Success)`
+and himalaya listed a new uid 42832 — but exporting 42832 returned the OLD "Saturday" body.
+Cause: the edited message kept the original `Message-ID`, and Gmail collapsed it into the
+existing message rather than storing the new bytes. Symptom is nasty because APPEND succeeds
+and a new UID appears, so nothing looks wrong until you re-export and diff the actual text.
+**Fix**: strip and regenerate the header before appending —
+`del msg['Message-ID']; msg['Message-ID'] = email.utils.make_msgid(domain='americanmotorscorp.com')`
+→ appended as 42833 with the corrected "Sunday" body confirmed on re-export.
+**Rule**: after ANY self-built/self-edited IMAP APPEND, re-export the new UID and diff the
+changed text — never trust the APPENDUID OK as proof the new content landed.
+Final: expunged 42831 + 42832, exactly 1 draft (42833). Verified via the stdlib-`email`
+parser: To=Restrada, Cc real None, From=Joe, Subject auto-decoded with em-dashes, inline PNG
+**byte-for-byte identical** (52,243 bytes), PDF **byte-for-byte identical** (39,180 bytes),
+`<b>$0.00</b>` bold exactly once, "Sunday August 30" present, zero
+'Saturday'/' dollars'/USD/EMDASH/CORRECTION leftovers, Daily-Closed Sent count 0 (the single
+`BC 8/30` Sent hit was Stacey's separate auto-sent Daily Opened report, 14819 — note her
+Opened pipeline DID fire on this closed Sunday, unlike 8/23 when it produced nothing).
+**Skill-size housekeeping**: condensed the 8/23-5pm and 8/27-5pm confirmatory entries to fit
+under the 100k limit. Keep pruning oldest confirmatory entries — never trap sections.
 
 ## 2026-08-27 6:16pm Closed MTD run — textbook one-shot, 28th consecutive clean "N dollars" build
 202 menus, $31,196.59 labor / $20,566.76 parts = $51,763.35 (Aug 1-27) — first month to
