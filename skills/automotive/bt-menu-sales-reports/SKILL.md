@@ -221,6 +221,21 @@ prior sends (Jul 1-28, Jul 1-30, Aug 1-8, 1-18, 1-24, 1-25, 1-26, 1-27) — usua
 MTD advisor leaders: Erick Villasenor Gonzalez 15/$21,868.08, Jon Lo 50/$14,351.96,
 Michael Rankin 42/$11,344.55, Jason Davis 69/$10,705.04.
 
+### (8/30 run, for Sat 8/29) CLEAN SEND on a CLOSE-LAG day (closedTime=7)
+Log showed `closed/invoiced ROs today: 7`, 1 prefilter hit, 1 new menu row. The 3-field probe
+with an adjacent-day control settled it as genuine store-side close lag, not starvation:
+8/29 closedTime=7 / invoicedTime=132 / creationTime=129 (all 200); control 8/28 closedTime=236
+/ invoiced=234 / created=139. Per the DECISION RULE: MTD valid, render + send normally, and
+state the lag in the email body (did so — 132 invoiced vs 7 closed, 8/29 contributed $166.40).
+MTD moved 339 rows/$90,251.64 -> **340 rows / $90,418.04** ($66,747.48 labor + $23,670.56 parts).
+.sh-wrapper + quoted-heredoc + DO-NOT-DOUBLE-SEND paragraph: one-attempt send in **60s**, zero
+SMTP errors (Message-ID <178809503800...>, 06:03 PDT). IMAP Sent-check returned in **72s** first
+try, 10 hits, exactly one carrying today's subject (Aug 1-29) — other 9 all prior sends
+(Jul 1-28, Jul 1-30, Aug 1-8, 1-18, 1-24, 1-25, 1-26, 1-27, 1-28), usual token-match trap.
+Stacey's himalaya grep returned nothing and she self-corrected to raw imaplib — normal.
+MTD advisor leaders: Erick Villasenor Gonzalez 15/$21,868.08, Jon Lo 50/$14,351.96,
+Michael Rankin 42/$11,344.55, Jason Davis 70/$10,871.44, Gio Elenes 12/$8,206.70.
+
 ### Verification ask wording that works first try
 Lead with `IMPORTANT: print the answer as plain text IN THIS REPLY` AND
 `Use himalaya / raw IMAP against "[Gmail]/Sent Mail" (NOT the Gmail API)` — the
