@@ -940,6 +940,29 @@ the scorecard/KPI + email use PARTS GROSS — use gross, not price.
 Drafts stack = 13 TOL total (08/21-08/26 Opened & Closed pairs + the perennial 08/02 em-dash
 pair UIDs 19/20) — no true dupes.
 
+## (8/29 8:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, TRUE dedupe, all 4 asks first try
+Both scripts ran FOREGROUND clean (opened pull ~seconds, render ~seconds) — no backoff, no
+scraper contention on a Saturday evening. Hand-off returned RC=0 in 117s; draft correct FIRST
+TRY at himalaya ID 42826 / IMAP UID 98, and TRUE dedupe happened (noon draft IMAP UID 95 with
+the identical subject actually deleted; subject-list showed Count: 1). All 3 verification asks
+returned FIRST try with "use raw IMAP, NOT the Gmail API" leading + the 3-line numbered part
+probe: subject-list 104s, part-probe 51s, Sent-check 42s.
+MIME clean: image/png CID scorecard 88,580B + .pdf 69,758B (base64-inflated from on-disk
+64,730 / 50,975 — expected, don't flag). Bolded total $789.02 confirmed in body.
+BOGUS-UID variant recurred (mild): Stacey's save summary said "himalaya ID 42826, IMAP UID 98"
+but the subject-list returned 42826 as the UID. Cosmetic — verify by SUBJECT, always.
+SENT-CHECK NOTE: broad `subject contains "TOL Menu Sales"` now returns 6 hits (not the 4 seen
+in prior runs) — the extra 2 are the same old June/July em-dash-era sends surfaced by the
+broader search string. ALL 6 are 06/29-07/03; zero today = no leak. A rising hit count on the
+BROAD query is not a regression, just a looser match term.
+DATA: 115 opened ROs scanned, **3 menus / $789.02** ($507.76 labor + $281.26 parts).
+Mauricio Orellana 1/$413.73 (RO 399209 TEK30000BNM 2020 GR Supra); Gustavo Alatorre 1/$247.40
+(RO 399208 TEK30000BNM 2023 Highlander); Michael Hachey 1/$127.89 (RO 399281 TEK10000BNM 2021
+Corolla). The first two are the same ROs the noon run caught ($774.85) — Hachey's 399281 is the
+afternoon add. `records` empty (0) while `rows` had all 3 — the 8/26 quirk STILL RECURS every
+run; ALWAYS read `rows`, never `records`.
+`totals.parts_price` ($621.55) != `parts_gross` ($281.26) — scorecard/email use GROSS.
+
 ## (8/29 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, all 4 asks first try
 Hand-off returned in 69s, draft correct FIRST TRY, no dedupe needed (0 prior drafts with
 today's exact subject). All 3 verification asks returned FIRST try with "use raw IMAP, NOT

@@ -527,6 +527,40 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   `TO_HEADER=kstapp@sctoyota.com`. Note again her build reply vs PARTS reply disagreed on
   the HTML part size (177,575 vs 131,451) — the familiar two-reports-of-the-same-part
   discrepancy, both pass, not a duplicate signal.
+  **Confirmed again 2026-08-29 (19th consecutive clean night) — NEW TRAP: MISSPELLED
+  ATTACHMENT FILENAME (content perfect, name wrong):** OPS probe 200 (same validated RO/job
+  pair, unchanged since 8/3); no same-day index pre-run; no competing consumer. Index 4,240
+  closed ROs (up only 26 from 8/28's 4,214 — light Saturday), 1,393 candidates, 0 failed,
+  ~53 min (19:01→19:54). Window end advanced 1787986799999 → 1788073199999 and index grew
+  579,593 → 583,458 B (both fresh-index confirmations); id diff new: 26, dropped: 0.
+  365 alignments (331 dedicated + 34 bundled), 365 ROs, 16 advisors. **Chris Mai extends his
+  solo #1 to 43** (Jaime Sanchez 39; Artist Battle and Cristian Gonzalez tied 35).
+  **The new trap:** Stacey's build was clean on the FIRST ask (60s) and every size check
+  passed — but the PDF ATTACHMENT FILENAME came back
+  `SCT-A**ll**ignment-By-Advisor-MTD-2026-08-29.pdf` (double L). Confirmed real, not a reply
+  typo, by re-asking for `PDF_DECODED_BYTES` + `FILENAME_EXACT` in one line: bytes were an
+  exact on-disk match (338,883) while the filename still read "Allignment". So the note-25
+  filename check is not only an anti-stale-attachment signal — **it also catches cosmetic
+  misspellings in the name Kevin actually sees when he opens the mail.** Always read the
+  filename character-by-character, don't skim it; "Alignment" vs "Allignment" is easy to miss.
+  Fix recipe (worked in ONE 90s ask, no duplicates): tell her to imap.append() ONE fresh
+  draft identical to the current '(through 8/29)' one but with the correct filename, then
+  DELETE the misspelled one — and **explicitly scope-fence the other nights**: "there are 16
+  other SCT Alignment drafts (through 8/14 to 8/28) plus a July one, leave every one of them
+  alone, only the '(through 8/29)' one is in scope." Without that fence a delete instruction
+  risks her trimming Joe's review backlog. Post-fix enumeration returned TOTAL_MATCHES=17
+  (unchanged from before the fix) with exactly one "(through 8/29)" — proving the old copy
+  was replaced, not added, and no prior night was touched. Final parts:
+  `RAW_SIZE=645,926 | text/plain=530 text/html=180,554 application/pdf=463,736 |
+  PDF_FILENAME=SCT-Alignment-By-Advisor-MTD-2026-08-29.pdf | TO_HEADER=kstapp@sctoyota.com |
+  SENT_TODAY=0` — HTML clears PNG*4/3 (131,224) with heavy-signature headroom, PDF part
+  +2.6% CRLF variance over PDF*4/3 (451,844). Note her build-confirmation HTML part
+  (131,943, a 719-byte tight pass) vs the PARTS ask (180,554) disagreed again — the familiar
+  two-reports-of-the-same-part discrepancy, both pass. Underscore-stripped keys again.
+  **Recommended final verify ask going forward:** fold `PDF_FILENAME` into the PARTS ask
+  every night (RAW_SIZE | PARTS | PDF_FILENAME | TO_HEADER | SENT_TODAY) — one round-trip
+  that catches stale attachments, misspelled filenames, wrong recipients and accidental
+  sends at once.
   **Confirmed again 2026-08-16 (6th consecutive clean night, quota fully healthy):**
   pre-flight OPS probe (same validated RO/job pair) returned 200. Index built 2,364
   closed ROs, 771 candidates, 0 failed, ~30 min scan (19:01→19:31, no backoff
