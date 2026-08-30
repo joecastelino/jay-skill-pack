@@ -297,7 +297,15 @@ the difference in ONE call: re-probe `search_closed` for today plus the two
 prior days. If adjacent days return healthy counts (8/21=24 ROs, 8/20=19) with
 no 429s, the API is fine and today's zero is genuine (invoicing simply hadn't
 posted by the 6 PM run). An outage instead shows 429/`DEALER_QUOTA` or zeros
-across ALL probed days. Still render + email on a genuine zero — the MTD total
+across ALL probed days. **Variant verified 2026-08-29 (Saturday):** a *nonzero* RO count with a zero
+prefilter — `closed/invoiced ROs today: 25` but `prefilter: 0 of 25`. Same
+validation applies and is equally cheap: adjacent days came back 8/28 = 239
+ROs / 5 TEK candidates and 8/27 = 225 / 6, no 429s, so the API was fine and
+Saturday simply invoiced 25 non-menu tickets. Note the RO count is itself a
+useful signal — 25 vs ~230 on weekdays confirms a light Saturday rather than a
+scan that silently failed to page.
+
+Still render + email on a genuine zero — the MTD total
 stands — and say so explicitly in the body ("No repair orders were
 invoiced/closed today as of the 6 PM run, so MTD is unchanged from yesterday")
 so Joe doesn't read the flat number as a broken pipeline.
