@@ -298,6 +298,26 @@ BEFORE flagging it as a missed transfer:
   itself is benign, yet the stale companion negative (2418 = −2) was still sitting there
   uncorrected from prior runs. Report the recurrence count and the unresolved companion, not the
   increase.
+- **STATUS UPDATE 2026-08-29 — 04500-1 REGRESSION DAY 5 (uninterrupted).** **04500-1** (5005, single-bin,
+  5005 IS Primary): −28 → **−29**. Five consecutive deepening days since the 8/25 +97 correction
+  (−23 → −26 → −27 → −28 → −29) — the correction has now been fully invalidated as a fix; frame as
+  "regression day 5, off-book consumption never stopped, recommend direct human investigation."
+  **31532** (5001) FLAT at −58 for a 4th day; SP-ORD Primary held at 28 (no refill/sale today), Total
+  Inventory Qty **−30**. **17801-F4010 recurrence #13** — 5006 flat at 4 (Primary), companion 2418 STILL
+  −2, Total Inventory Qty **2** vs bin 4; unmoved **19 days** since 8/11 (NO diff on 5006 today — the
+  bin-vs-Total tell was the only catch, 3rd silent-diff catch; keep opening this part every run).
+  Flat: 87139-42040 −12 (10th flat day), 87139-YZZ09 −22 (day 22 flat). 87139-YZZ93 5007 24→**53** (big
+  restock, largest single-day jump in the tracked window) reconciled clean (53 Primary + 4111=30 +
+  TXM/2422=0 → Total 83 ✓). Negatives held at **26 for a 12th consecutive day** with the IDENTICAL
+  per-bin mix every single day (5000:2, 5001:1, 5002:1, 5004:2, 5005:11, 5006:2, 5007:7) — 5007 still
+  owns 4 of the 6 deepest (−235 combined). Session state: :9223 was on **`/login?redirectTo=/home`**
+  (dealer null, 21 keys) with a 13-hour-old storage-state → `login.py --force` succeeded FIRST TRY
+  (~40s, LOGGED_IN) → cookies added:5 → **21/21** keys length-verified → `/navigate /home` welcome:true
+  on BC/1251 → dealer pill x1130,y32 → SCT leaf x1074,y344 → 876 in ONE 4s poll. Whole restore ~70s,
+  zero retries. 7/7 bins tagged+clicked first try via "500" filter + `data-jaybin`, zero scrolling,
+  Apply at x306,y689, Next at x880,y686, 4 pages clean, 2 diffs / 174 rows, 61/174 with 24h activity.
+  **NEW TIP: clear localStorage before injecting** (`localStorage.clear()` after `/navigate /login`) —
+  the dead session left 21 stale keys behind; clearing first guarantees the 21/21 verify is meaningful.
 - **STATUS UPDATE 2026-08-28 — 04500-1 REGRESSION DAY 4; 31532 Primary REFILLED again.**
   **04500-1** (5005, single-bin, 5005 IS Primary): −27 → **−28**. Four consecutive deepening days since
   the 8/25 +97 correction (−23 → −26 → −27 → −28). The correction demonstrably did not hold; frame as
