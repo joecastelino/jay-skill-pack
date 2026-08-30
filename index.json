@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-29T18:30:05",
+ "generated": "2026-08-29T18:45:45",
  "skill_count": 202,
  "skills": [
   {
@@ -99,6 +99,14 @@
    "last_used": "2026-08-21"
   },
   {
+   "name": "bc-menu-sales-reports",
+   "path": "automotive/bc-menu-sales-reports",
+   "category": "automotive",
+   "description": "Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards \u2014 Daily Closed (2x/day) and Closed Month-To-Date (1x/day) \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben Estrada (Restrada@blackstonegm.com). This is the GM-store sibling of the SCT/Kevin pipeline (sct-menu-sales-api-scorecard). Use for any \"BC menu report\", \"Blackstone Chevy/Cadillac menu sales\", or Ruben report request.",
+   "times_used": 36,
+   "last_used": "2026-08-29"
+  },
+  {
    "name": "sct-alignment-by-advisor-report",
    "path": "automotive/sct-alignment-by-advisor-report",
    "category": "automotive",
@@ -113,14 +121,6 @@
    "description": "The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-override plan for vehicle-correct GM parts, and open decisions. Load for ANY \"GM menu\", \"BC menu build\", \"GMLOF\", or Blackstone Chevrolet service menu work.",
    "times_used": 35,
    "last_used": "2026-08-18"
-  },
-  {
-   "name": "bc-menu-sales-reports",
-   "path": "automotive/bc-menu-sales-reports",
-   "category": "automotive",
-   "description": "Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards \u2014 Daily Closed (2x/day) and Closed Month-To-Date (1x/day) \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben Estrada (Restrada@blackstonegm.com). This is the GM-store sibling of the SCT/Kevin pipeline (sct-menu-sales-api-scorecard). Use for any \"BC menu report\", \"Blackstone Chevy/Cadillac menu sales\", or Ruben report request.",
-   "times_used": 35,
-   "last_used": "2026-08-26"
   },
   {
    "name": "tekion-opcode-api",
