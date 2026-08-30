@@ -980,26 +980,12 @@ it (wrong figure appeared 0 times, "CORRECTION" never leaked), but ALWAYS add bo
 post-build greps (`clean.count("<wrong figure>")`, `"CORRECTION" in clean`) when the ask
 contained a correction — better yet, compose the figure list once, cleanly, before sending.
 
-## 2026-08-25 noon Daily Closed run — textbook one-shot, 20th consecutive clean "N dollars" build
-2 menus, $452.68 labor / $178.74 parts = $631.42 (Houa Moua 1 / $544.96, Jeremia
-Navarro 1 / $86.46). 35 closed ROs → only 2 carried TEK menu opcodes;
-`✓ all candidate ROs scanned`; vision-verified KPI band (crop 460px + 2x LANCZOS)
-matched JSON exactly. Pull ran via `terminal(background=true)` + a SINGLE
-`process(action="wait", timeout=180)` and finished near-instantly. Stacey's build:
-`execute_code` + `subprocess.run` argument list wrapped in `timeout 600` → returned
-cleanly in **118s**, no exit-124, no recovery probe, terse DONE line correct with
-`TOTAL=$631.42`, and her reported id (42662) MATCHED himalaya's. No self-correction
-text in her reply → no duplicate (pattern holds). Verified via the stdlib-`email`
-parser: To=Restrada, Cc real None, From=Joe, Subject auto-decoded with em-dashes,
-inline PNG **byte-for-byte identical** (83,386 bytes), PDF **byte-for-byte
-identical** (50,635 bytes), all 7 figures present exactly once, `<b>$631.42</b>`
-bold, greeting + footer present, zero ' dollars'/USD leftovers (checked after
-stripping the data URI), exactly 1 draft, Daily-Closed Sent count 0, no stale prior
-8/25 draft to clean up. Also: no `BC 8/25` hit in Sent at all at noon — Stacey's
-auto-sent Daily Opened report hadn't fired yet at 12:26 PT.
-**Low-volume day note**: only 2 of 35 closed ROs carried menu opcodes (~6% attach,
-vs the more typical 10-20%). Low counts are normal Monday-morning-cutoff behavior
-for the noon run — the 5pm run picks up the rest of the day.
+## 2026-08-25 noon Daily Closed run — textbook one-shot, 20th consecutive clean build
+2 menus, $452.68 / $178.74 = $631.42 (Houa Moua 1, Jeremia Navarro 1). All byte-for-byte
+checks passed, no duplicate. **Low-volume note**: only 2 of 35 closed ROs carried menu
+opcodes (~6% attach vs the typical 10-20%) — normal noon-cutoff behavior, the 5pm run picks
+up the rest of the day. At 12:26 PT there was no `BC 8/25` Sent hit at all; Stacey's
+auto-sent Daily Opened report hadn't fired yet.
 
 ## 2026-08-25 5pm Daily Closed run — 21st consecutive clean "N dollars" build; Stacey self-caught her OWN regex bug mid-build
 5 menus, $691.19 labor / $346.53 parts = $1,037.72 (Houa Moua 2 / $650.52, Humberto
@@ -1070,28 +1056,13 @@ byte-for-byte checks passed, no duplicate. Confirms the explicit "dollar sign go
 the FIRST digit including the thousands comma" ask instruction is now standard on every ask
 where the total exceeds 1,000.
 
-## 2026-08-26 5pm Daily Closed run — textbook one-shot, 24th consecutive clean "N dollars" build
-14 menus, $1,963.54 labor / $1,107.98 parts = $3,071.52 (Humberto Dominguez 5 / $1,032.21,
-Jacob Debussey 4 / $352.46, Juan Ramirez 2 / $1,056.52, Jeremia Navarro 1 / $374.86, Erik
-Mercado 1 / $200.09, Houa Moua 1 / $55.38 — six advisors on the board, best Daily total
-since 8/21 5pm). 68 closed ROs → 14 carried TEK menu opcodes; `✓ all candidate ROs scanned`;
-vision-verified KPI band (crop 460px + 2x LANCZOS) matched JSON exactly. Pull ran via
-`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`. Stacey's build:
-`execute_code` + `subprocess.run` argument list wrapped in `timeout 600` → returned cleanly
-in **203s**, no exit-124, no recovery probe, no self-correction text → no duplicate (pattern
-holds). Terse DONE line correct with `TOTAL=$3,071.52`, and her reported id (42711) MATCHED
-himalaya's. Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe,
-Subject auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (205,510 bytes),
-PDF **byte-for-byte identical** (58,006 bytes), all 9 figures present exactly once,
-`<b>$3,071.52</b>` bold, greeting + footer present, zero ' dollars'/USD leftovers (checked
-after stripping the data URI), and per the 8/25 5pm `$037.72` lesson explicitly checked all
-five thousands-comma leading-digit-stripped variants ($071.52, $963.54, $107.98, $032.21,
-$056.52): all zero. Deleted the stale noon draft (42696) per the twice-daily cadence rule,
-kept 42711 → exactly 1 draft. Daily-Closed Sent count 0 (both `BC 8/26` Sent hits were
-Stacey's separate auto-sent Daily Opened reports, 14573 + 14592).
-**Note on the noon→5pm delta**: noon showed 7 menus / $1,131.49 with only two advisors;
-the 5pm run picked up 7 more menus and four additional advisors — normal intraday behavior,
-the noon run is a partial-day cut and the 5pm run supersedes it.
+## 2026-08-26 5pm Daily Closed run — textbook one-shot, 24th consecutive clean build
+14 menus, $1,963.54 / $1,107.98 = $3,071.52 (Humberto Dominguez 5, Jacob Debussey 4, Juan
+Ramirez 2, Jeremia Navarro 1, Erik Mercado 1, Houa Moua 1 — six advisors). All byte-for-byte
+checks passed, no duplicate; all five thousands-comma leading-digit-stripped variants = 0.
+Deleted the stale noon draft per the twice-daily cadence rule.
+**Noon→5pm delta**: noon showed 7 menus / $1,131.49 with two advisors; the 5pm run picked up
+7 more menus and four more advisors — normal intraday behavior, noon is a partial-day cut.
 
 ## 2026-08-26 6:17pm Closed MTD run — clean data + perfect draft, but NEW harness trap: `execute_code` has its OWN 300s cap
 188 menus, $28,721.28 labor / $18,740.65 parts = $47,461.93 (Aug 1-26). Advisors:
@@ -1289,6 +1260,33 @@ digit" line in the ask anyway — it costs nothing and the totals cross 1,000 mo
 **Skill-size housekeeping**: SKILL.md exceeded the 100k limit before this append (100,747).
 Condensed the confirmatory 2026-08-21 MTD and 2026-08-24 MTD entries to free room. Keep
 pruning oldest confirmatory entries — never trap sections.
+
+## 2026-08-29 5pm Daily Closed run — textbook one-shot, 33rd consecutive clean "N dollars" build
+3 menus, $523.10 labor / $332.53 parts = $855.63 (Juan Ramirez 2 / $544.82, Dimetri Reynoso
+1 / $310.81). 75 closed ROs → only 3 carried TEK menu opcodes (~4% attach — Saturday, second
+straight very-low-volume day after the 1-menu noon cut). `✓ all candidate ROs scanned`.
+Vision KPI band (crop 460px + 2x LANCZOS) matched JSON exactly; PNG again only 900px tall.
+Pull via `terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
+**write_file→background-terminal ask pattern, 8th straight run, returned inside ONE 180s
+wait** (`/tmp/bc_ask_0829_5pm.py`, `subprocess.run` argument list, `timeout 560`). Terse DONE
+line correct with `TOTAL=<b>$855.63</b>`, her reported id (42822) MATCHED himalaya's. Her
+reply DID contain the recurring em-dash IMAP-search wrinkle ("the IMAP search for
+verification choked on the em-dash encoding, but the APPEND itself worked fine") — POST-append
+verification, not a rebuild, so no duplicate; dedupe grep confirmed only 42822 + the expected
+stale noon draft. Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe,
+Subject auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (90,330 bytes),
+PDF **byte-for-byte identical** (51,289 bytes), all 5 figures present exactly once,
+`<b>$855.63</b>` bold, greeting + footer present, zero ' dollars'/USD/CORRECTION leftovers,
+all 7 leading-digit-stripped variants = 0. Deleted the stale noon draft (42820) per the
+twice-daily cadence rule, kept 42822 → exactly 1 draft. Daily-Closed Sent count 0 (the single
+`BC 8/29` Sent hit was Stacey's separate auto-sent Daily Opened report, 14774).
+**Noon→5pm delta**: noon showed 1 menu / $106.59; the 5pm run added 2 more (noon's RO 102161
+Silverado carried forward, plus RO 102167 Escalade and RO 102177 Trax). Confirms the noon cut
+is genuinely partial-day even on very light Saturdays.
+**Explicit "leave the older noon draft alone, I will clean it up myself" line worked again** —
+she named 42820 as untouched in her own reply. Keep it on every 5pm ask.
+**Skill-size housekeeping**: condensed the confirmatory 2026-08-25 noon and 2026-08-26 5pm
+entries to fit under the 100k limit. Keep pruning oldest confirmatory entries — never traps.
 
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
