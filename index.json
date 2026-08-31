@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-31T09:30:49",
+ "generated": "2026-08-31T09:45:25",
  "skill_count": 204,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 157,
+   "times_used": 158,
    "last_used": "2026-08-31"
   },
   {
@@ -315,6 +315,14 @@
    "last_used": "2026-08-03"
   },
   {
+   "name": "tekion-warranty-admin-closings",
+   "path": "automotive/tekion-warranty-admin-closings",
+   "category": "automotive",
+   "description": "Build a \"which warranty admin closed what tickets\" report for any AMG store from the Tekion OpenAPI \u2014 per-clerk RO counts, warranty $ and total RO $, month-to-date or any window. Verified SCT July 2026.",
+   "times_used": 11,
+   "last_used": "2026-08-31"
+  },
+  {
    "name": "tekion-ro-payer-split-sunbit",
    "path": "automotive/tekion-ro-payer-split-sunbit",
    "category": "automotive",
@@ -337,14 +345,6 @@
    "description": "Diagnose and fix Tekion Vehicle Inventory stock-number problems. \u26a0\ufe0f ROOT CAUSE SETTLED 2026-08-25 \u2014 the stock # is stamped at VIN DECODE from the bare global auto-increment counter, before stockType/stockSubType exist, and is never re-evaluated. FOUR UI remedies were tested and FAILED (add Make, add SubTypes, vehicleSubTypeMandatory ON, reverse entry order) \u2014 this is a Tekion platform defect, NOT a dealership misconfiguration, so do not propose Stock# Rules edits. Real fix = OpenAPI PUT /vehicle-inventory/{id} (stockID is writable) driven by the detector sct_stock_audit.py. Also covers the Add-Vehicle DOM map (Stock# field id is <dealer>_PRODUCTION; SubType is a radio group; custom non-native Vehicle Type radios), the :9223 cron-pipeline browser-contention trap, CT27xxx = human quarantine tag at SCT, and the model-year-prefix / pre-VIN-factory-order false positives. Verified live at SCT (876).",
    "times_used": 10,
    "last_used": "2026-08-25"
-  },
-  {
-   "name": "tekion-warranty-admin-closings",
-   "path": "automotive/tekion-warranty-admin-closings",
-   "category": "automotive",
-   "description": "Build a \"which warranty admin closed what tickets\" report for any AMG store from the Tekion OpenAPI \u2014 per-clerk RO counts, warranty $ and total RO $, month-to-date or any window. Verified SCT July 2026.",
-   "times_used": 10,
-   "last_used": "2026-08-17"
   },
   {
    "name": "dealerdetail-api-pipeline-build",

@@ -153,6 +153,34 @@ Named-agent attribution in Tekion comes from TWO places, and neither can hold a 
 Tekion reclassification, or a dummy user. Track by SOURCE FILTER instead, and build the
 attribution report externally off `appointmentSource`.
 
+### "What if I just CREATE a Tekion user called MIA?" — doesn't work either (verified 2026-08-31)
+365-day group-by on `createdByUserId`, filtered to all 6 external sources:
+| Store | ext-source appts (1yr) | createdBy breakdown |
+|---|---|---|
+| ST 876 | 3,898 | `1`:3,898 (100% System User) |
+| BT 1249 | 1,616 | `1`:1,614 + 2 UUIDs @1 each |
+| TL 1092 | 1,794 | `1`:1,794 |
+| SV 826 | 1,324 | `-1`:788 (ai_bdc) + `1`:533 + 3 UUIDs @1 each |
+| BC 1251 | 2,184 | `1`:2,184 |
+The 5 UUID outliers are 1 appointment each and are HUMANS who later rescheduled the record
+(BT appt161414/161324 = `status MISSED_RESCHEDULED`, `updatedAppointmentSource` flipped to
+`BDC_SCHEDULING`) — the record gets re-stamped on human touch, it is not vendor attribution.
+So: a new user record would simply never be referenced. The Open API write stamps System User
+no matter which users exist. **The only path where a MIA user actually shows as an agent is if
+MIA stops writing via Open API and instead books AS that user through the BDC scheduling path** —
+then `appointmentSource` becomes `BDC_SCHEDULING` and taker = MIA's user id, and MIA appears in
+native BDC agent reports. Costs/consequences to state: a Tekion user seat, MIA holding live DMS
+credentials with scheduling access, MIA's volume merging into the BDC bucket (loses the clean
+vendor split), and it STILL requires MIA to change their integration — so no advantage over
+asking Tekion for AI-class onboarding. **NEVER create the user — Joe's hard rule is no employee/
+user record changes without his explicit permission.**
+
+**KNOWN GAP (do not guess):** the `Appointment Create` / `Update Appointment` WRITE specs are
+listed in the plan quota sheet (`specs/plan-details/dealer-level-apis-full.txt` lines 26-35) but
+were NOT captured in `specs/apis/` — Service Appointments only has 10 read/search endpoints. So
+whether the create payload exposes a taker/agent field is UNVERIFIED. Re-scrape APC docs for the
+Service Appointment write endpoints before asserting either way.
+
 ## Known AMG case: MIA (asked again 2026-08-27, and 2026-08-31 "list MIA as an agent")
 Joe: "appointments made through MIA come over as Integration — can we set that up or
 does MIA need to change it?" **Answer given: MIA must fix it on their end.** MIA books
