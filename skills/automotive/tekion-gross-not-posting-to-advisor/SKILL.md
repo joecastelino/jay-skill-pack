@@ -83,8 +83,63 @@ than T-3.** Use the API report for anything recent.
 full-year native query at 2 days old. If they're still missing at T-4, that IS a real
 index drop worth a Tekion ticket — re-probe before claiming it.
 
+## ✅ RE-TEST 2026-08-31 — THE LAG IS GONE. Native is now same-day accurate.
+Re-ran the exact aging comparison at SCT (876) after the weekend. Native
+`lastUpdatedTime` = **8/30 23:31 PT** (previously the batch was a 3:31 AM job that left
+recent days starved). Every close-day 8/20–8/30 now matches the API to ~100% on RO
+count, **including T-1**:
+
+| Close day | age | API RO | Native RO | % | $ delta |
+|---|---|---|---|---|---|
+| 8/24 | 7d | 258 | 259 | 100% | +$573 |
+| 8/26 | 5d | 135 | 136 | 101% | +$121 |
+| 8/27 | 4d | 225 | 225 | 100% | −$162 |
+| 8/28 | 3d | 239 | 239 | 100% | −$253 |
+| 8/29 | 2d | 26 | 26 | 100% | $0 |
+| **8/30** | **1d** | **46** | **46** | **100%** | +$47 |
+
+Compare to 8/28: T-1 was **24%** and T-2 was **76%**. Residual ROs 577056 / 580281 /
+581233 all now return present (roNo IN probe, 3 ROs / $1,598.82) — they backfilled, so
+**no index-drop ticket is warranted.** ±1 RO / small-$ deltas are definitional (a single
+RO whose pay types straddle midnight counts on both days in the API report).
+
+Cross-checked BT (1249): native is now **≥** the API report on 8/29–8/30, i.e. not
+undercounting in the other store either.
+
+**Revised practical rule (supersedes "never read newer than T-3"):** the native report
+is usable again for recent days, BUT it is still a batch index — always read the
+**"Last Generated On"** timestamp in the header before trusting a same-day figure, and
+re-verify the aging curve if numbers ever look light again. The API report
+(`advisor_closed_gross.py`) remains the ground-truth reference for any dispute.
+**Re-testing method:** hit `generate-summary-report` per close-day with only the
+`payTypeFirstClosedTime` BTW filter swapped, read the `TOTAL` row's `Ro Count`
+(`f802dcf4-…`) and `Total Gross` (`c46b0950-…`) out of `reportCellList`, and diff against
+`out/advisor_closed_gross_<store>_*.json` grouped by `closed_days`.
+
 ### How to reproduce the comparison (the method that settled it)
 Capture the report's own XHR and replay it — a bare fetch 500s ("Token doesn't exist").
+
+**Shortcut (2026-08-31, faster than XHR-hooking):** you don't need to capture headers by
+driving the UI. Build them from `localStorage` in-page — this is what the axios
+interceptor does anyway, and it works for `generate-summary-report`:
+```js
+var u=JSON.parse(localStorage.getItem('t_user')||'{}');
+window.__H={'Accept':'application/json, text/plain, */*','Content-Type':'application/json',
+ 'tekion-api-token':localStorage.getItem('t_token'),
+ 'roleId':localStorage.getItem('currentActiveRoleId'),
+ 'userId':u.id,'tenantname':u.tenantName,
+ 'dealerId':localStorage.getItem('currentActiveDealerId'),
+ 'tek-siteId':'-1_'+localStorage.getItem('currentActiveDealerId'),
+ 'original-userid':u.id,'original-tenantid':u.tenantName,'clientId':'web','locale':'en_US',
+ 'program':'DEFAULT','applicationId':'ARC_NA','subApplicationId':'US','productIds':'ARC'};
+```
+Then `fetch(...,{headers:window.__H})` in-page. **Cross-store without switching dealers:**
+copy `__H` and override just `dealerId` + `tek-siteId` (`'-1_<id>'`) — verified against BT
+1249 while the browser sat on SCT 876. Saved request body template lives at
+`/tmp/native_body.json` (a 1-element list; only swap `[0].filters`).
+Stale saved header files (`/tmp/tekion_rec_headers.json`) expire — a 401
+`session.expired` means rebuild from localStorage, not that the endpoint changed.
+
 1. Preflight `:9223` (`opcode_preflight.py --dealer <ID>`; `--restore` after).
 2. Hook `XMLHttpRequest` open/send/setRequestHeader, stash any call to
    `/api/rosearchservice/u/visibility-dashboard/generate-summary-report` **with its
