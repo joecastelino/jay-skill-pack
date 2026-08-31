@@ -236,6 +236,26 @@ Stacey's himalaya grep returned nothing and she self-corrected to raw imaplib �
 MTD advisor leaders: Erick Villasenor Gonzalez 15/$21,868.08, Jon Lo 50/$14,351.96,
 Michael Rankin 42/$11,344.55, Jason Davis 70/$10,871.44, Gio Elenes 12/$8,206.70.
 
+### (8/31 run, for Sun 8/30) TEXTBOOK CLEAN — 16 new rows but ZERO dated 8/30 (pure backlog catch-up)
+70 closed ROs, 17 prefilter hits, 16 new menu rows, `all candidate ROs scanned`. MTD moved
+340 rows/$90,418.04 -> **356 rows / $95,230.44** ($70,352.36 labor + $24,878.08 parts).
+NEW WRINKLE: per-day math on the master showed **0 rows dated 08/30/26** — all 16 new rows were
+older invoiced ROs the store finally closed. So the +$4,812.40 MTD delta is 100% backlog, and the
+day itself contributed nothing. This is the inverse of the 8/26-8/29 pattern (day-dated rows plus
+some backlog). Say BOTH numbers in the body explicitly (did so: "no menus were dated 8/30 itself,
+that is why the MTD total moved up $4,812.40 even though Sunday itself contributed nothing"),
+otherwise Tony sees a big jump on a Sunday and distrusts it. NOTE this is NOT the close-lag case
+(closedTime was a healthy 70) — no 3-field probe needed; the day-dated-rows check is a separate,
+cheaper sanity read straight off the master.
+.sh-wrapper + quoted-heredoc + DO-NOT-DOUBLE-SEND paragraph: one-attempt send in **53s**, zero
+SMTP errors (Message-ID <178818138359...>, 06:03:03 PDT). IMAP Sent-check returned in **32s**
+first try, 11 hits, exactly one carrying today's subject (Aug 1-30) — other 10 all prior sends
+(Jul 1-28, Jul 1-30, Aug 1-8, 1-18, 1-24, 1-25, 1-26, 1-27, 1-28, 1-29), usual token-match trap.
+Ran with 4 concurrent TOL `tekion-scraper` processes live; backgrounded the pull defensively but
+it finished well inside 170s with no backoff.
+MTD advisor leaders: Erick Villasenor Gonzalez 15/$21,868.08, Jon Lo 53/$17,297.86, Jason Davis
+76/$11,596.43, Michael Rankin 42/$11,344.55, Gio Elenes 12/$8,206.70 (14 advisors on the board).
+
 ### Verification ask wording that works first try
 Lead with `IMPORTANT: print the answer as plain text IN THIS REPLY` AND
 `Use himalaya / raw IMAP against "[Gmail]/Sent Mail" (NOT the Gmail API)` — the
