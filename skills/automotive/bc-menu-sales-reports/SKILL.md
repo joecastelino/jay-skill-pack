@@ -630,48 +630,19 @@ himalaya false-negative from the skill's EMAIL VERIFICATION section, not a new
 bug. Numbers: 10 menus, $3,133.60 labor / $2,654.35 parts = $5,787.95 (MTD
 Aug 1-4), top advisor Juan Ramirez (5 menus).
 
-## 2026-08-19 noon Daily Closed run — clean one-shot, "N dollars" prevention rule confirmed again
-5 menus, $1,357.74 labor / $762.77 parts = $2,120.51 (Juan Ramirez 2 / $709.80,
-Humberto Dominguez 2 / $605.30, Michael Reyes 1 / $805.41). 42 closed ROs → 5
-carried TEK menu opcodes; `✓ all candidate ROs scanned`; vision-verified KPI band
-matched JSON exactly. Ran the pull via `terminal(background=true)` +
-`process(action="wait")` per the 600s-cap rule — needed 3 consecutive 180s waits
-(process-wait clamps to 180s; just call it again). Stacey's build: fired via
-`execute_code` + `subprocess.run` with an **argument list** (avoids the
-top-level `terminal()` paren/`&` false-positive blocks) wrapped in
-`timeout 600` — took ~8 min but returned cleanly with no exit-124, so no recovery
-probe was needed. The 2026-08-18 "N dollars" prevention rule worked again on the
-FIRST ask: zero `$digit` corruption, every figure intact
-(`<b>$2,120.51</b>`, $1,357.74, $762.77, $709.80, $605.30, $805.41 all present
-exactly once), no ' dollars'/'USD' leftovers. Exactly ONE draft, no dedupe churn.
-Verified: To=Restrada, Cc=None, From=Joe, inline PNG **byte-for-byte identical**
-(114,195 bytes) and PDF **byte-for-byte size match** (53,483 bytes), Daily-Closed
-Sent count 0. Note the Sent folder DID show one `BC 8/19` hit — Stacey's separate
-auto-sent **Daily Opened** report; filtering with `grep -i "Daily Closed"` gave 0,
-exactly as the dedup section warns. Lesson bank: use `timeout 600` (not 170) on
-the ask-agent subprocess for BC draft builds — 170s reliably under-runs a full
-build and manufactures a needless exit-124.
+## 2026-08-19 noon Daily Closed run — clean one-shot, 2nd "N dollars" build
+5 menus, $1,357.74 / $762.77 = $2,120.51. Pull needed 3 consecutive 180s `process wait`s
+(process-wait clamps to 180s; just call it again). All byte-for-byte checks passed, no duplicate.
+**Lesson bank: use `timeout 600` (not 170) on the ask-agent subprocess** — 170s reliably
+under-runs a full build and manufactures a needless exit-124. The one `BC 8/19` Sent hit was
+Stacey's separate auto-sent Daily Opened report; `grep -i "Daily Closed"` gave 0.
 
-## 2026-08-19 5pm Daily Closed run — textbook clean, zero deviations
-8 menus, $1,644.02 labor / $1,050.54 parts = $2,694.56 (Humberto Dominguez 4 /
-$888.72, Juan Ramirez 2 / $709.80, Michael Reyes 1 / $805.41, Erik Mercado 1 /
-$290.63). 65 closed ROs → 8 carried TEK menu opcodes; `✓ all candidate ROs
-scanned`; vision-verified KPI band matched JSON exactly. Pull ran via
-`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)` —
-finished well inside one wait this time (contrast 8/19 noon which needed 3).
-Stacey's build: `execute_code` + `subprocess.run` argument list wrapped in
-`timeout 600` → returned cleanly in 117s, no exit-124, no recovery probe, and
-her terse DONE line was correctly formatted with `TOTAL=$2,694.56`. The
-"N dollars" prevention rule worked a 3rd consecutive time: every figure intact
-exactly once, zero ' dollars'/'USD' leftovers, `<b>$2,694.56</b>` bold.
-Verified via the stdlib-`email`-parser method: To=Restrada, Cc=None (real
-None), From=Joe, inline PNG **byte-for-byte identical** (145,550 bytes), PDF
-**byte-for-byte identical** (54,788 bytes, compared full bytes not just size),
-Daily-Closed Sent count 0. Deleted the stale noon draft (42471) per the
-twice-daily cadence rule, kept 42520 → exactly 1 draft.
-Reinforced: pre-telling Stacey "there is an older noon draft at this subject,
-leave it alone, I will clean it up myself, just create ONE new draft" produced
-zero duplicate churn — worth including in every 5pm ask.
+## 2026-08-19 5pm Daily Closed run — textbook clean, 3rd consecutive clean build
+8 menus, $1,644.02 / $1,050.54 = $2,694.56 (Humberto Dominguez 4, Juan Ramirez 2, Michael Reyes 1,
+Erik Mercado 1). All byte-for-byte checks passed, no duplicate; deleted the stale noon draft.
+**Reinforced: pre-telling Stacey "there is an older noon draft at this subject, leave it alone,
+I will clean it up myself, just create ONE new draft" produced zero duplicate churn** — include
+it in every 5pm ask.
 
 ## 2026-08-19 6:16pm Closed MTD run — clean data, but Stacey self-corrected mid-build and left a DUPLICATE
 120 menus, $20,068.52 labor / $13,699.76 parts = $33,768.28 (Aug 1-19). Advisors:
@@ -1238,6 +1209,35 @@ is genuinely partial-day even on very light Saturdays.
 she named 42820 as untouched in her own reply. Keep it on every 5pm ask.
 **Skill-size housekeeping**: condensed the confirmatory 2026-08-25 noon and 2026-08-26 5pm
 entries to fit under the 100k limit. Keep pruning oldest confirmatory entries — never traps.
+
+## 2026-08-30 5pm Daily Closed run — second zero-menu Sunday of the day, textbook one-shot, 35th consecutive clean build
+0 menus, $0.00 labor / $0.00 parts = $0.00. **0 closed ROs** for the second run that day (BC
+service closed all Sunday — same as 8/23, both runs legitimately zero). `✓ all candidate ROs
+scanned`; empty-table variant; vision KPI band (crop 460px + 2x LANCZOS on a 1226x900 PNG) read
+all four tiles $0.00 / 0. Pull via `terminal(background=true)` + a SINGLE
+`process(action="wait", timeout=180)`, finished near-instantly.
+**write_file→background-terminal ask pattern, 11th straight run, returned inside ONE 180s wait**
+(`/tmp/bc_ask_0830_5pm.py`, `subprocess.run` argument list, `timeout 560`). Terse DONE line
+correct with `TOTAL=$0.00`, her reported id (42835) MATCHED himalaya's. Her reply contained the
+recurring "Himalaya ID ≠ IMAP UID, let me search by subject" wrinkle — a POST-append verification
+step, not a rebuild, so no duplicate; dedupe grep confirmed only 42835 + the expected stale noon
+draft. Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
+auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (52,819 bytes), PDF
+**byte-for-byte identical** (39,494 bytes), `<b>$0.00</b>` bold exactly once, "Sunday, August 30"
+present, greeting + footer present, zero 'Saturday'/' dollars'/USD/EMDASH/CORRECTION leftovers.
+Deleted the stale noon draft (42833) per the twice-daily cadence rule, kept 42835 → exactly 1
+draft. Daily-Closed Sent count 0 (the single `BC 8/30` Sent hit was Stacey's separate auto-sent
+Daily Opened report, 14819).
+**Weekday-verification rule paid off**: computed the weekday with `TZ=America/Los_Angeles date
++"%Y-%m-%d %A %H:%M"` as the FIRST action, so the ask said "Sunday, August 30" correctly and the
+8/30-noon Saturday/Sunday authoring error did not repeat. Make that date command step 0 of every
+BC run whose email names the day of week.
+**Note the 8/30-noon Message-ID re-APPEND trap did not apply here** — no self-edit was needed
+because the first build was clean. That trap only bites when you edit and re-append an .eml.
+**Skill-size housekeeping**: SKILL.md hit 100,588 chars after this append (over the 100k limit).
+Condensed the purely-confirmatory 2026-08-19 noon and 2026-08-19 5pm entries → back to 98,490.
+**Check `os.path.getsize()` on SKILL.md AFTER every append**, not just before — a ~2.5KB run
+entry can push a 98K file over the limit. Prune oldest confirmatory entries; never trap sections.
 
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
