@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-31T09:15:22",
+ "generated": "2026-08-31T09:30:49",
  "skill_count": 204,
  "skills": [
   {
@@ -7,8 +7,8 @@
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 254,
-   "last_used": "2026-08-28"
+   "times_used": 255,
+   "last_used": "2026-08-31"
   },
   {
    "name": "persistent-browser-server",
@@ -667,6 +667,14 @@
    "last_used": "2026-07-20"
   },
   {
+   "name": "tekion-vendor-data-sharing-audit",
+   "path": "automotive/tekion-vendor-data-sharing-audit",
+   "category": "automotive",
+   "description": "Audit which third-party vendors/integrations (vAuto, HomeNet, VinSolutions, CDK, Carfax, Podium, OEM feeds, etc.) are receiving data feeds from Tekion, broken down by store. Use when asked \"what vendors get data feeds/integrations from AMG\", \"who are we sending inventory/CRM/recon feeds to\", or similar vendor-integration inventory questions.",
+   "times_used": 3,
+   "last_used": "2026-08-31"
+  },
+  {
    "name": "gbrain-install",
    "path": "note-taking/gbrain-install",
    "category": "note-taking",
@@ -713,6 +721,14 @@
    "description": "Investigate REAL Tekion OpenAPI quota/429 usage per dealer using the APC portal's Transaction Dashboard (ground truth, not assumptions) \u2014 find which store/endpoint is burning quota, when Joe says \"don't assume, go check the APC portal\". Also covers what Plan Details and Usage Dashboard actually show (and don't).",
    "times_used": 2,
    "last_used": "2026-08-05"
+  },
+  {
+   "name": "tekion-appointment-source-audit",
+   "path": "automotive/tekion-appointment-source-audit",
+   "category": "automotive",
+   "description": "Answer \"why do appointments from vendor X show as Integration / can we relabel the appointment source\" and audit appointment volume by source (BDC, Consumer, Walk-in, Integration/Open API, AI) per store. Covers Tekion's fixed appointmentSource\u2192category enum, the internal /api/scheduling/u/appointment/search aggregation API, and how to identify which vendor is behind an Integration bucket.",
+   "times_used": 2,
+   "last_used": "2026-08-31"
   },
   {
    "name": "tekion-day-collection-report",
@@ -787,14 +803,6 @@
    "last_used": "2026-07-03"
   },
   {
-   "name": "tekion-vendor-data-sharing-audit",
-   "path": "automotive/tekion-vendor-data-sharing-audit",
-   "category": "automotive",
-   "description": "Audit which third-party vendors/integrations (vAuto, HomeNet, VinSolutions, CDK, Carfax, Podium, OEM feeds, etc.) are receiving data feeds from Tekion, broken down by store. Use when asked \"what vendors get data feeds/integrations from AMG\", \"who are we sending inventory/CRM/recon feeds to\", or similar vendor-integration inventory questions.",
-   "times_used": 2,
-   "last_used": "2026-08-26"
-  },
-  {
    "name": "google-workspace",
    "path": "productivity/google-workspace",
    "category": "productivity",
@@ -839,14 +847,6 @@
    "path": "automotive/slack-store-thread-cron-retarget",
    "category": "automotive",
    "description": "Retarget an AMG store's Hermes cron report deliveries to a new Slack thread when Joe says \"can this thread be <store> reports only?\", and sweep the whole fleet for dead channel_not_found cron deliveries.",
-   "times_used": 1,
-   "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-appointment-source-audit",
-   "path": "automotive/tekion-appointment-source-audit",
-   "category": "automotive",
-   "description": "Answer \"why do appointments from vendor X show as Integration / can we relabel the appointment source\" and audit appointment volume by source (BDC, Consumer, Walk-in, Integration/Open API, AI) per store. Covers Tekion's fixed appointmentSource\u2192category enum, the internal /api/scheduling/u/appointment/search aggregation API, and how to identify which vendor is behind an Integration bucket.",
    "times_used": 1,
    "last_used": "2026-08-26"
   },
