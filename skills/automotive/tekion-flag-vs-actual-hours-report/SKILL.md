@@ -405,11 +405,25 @@ explicit OK. Verified good example: SV RO 372190 line G — flagged 4.15 to matc
 actual clocked, op labor cost went $0 → $230.70 once fixed.
 
 ## Single-tech deep-dive variant (Joe follow-up, verified Tualla SV 2026-07-31)
-When Joe narrows to ONE tech (\"can we focus on Loreto Tualla?\"), don't reuse the\nclosed-RO list — pull ALL ROs the tech clocked on in the window regardless of\nstatus (open/HOLD included), then join flags. Two extra insights this surfaces:\n- **closedTime-window LEAK**: the store-wide scan keys on ROs *closed* in the\n  window, so an RO worked in-window but closed AFTER it is invisible (Tualla\n  372028 + 371877 were misses the store scan never showed). For per-tech audits,\n  key on clock-punch date, not closedTime.\n- **Open/HOLD ROs with clock-but-no-flag** are catchable BEFORE close (flag on\n  the RO tech-time modal — cheap fix) vs closed ones needing Flag Hours Report\n  adjustments. Split the output by status.\nAlso report the REVERSE rows (flag > clock, e.g. a REC flag with no punch) —\nJoe wants both directions. Pattern read that landed well: a tech who flags\nusually flags to the hundredth; gaps = ROs where the tech-time modal was never\nopened at all (behavioral, not systemic).\n\n## "The flagged hours look suspect / don't match" ticket (BC 2026-08-28)
-Joe's framing is usually **"tech flagged hours are suspect of not matching, compare
-to Tech Performance (beta)"** with 1-2 **employee numbers**, not names.
+## "The flagged hours look suspect / don't match" ticket (BC 2026-08-28)
+Joe's framing is usually **"tech flagged hours are suspect of not matching, compare to
+Tech Performance (beta)"** with 1-2 **employee numbers**, not names.
 
-**Step 0 — resolve employee number → tech UUID.** OpenAPI
+**Run order that answers it in ~4 tool calls (proven BC 5605, 2026-08-31):**
+1. `build_tech_perf_package.py --dealer <D> --tech-emp <N> --from --to --store-name` —
+   prints native vs index vs truth and the `NOT IN INDEX` count. If that's `0 entries`,
+   **say so first and plainly: the report is not losing his hours.**
+2. Diff flagged-vs-clocked per RO from the package (`indexed` + `clock`), split into
+   under/over buckets and print both totals — never just the net.
+3. For every under-flagged RO, fetch `GET /api/service-module/u/ro/v1/{roId}` and print
+   `status` + per-op `payType` / `billingTimeInSeconds` / `flagTimesWithPayDay`. That one
+   dump classifies every gap into the bucket table above and is where the real answer lives.
+4. `render_tech_perf.py` (clean renderer) → vision_analyze the PNG for branding → deliver.
+
+Don't stop at step 1. "Index is clean" is not an answer to a manager who is staring at
+double-digit unapplied hours — step 3 is what turns it into something he can act on.
+
+
 `GET /openapi/v4.0.0/users` (pageSize 100) →
 `employeeDetails.employeeDisplayNumber` + `userNameDetails.completeNames[DISPLAY_NAME]`
 + `userRoleDetails.primaryRole.persona`. **PAGINATION GOTCHA: the next-page param is
@@ -472,10 +486,29 @@ Only ONE of them is a Tekion bug:
 
 | bucket | tell | verdict |
 |---|---|---|
-| **payDay just outside the window** | flag exists on the RO doc, `payDay` = day after `--to` | timing, not lost — lands next pay period |
+| **payDay AFTER the window** | flag exists on the RO doc, `payDay` = day after `--to` | timing, not lost — lands next pay period |
+| **payDay BEFORE the window** | clocked in-window, but the flag `payDay` predates `--from` | already paid — NOT a leak (BC 100495: 1.52 clk in-window, 4.50 flagged 8/14) |
 | **RO still open** | status `IN_PROGRESS`/`READY_FOR_INVOICE` | not billed yet; flags post at billing |
-| **closed with ZERO labor billed** | every op `billSec: 0`, `flags: []`, `laborSale: None` | **store-process** issue — nothing to flag against |
-| **flag on doc, absent from index** | doc has a valid in-window `payDay`, `/breakdown` doesn't | **the Tekion defect** |
+| **billed but on HOLD** | status `HOLD`, op has real `billingTimeInSeconds`, `flags: []` | **pending swing** — flags all at once when it invoices |
+| **invoiced/closed with ZERO labor billed** | op `billSec: 0`, `flags: []`, but real clock time | **store-process** issue — nothing to flag against |
+| **flag on doc, absent from index** | doc has a valid in-window `payDay`, `/breakdown` doesn't | the Tekion index defect — **presume LAG, re-test in 2–3 days** |
+
+**The two buckets that actually move the number (BC 5605 Jared Weimer, Aug 16–30):**
+- **`billSec: 0` on an INVOICED warranty op** was 7.65 of 10.57 unapplied hrs — RO 102152,
+  `ELECTDIAG`/WARRANTY invoiced at 0.00 billed hrs with 7.65 clocked. Auto-flag copies
+  BILLED hours, so a zero-billed op flags zero forever. This is the single most common
+  real leak once the index is clean, and it is a **store** conversation (bill the diag
+  time before invoicing), not a Tekion ticket.
+- **HOLD tickets are a loaded spring.** RO 101483 sat on HOLD with a 20.5-hr WARRANTY
+  `MISC` op and zero flags; the tech showed 1.00 flagged / 3.44 clocked. Call these out
+  explicitly — the next period will look *inflated* for reasons that have nothing to do
+  with that period's work, and Joe/the manager will ask about it.
+
+**⚠️ The window materially changes the verdict — confirm it before reporting.** Same tech,
+same store: Aug 16–**27** read proficiency 100.50% / unapplied **−0.34**; extending to
+Aug 16–**30** read 87.76% / unapplied **+10.57**. Three days added one un-billed RO and
+flipped the story from "clean" to "10.5 hrs unapplied." Always state the exact window in
+the answer, and when Joe says "run it up till yesterday," re-run rather than extrapolating.
 
 Barks: RO 101947 CLOSED 2.86 clocked → flagged 2.70 on 08/28 (one day late);
 RO 101249 IN_PROGRESS 1.34; RO 101304 CLOSED 0.49 with `TPS`/INTERNAL and
@@ -492,6 +525,24 @@ Fetch the per-RO evidence with `clock_by("roId", …)` for the RO universe, then
 RO lookup goes through the clock report + `/openapi/v4.0.0/repair-orders:search`.
 
 ## Pitfalls
+- **NEVER hand-roll the TECH_CLOCK `generate-summary-report` body — you get HTTP 400.**
+  Writing a plausible `{"reportId","dataSource","groups","filters","defaultFilter","pageInfo"}`
+  payload from scratch fails every time. The ONLY working shape is: GET
+  `/api/rosearchservice/u/visibility-dashboard/report-definition/{CLOCK_REPORT_ID}?locale=en_US`,
+  `copy.deepcopy(DEF["customEsRequests"][0])`, overwrite `filters` (with `key` AND `field`
+  on each) + `groups[0].key/field/rows`, and **POST it wrapped in a LIST `[r]`**. That's
+  what `clock_by()` in `build_tech_perf_package.py` does — reuse that function, don't
+  reinvent it.
+- **`lookup/resolve-by-id` with `lookUpAsset: "USER_ID"` returns HTTP 500.** It works for
+  `TECH_ID` but not for resolving a `flaggedByUserId`. Use the public OpenAPI instead:
+  `GET /openapi/v4.0.0/users/{uuid}` → `userNameDetails.completeNames[]` (a LIST of
+  `{nameType,value}`), plus `userRoleDetails.primaryRole` and
+  `employeeDetails.employeeDisplayNumber`. That's how BC's lone manual flag was traced to
+  Phillip Stafford, Shop Foreman, emp 5577.
+- **Always name who posted a `MANUALLY_ADDED` flag.** It's usually the only hand-keyed
+  entry in the period and it's the one line a manager should validate — especially with a
+  blank `flagHourAdjustmentReason`. BC 100211: 20.00 hrs keyed by the Shop Foreman against
+  a 27.0-hr op, $4,980 labor, no reason text. Not necessarily wrong, but always worth surfacing.
 - **`/ro/v1/{id}` response shape**: RO header fields (`roNo`, `status`,
   `closedTime`, `primaryAdvisorId`, `documentNumber`) are nested one level down in
   `data.ro`, NOT on `data` — `data` itself only holds
