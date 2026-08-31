@@ -800,6 +800,22 @@ SKILL.md under its size limit. Consensus of those runs: the full prevention word
 produces a clean one-shot draft the large majority of the time; verification asks are
 still mandatory; the $0 opened streak ran 8/23–8/25 (6 half-day slots) and broke 8/26.
 
+## (8/30 8:05PM, Opened) TEXTBOOK CLEAN RUN — second $0 day in a row, zero exit-124s
+Ran with 5 concurrent `tekion-scraper` processes live; backgrounded the pull defensively but it
+finished in <60s with no backoff. Hand-off RC=0 FIRST TRY in 78s, draft correct FIRST TRY at
+IMAP UID 104, and TRUE dedupe (noon draft UID 101 actually deleted — subject-list showed exactly
+one 08/30 hit). All 3 verification asks returned FIRST try with "use raw IMAP, NOT the Gmail API"
+leading + the 3-line numbered part probe: subject-list 40s, part-probe 70s, Sent-check 36s.
+Part sizes came back DECODED again (PNG 43,937 / PDF 29,223 = exact on-disk bytes), same as
+8/30 noon — the base64-inflated form seen 8/28-8/29 seems to have stopped; either is fine.
+BOGUS-UID trap did NOT recur (reported UID 104 == subject-list UID). Sent-check = 4 hits, all
+old em-dash-era sends (06/30-07/03), zero today = no leak.
+DATA: 79 opened ROs scanned, **0 menus / $0.00** — GENUINE zero (`complete: true`,
+`expected_records: 0`, `rows` AND `records` both empty). SECOND consecutive $0 opened day
+(noon 8/30 was also 0/61 ROs) — Sunday, low menu volume; not starvation.
+Opened drafts stack = 11 (08/21-08/30 + perennial 08/02 em-dash UID 19); 13 TOL drafts total
+incl. 2 Closed-MTD. No true dupes.
+
 ## (8/30 12:05PM, Opened) TEXTBOOK CLEAN RUN — genuine $0 day, all 4 asks first try
 Ran with 5 concurrent `tekion-scraper` processes live; backgrounded the pull defensively
 per the 429 section but it finished in ~60s with no backoff. Hand-off RC=0 first try, draft

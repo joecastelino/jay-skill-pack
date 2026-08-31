@@ -561,6 +561,29 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   every night (RAW_SIZE | PARTS | PDF_FILENAME | TO_HEADER | SENT_TODAY) — one round-trip
   that catches stale attachments, misspelled filenames, wrong recipients and accidental
   sends at once.
+  **Confirmed again 2026-08-30 (20th consecutive clean night, final full day of August):**
+  OPS probe 200 (same validated RO/job pair, unchanged since 8/3); no same-day index pre-run;
+  no competing consumer. Index 4,286 closed ROs (up 46 from 8/29's 4,240 — light Sunday),
+  1,409 candidates, 0 failed, ~53 min (19:01→19:54). Window end advanced 1788073199999 →
+  1788159599999 and index grew 583,458 → 589,909 B (both fresh-index confirmations); id diff
+  new: 46, dropped: 0. 376 alignments (340 dedicated + 36 bundled), 376 ROs, 16 advisors.
+  **Chris Mai solo #1 with 45** (Jaime Sanchez 42, Cristian Gonzalez 36, Artist Battle 35).
+  Stacey's build clean on the FIRST ask (89s) with paths + on-disk sizes baked in: HTML part
+  132,155B cleared PNG*4/3 (131,398) by only **757 bytes** (another tight pass = PASS, note 13),
+  PDF part 345,219B an EXACT on-disk match.
+  **Verify sequencing that worked best (use this order going forward):** (1) run the date-free
+  SUBJECT+DATE enumeration FIRST rather than any DRAFTS_COUNT ask — it returned 18 matches, one
+  per night 8/14→8/30 plus the July leftover, with exactly ONE "(through 8/30)", proving
+  no-duplicate in a single 58s round-trip and completely sidestepping the note-26/note-28
+  false-count trap (no DRAFTS_COUNT ask was needed at all tonight). (2) Then the combined
+  5-field final ask — which TIMED OUT (exit 124) as usual when it bundles RAW_SIZE+PARTS+
+  PDF_FILENAME+TO_HEADER+SENT_TODAY. Per note 11, a 60s pause then **two two-field asks**
+  answered cleanly: `PDF_FILENAME | PDF_DECODED_BYTES` → correct spelling
+  `SCT-Alignment-By-Advisor-MTD-2026-08-30.pdf` (checked character-by-character for the
+  note-29 "Allignment" trap) with decoded bytes 345,219 = exact on-disk; then
+  `TO_HEADER | SENT_TODAY` → `kstapp@sctoyota.com | 0`. **Two-field asks are the reliable
+  granularity** — five fields times out, one field works but wastes round-trips.
+  Underscore-stripped keys again throughout.
   **Confirmed again 2026-08-16 (6th consecutive clean night, quota fully healthy):**
   pre-flight OPS probe (same validated RO/job pair) returned 200. Index built 2,364
   closed ROs, 771 candidates, 0 failed, ~30 min scan (19:01→19:31, no backoff
