@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-31T06:15:07",
+ "generated": "2026-08-31T06:30:23",
  "skill_count": 202,
  "skills": [
   {
@@ -223,8 +223,8 @@
    "path": "automotive/tekion-part-sales-ledger-report",
    "category": "automotive",
    "description": "Build a \"parts sold\" report (e.g. tires) for any Tekion store and period with ACTUAL invoiced dollars, split RO vs Sales Order (counter), by counterperson, from the internal part transaction ledger (activity-log API) \u2014 zero OpenAPI quota. Use when Joe asks \"how many X did we sell\" for a parts category, or when the OpenAPI quota is exhausted and RO-level pulls are blocked.",
-   "times_used": 14,
-   "last_used": "2026-08-26"
+   "times_used": 15,
+   "last_used": "2026-08-31"
   },
   {
    "name": "tekion-parts-autoorder-diagnosis",
@@ -363,6 +363,14 @@
    "last_used": "2026-08-31"
   },
   {
+   "name": "tekion-parts-sold-by-source-report",
+   "path": "automotive/tekion-parts-sold-by-source-report",
+   "category": "automotive",
+   "description": "Build a \"units of X sold in a period\" report (tires, batteries, brakes, BG products, wipers...) for any Tekion store using the Source Code part list + bulk salehistory API \u2014 NO OpenAPI quota, no RO fan-out. Use when Joe asks \"how many tires/batteries/etc were sold last month/quarter\" and the category maps to a parts Source Code. Verified TOL tires Q2 2026.",
+   "times_used": 9,
+   "last_used": "2026-08-31"
+  },
+  {
    "name": "tekion-writer-handoff-report",
    "path": "automotive/tekion-writer-handoff-report",
    "category": "automotive",
@@ -377,14 +385,6 @@
    "description": "Diagnose a Tekion service-menu ticket where a manager/advisor says the menu is \"missing items\", \"missing services\", \"the service didn't show up\", or the package looks short \u2014 i.e. WRONG CONTENT, not wrong price. Differential diagnosis across the 4 known root causes (row tier-coverage gap, wrong baseSystemInterval stamp, row-scope miss, inert Modify-System-Services entry), all readable over the API without a browser. Sibling of tekion-quotes-menu-price-diagnosis (that one = wrong DOLLARS; this one = missing LINES).",
    "times_used": 8,
    "last_used": "2026-08-21"
-  },
-  {
-   "name": "tekion-parts-sold-by-source-report",
-   "path": "automotive/tekion-parts-sold-by-source-report",
-   "category": "automotive",
-   "description": "Build a \"units of X sold in a period\" report (tires, batteries, brakes, BG products, wipers...) for any Tekion store using the Source Code part list + bulk salehistory API \u2014 NO OpenAPI quota, no RO fan-out. Use when Joe asks \"how many tires/batteries/etc were sold last month/quarter\" and the category maps to a parts Source Code. Verified TOL tires Q2 2026.",
-   "times_used": 8,
-   "last_used": "2026-08-18"
   },
   {
    "name": "tekion-parts-tax-not-calculating-diagnosis",
