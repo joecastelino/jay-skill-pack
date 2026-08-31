@@ -39,7 +39,7 @@ Scale of the distortion at SCT for that one advisor, August MTD:
 
 **~88% of the advisor's real gross was invisible.**
 
-## THIRD failure mode: 8/26 cohort near-totally absent (2026-08-27, UNRESOLVED)
+## THIRD failure mode: 8/26 cohort near-totally absent (2026-08-27) ✅ RESOLVED — index lag, since FIXED
 After fixing Status and Pay Type View, a "Pay Type Closed Date = yesterday" run
 STILL undercounted. Joe confirmed off his own screen: 19 rows = **all 18 ROs that
 closed 8/25, plus exactly one from 8/26 (581311)**. Truth was 28 ROs / $14,631.70.
@@ -76,12 +76,12 @@ variable):
 **Yesterday's number on the native report is ~1/4 of reality.** ≥3 days old is exact.
 The missing ROs are NOT clustered by pay type (INTERNAL dominates both the present and
 the missing buckets in equal proportion), which kills the pay-type-filter theory.
-**Practical rule: never read the native Advisor Performance Report for a day newer
-than T-3.** Use the API report for anything recent.
+~~**Practical rule: never read the native Advisor Performance Report for a day newer
+than T-3.**~~ **← RETIRED 2026-08-31, see the re-test section below. Tekion fixed it.**
 
-**Residual (watch):** 577056 / 580281 / 581233 (closed 8/26) were still absent from a
-full-year native query at 2 days old. If they're still missing at T-4, that IS a real
-index drop worth a Tekion ticket — re-probe before claiming it.
+**Residual — CLEARED.** 577056 / 580281 / 581233 (closed 8/26) were absent at T-2 on
+8/28; re-probed at T-5 on 8/31 they are all **present** (3 ROs / $1,598.82). They
+backfilled on their own, so there is **no index-drop defect and no ticket to file**.
 
 ## ✅ RE-TEST 2026-08-31 — THE LAG IS GONE. Native is now same-day accurate.
 Re-ran the exact aging comparison at SCT (876) after the weekend. Native
@@ -172,7 +172,8 @@ correctly; whether CVSC *should* count toward advisor gross/pay plan is a busine
 decision for the VP, not a Tekion bug — raise it, don't assume.
 Warranty-only ROs disappear the same way under a CP-filtered view.
 
-## CAUSE #3 — "Pay Type Closed Date = yesterday" silently drops ROs (UNRESOLVED)
+## CAUSE #3 — "Pay Type Closed Date = yesterday" silently drops ROs ✅ RESOLVED & FIXED
+**Was index lag; Tekion fixed it 2026-08-31. Kept for history — do not re-diagnose this.**
 SCT 2026-08-27, user-confirmed on his own screen (not OCR): filtering closed-date to
 8/25–8/26 returned **19 ROs — all 18 that closed 8/25, but only 1 of the 10 that
 closed 8/26.** RO 581233 (all pay types closed 8/26 18:10) was absent while RO 581311

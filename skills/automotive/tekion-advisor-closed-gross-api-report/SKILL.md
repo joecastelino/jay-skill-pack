@@ -56,7 +56,9 @@ by 4). For each of `st bt bc tl sv vc ar`, in order: scrape yesterday → render
   daily. Takes an optional date arg for a manual backfill: `fleet_advisor_daily.sh 2026-08-27`.
 
 `mail_advisor_daily.py --store <s> --date <d>` builds the per-store email: 6-column summary
-(Advisor/ROs/Bill Hrs/ELR/Hrs/RO/Total Gross), the T-3 index-lag explainer, auto-generated
+(Advisor/ROs/Bill Hrs/ELR/Hrs/RO/Total Gross), the T-3 index-lag explainer (⚠️ **now stale —
+Tekion fixed the lag 2026-08-31, see the section above; this block should be dropped or
+reworded to "batch index, check Last Generated On" on the next edit**), auto-generated
 **outlier callouts** (heavy-repair lane = Hrs/RO ≥2.5; internal/warranty queue = ≥8 ROs with
 <$250 parts; whale = ≥22% of store gross), CID inline PNG + PDF + CSV. `--dry-run` to preview,
 `--native "N ROs / $X"` to add a head-to-head line.
@@ -104,13 +106,52 @@ daily chain, (c) restating days <T-3 where late invoices may still be landing. F
 just re-run those individual days and `--add` them — the merge restates them in place
 (it prints `N restated`).
 
-## ⚠️ NATIVE ADVISOR PERFORMANCE REPORT LAGS ~3 DAYS (measured SCT 2026-08-28)
-Don't compare the API report to the native one on a recent day and think you have a bug.
-The native report is a batch-generated index and backfills over ~3 days: 8/27 at 1 day old
-showed **55 of 225 ROs (24%, $36,905 missing)**; 8/26 at 2 days = 76%; 8/25 at 3 days and
-everything older = **100%, penny-exact**. Full aging curve + the XHR-replay repro method
-lives in `tekion-gross-not-posting-to-advisor`. This is the strongest justification for the
-API report existing — lead with it when delivering a recent-day run.
+## ✅ NATIVE ADVISOR PERFORMANCE INDEX LAG — FIXED BY TEKION (re-verified 2026-08-31)
+**The old "never trust Advisor Performance newer than T-3" rule is RETIRED.** Do not repeat
+it to Joe or the stores.
+
+History: measured SCT 2026-08-28, the native report was a batch index that backfilled over
+~3 days — 8/27 at T-1 showed **55 of 225 ROs (24%, $36,905 missing)**, 8/26 at T-2 = 76%,
+T-3 and older = 100% penny-exact.
+
+Re-tested after the 8/29–8/30 weekend and the lag is **gone**. SCT 876, native vs this API
+report, close-day by close-day:
+
+| Close day | Age | API ROs | Native | % found | $ delta |
+|---|---|---|---|---|---|
+| 8/24 | 7d | 258 | 259 | 100% | +$573 |
+| 8/25 | 6d | 270 | 269 | 100% | +$403 |
+| 8/26 | 5d | 135 | 136 | 101% | +$121 |
+| 8/27 | 4d | 225 | 225 | 100% | −$162 |
+| 8/28 | 3d | 239 | 239 | 100% | −$253 |
+| 8/29 | 2d | 26 | 26 | 100% | $0 |
+| **8/30** | **1d** | **46** | **46** | **100%** | **+$47** |
+
+**What changed:** the report header's "Last Generated On" is now **~11:30 PM PT** (was
+~3:30 AM). The batch index regenerates late-night and catches the full prior day.
+
+**No Tekion defect ticket is warranted.** The 3 SCT residual ROs that were still missing at
+T-2 on 8/28 — **577056 / 580281 / 581233** (closed 8/26, $1,598.82) — all backfilled on
+their own and now return present. A ticket was drafted and correctly killed.
+
+**Cross-store check:** BT (1249) confirms it isn't SCT-only — native now runs at or above
+the API report on 8/29–8/30, not undercounting.
+
+Still true, and still why this report exists:
+- It is a **BATCH index, not live** — read "Last Generated On" in the header before quoting
+  a same-day figure.
+- The API report remains the **tie-breaker for any advisor pay dispute**, because it is
+  immune to all three original failure modes (INVOICED-vs-CLOSED status filter, CVSC hidden
+  under Pay Type View, index lag).
+- Residual ±1 RO / small-dollar deltas are **definitional, not errors**: an RO whose pay
+  types straddle midnight lands on both days in this report (see the RO 392344 case below).
+
+⚠️ Comparison trap hit during this re-test: don't diff native against a **stale incremental**
+API file. BT's on-disk MTD was an old append chain and made native look inflated; pull fresh
+store numbers for the days being compared before drawing any conclusion.
+
+Full aging-curve history + the XHR-replay repro method lives in
+`tekion-gross-not-posting-to-advisor`.
 
 ## TWO RENDERERS — pick by what the user asked for
 - `render_advisor_closed_gross.py` — house scorecard style (hero KPI cards, ranked

@@ -148,10 +148,15 @@ index on its own:**
 |---|---|---|---|---|
 | BC 1251 | 5576 | Victor Tafolla | 4 entries / 2.40 hrs | **0 / 0.00** — 45 = 45 entries, 58.50 = 58.50 hrs |
 | BC 1251 | 410 | Craig Holman | 2 entries / 3.40 hrs | **0 / 0.00** — 68 = 68 entries, 52.80 = 52.80 hrs |
+| BT 1249 | 512 | Luis Vasquez Melchor | 4 entries / 3.80 hrs | **0 / 0.00** — 63 = 63 entries, 62.40 = 62.40 hrs |
+
+**3 of 3 techs across BOTH affected stores cleared on re-test** — so this is a
+platform-wide indexing lag, not a per-store config problem, and it self-heals in
+roughly 3 days. All 9.60 hrs / ~$480 landed without intervention.
 
 Tell that it self-healed: the tech's NATIVE flagged total *rose* by exactly the
-dropped hours (Tafolla 56.10 → 58.50, Holman 49.40 → 52.80). **So the tech gets
-paid with NO Flag Hours Report adjustment** — do not post a manual adjustment on a
+dropped hours (Tafolla 56.10 → 58.50, Holman 49.40 → 52.80, Vasquez Melchor
+58.60 → 62.40). **So the tech gets paid with NO Flag Hours Report adjustment** — do not post a manual adjustment on a
 fresh drop, you will double-pay him. Same story as the Advisor Performance index
 lag re-tested the same morning (see tekion-gross-not-posting-to-advisor).
 
