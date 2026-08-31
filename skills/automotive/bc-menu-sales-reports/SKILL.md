@@ -790,26 +790,10 @@ assume either way, always grep**. All byte-for-byte checks passed, no duplicate.
 **Authoring note**: my ask contained a self-correction typo mid-sentence while listing figures.
 Stacey handled it, but don't rely on that — compose the figure list once, cleanly, before sending.
 
-## 2026-08-22 5pm Daily Closed run — textbook one-shot, 12th consecutive clean "N dollars" build
-9 menus, $1,081.79 labor / $753.20 parts = $1,834.99 (Juan Ramirez 5 / $1,137.75,
-Dimetri Reynoso 4 / $697.24). 21 closed ROs → 9 carried TEK menu opcodes;
-`✓ all candidate ROs scanned`; vision-verified KPI band matched JSON exactly.
-Pull ran via `terminal(background=true)` + a SINGLE `process(action="wait",
-timeout=180)`. Stacey's build: `execute_code` + `subprocess.run` argument list
-wrapped in `timeout 600` → returned cleanly in **74s**, no exit-124, no recovery
-probe, terse DONE line correct with `TOTAL=$1,834.99`, and her reported id
-(42586) MATCHED himalaya's. Her reply DID mention "The search error was just a
-verification step" (the recurring em-dash IMAP-search failure) — per the 8/21
-refinement, that failure happens BEFORE the append, so no duplicate resulted;
-the dedupe grep confirmed only the expected stale noon draft. Verified via the
-stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject auto-decoded
-with em-dashes, inline PNG **byte-for-byte identical** (135,558 bytes), PDF
-**byte-for-byte identical** (53,278 bytes), all 5 figures present exactly once,
-`<b>$1,834.99</b>` bold, greeting + footer present, zero ' dollars'/USD leftovers
-(checked after stripping the data URI). Deleted the stale noon draft (42584) per
-the twice-daily cadence rule, kept 42586 → exactly 1 draft. Daily-Closed Sent
-count 0 (the single `BC 8/22` Sent hit was Stacey's separate auto-sent Daily
-Opened report, 14245).
+## 2026-08-22 5pm Daily Closed run — textbook one-shot, 12th consecutive clean build
+9 menus, $1,081.79 / $753.20 = $1,834.99 (Juan Ramirez 5, Dimetri Reynoso 4). All
+byte-for-byte checks passed, no duplicate; deleted the stale noon draft. Her reply had the
+recurring em-dash IMAP-search wrinkle (PRE-append per the 8/21 refinement) → no duplicate.
 
 ## 2026-08-22 6:22pm Closed MTD run — textbook one-shot, 13th consecutive clean build
 160 menus, $24,810.30 / $16,591.51 = $41,401.81 (Aug 1-22), top Juan Ramirez 41. Master asof
@@ -1019,32 +1003,18 @@ Left the sibling Daily Closed 8/26 draft (42711) untouched — different report 
 25th consecutive clean "N dollars" build.
 
 ## 2026-08-27 noon Daily Closed run — textbook one-shot, 26th consecutive clean "N dollars" build
-7 menus, $927.75 labor / $771.76 parts = $1,699.51 (Houa Moua 3 / $284.80, Humberto
-Dominguez 1 / $897.47, Dimetri Reynoso 1 / $238.39, Juan Ramirez 1 / $146.58, Jacob
-Debussey 1 / $132.27 — five advisors). 52 closed ROs → 7 carried TEK menu opcodes;
-`✓ all candidate ROs scanned`; vision-verified KPI band (crop 460px + 2x LANCZOS)
-matched JSON exactly. Pull via `terminal(background=true)` + a SINGLE
-`process(action="wait", timeout=180)`.
-**Applied the 8/26-MTD harness lesson and it worked perfectly**: instead of
-`execute_code`+`subprocess.run` (300s cap risk), wrote the ask script to
-`/tmp/bc_ask_0827.py` with `write_file`, then fired it via top-level
-`terminal(command="/usr/bin/python3 /tmp/bc_ask_0827.py", background=true,
-notify_on_complete=true)` + `process(action="wait", timeout=180)`. Returned cleanly
-inside ONE wait with Stacey's full stdout including the terse DONE line
-(`DONE 42730 ... TOTAL=$1,699.51`), her reported id MATCHED himalaya's. This
-write_file→background-terminal pattern sidesteps BOTH the `execute_code` 300s cap
-and the top-level `terminal()` paren/`&`/`$digit` scanner false-positives (the
-message never touches a shell string — it's a Python literal in a file). **Make this
-the default way to fire BC/SCT/TOL Stacey asks.**
-No self-correction text in her reply → no duplicate (pattern holds). Verified via the
-stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject auto-decoded with
-em-dashes, inline PNG **byte-for-byte identical** (138,322 bytes), PDF **byte-for-byte
-identical** (53,487 bytes), all 8 figures present exactly once, `<b>$1,699.51</b>` bold,
-greeting + footer present, zero ' dollars'/USD leftovers (checked after stripping the
-data URI), leading-digit-stripped variants ($699.51, $1.51, $,699.51) all 0. Exactly 1
-draft (42730), Daily-Closed Sent count 0 (the single `BC 8/27` Sent hit was Stacey's
-separate auto-sent Daily Opened report, 14629). No stale prior 8/27 draft (noon = first
-run of the day).
+7 menus, $927.75 labor / $771.76 parts = $1,699.51 (Houa Moua 3, Humberto Dominguez 1, Dimetri
+Reynoso 1, Juan Ramirez 1, Jacob Debussey 1 — five advisors). 52 closed ROs → 7 menu opcodes;
+`✓ all candidate ROs scanned`. All byte-for-byte checks passed, no duplicate.
+**Applied the 8/26-MTD harness lesson and it worked perfectly — this run established the
+now-default ask pattern**: instead of `execute_code`+`subprocess.run` (300s cap risk), write
+the ask script to `/tmp/bc_ask_<date>.py` with `write_file`, then fire it via top-level
+`terminal(command="/usr/bin/python3 /tmp/bc_ask_<date>.py", background=true,
+notify_on_complete=true)` + `process(action="wait", timeout=180)`. Returned cleanly inside ONE
+wait with her full stdout including the terse DONE line. This sidesteps BOTH the `execute_code`
+300s cap and the top-level `terminal()` paren/`&`/`$digit` scanner false-positives (the message
+never touches a shell string — it's a Python literal in a file). **Make this the default way to
+fire BC/SCT/TOL Stacey asks.**
 
 ## 2026-08-27 5pm Daily Closed run — textbook one-shot, 27th consecutive clean build
 14 menus, $2,475.31 / $1,826.11 = $4,301.42 (Humberto Dominguez 4, Jacob Debussey 3, Houa
@@ -1238,6 +1208,40 @@ because the first build was clean. That trap only bites when you edit and re-app
 Condensed the purely-confirmatory 2026-08-19 noon and 2026-08-19 5pm entries → back to 98,490.
 **Check `os.path.getsize()` on SKILL.md AFTER every append**, not just before — a ~2.5KB run
 entry can push a 98K file over the limit. Prune oldest confirmatory entries; never trap sections.
+
+## 2026-08-31 noon Daily Closed run — textbook one-shot, 37th consecutive clean "N dollars" build
+3 menus, $558.94 labor / $264.63 parts = $823.57 (Jacob Debussey 1 / $454.35 — RO/TEK45000BNM
+2024 Trax, Houa Moua 1 / $247.06 — TEK30000BNM 2021 Silverado 3500HD, Humberto Dominguez 1 /
+$122.16 — TEK7500BNM 2020 Silverado 1500). 86 closed ROs → only 3 carried TEK menu opcodes
+(~3.5% attach — Monday noon cut, matching the recent run of very-low-attach noon pulls);
+`✓ all candidate ROs scanned`. Pull via `terminal(background=true)` + a SINGLE
+`process(action="wait", timeout=180)`. Vision KPI band (crop 460px + 2x LANCZOS on a 1226x900
+PNG) read all four tiles exactly ($558.94 / $264.63 / $823.57 / 3) and matched JSON.
+**write_file→background-terminal ask pattern, 13th straight run, returned inside ONE 180s wait**
+(`/tmp/bc_ask_0831_noon.py`, `subprocess.run` argument list, `timeout 560`). Terse DONE line
+correct with `TOTAL=$823.57`, her reported id (42869) MATCHED himalaya's. Her reply contained
+the recurring em-dash IMAP-search wrinkle, and this time she stated explicitly "The append
+itself never ran. Let me fix — wrap the searches in try/except so the append proceeds" — i.e. a
+PRE-append failure per the 8/21 refinement, so no duplicate; dedupe grep confirmed exactly 1
+draft and there was no stale prior 8/31 draft (noon = first run of the day).
+Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
+auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (97,674 bytes), PDF
+**byte-for-byte identical** (52,493 bytes), all 6 figures present exactly once,
+`<b>$823.57</b>` bold, greeting + footer present, zero
+' dollars'/USD/EMDASH/CORRECTION/Saturday/Sunday leftovers, all 12 leading-digit-stripped
+variants = 0. Daily-Closed Sent count 0 (no `BC 8/31` Sent hits at all at 12:23 PT — Stacey's
+auto-sent Daily Opened report had not fired yet, same as the 8/25 noon precedent).
+**Useful pre-emptive ask line**: telling her up front "if your verification/IMAP search step
+errors out (the em-dash in the subject is known to break IMAP search), that is fine — do NOT
+re-append or rebuild, just report it, I will verify the draft myself" appears to keep her
+em-dash search failure from turning into a rebuild/duplicate. Keep it in every ask.
+**Note on the day-of-week sentence**: a non-zero Daily Closed body doesn't need to name the
+weekday (only zero-day reports do, to explain the $0), so a `count("Monday")==0` in the
+post-build greps is expected here and is NOT a defect. Still run step 0 (`TZ=America/
+Los_Angeles date +"%Y-%m-%d %A %H:%M"`) every run so the date in the subject is right.
+**Skill-size housekeeping**: SKILL.md was 98,902 pre-append; condensed the purely-confirmatory
+2026-08-22 5pm entry to make room, ending ~98.3k. Keep pruning oldest confirmatory entries;
+never trap sections. Re-check `os.path.getsize()` AFTER the append.
 
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.

@@ -800,6 +800,23 @@ SKILL.md under its size limit. Consensus of those runs: the full prevention word
 produces a clean one-shot draft the large majority of the time; verification asks are
 still mandatory; the $0 opened streak ran 8/23–8/25 (6 half-day slots) and broke 8/26.
 
+## (8/31 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, all 4 asks first try
+No concurrent scrapers; both scripts ran FOREGROUND clean in seconds. Hand-off RC=0 FIRST TRY
+in 87s; draft correct FIRST TRY at IMAP UID 105, no dedupe needed (no prior draft with today's
+exact subject). All 3 verification asks returned FIRST try with "use raw IMAP, NOT the Gmail
+API" leading + the 3-line numbered part probe: subject-list 38s, part-probe 97s, Sent-check 30s.
+Part sizes DECODED (PNG 49,958 / PDF 47,242 = exact on-disk bytes) — 4th consecutive decoded run.
+BOGUS-UID trap did NOT recur (reported UID 105 == subject-list UID 105). Sent-check = 6 hits,
+all old em-dash-era sends (06/29-07/03), zero today = no leak.
+DATA: 87 opened ROs scanned, **3 menus / $479.17** ($344.43 labor + $134.74 parts) — ends the
+two-day $0 streak (8/30 noon + EOD both zero). Gustavo Alatorre wrote ALL 3 (single-advisor day):
+RO 399398 TEK10000BNM 2023 Highlander $110.85; RO 399419 TEK30000BNM 2024 RAV4 $241.41;
+RO 399422 TEK10000BNM 2018 Tundra 4WD $126.91. `records` empty (0) while `rows` had all 3 —
+the 8/26 quirk STILL RECURS every run; ALWAYS read `rows`, never `records`.
+`totals.parts_price` ($297.99) != `parts_gross` ($134.74) — scorecard/email use GROSS.
+Opened drafts stack = 12 (08/21-08/31 + perennial 08/02 em-dash UID 19); note 08/28 (UID 91) is
+also an EM-DASH subject now, so the hyphen search stem surfaces 10 hyphen + 2 em-dash. No dupes.
+
 ## (8/30 8:05PM, Closed MTD) TEXTBOOK CLEAN RUN — zero exit-124s, all 4 asks first try
 Backgrounded the closed daily-append defensively (5 concurrent `tekion-scraper` SVW processes
 live) but it finished in well under 170s with no backoff — 163 closed ROs, prefilter 0 of 163
