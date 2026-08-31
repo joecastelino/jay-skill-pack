@@ -74,7 +74,16 @@ A bare `fetch()` can't auth — the app's axios interceptor signs requests. So:
 
 **Engine:** `/home/itadmin/tekion-reports/wip_engine.py` — `arm()`, `month_ms(y,m)`,
 `ytd_ms(y,m)` (Pacific), `saved_groups(dealer)`, `group_filters(groups,name,a,b)`,
-`summary(dealer,filters)`, `total_row()`, `hrs()`, `money()`, `elr()`, `rocount()`.
+`summary(dealer,filters,site=None)`, `total_row()`, `hrs()`, `money()`, `elr()`, `rocount()`.
+
+**Two engine fixes landed 2026-08-31 — reload before using:**
+1. `summary(..., site=...)` optional override for `tek-siteId` (proved BT ignores it,
+   but the param stays for other multi-site probes).
+2. `group_filters()` now re-windows **any** date field a saved group uses
+   (`payTypeFirstClosedTime | roClosedTime | roCreatedTime`), not just the first.
+   Before this fix VC's groups all returned a silent 0.00.
+Always `importlib.reload(W); W.arm()` at the top of every `execute_code` cell — the
+sandbox is fresh each call.
 
 ### VALIDATE AGAINST A KNOWN-GOOD PRIOR MONTH BEFORE FILLING ANYTHING
 Reproduce last month's column first; report the match table to Joe. SCT June 2026 —
@@ -115,7 +124,110 @@ not an RO count → likely the Report Builder report `SCP-Toyota Care 2.0`, not 
 Performance.** Ask Joe which report feeds the TXM row before filling it. Same for PDI's
 1.5-hr gap.
 
-### Dead ends (don't re-walk these)
+### METHOD 0c — ALL 8 TABS, JUNE-VALIDATED (2026-08-31). START HERE.
+
+Whole-fleet June cross-check took ~25 tool calls with the engine. Two structural
+discoveries that block everything until you know them:
+
+### 🔑 DISCOVERY 1 — BT is TWO tabs inside ONE dealer, split BY ADVISOR
+"Toyota of Fresno" (BT service) and "Blackstone Body Shop" are both dealer **1249**.
+There is **NO site/department dimension in this API** — `tek-siteId` is IGNORED for
+dealer 1249 (`-1_1249`, `1_1249`, `2_1249`, `1249` all return the identical 3,609.72),
+and `departmentId` / `serviceType` / `roType` / `serviceMode` filters all return 0 rows.
+The DB has no site key either (`payload.ro` has no `siteId`/`departmentId`; all null).
+
+**The split is the ADVISOR SET.** Body shop advisors are the extreme hours-per-RO
+outliers (27–75 hrs/RO vs ~1.5 for service):
+
+```python
+BT_BODY = ["73c7e798-5d39-4603-b516-16eae5f36216",   # 410.40 hrs / 15 ROs
+           "bfa0b344-a494-4117-a225-269b91e12f36",   # 391.30 hrs / 17 ROs
+           "93017239-1132-4ecd-b881-1f023d4b8af7"]   # internal 59.00 / 2 ROs
+NB = {"field":"primaryAdvisorId","operator":"NIN","values":BT_BODY}   # → service tab
+IB = {"field":"primaryAdvisorId","operator":"IN", "values":BT_BODY}   # → body shop tab
+```
+Verified June: service CUSTOMER 2,805.62 ✅ / INTERNAL 1,747.10 ✅; body CUSTOMER
+804.10 ✅ / INTERNAL 59.00 ✅ / Attend Others 14 ✅. Without this split BT looks
+~800 hrs over and you will waste an hour hunting a phantom filter.
+**To find the advisor set at any multi-department store:** pull the per-advisor rows
+(non-`-1`) and sort by hours-per-RO — body/heavy-line advisors stand out by 10-50×.
+
+### 🔑 DISCOVERY 2 — saved filter groups carry DEAD date windows AND a different date field
+A saved group embeds whatever date field its author used — VC's groups use
+**`roClosedTime`**, not `payTypeFirstClosedTime` — with the **hardcoded window from the
+day it was saved**. The original `group_filters()` only re-windowed
+`payTypeFirstClosedTime`, so every VC group silently returned **0.00** (no error, just
+zeros — the worst kind of failure). Fixed in the engine: it now re-windows ANY of
+`payTypeFirstClosedTime | roClosedTime | roCreatedTime`. After the fix VC Care/Care Plus
+40.46 ✅ and Carefree 132.20 ✅ landed exactly.
+**Rule: a 0.00 from a saved group means a stale date field, not "no data."**
+
+### Saved-group inventory (re-verified, all 7 dealers)
+`SCT 876` = 11 groups · `VC 1891` = 6 (CARE/CAREPLUS, CAREFREE, Service Xpress, WARRANTY
+SOLD HOURS, wARRANTY hOURS, Open Repair Orders) · `AR 6195` = 1 (`Quickservice ` — note
+the trailing space; = `opcodes IN [LOF,LOF2L,LOF4C,LOFV6]`, reproduces 78.90 ✅).
+**SV 826 / BT 1249 / BC 1251 / TL 1092 = ZERO groups** → derive from opcodes.
+
+### Per-store bucket recipes VERIFIED against June
+Common: `CL = payTypeStatus IN [CLOSED]`, `D = payTypeFirstClosedTime BTW [monthstart,monthend]`.
+Attendance rows use **no** status filter.
+
+| Tab | Row | Filter | June ✓ |
+|---|---|---|---|
+| **Fresno GM (BC 1251)** | CUSTOMER / WARRANTY / INTERNAL | `CL+D+payType IN [X]` | 2050.30 / 1262.40 / 755.30 all ✅ |
+| BC | Attend GM / Others | `D + makeId IN/NIN ["chevrolet","cadillac"]` | 1926 ✅ / 264 ✅ — **2 makes ONLY; adding gmc+buick gives 1997/193 ✗** |
+| **Alfa Romeo (6195)** | CUST/WARR/INT | `CL+D+payType` | 263.53 / 104.10 / 202.08 all ✅ |
+| AR | Quick Service | saved group `Quickservice ` | 78.90 ✅ |
+| AR | Attend AR / Others | `makeId IN/NIN ["alfaromeo","alfa romeo"]` (**both spellings**, data is dirty) | 92 ✅ / 41 ✅ |
+| **BT service (1249+NB)** | CUST / INT | `CL+D+payType+NB` | 2805.62 ✅ / 1747.10 ✅ |
+| BT | TOYOTA CARE | `CL+D+opcodes IN TAC-set+NB` | 668.80 ✅ |
+| BT | PREPAID / PDI | `opcodes IN TSC-set` / `opcodes IN [PDI]` | 0.00 ✅ / 274.10 ✅ |
+| **Body Shop (1249+IB)** | CUST / INT / Attend Oth | as above with `IB` | 804.10 ✅ / 59.00 ✅ / 14 ✅ |
+| **TL 1092** | WARR / INT / Attend Oth | `CL+D+payType` | 1243.31 ✅ / 506.42 ✅ / 245 ✅ |
+| TL | TOYOTACARE | **`opcodes IN TAC-set + TSC-set` COMBINED** (602.60 vs 602.10; TAC alone = 196.80 ✗) | ~✅ |
+| **SV 826** | WARR / INT / Attend Oth | `CL+D+payType` | 617.38 ✅ / 222.26 ✅ / 55 ✅ |
+| **VC 1891** | CUST / INT | `CL+D+payType` | 635.75 ✅ / 107.28 ✅ |
+| VC | CARE/CAREPLUS, CAREFREE | saved groups (post date-fix) | 40.46 ✅ / 132.20 ✅ |
+
+Opcode sets per store come from `POST /api/service-module/u/opcode/search`
+`{"searchText":"TAC","page":{"from":0,"size":100}}` → `data.hits[]` with
+`opcode/description/status`. **Opcode sets differ per store** — TL has `PDI` +
+`PDICILAJET` and TSC1-5 active; BT has only `PDI` and TSC1-4 INACTIVE. Never reuse
+SCT's list blind.
+
+### ❌ Still unreproduced after full June sweep — ASK JOE, DO NOT GUESS
+| Item | Engine | Sheet | Gap |
+|---|---|---|---|
+| TL PDI | 274.00 (100% WARRANTY pay) | 236.76 | −37.24 |
+| VC Attendance VW | 677 (628 excl internal) | 587 | −90 |
+| SV Service Xpress | 453.61 | 368.63 | −85 |
+| SV Care/Care Plus | 63.21 (using VC's opcode list) | 35.20 | −28 |
+| BT Warranty svc/body | 1200.60 / 533.50 | 1206.70 / 527.40 | 6.1 on wrong side of the split |
+
+**Sub-2-hour drift is EXPECTED and not a bug** when validating an old month: SV Customer
+680.21 vs 678.31, TL Customer 2473.49 vs 2471.79, SV Attend 745 vs 746, TL Attend 3821
+vs 3822. Cause = ROs reopened/re-closed in the ~2 months since Joe pulled the column.
+Say this explicitly instead of hunting it — same-day pulls won't have it.
+
+### More dead ends closed 2026-08-31 (do not re-probe)
+- **No service-type / department / site endpoint exists** for this app. All 404 or 500:
+  `/api/service-module/u/{makes,departments,service-type/list,serviceTypes,site/list}`,
+  `/api/servicesettings/u/{ro/sites,servicetype/all,site/<id>}`,
+  `/api/dealer-management/u/sites`, `/api/tenant/u/dealer/<id>/sites`,
+  `/api/user-management/u/{dealers,user/context,logged-in-user}`,
+  `/api/preference/u/{dealer/list,user/dealers}`.
+  Get make lists from the **dealer-detail DB** instead:
+  `payload->'vehicle'->>'make'` grouped by store (`wip_makes2.cjs` pattern).
+- **`serviceTypeIds` is per-dealer.** VC's Service Xpress id `6421d1490d173d3a9412d197`
+  returns **0.00** at SV, BC and AR. Don't port an id across stores.
+- **Only 3 payTypes exist fleet-wide:** `CUSTOMER_PAY`, `WARRANTY`, `INTERNAL`. `PDI`,
+  `SERVICE_CONTRACT`, `EXTENDED_WARRANTY`, `TOYOTA_CARE`, `PREPAID`, `MAINTENANCE_PLAN`
+  all return 0 at every store. Every other sheet row is an **opcode** bucket, not a
+  pay type. (So AR's SERVICE CONTRACT 18.85 row is opcode-derived — ask Joe which.)
+- `advisorName` / `primaryAdvisorName` come back **null** in `reportData[]` — resolve
+  UUIDs via `/openapi/v4.0.0/users/{id}` if you need names.
+
+## Dead ends (don't re-walk these)
 - **`Advisor Performance Report(3)`** in `/core/reports` is a DIFFERENT, newer report
   (visibility-dashboard, `documentId 68f20e5a175cec6153a05014`) hitting
   `POST /api/rosearchservice/u/visibility-dashboard/generate-summary-report`. It works and
@@ -279,7 +391,11 @@ Joe confirmed which groups:
   (gap = sync lag, not logic). Say which one you used.
 - **Advisor Performance sums whole ROs; this report sums OPERATIONS.** Never expect the
   advisor-performance API to reproduce an operation-grain Report Builder number. Report has a relative date filter "RO Closed Date = Last Month" that AUTO-SHIFTS each month — no manual date entry needed, just open it on/after the 1st of the following month. Gotcha: the page's "Latest successful sync"/"Last Updated" timestamp can show a STALE date (e.g. showed "Jul 3" when opened Aug 3) — this is cosmetic; the underlying data table still reflects the FULL target month (verified max row date = last day of month, 1,038 records). Read the KPI summary strip or the Total row for **Operation Assigned Bill Hours (Total)**. Verified July SCT: Bill Hrs = **493**. For **TOYOTA CARE's ELR (YTD)**, use the separate saved Advisor Performance group **`TAC/TOYOTACARE REVISED 3/1/25`** with dates set 01/01→EOM-of-target-month (verified July SCT: ELR $118.34, matches Prepaid Maint's ELR coincidentally — both are OEM-mandated-maintenance opcodes, not a bug). So TOYOTA CARE row = TWO sources: Report Builder (Bill Hrs) + saved filter group (ELR YTD).
-- **TXM row's own source is now UNRESOLVED again** (the earlier skill note pointing it at SCP-Toyota Care 2.0 was Jay's mistaken guess, corrected above) — do NOT reuse `TXM REVISED 9/1` or `SCP-Toyota Care 2.0` for the TXM row without asking Joe first; confirm the correct group/report before filling that cell.
+- ~~TXM row's own source is now UNRESOLVED again~~ **STALE — IGNORE. RESOLVED 2026-08-31:
+  Joe confirmed verbatim "SCP-Toyota Care 2.0, YOU GOT IT!"** TXM row + the TXM
+  COUNT/SALE/COST/GROSS + TXM PARTS block all come from Report Builder
+  `SCP-Toyota Care 2.0` (id `6a45095462e5ff667243d553`). Still open: whether BT/TL have
+  their own per-store copy of that report or share SCT's — ask Joe.
 - Attendance = `WIP Attendance - Toyota` group (see above).
 SAVED-GROUP PITFALLS: loaded groups carry STALE dates (reset every time) and possibly WRONG edited-then-saved values — read every row (esp. Pay Type) after loading, before Apply. Date calendar: month-grid cells have no onClick — advance RIGHT panel arrow first, then LEFT (left arrow caps adjacent to right panel); details in tekion-standard-reports-performance skill. For YTD: left-panel prev-month arrow (~606,441) back to Jan, click "1" in left panel, click "31" (or EOM) in right panel — range inputs update only after BOTH ends clicked.
 
