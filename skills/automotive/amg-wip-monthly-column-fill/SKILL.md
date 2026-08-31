@@ -99,7 +99,12 @@ Reproduce last month's column first; report the match table to Joe. SCT June 202
    sheet is 1,000.80 = WARRANTY minus the 30 TXM opcodes (WARRANTY∩TXM = 519.10). This
    reconciles the old "is Warranty TXM-contaminated?" thread — the exclusion is real.
 
-### ❌ TXM ROW — STILL UNRESOLVED, ASK JOE (do not guess)
+### ✅ TXM ROW — RESOLVED 2026-08-31 (see METHOD 0b for the full recipe)
+Joe confirmed the source is Report Builder **`SCP-Toyota Care 2.0`** (operation-grain,
+`RO_OPERATION_OPCODE STARTS_WITH "TEK"`), NOT Advisor Performance. The elimination log
+below is kept only so nobody re-walks it:
+
+#### (historical) why no Advisor-Performance filter could ever match
 June target 744.96 hrs / 1,442 count / $215,399 sale. Ruled out exhaustively:
 30-opcode `TXM REVISED 9/1` set (541.96), the 63-opcode `TXM ` superset, full `TXM*`
 opcode list incl. TXMPLUS/TXMROTATE/MT000B (4,042 — TXMPLUS alone is 3,495, way over),
@@ -143,7 +148,85 @@ Performance.** Ask Joe which report feeds the TXM row before filling it. Same fo
 - **Alfa Romeo SJ:** r4 CUSTOMER, r5 WARRANTY/ROAD READY, r6 INTERNAL, r7 QUICK SERVICE,
   r8 SERVICE CONTRACT, r9 MOPAR EXPRESS(N/A) · r13 ALFA ROMEO, r14 OTHERS.
 
-## Data methods (validated 2026-08-03, SCT July)
+## MANDATORY PROTOCOL (Joe context)
+Joe's benchmark: **he fills all 8 tabs by hand in ~3 hours.** A prior attempt burned
+5 hours and did not finish one tab (UI/date-picker clicking). If you are past ~30 min
+without a validated column, you are on the wrong path — switch to METHOD 0 below.
+
+1. **Never fill a cell you can't prove.** For EACH store, first reproduce a known-good
+   prior column (June) via API and diff to the cent. Show Joe the diff table. Only
+   then produce the new month. This is what buys trust — he cross-checks.
+2. **Never invent or silently estimate a number.** If a row won't reproduce, say so and
+   ask (TXM, this session). Joe accepts "I don't know yet"; he does not accept a
+   confident wrong number.
+3. **One email/output per store**, fleet rollup only as an extra.
+4. Flag anomalies as anomalies, not as data errors (e.g. Aug warranty +24% while
+   everything else fell).
+
+## METHOD 0b — THE ENGINE + VERIFIED BUCKETS (built 2026-08-31)
+**Do NOT click the report UI / date calendar.** Joe's Advisor Performance screen is
+backed by a plain internal API you can replay for any store, any window, in one call.
+Engine: **`/home/itadmin/tekion-reports/wip_engine.py`** (drives the `:9225` browser).
+Reproduced SCT June EXACTLY on 6 of 8 rows + all 6 ELRs to the cent on first pass;
+whole-column pull takes ~5 tool calls instead of ~5 hours.
+
+```python
+import sys; sys.path.insert(0,"/home/itadmin/tekion-reports")
+import wip_engine as W
+W.arm()                      # builds auth headers from localStorage
+G = W.saved_groups(876)      # Joe's saved filter groups, WITH their real definitions
+a,b   = W.month_ms(2026,8)   # target month, Pacific
+ya,yb = W.ytd_ms(2026,8)     # ELR window (ELR is the ONLY YTD row)
+t = W.total_row(W.summary(876, filters))
+W.hrs(t)      # billingTimeInSeconds/3600
+W.rocount(t); W.elr(t); W.money(t,'totalLaborSaleAmount')
+```
+
+- **Endpoint:** `POST /api/service-module/u/reporting/advisor-performance/summary`
+  body `{"reportName":"REPAIR_ORDER_REPORT","reportGroup":"REPAIR_ORDER",
+  "filters":[{"field":"migrated","values":[false],"operator":"IN"}, ...],"projections":[]}`
+  → `data.reportData[]`. **TOTAL row = the one with `primaryAdvisorId == "-1"`.**
+  Hours in SECONDS, all $ in CENTS, `elrValue` already a float.
+- **Read Joe's saved groups instead of guessing what a name means:**
+  `GET /api/sales/settings/u/v1.0.0/groupFilter/ADVISOR_PERFORMANCE_REPORT_SUMMARY/filter/preference/list`
+  → exact `field/operator/values` per group. This retires the whole
+  "load group in the popover and squint at the rows" ritual.
+- **AUTH HEADERS: build from `localStorage`, do NOT XHR-capture them.** Capturing a
+  live request works but **dies the moment you navigate** (cost a debugging detour).
+  `W.MKH` assembles them from `t_token` / `currentActiveRoleId` /
+  `currentActiveDealerId` / `currentActiveSiteId` / `t_user.id`. Cross-store = just
+  swap `dealerId` + `tek-siteId: -1_<id>` in the header dict; no dealer switching.
+- **Opcode census:** `POST /api/service-module/u/opcode/search`
+  `{"searchText":"TEK","pageInfo":{"start":0,"rows":2000},"filters":[]}` →
+  `data.hits[]` with `opcode` + `category`. (SCT: 1,371 TEK opcodes, 316 SERVICE_MENU.)
+
+### `/eval` JS pitfalls that cost time here
+- A **regex literal** inside the JS payload (`/advisor-performance\/summary/`) made the
+  `:9225` `/eval` endpoint return **HTTP 500**. Use `x.u.indexOf("...")>-1` instead.
+- Wrap the whole IIFE in `try{}catch(e){return "EX:"+String(e)}` and return
+  `await r.text()` into a `window.__VAR`, then parse in a second call — a throw inside
+  the async IIFE also surfaces as an opaque 500.
+- Report Builder search returns `j.data.esResponse.hits`, **not** `j.data.hits`.
+
+### Bucket definitions VERIFIED against Joe's June SCT column (use these, not the group names)
+The saved group names do NOT equal Joe's sheet math. Validated deltas:
+| Row | Filter that reproduces the sheet | June check |
+|---|---|---|
+| CUSTOMER r4 | payType CP + opcodes NIN (TAC*+TSC*) — **NO makeId filter** | 2,666.82 ✅ (with the group's makeId → 2,613.92 ✗) |
+| TOYOTA CARE r6 | opcodes IN TAC15–TAC80 + payType NIN WARRANTY | 283.70 ✅ |
+| PREPAID r7 | opcodes IN TSC1–TSC10 + payType IN CUSTOMER_PAY | 895.35 ✅ |
+| WARRANTY r8 | payType IN WARRANTY + **opcodes NIN the 30 TXM\* opcodes** | 1,000.80 ✅ (group alone → 1,519.90 ✗) |
+| PDI r9 | opcodes IN [PDI] + payType IN INTERNAL | 418.40 (sheet 416.90, ~1.5 off) |
+| INTERNAL r10 | opcodes NIN [PDI] + payType IN INTERNAL | 1,209.78 ✅ |
+| ATTEND r13/r14 | makeId IN / NIN [toyota,scion], no status filter | 5,243 / 138 ✅ |
+Date field = **`payTypeFirstClosedTime`** (Joe's clock). `roClosedTime`/`roCreatedTime`
+give different numbers; `invoiceCreatedTime` returns 0. Window = CALENDAR month
+(1st–EOM) — the 26th-to-25th window does NOT reproduce Joe's figures.
+
+**ONLY SCT + VC have saved filter groups.** SV/BT/BC/TL return `[]` — derive their
+buckets from opcodes and June-validate before filling anything.
+
+## Data methods (validated 2026-08-03, SCT July) — LEGACY UI PATH, fallback only
 
 ### 1. Vehicle Attendance (RO count) — live OpenAPI, search-only, quota-cheap
 `POST /repair-orders:search` filters: `closedTime BTW [monthStartPT_ms, monthEndPT_ms]` + `status IN CLOSED,INVOICED`, pageSize 200, paginate via `meta.nextPageToken`. NO fan-out → survives even when DEALER_QUOTA is tight (search itself kept working while /jobs fan-out 429'd). Script: `/home/itadmin/tekion-reports/wip_sct_july_attendance.py`. SCT July = 5,199.
@@ -172,7 +255,30 @@ Joe confirmed which groups:
 - **PREPAID MAINT** = `TSC/Prepaid Hours REVISED 3/1/25` ✓
 - **PDI row's saved group is actually the INTERNAL bucket (RESOLVED + CONFIRMED 2026-08-03):** the saved group literally named "PDI" is configured as Opcode **"Not In" PDI** + Pay Type **"In" Internal** — i.e. it EXCLUDES PDI opcodes and scopes to Internal pay type. Jay flagged this as implausible for a PDI-only read (July gave Bill Hrs 1,126.78 / RO Count 4,720) rather than guessing; Joe confirmed: "yes, that's how I got the internal number" — **use this group's output for the INTERNAL row, not the PDI row.** A true standalone PDI-only filter (Opcode "In" PDI) has NOT been built/verified — if the sheet ever needs a distinct PDI number, that's still open; ask Joe rather than assume. **Lesson: a saved group's NAME is not proof of its filter logic — always re-open the funnel popover and read the actual field/operator/value rows before trusting output, especially if the resulting count looks implausible.**
 - **WARRANTY TXM-exclusion (re-confirmed 2026-08-03):** Joe initially flagged the Warranty Hours 11/1 Bill Hrs (1,420.7) as possibly TXM-contaminated and had Jay test flipping Opcode from "Not In" TXM-list to "In" the same list to quantify the leak — mid-test Joe corrected himself: "I made a mistake, TXM filter is correct." The group's Opcode "Not In" [TXM list] is CORRECT as-is; no fix needed. Always revert a diagnostic "In"-flip test back to "Not In" immediately once told the filter is fine, before moving on (don't leave the report in the test state).
-- **TOYOTA CARE Bill Hrs source CORRECTED 2026-08-03 (supersedes prior "TXM = SCP-Toyota Care 2.0" note — that was wrong):** Joe: "the SCP 2.0 is the toyota care number" — the Report Builder custom report **"SCP-Toyota Care 2.0"** (id `6a45095462e5ff667243d553`, /report-manager) is the source for the **TOYOTA CARE row's Bill Hrs**, NOT for TXM. Report has a relative date filter "RO Closed Date = Last Month" that AUTO-SHIFTS each month — no manual date entry needed, just open it on/after the 1st of the following month. Gotcha: the page's "Latest successful sync"/"Last Updated" timestamp can show a STALE date (e.g. showed "Jul 3" when opened Aug 3) — this is cosmetic; the underlying data table still reflects the FULL target month (verified max row date = last day of month, 1,038 records). Read the KPI summary strip or the Total row for **Operation Assigned Bill Hours (Total)**. Verified July SCT: Bill Hrs = **493**. For **TOYOTA CARE's ELR (YTD)**, use the separate saved Advisor Performance group **`TAC/TOYOTACARE REVISED 3/1/25`** with dates set 01/01→EOM-of-target-month (verified July SCT: ELR $118.34, matches Prepaid Maint's ELR coincidentally — both are OEM-mandated-maintenance opcodes, not a bug). So TOYOTA CARE row = TWO sources: Report Builder (Bill Hrs) + saved filter group (ELR YTD).
+- **⚠️ TXM ROW = Report Builder "SCP-Toyota Care 2.0" (Joe CONFIRMED 2026-08-31: "SCP-Toyota Care 2.0, YOU GOT IT!").**
+  This SUPERSEDES the earlier note that pointed this report at the TOYOTA CARE row —
+  that was wrong twice over (first "TXM = SCP", then "corrected" to TOYOTA CARE, now
+  back to TXM and confirmed by Joe). **TOYOTA CARE comes from the TAC opcodes via the
+  Advisor Performance API** (see METHOD 0 table); **SCP-Toyota Care 2.0 feeds the TXM
+  row + the TXM COUNT/SALE/COST/GROSS + TXM PARTS block (r60-67).**
+  Report id `6a45095462e5ff667243d553`, `/report-manager/report/<id>/reportType/custom/detail`.
+  **Its real filter is `RO_OPERATION_OPCODE STARTS_WITH "TEK"`** + `RO_OPERATION_CATEGORY
+  EQUALS [Vehicle, Maintenance]`, grouped by `RO_NUMBER` — i.e. FACTORY MENU opcodes,
+  **NOT** the `TXM*` opcodes. That is why no TXM*-opcode filter can ever reproduce it
+  (I burned many calls trying every date basis, TXMPLUS, and make filter before
+  reading the config). Read the config, don't guess:
+  `POST /api/reportbuilder/u/report/search` `{"searchText":"SCP","searchFields":["name"],
+  "sort":[{"field":"modifiedTime","order":"DESC"}],"pageInfo":{"start":0,"rows":50},
+  "includeDeleted":false}` → `data.esResponse.hits[0]` has `filterConfigs`, `kpiMetrics`, `fields`.
+  KPI read = **"Operation Assigned Bill Hours (Total)"**; record count = "N Record(s)".
+  **TIMING TRAP:** the report is `DATE_RELATIVE / LAST_MONTH`, so it renders the PRIOR
+  month and only flips after midnight on the 1st. Pulling the WIP column on the last
+  day of the month gets you the WRONG month — wait for the flip, or estimate from the
+  dealer-detail DB (`payload.jobs[].operations[]` where opcode `^TEK`, using
+  `laborAllowanceDuration/3600`) which reproduced 1,013 of 1,038 records = 97.6%
+  (gap = sync lag, not logic). Say which one you used.
+- **Advisor Performance sums whole ROs; this report sums OPERATIONS.** Never expect the
+  advisor-performance API to reproduce an operation-grain Report Builder number. Report has a relative date filter "RO Closed Date = Last Month" that AUTO-SHIFTS each month — no manual date entry needed, just open it on/after the 1st of the following month. Gotcha: the page's "Latest successful sync"/"Last Updated" timestamp can show a STALE date (e.g. showed "Jul 3" when opened Aug 3) — this is cosmetic; the underlying data table still reflects the FULL target month (verified max row date = last day of month, 1,038 records). Read the KPI summary strip or the Total row for **Operation Assigned Bill Hours (Total)**. Verified July SCT: Bill Hrs = **493**. For **TOYOTA CARE's ELR (YTD)**, use the separate saved Advisor Performance group **`TAC/TOYOTACARE REVISED 3/1/25`** with dates set 01/01→EOM-of-target-month (verified July SCT: ELR $118.34, matches Prepaid Maint's ELR coincidentally — both are OEM-mandated-maintenance opcodes, not a bug). So TOYOTA CARE row = TWO sources: Report Builder (Bill Hrs) + saved filter group (ELR YTD).
 - **TXM row's own source is now UNRESOLVED again** (the earlier skill note pointing it at SCP-Toyota Care 2.0 was Jay's mistaken guess, corrected above) — do NOT reuse `TXM REVISED 9/1` or `SCP-Toyota Care 2.0` for the TXM row without asking Joe first; confirm the correct group/report before filling that cell.
 - Attendance = `WIP Attendance - Toyota` group (see above).
 SAVED-GROUP PITFALLS: loaded groups carry STALE dates (reset every time) and possibly WRONG edited-then-saved values — read every row (esp. Pay Type) after loading, before Apply. Date calendar: month-grid cells have no onClick — advance RIGHT panel arrow first, then LEFT (left arrow caps adjacent to right panel); details in tekion-standard-reports-performance skill. For YTD: left-panel prev-month arrow (~606,441) back to Jan, click "1" in left panel, click "31" (or EOM) in right panel — range inputs update only after BOTH ends clicked.

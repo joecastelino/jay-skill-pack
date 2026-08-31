@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-31T11:45:03",
+ "generated": "2026-08-31T12:00:57",
  "skill_count": 204,
  "skills": [
   {
@@ -275,6 +275,14 @@
    "last_used": "2026-08-28"
   },
   {
+   "name": "tekion-warranty-admin-closings",
+   "path": "automotive/tekion-warranty-admin-closings",
+   "category": "automotive",
+   "description": "Build a \"which warranty admin closed what tickets\" report for any AMG store from the Tekion OpenAPI \u2014 per-clerk RO counts, warranty $ and total RO $, month-to-date or any window. Verified SCT July 2026.",
+   "times_used": 13,
+   "last_used": "2026-08-31"
+  },
+  {
    "name": "hermes-agent-provider-switch",
    "path": "automotive/hermes-agent-provider-switch",
    "category": "automotive",
@@ -313,14 +321,6 @@
    "description": "Scrape any Tekion Report Builder CUSTOM report (e.g. \"SCT Menu Sales Opened\") headlessly \u2014 find the report id, open it under the right dealer, expand grouped rows, parse to JSON, render a manager-ready scorecard (PNG+PDF), and email it via Stacey. Use whenever Joe/managers want recurring Tekion report data without downloading PDFs from Tekion's emailed reports.",
    "times_used": 11,
    "last_used": "2026-08-03"
-  },
-  {
-   "name": "tekion-warranty-admin-closings",
-   "path": "automotive/tekion-warranty-admin-closings",
-   "category": "automotive",
-   "description": "Build a \"which warranty admin closed what tickets\" report for any AMG store from the Tekion OpenAPI \u2014 per-clerk RO counts, warranty $ and total RO $, month-to-date or any window. Verified SCT July 2026.",
-   "times_used": 11,
-   "last_used": "2026-08-31"
   },
   {
    "name": "tekion-ro-payer-split-sunbit",
