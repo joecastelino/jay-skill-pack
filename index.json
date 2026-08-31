@@ -1,6 +1,6 @@
 {
- "generated": "2026-08-31T07:15:06",
- "skill_count": 202,
+ "generated": "2026-08-31T07:30:05",
+ "skill_count": 203,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -1063,6 +1063,14 @@
    "path": "automotive/tekion-opcode-pricing-v2",
    "category": "automotive",
    "description": "DEEP REFERENCE / ARCHIVE for Tekion opcodeManagementV2. The day-to-day work is now split into three clean skills \u2014 use those FIRST: tekion-opcode-default-pricing (labor + parts), tekion-opcode-overrides (vehicle/part override batch rows), and tekion-opcode-api (read/audit/verify committed rows). Load THIS skill only when you need the full historical detail: complete dealer-switch code, Puppeteer scripts, every selector quirk, and the session-by-session debugging archaeology behind the verified recipes.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-parts-gross-fleet-mtd",
+   "path": "automotive/tekion-parts-gross-fleet-mtd",
+   "category": "automotive",
+   "description": "Pull TOTAL PARTS GROSS (revenue, cost, gross, GP%, RO vs counter split, by counterperson, by day) for any period across any/all 7 AMG stores from the Tekion part transaction ledger. Zero OpenAPI quota. Use when Joe asks for parts gross / parts sales numbers MTD, last month, or a custom window.",
    "times_used": 0,
    "last_used": null
   },

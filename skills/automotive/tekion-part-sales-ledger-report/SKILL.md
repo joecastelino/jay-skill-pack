@@ -70,7 +70,63 @@ positive=reversal/unfill), `unitSellingPrice`, `unitTotalCostPrice` (real DOLLAR
 not cents), `customer.customerName`, `soldByName`, `beforeOnHandQty/afterOnHandQty`.
 Other transactionTypes: PURCHASE (PO received), adjustments — filter SALE only.
 
-### ⚠️ PAGINATION IS BROKEN — pageNumber is IGNORED (the #1 trap)
+### ✅ USE THIS SHAPE INSTEAD — `pageInfo:{start,rows}` + refType filter (verified fleet-wide 2026-08-31)
+The bisection machinery below is **only needed for the `page:{pageNumber,pageSize}`
+body shape**. The OTHER shape (the one in `sct_backcounter_ledger_scan.py`) paginates
+CORRECTLY by offset and is dramatically simpler:
+
+```json
+{"tekRequest":{"filters":[
+  {"field":"transactionTime","operator":"BTW","values":["<ms0>","<ms1>"]},
+  {"field":"refType","operator":"IN","values":["FULFILMENT","SALES_ORDER"]}],
+  "pageInfo":{"start":<offset>,"rows":500}}}
+```
+- `rows:500` honored; `start` advances properly; **zero id overlap** between pages
+  (verified: count=141, rows500 got exactly 141 distinct; start=100 got the last 41).
+- Loop `start += 500` until `start >= count`. No time-bisection, no `id NIN` tie-draining.
+- `refType` is a valid TOP-LEVEL filter field here (`FULFILMENT`=RO, `SALES_ORDER`=counter)
+  — filtering server-side beats pulling everything and filtering client-side.
+- Verified at scale: **119,633 rows over 217 store-days (7 stores × 31 days), expected ==
+  retrieved on every store, zero failed days.** ~7 min wall clock for the whole fleet-month.
+- Skip `transactionType:SALE` — filtering on `refType` already scopes to sale traffic, and
+  netting on `deltaOnHandQty` sign handles reversals.
+
+### 🔑 DEALER SWITCH BY HEADER SWAP — no UI clicking (verified all 7 stores 2026-08-31)
+For the ledger API you do **NOT** need the dealer-pill dance. Just swap `dealerId` +
+`tek-siteId` in the header set and the response comes back scoped to that store
+(confirmed by asserting `hits[0].dealerId` matches the requested dealer on all 7).
+This means one browser session can pull all 7 rooftops with zero dealer drift risk —
+build the header set once from `localStorage` and parameterize the dealer:
+
+```js
+function mkH(dealer){return {'Content-Type':'application/json','Accept':'application/json, text/plain, */*',
+  'tekion-api-token':localStorage.getItem('t_token'),
+  'roleId':localStorage.getItem('currentActiveRoleId'),
+  'userId':localStorage.getItem('__user_id'),
+  'tenantname':'americanmotorscorporation',
+  'dealerId':String(dealer),'tek-siteId':'-1_'+dealer,
+  'original-userid':localStorage.getItem('__user_id'),
+  'original-tenantid':'americanmotorscorporation',
+  'clientId':'web','locale':'en_US','program':'DEFAULT',
+  'applicationId':'ARC_NA','subApplicationId':'US','productIds':'ARC'}}
+```
+
+### ⚠️ THE JWT IS MASKED ON THE WAY OUT OF THE BROWSER (cost ~6 calls 2026-08-31)
+Reading captured headers out via `/eval` returns the token **redacted** —
+`"eyJhbG...78J"` (13 chars). It looks like a real value, so `json.dump`ing it to a
+headers file and using it from `urllib` outside the browser gives
+`500 "Token doesn't exist or is invalid"`. Two consequences:
+1. **Build headers IN-PAGE from `localStorage.getItem('t_token')`** (536 chars, real) —
+   never ferry the token out and back in.
+2. **Do the fetches in-page**, ferry only aggregates. Corollary: a cached `window.__H`
+   from a previous turn is worthless if it was ever round-tripped through `/eval`.
+Also: `window.__H`/`__LH` get **wiped by SPA reloads between turns** — a probe that
+worked last call can come back with `hdrkeys:['Content-Type','Accept']` and 500. Make each
+harvest ONE self-contained eval that rebuilds headers from localStorage at the top.
+Header-file note: `/home/itadmin/sct-physical-2025/api-headers.json` goes stale
+(`AUTH401 Login user session is expired`) — check it before assuming it works.
+
+### ⚠️ LEGACY: `page:{pageNumber,pageSize}` shape — pageNumber is IGNORED (the old #1 trap)
 The endpoint returns max ~20 rows regardless of pageSize/pageNumber; requesting
 page 2 returns the SAME rows. A naive "while rows<count page++" loop silently
 duplicates and/or truncates (I got 1,142 rows w/ dupes, then 302 rows, for a true
