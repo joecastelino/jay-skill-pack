@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-31T08:00:05",
+ "generated": "2026-08-31T08:15:29",
  "skill_count": 203,
  "skills": [
   {
@@ -31,8 +31,8 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 86,
-   "last_used": "2026-08-28"
+   "times_used": 87,
+   "last_used": "2026-08-31"
   },
   {
    "name": "tekion-sitemap",
@@ -283,20 +283,20 @@
    "last_used": "2026-08-27"
   },
   {
+   "name": "tekion-advisor-closed-gross-api-report",
+   "path": "automotive/tekion-advisor-closed-gross-api-report",
+   "category": "automotive",
+   "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
+   "times_used": 12,
+   "last_used": "2026-08-31"
+  },
+  {
    "name": "amg-wip-monthly-column-fill",
    "path": "automotive/amg-wip-monthly-column-fill",
    "category": "automotive",
    "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
    "times_used": 11,
    "last_used": "2026-08-03"
-  },
-  {
-   "name": "tekion-advisor-closed-gross-api-report",
-   "path": "automotive/tekion-advisor-closed-gross-api-report",
-   "category": "automotive",
-   "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
-   "times_used": 11,
-   "last_used": "2026-08-28"
   },
   {
    "name": "tekion-parts-appointments-recalls-only",
