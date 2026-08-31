@@ -138,10 +138,33 @@ valid `payDay` inside the report window. Nothing in the UI can fix this — the
 flag is already correct on the RO. It needs a Flag Hours Report adjustment to
 pay the tech, plus a Tekion ticket for the indexing defect.
 
+### ⚠️ RESOLVED 2026-08-31 — it was index LAG, not a permanent drop. RE-TEST BEFORE FILING.
+
+Re-ran the identical reconciliation on **2026-08-31**, same Aug 16–27 window, same
+BC techs that had confirmed drops. **Every dropped entry had backfilled into the
+index on its own:**
+
+| store | emp | tech | 8/28 dropped | 8/31 re-test |
+|---|---|---|---|---|
+| BC 1251 | 5576 | Victor Tafolla | 4 entries / 2.40 hrs | **0 / 0.00** — 45 = 45 entries, 58.50 = 58.50 hrs |
+| BC 1251 | 410 | Craig Holman | 2 entries / 3.40 hrs | **0 / 0.00** — 68 = 68 entries, 52.80 = 52.80 hrs |
+
+Tell that it self-healed: the tech's NATIVE flagged total *rose* by exactly the
+dropped hours (Tafolla 56.10 → 58.50, Holman 49.40 → 52.80). **So the tech gets
+paid with NO Flag Hours Report adjustment** — do not post a manual adjustment on a
+fresh drop, you will double-pay him. Same story as the Advisor Performance index
+lag re-tested the same morning (see tekion-gross-not-posting-to-advisor).
+
+**Standing rule now:** a same-week index gap is presumed LAG. Before promising a
+remediation or drafting a Tekion ticket, (1) say it's likely to self-heal, and
+(2) re-run the reconciliation 2–3 days later. Only entries still absent after
+several days are a real defect. Re-test is cheap: `build_tech_perf_package.py`
+for the same tech/window, read the `NOT IN INDEX` line.
+
 **Corroborate across stores before calling it a Tekion defect** (the standing
 fleet-comparison rule — a single store's oddity has repeatedly turned out to be
-local config). Confirmed at **two of seven** stores, **3 of the first 4 techs
-checked** (2026-08-28, window Aug 16–27):
+local config). Originally observed at **two of seven** stores, **3 of the first 4 techs
+checked** (2026-08-28, window Aug 16–27) — all since cleared:
 
 | store | emp | tech | dropped entries | hours | $ @ wage |
 |---|---|---|---|---|---|
