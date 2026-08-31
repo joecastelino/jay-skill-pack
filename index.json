@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-31T12:00:57",
+ "generated": "2026-08-31T12:16:02",
  "skill_count": 204,
  "skills": [
   {
@@ -211,6 +211,14 @@
    "last_used": "2026-07-12"
   },
   {
+   "name": "tekion-standard-reports-performance",
+   "path": "automotive/tekion-standard-reports-performance",
+   "category": "automotive",
+   "description": "Pull Tekion Standard Reports from the REPORTS module (/core/reports) via the :9223 authenticated browser \u2014 especially the fixed-ops performance suite (Advisor Performance, Tech Performance / proficiency = assigned-billed vs attendance hours). Covers the filter funnel (Flag Date range, Make filter), Group By, and Export. Use when Joe wants advisor/tech performance numbers, or ANY report that is NOT a custom Report Builder report.",
+   "times_used": 16,
+   "last_used": "2026-08-31"
+  },
+  {
    "name": "tekion-opcode-default-pricing",
    "path": "automotive/tekion-opcode-default-pricing",
    "category": "automotive",
@@ -224,6 +232,14 @@
    "category": "automotive",
    "description": "Build a \"parts sold\" report (e.g. tires) for any Tekion store and period with ACTUAL invoiced dollars, split RO vs Sales Order (counter), by counterperson, from the internal part transaction ledger (activity-log API) \u2014 zero OpenAPI quota. Use when Joe asks \"how many X did we sell\" for a parts category, or when the OpenAPI quota is exhausted and RO-level pulls are blocked.",
    "times_used": 15,
+   "last_used": "2026-08-31"
+  },
+  {
+   "name": "amg-wip-monthly-column-fill",
+   "path": "automotive/amg-wip-monthly-column-fill",
+   "category": "automotive",
+   "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
+   "times_used": 14,
    "last_used": "2026-08-31"
   },
   {
@@ -267,12 +283,12 @@
    "last_used": "2026-08-24"
   },
   {
-   "name": "tekion-standard-reports-performance",
-   "path": "automotive/tekion-standard-reports-performance",
+   "name": "tekion-report-builder-scraper",
+   "path": "automotive/tekion-report-builder-scraper",
    "category": "automotive",
-   "description": "Pull Tekion Standard Reports from the REPORTS module (/core/reports) via the :9223 authenticated browser \u2014 especially the fixed-ops performance suite (Advisor Performance, Tech Performance / proficiency = assigned-billed vs attendance hours). Covers the filter funnel (Flag Date range, Make filter), Group By, and Export. Use when Joe wants advisor/tech performance numbers, or ANY report that is NOT a custom Report Builder report.",
+   "description": "Scrape any Tekion Report Builder CUSTOM report (e.g. \"SCT Menu Sales Opened\") headlessly \u2014 find the report id, open it under the right dealer, expand grouped rows, parse to JSON, render a manager-ready scorecard (PNG+PDF), and email it via Stacey. Use whenever Joe/managers want recurring Tekion report data without downloading PDFs from Tekion's emailed reports.",
    "times_used": 13,
-   "last_used": "2026-08-28"
+   "last_used": "2026-08-31"
   },
   {
    "name": "tekion-warranty-admin-closings",
@@ -299,28 +315,12 @@
    "last_used": "2026-08-27"
   },
   {
-   "name": "amg-wip-monthly-column-fill",
-   "path": "automotive/amg-wip-monthly-column-fill",
-   "category": "automotive",
-   "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
-   "times_used": 11,
-   "last_used": "2026-08-03"
-  },
-  {
    "name": "tekion-parts-appointments-recalls-only",
    "path": "automotive/tekion-parts-appointments-recalls-only",
    "category": "automotive",
    "description": "Restrict Tekion Parts RO Sales appointment notifications to recall opcodes only (or any opcode subset) by mass-toggling the per-opcode \"Consider for Parts preparation on Appointment\" flag. Covers the Bulk Update UI, the underlying bulk-update API for scale, and full verification. Built for Glade at SCT 2026-07-20; applies to any store.",
    "times_used": 11,
    "last_used": "2026-07-30"
-  },
-  {
-   "name": "tekion-report-builder-scraper",
-   "path": "automotive/tekion-report-builder-scraper",
-   "category": "automotive",
-   "description": "Scrape any Tekion Report Builder CUSTOM report (e.g. \"SCT Menu Sales Opened\") headlessly \u2014 find the report id, open it under the right dealer, expand grouped rows, parse to JSON, render a manager-ready scorecard (PNG+PDF), and email it via Stacey. Use whenever Joe/managers want recurring Tekion report data without downloading PDFs from Tekion's emailed reports.",
-   "times_used": 11,
-   "last_used": "2026-08-03"
   },
   {
    "name": "tekion-ro-payer-split-sunbit",
