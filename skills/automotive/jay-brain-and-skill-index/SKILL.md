@@ -615,6 +615,31 @@ re-embedding the edited index.md. ALSO observed 2026-06-29: a `git commit` may r
 even after a real index.md edit, because a concurrent session-end-sync pass already `git add`ed + committed
 your staged change as part of its own flow — verify with `git log --oneline -3` (the edit IS captured in a
 "brain sync" or "session:" commit); the tree being clean is the success signal, not the commit message.
+**COROLLARY — the hijacking sync ALSO absorbs your RE-IMPORT, so post-commit "0 pages imported" for a
+just-edited index.md is CORRECT, not an import-skip (new 2026-08-31 09:00 cron).** Sequence: edited
+index.md (2 new session lines) → `git add -A` → commit said "nothing to commit, working tree clean"
+(session-end-sync had already committed it; `git log --oneline -3` showed its `session:` /
+`skill backfill:` commits on top) → the mandatory step-6 re-import then reported **0 pages imported /
+0 chunks / 0 stale**. That LOOKS like index.md's new wikilinks never got re-embedded, and it's exactly
+the shape that tempts a needless newline-bump. It's fine: the same sync pass that stole the commit also
+ran its own `gbrain import`, so the DB already had the edit. **VERIFY instead of remediating** — compare
+DB vs disk directly:
+```bash
+HOME=/home/itadmin gbrain get index | grep -c 'session-<YYYYMMDD>_<hh>'   # DB copy
+grep -c 'session-<YYYYMMDD>_<hh>' /home/itadmin/brain/index.md            # disk copy
+```
+Equal counts (2 == 2 here) = index.md is current in the brain; move on to the orphan re-check. Only if
+DB < disk is there a real skip (then plain re-import, and only then the newline-bump). Contrast: the very
+next round's commit was NOT hijacked, and its re-import behaved textbook — "1 page imported / 27 chunks"
+for index.md re-chunking + `embed --stale` 1 chunk. So both readings are normal; which one you get just
+depends on whether a 15-min sync pass overlapped your commit.
+Rest of that run was pure documented happy path, nothing new: clean pass 1 (0/1399) → `sleep 20` → pass 2
+found 2 pages/3 chunks + 2 [projects] orphans → hub→page `link index projects/session-<ts> --link-type
+references` ×2 + index.md → commit (hijacked, above) → 1 latecomer orphan → link + index.md + commit
+(clean this time) → re-import 1 page/27 chunks + embed 1 → orphans 0/1402 → confirming `sleep 20` pass
+0 imported / 0 stale / 0 orphans / tree clean → `[SILENT]`. Final: 1402 pages / 2979 chunks / 2979
+embedded / 2493 links. Confirms the sleep-20-before-the-confirming-pass tip and the 2b "run orphans every
+pass regardless of import counts" rule both earn their keep.
 
 ## DIAGNOSTIC: "only N embeddings / gbrain search finds nothing about a topic we worked on"
 KEY INSIGHT (2026-06-25): GBrain's embedding count only reflects pages WRITTEN INTO THE BRAIN REPO.

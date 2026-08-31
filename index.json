@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-31T09:01:19",
+ "generated": "2026-08-31T09:15:22",
  "skill_count": 204,
  "skills": [
   {
@@ -235,6 +235,14 @@
    "last_used": "2026-08-07"
   },
   {
+   "name": "tekion-advisor-closed-gross-api-report",
+   "path": "automotive/tekion-advisor-closed-gross-api-report",
+   "category": "automotive",
+   "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
+   "times_used": 13,
+   "last_used": "2026-08-31"
+  },
+  {
    "name": "tekion-clock-time-by-opcode",
    "path": "automotive/tekion-clock-time-by-opcode",
    "category": "automotive",
@@ -281,14 +289,6 @@
    "description": "Independently verify a Gmail draft/send that Stacey (email-agent) reports she created \u2014 confirm it's actually in Drafts/Sent with correct recipients, body, and attachments, without trusting her self-report alone. Use whenever Joe asks to \"chase\" or double-check an email Jay routed through Stacey, or when Jay's own Gmail-dependent flow (himalaya/Google API) throws auth errors.",
    "times_used": 12,
    "last_used": "2026-08-27"
-  },
-  {
-   "name": "tekion-advisor-closed-gross-api-report",
-   "path": "automotive/tekion-advisor-closed-gross-api-report",
-   "category": "automotive",
-   "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
-   "times_used": 12,
-   "last_used": "2026-08-31"
   },
   {
    "name": "amg-wip-monthly-column-fill",
