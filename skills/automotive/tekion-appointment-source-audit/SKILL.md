@@ -105,6 +105,20 @@ j.data.groups[0].buckets.map(x=>x.key+':'+x.docCount);   // lowercased keys
 4. **Definitive test:** get ONE known appointment number from the vendor and pull its
    `appointmentSource` directly (`searchText:"<apptNo>"` or filter on `apptNo`).
 
+## AMG baseline — last 30 days, captured 2026-08-31 (source group-by)
+| Store | total | bdc_scheduling | consumer | walk_in_web | open_api | other |
+|---|---|---|---|---|---|---|
+| ST 876 | 5,981 | 3,630 | 989 | 925 | **437** | – |
+| BT 1249 | 4,182 | 2,782 | 595 | 551 | **254** | – |
+| TL 1092 | 5,018 | 3,438 | 558 | 897 | **125** | – |
+| SV 826 | 835 | 433 | 168 | 134 | **17** | ai_bdc 83 |
+| BC 1251 | 2,201 | 1,324 | 155 | 467 | **5** | gm_oss 250 |
+| VC 1891 | 882 | 489 | 200 | 193 | 0 | – |
+| AR 6195 | 202 | 141 | 50 | 11 | 0 | – |
+Reading: ST/BT/TL Integration == open_api == one vendor, clean 1:1 filter. BC Integration is
+MIXED (gm_oss + open_api) → must use Sub Source. VC/AR have NO integration bookings at all.
+SV has open_api AND ai_bdc → two vendors, must confirm which is which before attributing.
+
 ## AMG baseline (last 60 days, captured 2026-08-26)
 | Store | BDC | Consumer | Walk-in | Integration (open_api) | AI (ai_bdc) |
 |---|---|---|---|---|---|
@@ -120,7 +134,26 @@ Note SV carries BOTH `ai_bdc` and `open_api` — two different AI/integration ve
 coexist there; do not assume a single vendor owns "the AI appointments" fleet-wide.
 `open_api` first appearances: BT Nov 2022, SV Aug 2024, ST Mar 2025, TL Aug 2025.
 
-## Known AMG case: MIA (asked again 2026-08-27)
+## "Can we list vendor X as an AGENT instead of an Integration?" — NO (verified 2026-08-31)
+Named-agent attribution in Tekion comes from TWO places, and neither can hold a vendor:
+1. **`appointmentTakerUserId`** on the appointment = the dimension BDC-agent reporting
+   groups by. Verified: for EVERY external source it is `null`.
+   - `OPEN_API` (ST/BT/TL/SV/BC): `createdByUserId="1"` (System User), `appointmentTakerUserId=null`,
+     `externalBdcAgent=false`, `externalId=null`, `appointmentChannel=null`, `leadId=null`.
+   - `AI_BDC` (SV, Tekion's own AI class): `createdByUserId="-1"`, `appointmentTakerUserId=null`.
+     **So even getting reclassified to the AI bucket does NOT produce an agent name** — there is
+     no field on the appointment for an external agent identity.
+   - Contrast `bdc_scheduling`: taker is a real user UUID and groups cleanly
+     (ST 7d: 159/135/121/103/85… per agent).
+2. **`bdcAgentIds`** array in `GET /api/scheduling/u/settings/appointment` — the store's BDC agent
+   roster. Verified 2026-08-31: ST has 6 UUIDs, all other 6 stores `[]`. It accepts only real
+   Tekion USER records, and adding one would not help because Open API writes stamp System User,
+   not the roster user. (Also: creating a Tekion user for a vendor needs Joe's explicit OK.)
+**Conclusion to give Joe:** vendor-as-agent is not achievable at any layer — dealer setting,
+Tekion reclassification, or a dummy user. Track by SOURCE FILTER instead, and build the
+attribution report externally off `appointmentSource`.
+
+## Known AMG case: MIA (asked again 2026-08-27, and 2026-08-31 "list MIA as an agent")
 Joe: "appointments made through MIA come over as Integration — can we set that up or
 does MIA need to change it?" **Answer given: MIA must fix it on their end.** MIA books
 through the generic public Open API → `OPEN_API` → Integration. No dealer-side toggle.
