@@ -45,6 +45,29 @@ suffix the filename. Outputs PNG (page-1 summary), PDF (full RO detail), CSV
 ## 🤖 FLEET AUTOMATION — all 7 stores, nightly, one email per store (live 2026-08-28)
 Joe asked for the whole fleet on a cron with **separate emails by store**. Wired:
 
+🚨 **CRON `python3` = `/usr/bin/python3`, WHICH HAS NO PLAYWRIGHT (silent 3-night outage, found 2026-08-31).**
+`fleet_advisor_daily.sh` called bare `python3`. Interactively that resolves to the venv
+(`/home/itadmin/.hermes/hermes-agent/venv/bin/python3`) and works; under cron's PATH it
+resolves to `/usr/bin/python3` → `ModuleNotFoundError: No module named 'playwright'` in
+`render_advisor_perf_style.py`. Consequences, all silent:
+- **scrapes and `mtd_append` all SUCCEEDED** — no data was lost, JSONs are intact
+- but every render died → no `_perf.png` → `mail_advisor_daily.py` bailed
+- the log read `MTD APPEND FAILED (daily still good)` which is **MISLEADING** — the append
+  itself worked; the `&&`-chained render after it is what failed
+- result: **0 of 7 stores emailed for close days 8/28, 8/29, 8/30** and nobody noticed until
+  Joe asked for a store by hand.
+
+FIXED: the script now pins `PY=/home/itadmin/.hermes/hermes-agent/venv/bin/python3.11` and
+calls `$PY` everywhere. **Never use bare `python3` in any cron'd script here.** Recovery is
+cheap — re-render from the existing JSON and re-mail; no re-scrape needed:
+```bash
+PY=/home/itadmin/.hermes/hermes-agent/venv/bin/python3.11
+$PY render_advisor_perf_style.py out/advisor_closed_gross_<s>_<date>.json
+$PY mail_advisor_daily.py --store <s> --date <date>
+```
+**Health check worth running any time Joe asks for a store by hand** (it usually means the
+cron is dead): `grep -E "EMAIL FAILED|SENT " data/_fleet_daily_$(date -d yesterday +%F).log`.
+
 `/home/itadmin/tekion-reports/fleet_advisor_daily.sh` — cron **3:30 AM daily** (Joe is up
 by 4). For each of `st bt bc tl sv vc ar`, in order: scrape yesterday → render →
 `mtd_append.py` onto the running MTD → `mail_advisor_daily.py`. ~15 min end to end.
