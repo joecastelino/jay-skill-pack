@@ -81,6 +81,13 @@ Work dir: `/home/itadmin/tekion-reports`
      wait 8 min, retry ONCE.
 3. Render: `python3.11 render_scorecard.py data/sct-menu-sales-closed-<today>.json`
    → PNG + PDF.
+   ⚠️ **Output lands in `data/`, NOT the work-dir root.** The task spec implies
+   `/home/itadmin/tekion-reports/SCT-Menu-Sales-Closed-Scorecard-<today>.pdf`,
+   but the renderer actually writes
+   `/home/itadmin/tekion-reports/data/SCT-Menu-Sales-Closed-Scorecard-<today>.{png,pdf}`
+   (it echoes both full paths on stdout — just read them from there). An `ls` on
+   the root path returns "No such file or directory"; that is not a render
+   failure. Always attach the `data/` path in the Stacey ask.
 4. Vision-verify the PNG (title, 4 KPIs, real advisor names not UUIDs, no
    NaN/cut-off). **An empty table with "No menu sales recorded yet for this
    period" is a VALID render** — don't treat it as a renderer bug.
