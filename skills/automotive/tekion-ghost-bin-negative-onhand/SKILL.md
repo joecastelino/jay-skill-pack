@@ -298,6 +298,23 @@ BEFORE flagging it as a missed transfer:
   itself is benign, yet the stale companion negative (2418 = −2) was still sitting there
   uncorrected from prior runs. Report the recurrence count and the unresolved companion, not the
   increase.
+- **STATUS UPDATE 2026-08-30 — WHOLE BOARD FLAT; 04500-1 regression finally PAUSED.** **04500-1**
+  (5005, single-bin, 5005 IS Primary) held at **−29** — first non-worsening day after 5 straight
+  deepening days post-8/25 correction; report as "paused, still −29, not fixed." **31532** (5001)
+  FLAT at −58 for a 5th day, but SP-ORD Primary dropped **28 → 24** (another sale off Primary) →
+  Total Inventory Qty **−34**. Bin-vs-Total divergence persists. **17801-F4010 recurrence #14** —
+  5006 flat at 4 (Primary), companion 2418 STILL −2, Total **2** vs bin 4; unmoved **20 days**
+  since 8/11, and again NO diff on 5006 (4th silent-diff catch — the bin-vs-Total tell was the
+  only signal). Flat: 87139-42040 −12 (11th flat day), 87139-YZZ09 −22 (day 23 flat). ONLY ONE
+  diff in 174 rows: 87139-YZZ93 5007 53→41 reconciled clean (41 Primary + 4111=30 + TXM/2422=0 →
+  Total 71 ✓). Negatives held at **26 for a 13th consecutive day** with the IDENTICAL per-bin mix
+  (5000:2, 5001:1, 5002:1, 5004:2, 5005:11, 5006:2, 5007:7); 5007 still owns 4 of the 6 deepest.
+  Session state: :9223 was on **`/login?redirectTo=/home`** (single tab, 13h-old storage-state) →
+  `login.py --force` succeeded FIRST TRY (~35s, LOGGED_IN) → cookies added:5 → `localStorage.clear()`
+  → **21/21** keys verified → `/navigate /home` welcome:true on BC/1251 → dealer pill x1130,y32 →
+  SCT leaf x1074,y344 → 876 in ONE 4s poll. Restore ~60s, zero retries. 7/7 bins tagged+clicked
+  first try via "500" filter + `data-jaybin`, zero scrolling, Apply at x306,y689, Next at x865,y686,
+  4 pages clean, 57/174 with 24h activity.
 - **STATUS UPDATE 2026-08-29 — 04500-1 REGRESSION DAY 5 (uninterrupted).** **04500-1** (5005, single-bin,
   5005 IS Primary): −28 → **−29**. Five consecutive deepening days since the 8/25 +97 correction
   (−23 → −26 → −27 → −28 → −29) — the correction has now been fully invalidated as a fix; frame as

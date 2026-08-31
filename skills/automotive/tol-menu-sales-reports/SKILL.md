@@ -800,6 +800,27 @@ SKILL.md under its size limit. Consensus of those runs: the full prevention word
 produces a clean one-shot draft the large majority of the time; verification asks are
 still mandatory; the $0 opened streak ran 8/23–8/25 (6 half-day slots) and broke 8/26.
 
+## (8/30 8:05PM, Closed MTD) TEXTBOOK CLEAN RUN — zero exit-124s, all 4 asks first try
+Backgrounded the closed daily-append defensively (5 concurrent `tekion-scraper` SVW processes
+live) but it finished in well under 170s with no backoff — 163 closed ROs, prefilter 0 of 163
+carried a TEK menu opcode (so no new rows today), master holds 44 MTD rows, `✓ all candidate ROs
+scanned (no truncation)`. NOTE: a 0-prefilter day still produces a valid MTD report — the master
+carries the month's accumulated rows; don't mistake "0 new" for a starved pull (163 ROs scanned
+proves health).
+Hand-off RC=0 FIRST TRY in 105s; draft correct FIRST TRY at IMAP UID 105 (himalaya id 42839),
+no dedupe needed (no prior draft with today's exact subject). All 3 verification asks returned
+FIRST try with "use raw IMAP, NOT the Gmail API" leading + the 3-line numbered part probe:
+subject-list 36s, part-probe 108s, Sent-check 33s. Part sizes came back DECODED (PNG 105,550 /
+PDF 90,818 = exact on-disk bytes) — third consecutive run in decoded form. Bolded total
+$9,859.34 confirmed in body. BOGUS-UID trap did NOT recur (reported 42839/UID 105 == subject-list
+UID 105). Sent-check = 6 hits, all old em-dash-era sends (06/29-07/03), zero today = no leak.
+DATA: 44 menus MTD / **$9,859.34** ($6,664.52 labor + $3,194.82 parts), Aug 1-30 closed-to-date.
+Gustavo Alatorre 21/$2,874.61; Michael Hachey 6/$2,557.27; Eduardo Jimenez 5/$1,152.14; 10
+advisors on the board. `rows` populated (44), `records` key ABSENT entirely in the closed JSON
+(the closed schema uses `rows` + `row_count` + `expected_records`, not `records`) — read `rows`.
+TOL drafts stack = 14 (11 Opened 08/21-08/30 + perennial 08/02 em-dash UID 19, plus 3 Closed-MTD:
+Aug 1-28, 1-29, 1-30). No true dupes; older Closed-MTD drafts have unique date ranges — leave them.
+
 ## (8/30 8:05PM, Opened) TEXTBOOK CLEAN RUN — second $0 day in a row, zero exit-124s
 Ran with 5 concurrent `tekion-scraper` processes live; backgrounded the pull defensively but it
 finished in <60s with no backoff. Hand-off RC=0 FIRST TRY in 78s, draft correct FIRST TRY at
