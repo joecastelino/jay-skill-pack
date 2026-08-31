@@ -1244,78 +1244,71 @@ Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
 Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
 Drafted to Ruben (draft IDs 38930 Daily, 38931 MTD), inline PNG + PDF, SENT=NONE.
 
-## 2026-08-07 noon Daily Closed run — rebuild trap + 2x timeout, but Stacey self-caught the duplicate this time
-4 menus, $497.07 labor / $238.67 parts = $735.74 (Dimetri Reynoso 2, Juan Ramirez
-2). Data pull + render clean, `✓ all candidate ROs scanned`. First ask-agent
-build call timed out (exit 124) → terse "DONE <id> or NOT-DONE" probe recovered
-it → draft 41860 built but HASPNG=no (known trap, confirmed via a second terse
-probe asking literally for HASPNG=yes/no). Rebuild ask ALSO timed out (exit 124),
-and the FOLLOW-UP probe timed out too (2 consecutive 124s) — third attempt with
-a lighter "Reply with just: DONE <id> or NOT-DONE" finally got through. Notably
-this time **Stacey proactively flagged the duplicate herself** ("Two drafts
-exist (41861 and 41860)... Need me to clean up the duplicate?") instead of
-falsely claiming a clean dedupe (contrast with the 2026-08-04 false-negative
-precedent) — still independently verified via himalaya rather than trusting her
-word, and had her delete 41860 + confirm HASPNG=yes on 41861 in one combined
-ask. Final state: 1 draft (41861), PDF verified via himalaya attachment
-download, inline PNG confirmed via Stacey's raw-MIME check, Sent Mail
-Daily-Closed-BC count = 0. Lesson: a SINGLE terse recovery probe after a
-timeout is not always enough — be ready to send it twice before falling back
-to an even lighter one-liner.
+## 2026-08-07 noon Daily Closed run — rebuild trap + 2x timeout, Stacey self-caught the duplicate
+4 menus, $497.07 / $238.67 = $735.74. Pre-"N dollars" era churn: ask timed out → probe → build
+came back HASPNG=no → rebuild timed out → follow-up probe ALSO timed out (2 consecutive 124s) →
+a lighter one-liner probe finally got through. Notably Stacey proactively FLAGGED the duplicate
+herself (contrast the 2026-08-04 false-clean-dedupe precedent) — still verified via himalaya
+rather than trusting her. Kept 41861, Sent count 0. **Lesson: a SINGLE terse recovery probe
+after a timeout is not always enough — be ready to send it twice before falling back to an even
+lighter one-liner.**
 
-## 2026-08-09 6:18pm Closed MTD run — clean, byte-for-byte verify confirms the method
-34 menus, $6,770.64 labor / $4,051.86 parts = $10,822.50 (Aug 1-9), top advisor
-Juan Ramirez (14 menus, $4,268.69). Master asof was already 2026-08-08 (prior
-run) so no missed-day catch-up needed; default append found 0 new closed ROs
-today but ran clean (`✓ all candidate ROs scanned`). Render matched computed
-totals exactly on vision-check. Stacey's first ask-agent build call hit the
-documented genuine timeout (175s, not the false-positive `&`-backgrounding
-block) — waited ~20s, sent the standard terse "DONE <id> or NOT-DONE" probe,
-got `DONE 41913` back in one shot (no repeat probes needed this time). Used
-the skill's self-serve byte-for-byte verification (export --full, locate the
-base64-encoded text/html MIME part, decode it, regex out the
-`data:image/png;base64,...` payload, decode THAT, compare bytes against the
-source PNG file directly) — confirmed **exact byte match**, strongest possible
-proof, no dependence on Stacey's self-report at all. PDF confirmed via
-himalaya attachment download. Sent Mail = 0 for this subject+date. Exactly one
-draft existed for TODAY's date/subject (41913); a grep for the bare subject
-string without the date also matched yesterday's 8/8 draft (41894) — that is
-NOT a duplicate, just the prior day's report still sitting in Drafts (expected;
-each day's MTD draft has its own date in the subject). Lesson: when checking
-for duplicate drafts, always grep with the FULL date-qualified subject (as the
-skill's dedup section already says — `grep "BC m/d"` — not a bare/partial
-subject string), or you'll mistake yesterday's still-present draft for a
-same-day duplicate.
+## 2026-08-09 6:18pm Closed MTD run — clean; byte-for-byte verify confirms the method
+34 menus, $6,770.64 / $4,051.86 = $10,822.50 (Aug 1-9), top Juan Ramirez 14. Default append,
+0 new closed ROs, `✓ all candidate ROs scanned`. Ask timed out at 175s → one terse
+"DONE <id> or NOT-DONE" probe returned `DONE 41913`. Used the self-serve export→decode→compare
+method: **exact byte match** — strongest proof, no dependence on Stacey's self-report.
+**Lesson: when checking for duplicate drafts, always grep the FULL date-qualified subject**
+(`BC m/d`) — a bare-subject grep also matched the prior day's 8/8 draft (41894), which is NOT a
+duplicate, just yesterday's report still sitting in Drafts.
 
-## 2026-08-16 5pm Daily Closed run — clean zero-menu day, confirms $0.00 zero-count reporting works fine
-0 menus closed today, $0.00/$0.00/$0.00 total. Data pull + render clean (`✓ all
-candidate ROs scanned`). Stacey's build succeeded on the FIRST ask (~110s, no
-timeout) using the literal-numbers rule (embedded "0 menus, $0.00 total" as
-exact text, told her not to regenerate). Only deviation from a normal run: a
-noon draft (42246) for the SAME date/subject already existed with 0 menus too
-(both noon and 5pm runs found 0 closed menus that day) — this is a genuine
-same-day leftover per the twice-daily cadence note, not a new-bug duplicate;
-expunged it, kept the 5pm draft (42248). Byte-for-byte self-serve PNG
-verification (export --full, decode outer base64 CTE on the text/html part,
-regex out data:image/png;base64 payload, decode, compare bytes to source PNG)
-confirmed exact match. To=Restrada only/no Cc/From=Joe, PDF attachment
-confirmed present in raw export, Sent Mail count for this subject = 0. Zero
-menus closed is valid data, not an error — report it plainly.
+## 2026-08-16 5pm Daily Closed run — clean zero-menu day, confirms $0.00 reporting works
+0 menus, $0.00. First-ask build (~110s) using the literal-numbers rule. Only deviation: the
+noon draft for the SAME date/subject was also 0 menus — a genuine same-day leftover per the
+twice-daily cadence note, not a new-bug duplicate; expunged it. Byte-for-byte PNG match.
+Zero menus closed is valid data, not an error — report it plainly.
+
+## 2026-08-30 6:16pm Closed MTD run — zero-activity Sunday, textbook one-shot, 36th consecutive clean "N dollars" build
+215 menus, $33,187.54 labor / $21,756.82 parts = $54,944.36 (Aug 1-30) — **identical to the
+8/29 MTD** because BC service was closed all Sunday: **0 closed ROs today → 0 new rows**, master
+stayed at 215 (asof advanced 8/29→8/30). Advisors unchanged: Juan Ramirez 50 / $14,735.37, Houa
+Moua 40 / $8,541.14, Humberto Dominguez 36 / $11,913.03, Dimetri Reynoso 30 / $7,114.73, Jacob
+Debussey 23 / $3,385.70, Michael Reyes 19 / $4,273.98, Erik Mercado 11 / $3,656.53, Jeremia
+Navarro 6 / $1,323.88. Master asof was 2026-08-29 → default append (no seed/catch-up);
+`✓ all candidate ROs scanned`; pull via `terminal(background=true)` + a SINGLE
+`process(action="wait", timeout=180)`, finished near-instantly. Vision KPI band (crop 460px +
+2x LANCZOS on a 1226x7953 PNG) matched JSON exactly; master `_gross` sums matched the emitted
+report `totals` exactly.
+**Third zero-activity Sunday logged (8/23, 8/30 noon, 8/30 5pm/MTD)** — the 8/23 nuance applies
+again: a zero-activity day on the MTD report looks completely normal (full table, big totals)
+and is numerically bit-identical to yesterday's draft, so Ruben could read it as a stale
+re-send. Included the explicit sentence "The store was closed Sunday, August 30, so no repair
+orders closed today and the month-to-date figures are unchanged from yesterday." Keep doing this
+on every closed-Sunday MTD.
+**Weekday-verification rule (step 0) paid off again**: ran `TZ=America/Los_Angeles date
++"%Y-%m-%d %A %H:%M"` as the FIRST action, so the ask correctly said "Sunday, August 30" — the
+8/30-noon Saturday/Sunday authoring error did not repeat. Added `Saturday` to the post-build
+leftover greps (count 0) as a cheap guard.
+**write_file→background-terminal ask pattern, 12th straight run, returned inside ONE 180s wait**
+(`/tmp/bc_ask_0830_mtd.py`, `subprocess.run` argument list, `timeout 560`). Terse DONE line
+correct with `TOTAL=$54,944.36`, her reported id (42836) MATCHED himalaya's, no self-correction
+text → no duplicate. Verified via the stdlib-`email` parser: To=Restrada, Cc real None,
+From=Joe, Subject auto-decoded with em-dashes, inline PNG **byte-for-byte identical**
+(1,684,998 bytes), PDF **byte-for-byte identical** (91,986 bytes), all 11 figures present
+exactly once, `<b>$54,944.36</b>` bold, greeting + footer present, zero
+' dollars'/USD/EMDASH/CORRECTION/Saturday leftovers, all 16 leading-digit-stripped variants = 0.
+Exactly 1 MTD 8/30 draft, MTD Sent count 0 (the single `BC 8/30` Sent hit was Stacey's separate
+auto-sent Daily Opened report, 14819). Left the sibling Daily Closed 8/30 draft (42835)
+untouched — different report type.
+**Skill-size housekeeping**: SKILL.md was 98,877 pre-append; condensed the purely-confirmatory
+2026-08-06 5pm and 2026-08-16 5pm entries to make room. Keep pruning oldest confirmatory
+entries; never trap sections. Re-check `os.path.getsize()` AFTER the append.
 
 ## 2026-08-06 5pm Daily Closed run — full trap sequence hit again, playbook held
-5 menus, $1,744.99 labor / $820.10 parts = $2,565.09 (Juan Ramirez 4 menus, Erik
-Mercado 1). Data pull + render clean (`✓ all candidate ROs scanned`). Stacey's
-first ask-agent call timed out (exit 124) → terse probe recovered it → first
-build came back HASPNG=no (known trap) → full-spec rebuild ask → that ALSO
-timed out → probe #1 got a non-conforming free-text reply → probe #2 with an
-exact-format demand got a clean `DONE 41748 HASPNG=yes HASPDF=yes
-TO=Restrada@blackstonegm.com CC=none`. Ended up with 6 total drafts at the same
-subject (1 leftover from the noon run + 5 from this run's churn) — verified all
-6 were correctly addressed to Ruben (no wrong-recipient leak this time), kept
-41748, expunged the other 5. Final state: 1 draft, PDF verified via himalaya
-attachment download, Sent Mail = 0 matches. Every trap this run was already
-documented in this skill — no new failure modes, just confirms the churn is
-routine and the recovery steps are reliable.
+5 menus, $1,744.99 / $820.10 = $2,565.09. Pre-"N dollars" era: ask timed out → probe →
+HASPNG=no → rebuild → timeout → 2 probes → clean DONE. Ended with 6 drafts at one subject
+(noon leftover + 5 churn), all correctly to Ruben; kept 41748, expunged 5. No new failure
+modes — confirms the churn is routine and the recovery steps reliable.
 
 ## 2026-08-29 6:17pm Closed MTD run — textbook one-shot, 34th consecutive clean "N dollars" build
 215 menus, $33,187.54 labor / $21,756.82 parts = $54,944.36 (Aug 1-29) — new monthly high, and
