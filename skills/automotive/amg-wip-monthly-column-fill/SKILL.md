@@ -1153,6 +1153,25 @@ Total-row read order after 'Sublet Parts Cost\nTotal\n': ROcount, [6 $ columns],
 **Verified YTD CP (SCT, 01/01–07/31/2026): Bill Hrs 18,486.81, ROs 23,619, ELR $174.65** (July-only was 2,211.33 / 3,177 / $172.63).
 
 ## Pitfalls
+
+### COLUMN POSITION IS PER-TAB (cost a re-send 2026-09-01)
+Tabs do NOT share the same last-data column. In the Aug-2026 book: SCT/BT/TL/BodyShop/VC/BC ended at col 47, **SV at 48, Alfa Romeo at 20**. Inserting the new month at a hardcoded col 48 put Alfa's August 27 columns right of May behind a wall of blanks (looks like "you're missing the Alfa numbers") and put SV's August *before* May.
+
+**Rule:** per tab, find that tab's own max date-header column and insert at `last_date_col + 1`:
+```python
+def augcol(ws, y=2026, m=8):
+    return [c for c in range(2, ws.max_column+1)
+            if isinstance(ws.cell(1,c).value, dt.datetime)
+            and ws.cell(1,c).value.month==m and ws.cell(1,c).value.year==y][0]
+last = max(c for c in range(2,ws.max_column+1) if isinstance(ws.cell(1,c).value, dt.datetime))
+```
+When relocating an already-written column, re-letter any formulas (`=AV18-AV19` → `=U18-U19`) via `re.sub(r'\b[A-Z]{1,2}(?=\d)', new_letter, formula)`.
+
+### Audit by DATE HEADER, not by `.month==8`
+An audit that grabbed "the August column" with `.month==8` matched **Aug-2023** on tabs with long history and reported nonsense (31 cells at col 14). Always constrain year too, and print `prev_col`'s date to confirm the new column really is adjacent to last month.
+
+### Blank-check must compare against the tab's own prior column
+Checking "is Aug blank where May had data" only works if you resolved May per-tab. Alfa's entire column was skipped because the checker read col 47 (empty on that tab) as the prior month.
 - OpenAPI RO search results have NO `id` field — use `documentId`; jobs live at `data.jobs`, operations at `data.roOperations` (fan-out path only).
 - `get_token(cfg)` requires the cfg arg (`sys.path.insert(0,"/home/itadmin/tekion-api")`).
 - 2-4 AM PT = VI pull window; DEALER_QUOTA 429s on fan-out likely. Search-only endpoints still worked.
