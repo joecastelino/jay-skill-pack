@@ -47,7 +47,25 @@ After a retarget, Joe's next question is whether the missed runs actually EXECUT
 2. Report a per-report table: report name + schedule, the actual numbers, and the delivery artifact (email ID / draft ID).
 3. Re-surface any business flags buried in those missed runs (e.g. BC warranty closings done by CASHIERS instead of warranty admins) — that's the value Joe lost while Slack was dark.
 
+## Same-target, split-result: 2 of 3 BC crons failing (2026-09-01)
+Observed state: all three BC jobs pointed at `C0BR7FHMF17:1787111069.163529`, yet
+**BC Warranty Closings (7am) delivered OK while BC Menu Sales — Daily Closed and
+BC Menu Sales — Closed MTD both logged `channel_not_found`.** Same channel, same
+thread, different outcomes — so the error can be STALE on the job record rather
+than a genuinely dead channel. Two consequences:
+- Don't infer channel death from one job's error line; cross-check a sibling job
+  on the SAME target before retargeting.
+- Note the ts drift: this target ts (`...1069.163529`) is NOT the BC-only ts
+  recorded elsewhere (`...1034.827789`). Reconcile which thread Joe is actually
+  reading in before you move anything.
+Correct move when you see this: ASK Joe whether those reports are arriving, then
+retarget + verify end-to-end. Don't silently retarget a job that may be fine.
+
 ## Pitfalls
 - A `channel_not_found` cron looks HEALTHY in its own run log if it also emails — check the Slack post result specifically.
+- A cron whose background process completes in ANOTHER agent session (e.g. the SCT
+  alignment MTD scan `sct_align_mtd.py`, job `25ec117cfe72`, 7PM) renders and
+  delivers in its own session. A stray "background process completed" notice for it
+  needs NO follow-up — don't re-render or re-deliver.
 - Don't dump another store's reports into a single-store thread; ask Joe first.
 - Thread-scoped delivery needs the thread_ts, not just the channel — posting to the channel root is not what he asked for.

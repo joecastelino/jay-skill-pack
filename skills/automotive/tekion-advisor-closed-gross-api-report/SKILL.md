@@ -287,6 +287,18 @@ backoffs ate ~20 min of wall clock. On a high-volume store quote **~70–110 min
 the low end. Same-day 8/26 daily = 169 ROs / $45,161.18. TL ELRs $152–$215 (Toyota
 store but higher than SCT/BT — don't apply the $130–140 band store-blind).
 
+**VC (VW Clovis, 1891) baseline, Aug 2026** — smallest advisor roster in the fleet,
+only **4 advisors**: Joe Mendoza, Gabriel Salazar, David Brown, Doug Hampton.
+Closed MTD Aug 1–30 = **583 ROs / $198,922.86**. Daily Fri 8/28 = 25 / $7,931.74;
+Sat 8/29 = 9 / $3,889.42. **Sunday 8/30 closed ZERO ROs** — a Sunday with 0 closes is
+normal at VC, not a scrape failure, and it means MTD-through-Sunday == MTD-through-Saturday
+(say that explicitly or the identical totals look like a bug).
+VC ELR band **$186–$233** (VW store — do NOT apply the Toyota $130–140 band).
+Standing shape: Mendoza = heavy-repair lane (1.84 Hrs/RO MTD, highest ELR, ~31% of ROs
+but ~44% of gross); Brown = volume/express valve (most ROs, lowest ELR + lowest Hrs/RO);
+Hampton = light part-time-looking load (~22 ROs/mo). Use that as the ready-made outlier
+callout trio for VC deliveries.
+
 **Outliers that made the BC delivery land well** (pattern to reuse): the advisor
 with ~3.2 Hrs/RO on low RO count = heavy-repair lane; the advisor with ~$254 ELR
 and near-zero parts sale ($25 across 78 ROs) = dedicated internal/warranty queue.
@@ -596,6 +608,19 @@ verification result in one line — Joe has been burned by "verified" that wasn'
 Subjects that worked: `<STORE> Advisor Performance — Closed MM/DD/YYYY` and
 `<STORE> Advisor Performance — Closed MTD (Month D–D, YYYY)`.
 
+### "can you email them to me?" — AFTER you already sent them (2026-09-01)
+Joe re-asking is common and does **not** mean the send failed. Self-sends carry BOTH
+`\Inbox` and `\Sent` labels, so in a filtered/threaded Gmail view they can hide inside
+the Sent conversation. **Do not blindly re-send** — re-verify first (All Mail →
+`X-GM-RAW rfc822msgid:` → parse label SET → confirm `\Seen` absent → confirm
+`Received:` count ≥ 1), then answer with a compact table of subject + delivery
+timestamp and tell him what to search for. Explain the Inbox+Sent dual-label quirk in
+one line so it doesn't read as a dodge, and offer: *"if they're still not showing,
+say so and I'll re-send with a fresh Message-ID rather than assume it's a display
+issue."* That framing was accepted. Only actually re-send if he confirms they're
+still missing — a duplicate with the SAME Message-ID gets collapsed by Gmail and
+makes it worse.
+
 ## Pitfalls
 - f-strings can't contain backslashes in the expression part — build conditional
   HTML fragments (e.g. the logo `<img>`) with `%` formatting on a prior line.
@@ -606,10 +631,17 @@ Subjects that worked: `<STORE> Advisor Performance — Closed MM/DD/YYYY` and
   Say it once up front in the "starting the run" message, then ship. Do NOT repeat
   the logo nag on every subsequent delivery. On disk today: `logo_st.png` and
   `logo_0.png` (which IS the SCT mark — never use it as a fallback). Branded
-  re-renders are still owed for **BC and TL** if Joe ever sends those logos.
-- **Store order Joe has walked so far: SCT → BT → BC → TL.** Each time he said
-  "can you do the same for <next store>". Remaining un-built: SV, AR, VC. When he
-  names one, copy `_tl_advisor_run.sh`, swap the code, keep the same date window.
+  re-renders are still owed for **BC, TL, and VC** if Joe ever sends those logos.
+- **Store order Joe has walked so far: SCT → BT → BC → TL → VC.** All 7 are now on
+  `fleet_advisor_daily.sh`, so ad-hoc single-store asks are usually a **cron-health
+  signal** — run the `grep -E "EMAIL FAILED|SENT "` check before assuming it's a
+  one-off request.
+- **He asks by close DATE, and often for several at once** ("MTD, Friday the 28th,
+  and Saturday the 29th … I need 3 different reports" — VC, 2026-09-01). That's 3
+  separate emails, one per window, not a combined pack. Since all 7 stores are
+  scraped nightly, the JSONs already exist — **re-render + re-mail from disk, never
+  re-scrape** (`render_advisor_perf_style.py` then `mail_advisor_daily.py` /
+  `mail_advisor_mtd.py`). Whole thing is seconds, not minutes.
 - **Post the DAILY the moment it lands.** The pair is deliberately split: daily ≈
   2–4 min, MTD 30–90 min. Poll with `terminal("sleep 90; tail -25 <log>")` (a
   foreground sleep in `terminal` is fine — it's the 300s `execute_code` cap that

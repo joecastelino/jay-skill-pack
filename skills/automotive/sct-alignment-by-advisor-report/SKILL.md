@@ -973,6 +973,14 @@ cross-sell attach rate (ROs carrying both).
   → `data.parts[].saleAmount`, one extra call per BG line.
 - Aug 2026 reference scale: 5,094 closed ROs → 275 with a BG opcode, 200 of those carry
   NO align/TEK op (invisible to the alignment scan), 64 ROs sold BOTH.
+- **RECIPIENT: draft to JOE (jcastelino@americanmotorscorp.com, greeting "Joe,"), NOT
+  Kevin** — this is a NEW format Joe has not signed off on yet. Only after he approves
+  does it go to Kevin / join the nightly cadence / roll out to the other stores. Same
+  DRAFT-ONLY hard-stop language as the main report applies.
+- **SCHEDULING: it must run AFTER the nightly `sct_align_mtd.py` finishes**, not beside
+  it (same rate-limit bucket; Kevin's 7 PM report has priority). Scheduled at 21:15
+  Pacific (job `733827598a50`, first run for August 2026 final on 2026-09-01) so the
+  ~19:01→~20:04 nightly is well clear. Still `pgrep -af sct_align_mtd` before launching.
 
 ## BUG FOUND + FIXED 2026-08-31 — ALIGN00**R**BA vs ALIGN00**B**RA
 `ALIGN_OPC` had `ALIGN00BRA`, but the opcode SCT actually uses is **`ALIGN00RBA`** (R and
