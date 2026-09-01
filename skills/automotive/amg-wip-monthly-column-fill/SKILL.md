@@ -413,11 +413,41 @@ Joe, and the kind of thing RO grain hides completely.
 Whole-fleet June cross-check took ~25 tool calls with the engine. Two structural
 discoveries that block everything until you know them:
 
-### 🔑 DISCOVERY 1 — BT is TWO tabs inside ONE dealer, split BY ADVISOR
+### 🔑 DISCOVERY 1 — BT is TWO tabs inside ONE dealer → **SPLIT WITH `departmentId`**
+
+> 🚨 **CORRECTED 2026-09-01. The paragraph below this box used to say "there is NO
+> site/department dimension in this API — `departmentId` filters return 0 rows," and
+> prescribed a hand-built advisor-UUID list. THAT IS WRONG. `departmentId` works fine on
+> `advisor-performance/summary`.** Use this and skip the UUID hack entirely:
+>
+> ```python
+> DEP = lambda op: {"field":"departmentId","operator":op,"values":["1249_department_3"]}
+> DEP("IN")   # → Toyota of Fresno   (BT SERVICE tab)
+> DEP("NIN")  # → Blackstone Body Shop (BT BODY tab)
+> ```
+> June 2026 ELR proof — **both warranty rows exact on the first try**: service
+> **240.00** = sheet 240.00 ✅ · body **124.70** = sheet 124.70 ✅. Unfiltered gives 205.66,
+> i.e. neither tab. Same `1249_department_3` value and same inverted-name trap as
+> METHOD 0c (the group *named* "Toyota Body Shop" uses **NIN**, so `department_3` IS
+> main service).
+>
+> **Why the original conclusion was wrong, and how to avoid repeating it:** the earlier
+> probe tried `departmentId IN ["SERVICE"]` — a **guessed value** — got 0 rows, and
+> concluded *the field* was unsupported. **A valid field with a bad value returns 0 rows,
+> exactly like an unsupported field.** Never conclude "this dimension doesn't exist" from a
+> zero-row response on a value you invented; a 400 proves the field is bad, `0` proves
+> nothing. Get real values from the saved-group endpoints
+> (`groupFilter/TECH_PERFORMANCE` and `.../ADVISOR_PERFORMANCE_REPORT_SUMMARY`) and retry
+> before writing off a filter. This one bad inference sat in the skill for a full session
+> and pushed the next run toward an unfalsifiable subset-sum.
+>
+> Keep the advisor-UUID split below ONLY as a cross-check for the **Hours Sold** rows,
+> which were validated with it. Prefer `departmentId` for anything new.
+
 "Toyota of Fresno" (BT service) and "Blackstone Body Shop" are both dealer **1249**.
-There is **NO site/department dimension in this API** — `tek-siteId` is IGNORED for
-dealer 1249 (`-1_1249`, `1_1249`, `2_1249`, `1249` all return the identical 3,609.72),
-and `departmentId` / `serviceType` / `roType` / `serviceMode` filters all return 0 rows.
+(Historical note — superseded by the box above:) `tek-siteId` IS ignored for dealer 1249
+(`-1_1249`, `1_1249`, `2_1249`, `1249` all return the identical 3,609.72), and
+`serviceType` / `roType` / `serviceMode` filters do all return 0 rows.
 The DB has no site key either (`payload.ro` has no `siteId`/`departmentId`; all null).
 
 **The split is the ADVISOR SET.** Body shop advisors are the extreme hours-per-RO
@@ -912,8 +942,34 @@ Dead ends confirmed here (do not re-probe):
   one message and produced the real, reusable answer.
 
 ## ⭐ METHOD 0d — THE FULL ELR BLOCK (rows 34–55) — SOLVED 2026-09-01
-**ELR is the ONLY YTD block** (`W.ytd_ms(y,m)` = Jan 1 → EOM target). Joe flagged this
-directly: *"ELR???? that is a YTD number for all the toyota stores."*
+
+### 🚨🚨 ELR BASIS IS SPLIT BY STORE — **TOYOTA = YTD, EVERYONE ELSE = MTD**
+**Read Joe's sentence again, carefully — the qualifier is load-bearing:**
+*"ELR???? that is a YTD number **for all the toyota stores**."* Then, a turn later, when I
+had applied YTD everywhere: ***"all the other stores are MTD."***
+
+| Tab | ELR window |
+|---|---|
+| SCT · BT service · BT body · TL | **YTD** — `W.ytd_ms(y,m)` (Jan 1 → EOM target) |
+| SV · BC · VC · AR | **MTD** — `W.month_ms(y,m)` (same window as Hours Sold) |
+
+This supersedes the blanket *"ELR is the ONLY YTD block"* rule stated elsewhere in this
+skill — that rule is right about **which block** is YTD-capable and wrong about **which
+tabs**. Applying YTD fleet-wide silently produces plausible-but-wrong numbers on 4 of 8
+tabs (no error, correct order of magnitude — the worst failure mode).
+
+🔑 **THE TRANSFERABLE LESSON: when Joe scopes a correction with "for all the X stores,"
+that phrase is the spec, not filler.** I read the emphasis (YTD) and dropped the scope
+(toyota stores), then applied it universally. **If a correction names a subset, ask what
+the complement does BEFORE building** — it is one sentence versus a wrong pass over half
+the workbook. Cheap test: run the candidate basis against the prior column for one
+non-Toyota store; if it misses by a lot but the Toyota stores are exact, the basis is
+per-store, not global.
+
+**MTD validation, June 2026** (`CL` + `payType IN [X]` + `month_ms`, read `elrValue`):
+BC **168.33 / 224.90 / 197.18 — 3/3 exact ✅** · VC 208.84 ✅ / 234.19 ⚠️ / 213.04 ✅ ·
+SV 233.10 / 358.42 / 244.10 ✅ · AR 289.48 / 441.39 / 202.60 (all within reopened-RO drift).
+Non-Toyota tabs are just CP / WARRANTY / INTERNAL — no opcode buckets, no make filter.
 
 🔑 **The asymmetry that breaks a naive pass: rows 35–41 are STORE-WIDE (no make filter),
 rows 43–45 filter to NON-Toyota.** "TOYOTA CUSTOMER" does *not* mean `makeId IN [toyota]`
@@ -936,6 +992,44 @@ Note r35/r37 reuse the **same exclusions as their Hours Sold counterparts** (CP 
 TAC/TSC; INTERNAL excludes PDI) — mirror the block-1 recipe, just swap the window to YTD
 and read `elrValue` instead of hours. r36 warranty runs ~1.5% low (reopened ROs, expected
 drift on an old month). r44 OTHER WARRANTY is 0.00 in the sheet — don't chase it.
+
+### ⭐ PER-STORE OPCODE SETS — derive them, SCT's do NOT transfer
+Only SCT has saved opcode groups, and **applying SCT's sets to BT/TL is provably wrong**
+(BT TXM 72.31 vs sheet 242.42; TL 182.57 vs 219.96). Census each store:
+```python
+POST /api/service-module/u/opcode/search   {"searchText":"TAC","pageInfo":{"start":0,"rows":2000}}
+→ data.hits[]  # keep status=="ACTIVE"
+```
+Two rules reverse-engineered by diffing SCT's saved groups against its live opcode list
+(these reproduce SCT to the cent, so apply them per store):
+```python
+TXM = [o for o in hits if o.startswith("TXM") and not re.search(r'PLUS|ROTATE', o.upper())]
+TAC = [o for o in hits if re.fullmatch(r'TAC\d*', o)]   # excludes junk like TACOMALOCK
+TSC = [o for o in hits if re.fullmatch(r'TSC\d*', o)]
+```
+Counts differ wildly per store — SCT TXM 25 / TAC 15 · BT TXM 15 / TAC 3 · TL TXM 8 / TAC 16.
+Cached at `/tmp/store_ops.json`. **`r49–55 are Excel formulas** (`=AV35`…) — they auto-fill
+off r35–41; do not compute them. Exception: **TL r49 is hardcoded.**
+
+### ❌ 6 CELLS THAT WOULD NOT RECONCILE (BT/TL only) — ASK, DON'T GRIND
+Everything else in the ELR block validated. These resisted every exclusion combo tried
+(±TAC, ±TSC, ±TXM, ±make filter, ±department, YTD vs MTD):
+
+| Cell | Mine | Sheet | Shape of the miss |
+|---|---|---|---|
+| BT r35 CUSTOMER | 148.82 | 132.74 | high |
+| BT r37 INTERNAL | 130.93 | 151.32 | low — CP high + INT low by similar size ⇒ a bucket is moving between them |
+| BT r38 TXM | 72.31 | 242.42 | >3× low; TEK-prefix (699 opcodes) gives 172.98, still short |
+| TL r38 TXM | 182.57 | 219.96 | opcode set too narrow |
+| TL r39 TAC | 171.75 | 114.77 | 16-code set too wide (suspects: bare `TAC`, `TAC5`) |
+| TL r41 PDI | 236.76 | 154.29 | same root cause as TL PDI hours (TL PDI is ~100% warranty) |
+
+**These are opcode-definition problems, not engine problems** — every structural mechanism
+(dept filter, YTD/MTD basis, elrValue read) is proven correct at the same stores on other
+rows. **The fix is Joe saving an opcode group at BT/TL the way he did `TXM REVISED 9/1` at
+SCT** (which the API reads back verbatim and which nails SCT exactly), or him pasting the
+opcode list. Per the time budget: offer that trade instead of sweeping more combinations —
+BT/TL have no saved groups, so there is nothing left to read and guessing is unbounded.
 
 ### TXM COUNT/SALE/COST block (rows 57–67) — grain confirmed, opcode set incomplete
 The advisor API with the TXM 30-opcode group returns `roCount` **1,007 vs the sheet's

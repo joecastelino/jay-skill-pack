@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-01T07:00:53",
+ "generated": "2026-09-01T07:15:53",
  "skill_count": 205,
  "skills": [
   {
@@ -39,7 +39,7 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 76,
+   "times_used": 77,
    "last_used": "2026-09-01"
   },
   {
@@ -103,7 +103,7 @@
    "path": "automotive/sct-alignment-by-advisor-report",
    "category": "automotive",
    "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
-   "times_used": 38,
+   "times_used": 39,
    "last_used": "2026-09-01"
   },
   {
@@ -175,7 +175,7 @@
    "path": "automotive/amg-wip-monthly-column-fill",
    "category": "automotive",
    "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
-   "times_used": 22,
+   "times_used": 23,
    "last_used": "2026-09-01"
   },
   {
@@ -195,20 +195,20 @@
    "last_used": "2026-07-12"
   },
   {
+   "name": "tekion-standard-reports-performance",
+   "path": "automotive/tekion-standard-reports-performance",
+   "category": "automotive",
+   "description": "Pull Tekion Standard Reports from the REPORTS module (/core/reports) via the :9223 authenticated browser \u2014 especially the fixed-ops performance suite (Advisor Performance, Tech Performance / proficiency = assigned-billed vs attendance hours). Covers the filter funnel (Flag Date range, Make filter), Group By, and Export. Use when Joe wants advisor/tech performance numbers, or ANY report that is NOT a custom Report Builder report.",
+   "times_used": 19,
+   "last_used": "2026-09-01"
+  },
+  {
    "name": "tekion-opcode-create",
    "path": "automotive/tekion-opcode-create",
    "category": "automotive",
    "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
    "times_used": 18,
    "last_used": "2026-08-28"
-  },
-  {
-   "name": "tekion-standard-reports-performance",
-   "path": "automotive/tekion-standard-reports-performance",
-   "category": "automotive",
-   "description": "Pull Tekion Standard Reports from the REPORTS module (/core/reports) via the :9223 authenticated browser \u2014 especially the fixed-ops performance suite (Advisor Performance, Tech Performance / proficiency = assigned-billed vs attendance hours). Covers the filter funnel (Flag Date range, Make filter), Group By, and Export. Use when Joe wants advisor/tech performance numbers, or ANY report that is NOT a custom Report Builder report.",
-   "times_used": 18,
-   "last_used": "2026-09-01"
   },
   {
    "name": "tekion-internal-cost-center-gl-routing",
