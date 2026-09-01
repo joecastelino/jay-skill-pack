@@ -168,6 +168,43 @@ that merely *touches* the opcode). Real case: 76.04 (RO-level) vs 43.5
   (e.g. `"Warranty Care/Care Plus"` / `"50% Labor Rate"`), `opcodeDescription`.
 
 ### Finding the report id + full config (this part DOES have an API)
+
+> **If a manager says a report "isn't working," go to skill
+> `tekion-rebuild-broken-report-builder-report`** — it is the full diagnose →
+> prove-staleness → rebuild-on-OpenAPI workflow (proven TL/ToyotaCare 2026-09-01).
+
+⚠️ **`searchText` FALSE-NEGATIVES (burned 2026-09-01).** Searching `"TAC"`,
+`"Toyota"`, `"Care"` all returned **count 0** at TL while the report named
+*"SCP OP Code-ToyotaCare (TXM)"* sat in the full list (yet `"TOL"`→16 worked).
+**Enumerate with `searchText:""` and filter client-side in Python.** Use
+`includeDeleted:True` to catch deleted reports (list length differs: 82 vs 90).
+
+⚠️ **Stale `tekion-api-token` in `api-headers-live.json` → HTTP 401
+`{"errorCode":"AUTH401","key":"session.expired"}`.** Refresh it from the
+`:9223` browser's `localStorage.t_token`. The eval endpoint parameter is **`js`**,
+NOT `expression`. The browser may be parked on a different dealer — irrelevant;
+only the `dealerId` + `tek-siteId` HEADERS scope the report list, no UI switch needed.
+
+⚠️ **`dataSource: null` on a hit = a structurally incomplete config** — that
+alone explains "not working," no execution possible. Four TL reports were in
+this state.
+
+⚠️ **A stale filter ENUM silently returns ZERO rows.** TL's
+`RO_OPERATION_CATEGORY EQUALS "Vehicle"` now matches nothing because operations
+come back as `category: "MAINTENANCE"`. Isolate by dropping filters one at a
+time — the one whose removal takes you 0 → N is the culprit.
+
+⚠️ **The report NAME can lie about what it filters.** TL's "ToyotaCare (TXM)"
+report actually filtered `RO_OPERATION_OPCODE STARTS_WITH "TEK"` (menu opcodes),
+not the TAC family the manager meant. Always reconcile the user's mental model
+against the actual `filterConfigs` and say so out loud.
+
+**Row shape (REPAIR_ORDER):** each hit is a whole RO; operations are nested in
+**`repairOrderJobOperations[]`** (siblings: `repairOrderJobs`,
+`repairOrderJobOperationParts`, `repairOrderOperationTechnicians`,
+`repairOrderTechClockIns`, `repairOrderTechFlagHours`). Per-op: `opcode`,
+`jobOpCodeDescription`, `billHours`, `laborAmount` (**CENTS**), `billingRate`.
+
 Capture internal headers once from a Playwright session (`page.on("request")`
 on any `/api/reportbuilder/` call), then replay with urllib. Required headers
 include `tekion-api-token`, `dealerid`, `tek-siteid: -1_<dealerid>`,

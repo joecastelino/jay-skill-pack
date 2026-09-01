@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-01T10:30:41",
- "skill_count": 207,
+ "generated": "2026-09-01T10:46:09",
+ "skill_count": 208,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 159,
+   "times_used": 161,
    "last_used": "2026-09-01"
   },
   {
@@ -39,7 +39,7 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 78,
+   "times_used": 80,
    "last_used": "2026-09-01"
   },
   {
@@ -195,19 +195,19 @@
    "last_used": "2026-07-12"
   },
   {
+   "name": "tekion-internal-cost-center-gl-routing",
+   "path": "automotive/tekion-internal-cost-center-gl-routing",
+   "category": "automotive",
+   "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
+   "times_used": 20,
+   "last_used": "2026-09-01"
+  },
+  {
    "name": "tekion-standard-reports-performance",
    "path": "automotive/tekion-standard-reports-performance",
    "category": "automotive",
    "description": "Pull Tekion Standard Reports from the REPORTS module (/core/reports) via the :9223 authenticated browser \u2014 especially the fixed-ops performance suite (Advisor Performance, Tech Performance / proficiency = assigned-billed vs attendance hours). Covers the filter funnel (Flag Date range, Make filter), Group By, and Export. Use when Joe wants advisor/tech performance numbers, or ANY report that is NOT a custom Report Builder report.",
    "times_used": 20,
-   "last_used": "2026-09-01"
-  },
-  {
-   "name": "tekion-internal-cost-center-gl-routing",
-   "path": "automotive/tekion-internal-cost-center-gl-routing",
-   "category": "automotive",
-   "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
-   "times_used": 18,
    "last_used": "2026-09-01"
   },
   {
@@ -235,6 +235,14 @@
    "last_used": "2026-09-01"
   },
   {
+   "name": "tekion-parts-sales-orders",
+   "path": "automotive/tekion-parts-sales-orders",
+   "category": "automotive",
+   "description": "Tekion Parts Sales Orders (counter sales) + Parts RO Sales (parts on repair orders) + the full parts PRICING system (hierarchy, price codes, price breaks/formulas, matrices, defaults). Covers /parts/sales-order, P&A vs Fulfillment, cores, prepaid parts, core returns (CM credit memos), and the 5-tier pricing hierarchy where manual override is \"king of kings.\" Load for counter-sale, parts-on-RO, or parts-pricing questions.",
+   "times_used": 16,
+   "last_used": "2026-09-01"
+  },
+  {
    "name": "tekion-opcode-default-pricing",
    "path": "automotive/tekion-opcode-default-pricing",
    "category": "automotive",
@@ -257,14 +265,6 @@
    "description": "Diagnose why parts at a Tekion store stocked out / didn't auto-order (forcing local sourcing from Sunnyvale/Capitol/etc.). The CANONICAL parts-replenishment skill (supersedes tekion-parts-shortage-diagnosis). Works from RO numbers OR part numbers. Pulls live Stocking Details (Source Code, Stocking Status, Manual Order, BRP/BSL, Min/Max, On Hand/Order, Open Documents, Transactions ledger) per part, runs the day-supply demand calc, exposes the BSL Round-Down trap and the negative-on-hand backfill trap, and produces a per-part verdict + fix (Min Qty vs source-code BRP/BSL vs in-and-out receiving discipline). Use whenever Joe asks \"why aren't these parts auto ordering / why do we have shortages / why did we have to get parts locally / why is my shelf at 0 when Min is set.",
    "times_used": 14,
    "last_used": "2026-08-07"
-  },
-  {
-   "name": "tekion-parts-sales-orders",
-   "path": "automotive/tekion-parts-sales-orders",
-   "category": "automotive",
-   "description": "Tekion Parts Sales Orders (counter sales) + Parts RO Sales (parts on repair orders) + the full parts PRICING system (hierarchy, price codes, price breaks/formulas, matrices, defaults). Covers /parts/sales-order, P&A vs Fulfillment, cores, prepaid parts, core returns (CM credit memos), and the 5-tier pricing hierarchy where manual override is \"king of kings.\" Load for counter-sale, parts-on-RO, or parts-pricing questions.",
-   "times_used": 14,
-   "last_used": "2026-09-01"
   },
   {
    "name": "tekion-advisor-closed-gross-api-report",
@@ -795,6 +795,14 @@
    "last_used": "2026-07-06"
   },
   {
+   "name": "tekion-parts-so-gl-account-routing",
+   "path": "automotive/tekion-parts-so-gl-account-routing",
+   "category": "automotive",
+   "description": "Diagnose \"this parts Sales Order / counter sale is hitting the WRONG GL account\" (e.g. a Wholesale SO posting to a retail parts sales account). Covers the GLAM Fixed Operations > Part & Accessories > Parts-Counter mapping table, its 6 keying dimensions, the customer.taxable master-flag gotcha, and the internal API endpoints to pull a full SO for evidence. Use for any \"why did SO X go to retail instead of wholesale\" question.",
+   "times_used": 2,
+   "last_used": "2026-09-01"
+  },
+  {
    "name": "tekion-physical-inventory",
    "path": "automotive/tekion-physical-inventory",
    "category": "automotive",
@@ -817,6 +825,14 @@
    "description": "Add vehicle/part override rows to a Tekion opcode (Overrides \u2192 Parts tab). Copy existing row, modify model/year via checkbox dropdowns, set part/price, save. Only works in real browser tool \u2014 headless Playwright cannot render the ant-design vehicle override table.",
    "times_used": 2,
    "last_used": "2026-07-03"
+  },
+  {
+   "name": "vw-carefree-care-plus-hours-elr-report",
+   "path": "automotive/vw-carefree-care-plus-hours-elr-report",
+   "category": "automotive",
+   "description": "Build the VW CAREFREE and VW CARE/CARE PLUS hours-sold + ELR backup reports for the two AMG Volkswagen stores (Stevens Creek VW 826, VW Clovis 1891). Use when Joe asks for Carefree / Care / Care Plus hours, their effective labor rate, or backup documentation for the VW rows on the AMG WIP sheet.",
+   "times_used": 2,
+   "last_used": "2026-09-01"
   },
   {
    "name": "google-workspace",
@@ -899,14 +915,6 @@
    "last_used": "2026-07-06"
   },
   {
-   "name": "tekion-parts-so-gl-account-routing",
-   "path": "automotive/tekion-parts-so-gl-account-routing",
-   "category": "automotive",
-   "description": "Diagnose \"this parts Sales Order / counter sale is hitting the WRONG GL account\" (e.g. a Wholesale SO posting to a retail parts sales account). Covers the GLAM Fixed Operations > Part & Accessories > Parts-Counter mapping table, its 6 keying dimensions, the customer.taxable master-flag gotcha, and the internal API endpoints to pull a full SO for evidence. Use for any \"why did SO X go to retail instead of wholesale\" question.",
-   "times_used": 1,
-   "last_used": "2026-09-01"
-  },
-  {
    "name": "tekion-recommendation-part-not-found-diagnosis",
    "path": "automotive/tekion-recommendation-part-not-found-diagnosis",
    "category": "automotive",
@@ -953,14 +961,6 @@
    "description": "Answer how Tekion handles bins \u2014 which bin a sale pulls from (Primary Bin), whether you can replenish/auto-transfer between bins, the Warehouse Management app (Bin Change, Bin Reports, locations), and the CDK-migration ghost-bin pattern. Use when Joe asks about \"bins messed up\", choosing a pull bin, per-bin replenishment, bin transfers, or primary vs secondary bins. Load with tekion-sitemap + persistent-browser-server.",
    "times_used": 1,
    "last_used": "2026-06-29"
-  },
-  {
-   "name": "vw-carefree-care-plus-hours-elr-report",
-   "path": "automotive/vw-carefree-care-plus-hours-elr-report",
-   "category": "automotive",
-   "description": "Build the VW CAREFREE and VW CARE/CARE PLUS hours-sold + ELR backup reports for the two AMG Volkswagen stores (Stevens Creek VW 826, VW Clovis 1891). Use when Joe asks for Carefree / Care / Care Plus hours, their effective labor rate, or backup documentation for the VW rows on the AMG WIP sheet.",
-   "times_used": 1,
-   "last_used": "2026-09-01"
   },
   {
    "name": "wsl-cross-distro-hermes-discovery",
@@ -1127,6 +1127,14 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-rebuild-broken-report-builder-report",
+   "path": "automotive/tekion-rebuild-broken-report-builder-report",
+   "category": "automotive",
+   "description": "Diagnose a Tekion Report Builder custom report that a manager says is \"not working\" (wrong/low numbers, blank, zero rows), then REBUILD it as a live OpenAPI-sourced report. Covers pulling the report's real definition, running it natively via the RB execute API, proving index staleness vs a definition bug, and shipping an API replacement + PNG/PDF scorecard by email.",
    "times_used": 0,
    "last_used": null
   },

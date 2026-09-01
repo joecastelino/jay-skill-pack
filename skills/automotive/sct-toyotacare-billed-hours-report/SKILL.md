@@ -46,6 +46,28 @@ Dodge the calendar entirely and compute the number from RO data:
 4. Cross-check against Joe's browser number (his 283.7 for SCT June) to validate before rolling out.
 
 ## Cross-store rollout
+
+### TL (Toyota of Lancaster, 1092) — DONE, API-sourced (2026-09-01)
+Script `/home/itadmin/tekion-reports/tl_tac_api.py <start> <end> tl` +
+renderer `render_tl_tac.py`. Dodges the Advisor-Performance calendar entirely.
+- **TL's TAC family = `TAC` plus `TAC5,10,15,...,80`** (16 ACTIVE opcodes,
+  `INDIVIDUAL_SERVICE`). Note TL has **TAC5 and TAC10**, which SCT's saved
+  filter (TAC15–TAC80) does NOT include — do not reuse SCT's opcode list at TL.
+  Enumerate per store via `POST /api/service-module/u/opcode/search
+  {"searchText":"TAC","pageInfo":{"start":0,"rows":100}}`.
+- TL Aug 2026 reference: **116 ops / 54.35 billed hrs / $7,105.25 labor sale /
+  $5,866.94 gross / ELR $130.73**, 14 advisors, 4,046 closed ROs scanned.
+- ⚠️ TL's Report Builder copy (*"SCP OP Code-ToyotaCare (TXM)"*,
+  `6585c492ee94990ac065f290`) is **NOT a TAC report** — it filters
+  `RO_OPERATION_OPCODE STARTS_WITH "TEK"` and its index runs 5–9 days stale
+  (understated Aug by ~15%). Never quote it as ToyotaCare. Full rebuild
+  method: skill `tekion-rebuild-broken-report-builder-report`.
+- **ELR is the number Joe follows up asking for** — always report
+  `labor sale / billed hours` alongside hours, and offer the YTD trend. TAC ELR
+  runs low by design (TAC10 ≈ $150/hr vs TAC35 ≈ $91/hr drags the blend).
+- Runtime: a month ≈ 4 min, YTD ≈ 25–30 min → **background + notify_on_complete**,
+  never foreground (180s limit).
+
 After SCT is confirmed, pull the same TAC billed-hours for the other 6 stores (BC, BT, SV, TL, AR, VC) for the SAME period. Note: **TAC opcodes are Toyota-specific** — only Toyota stores (BT, TL, and SCT) will have them; non-Toyota stores (BC, SV, AR, VC) won't return ToyotaCare data. Confirm with Joe which stores he wants before assuming.
 
 ### TL (Toyota of Lancaster, 1092) — verified 2026-09-01
