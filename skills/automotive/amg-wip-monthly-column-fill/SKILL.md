@@ -480,9 +480,14 @@ without a validated column, you are on the wrong path — switch to METHOD 0 bel
 1. **Never fill a cell you can't prove.** For EACH store, first reproduce a known-good
    prior column (June) via API and diff to the cent. Show Joe the diff table. Only
    then produce the new month. This is what buys trust — he cross-checks.
-2. **Never invent or silently estimate a number.** If a row won't reproduce, say so and
-   ask (TXM, this session). Joe accepts "I don't know yet"; he does not accept a
-   confident wrong number.
+2. **Never invent or SILENTLY estimate a number** — but do NOT leave a cell blank as a
+   final answer either. Present the best-available figure WITH its basis and error band and
+   let Joe authorize it. He does (2026-09-01, SV Care/Care Plus: *"you can write the 43.5 in
+   there"* after seeing the ±8-hr both-directions table; and on AR SERVICE CONTRACT:
+   *"I just make that number up... keep it within a certain believable number"*).
+   The unacceptable thing is a confident number with no stated provenance — not an
+   explicitly-labeled EST. Blank cells are a last resort for rows where even the grain is
+   unknown, and they must be called out to Joe by row.
 3. **One email/output per store**, fleet rollup only as an extra.
 4. Flag anomalies as anomalies, not as data errors (e.g. Aug warranty +24% while
    everything else fell).

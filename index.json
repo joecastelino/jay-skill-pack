@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-01T05:45:06",
+ "generated": "2026-09-01T06:00:39",
  "skill_count": 204,
  "skills": [
   {
@@ -63,7 +63,7 @@
    "path": "automotive/tekion-autonomous-login",
    "category": "automotive",
    "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
-   "times_used": 44,
+   "times_used": 45,
    "last_used": "2026-09-01"
   },
   {
@@ -191,7 +191,7 @@
    "path": "automotive/amg-wip-monthly-column-fill",
    "category": "automotive",
    "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
-   "times_used": 18,
+   "times_used": 19,
    "last_used": "2026-09-01"
   },
   {
