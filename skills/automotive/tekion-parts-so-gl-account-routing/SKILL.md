@@ -142,14 +142,59 @@ applied). **Always find a shared value on a dimension to eliminate it — that's
 evidence than "these look the same."**
 
 ### Two separate defects — present BOTH, let Joe choose
-1. **Customer master record** — a wholesale body-shop account (wholesale price code, NO
-   TAX applied) flagged Taxable, while a comparable account (Crash Champions) is
-   Non-taxable. Inconsistent customer setup.
+1. **Customer master record** — check `partsTaxInfo[0].taxExempted` on both customers
+   before claiming inconsistent setup. In the 331990/323623 case this candidate DIED:
+   both were Parts-exempt. Only raise it if the masters actually differ.
 2. **The mapping row itself** — `Taxable / Wholesale → 4740 …COUNTER RTL…` sends taxable
    wholesale revenue into the retail counter account. Arguably wrong by design.
+   **This one survives regardless of the snapshot question** — it's a standalone finding.
 
 Don't pick for him. He may want the customer fixed (one account) or the row fixed
 (all taxable wholesale customers).
+
+## 🔬 Pulling the customer master (do this BEFORE blaming customer setup)
+
+The customer endpoints are **fetch()-based, not XHR** — the XHR hook alone MISSES them.
+Install a `window.fetch` wrapper too:
+```js
+(function(){ if(window.__fcap) return 'already'; window.__fcap=[];
+ var F=window.fetch;
+ window.fetch=function(u,o){ try{window.__fcap.push({u:(u&&u.url)||u, o:o});}catch(e){}
+   return F.apply(this,arguments); };
+ return 'fhooked';})()
+```
+Navigate to `/core/customer/viewCustomer/<customerId>`, let it settle, then replay
+in-page with a captured request's headers:
+```js
+(async function(){
+  var c = window.__cap.filter(x=>x.u.indexOf('/api/cms/u/customers/')>-1)[0];
+  window.__X = window.__X || {};
+  for (var k in {dl:'2c95b9d9-...', cc:'50bad0fe-...'}) {}   // loop your ids
+  var r = await fetch('/api/cms/u/customers/'+ID+'?reciprocalTrading=false&locale=en_US',
+                      {headers:c.h, credentials:'include'});
+  window.__X[key] = await r.text(); return r.status;
+})()
+```
+Then read `window.__X[key]` back in ≤15,000-char slices and write to disk — **`window.__X`
+and both hooks are destroyed by the next `/navigate`.** Save to a real dir under
+`/home/itadmin/` (e.g. `/home/itadmin/so331990/`), never `~`.
+
+Recursive scan pattern that caught my error — walk the whole customer JSON for
+`tax|exempt` keys rather than reading the one field you expect:
+```python
+def walk(o, p=""):
+    if isinstance(o, dict):
+        for k, v in o.items():
+            if re.search(r'tax|exempt', k, re.I) and not isinstance(v, (dict, list)):
+                print(f"{p}.{k} = {v!r}")
+            walk(v, f"{p}.{k}")
+    elif isinstance(o, list):
+        for i, v in enumerate(o): walk(v, f"{p}[{i}]")
+```
+
+Other customer-module endpoints seen: `/api/cms/u/customers/<id>/vInfo`,
+`/api/cms/u/customers/<id>/v1/notes`, `POST /api/cms/u/v2/customers/advancedsearch`,
+`GET /api/cms/u/v2/customers/cnf/dealers`.
 
 ## Evidence collection — internal API (zero OpenAPI quota)
 
@@ -255,6 +300,27 @@ truncates around 20k) and reassemble.
 
 6. `/eval` body param is **`js`**, not `expression` (→ `{"error":"js is required"}`).
 
+7. **🔴 ORDER SNAPSHOT ≠ MASTER RECORD.** The single worst trap here — it cost a
+   retraction to Joe. `salesOrder.customer.taxable` is frozen onto the order at creation.
+   When Joe asks *"where is the master record that says X is taxable?"* you must be able
+   to point at `/api/cms/u/customers/<id> → taxInformation.partsTaxInfo[0].taxExempted`
+   and the **Tax Exemptions → Parts** sub-tab. If you never pulled that endpoint, you do
+   not know the master. **Pull the master before asserting anything about customer setup.**
+
+8. **Customer endpoints are `fetch()`, not XHR** — the XHR hook returns nothing for them.
+   Install the `window.fetch` wrapper too (see the customer-master section above).
+
+9. **The three Tax Exemptions sub-tabs look near-identical.** Parts / Sales / Service all
+   render the same grid layout. I nearly reported the **Service** tab's values as the
+   Parts answer. Screenshot and `vision_analyze` asking *"which sub-tab is highlighted
+   blue?"* before reading any value off it — and prefer the API payload over the screen.
+   Also: the list-view columns (`Sales Tax`/`Service Tax`/`Parts Tax` Yes/No) are
+   ambiguously labeled and are NOT a reliable read of exemption status.
+
+10. **UI vs API mismatch on the exempt number.** Screenshot rendered De Laveaga's tax
+    exempt number as `101201554-11000`; the API returned `101201554-10000`. Could be OCR,
+    could be real. **Never quote a number to Joe off vision — quote it from the payload.**
+
 ## Diagnosis checklist (order matters)
 
 1. Confirm the store + dealer id on the browser port.
@@ -264,9 +330,13 @@ truncates around 20k) and reassemble.
 5. Read the live Parts-Counter mapping rows from GLAM.
 6. Find the single differing dimension; **eliminate the others by shared value**, not by
    eyeballing.
-7. Report the matched row, the mechanism (customer master flag vs transaction tax), and
-   BOTH candidate defects (customer record / mapping row).
-8. **Change nothing** if he said diagnosis only — he says "I DON'T WANT YOU TO FIX
+7. **If the differing dimension is Customer Tax Status → PULL BOTH CUSTOMER MASTERS**
+   (`/api/cms/u/customers/<id>`, `partsTaxInfo[0].taxExempted`) before saying a word about
+   customer setup. The order snapshot is not the master. If the masters match, say so and
+   name the snapshot mechanism as OPEN rather than inventing one.
+8. Report the matched row, the mechanism, and any candidate defects that SURVIVED
+   verification.
+9. **Change nothing** if he said diagnosis only — he says "I DON'T WANT YOU TO FIX
    ANYTHING" and means it. End with "nothing touched."
 
 ## Related skills
