@@ -1152,6 +1152,42 @@ Total-row read order after 'Sublet Parts Cost\nTotal\n': ROcount, [6 $ columns],
 
 **Verified YTD CP (SCT, 01/01–07/31/2026): Bill Hrs 18,486.81, ROs 23,619, ELR $174.65** (July-only was 2,211.33 / 3,177 / $172.63).
 
+## TXM block (SCT) — SOLVED 2026-09-01
+
+Definition = the SCT **saved advisor-performance group `"TXM REVISED 9/1"`** (Joe built it; read it, never hand-roll the opcode list):
+
+```python
+G   = W.saved_groups(876)
+OPS = [g for g in G if g["name"]=="TXM REVISED 9/1"][0]["filters"][-1]["values"]  # 30 opcodes
+a,b = W.month_ms(2026, m)
+t = W.total_row(W.summary(876,[
+      {"field":"payTypeStatus","operator":"IN","values":["CLOSED"]},
+      {"field":"payTypeFirstClosedTime","operator":"BTW","values":[a,b]},
+      {"field":"opcodes","operator":"IN","values":OPS}]))
+```
+Row values are **strings** — cast with `float()`. Money is **cents**; hours = `billingTimeInSeconds/3600`.
+Maps to: TXM COUNT=`roCount`, TXM SALE=`totalLaborSaleAmount`, TXM COST=`totalLaborCostAmount`,
+TXM PARTS SALE=`totalPartsSaleAmount`, TXM PART COST=`totalPartsCostAmount`,
+r5 TXM=hours, r38 TOYOTA TXM=ELR=laborSale/hours. GROSS rows are formulas — don't write them.
+
+Gate result: **Jan and May reproduce EXACT on all 6 metrics.** Feb/Mar $ exact, hours +27/+10 = reopened-RO settle drift.
+
+### THE TRAP: SCT's TXM opcodes migrated in June 2026
+Mileage codes collapsed (TXM5/10/15/20/25: ~1,170 → 89 ROs) and the work moved to the
+**TEK09\* ToyotaCare menu opcodes** (0 hrs in May → 611.7 hrs in Aug). TXM-list-only for
+August returns a bogus **522 ROs / 74.1 hrs** vs a true ~1,127 / ~727.
+
+**Any month ≥ June 2026 must use the UNION** of the 30 TXM codes + these 19:
+`TEK09010103/105/106, TEK09020101, TEK09030103/106, TEK09040101/104/105/107/108,
+TEK09050102/103/106/107, TEK09060101, TEK09070103, TEK09080101, TEK09090101`
+The union leaves May **unchanged and still exact**, so the series stays continuous.
+
+- **Never include TXMPLUS or TXMROTATE.** TXMPLUS is a near-universal $0 container op — adding it inflates May 3.4x (1,227 → 4,226 ROs). TXMBASIC **is** included.
+- **Don't use Report Builder for the current month** — its ES index is stale (Aug 20–23 near-zero, Aug 26–31 zero; Joe's own export stopped at Aug 25). Use the live advisor summary API.
+- **BT (1249) and TL (1092) have NO saved groups and different opcode schemes** — SCT's mileage codes barely exist there. Derive per store and gate before filling; do not reuse SCT's list.
+
+Diagnostic that finds a migration: loop each opcode individually for the known-good month vs the target month and diff the counts. A flat total-RO count with a collapsing opcode subset = migration, not lag.
+
 ## Pitfalls
 
 ### COLUMN POSITION IS PER-TAB (cost a re-send 2026-09-01)
