@@ -129,7 +129,22 @@ Joe confirmed the source is Report Builder **`SCP-Toyota Care 2.0`** (operation-
      REPAIRORDER_OPERATION_LABOR_PRICE__SUM / _PARTS_PRICE__SUM (CENTS)
 ```
 - **Cross-store:** same 2-header swap (`dealerId`, `tek-siteId`). Each store has its OWN
-  copy of the report — **BT (1249) has `SCP-Toyota Care 2.0`; TL (1092) does NOT.**
+  copy, and **the names differ — search `"SCP"`, not the exact title:**
+
+| Store | Report | id | created | category filter | bill-hrs? |
+|---|---|---|---|---|---|
+| SCT 876 | `SCP-Toyota Care 2.0` | `6a45095462e5ff667243d553` | 2026-07-01 | Vehicle + Maintenance | ✅ |
+| BT 1249 | `SCP-Toyota Care 2.0` | `66227a89735ee81a7ca35bad` | 2024-04 | Vehicle + Maintenance | ✅ |
+| TL 1092 | `SCP OP Code-ToyotaCare (TXM)` | `6585c492ee94990ac065f290` | 2023-12 | **Vehicle only** | ❌ **returns 0** |
+
+  (Corrects an earlier note claiming TL has no such report — it does, just named differently.
+  Find it with `searchText:"SCP"`, then match on `id`.)
+- **TL's report carries no billable-hours field** — `..._ASSIGNED_BILL_HOURS__SUM` is `0` for
+  every window, only `count` is real. TL TXM **cannot** be produced from it; ask Joe to read
+  the number off his screen.
+- **BT's report does NOT equal Joe's sheet** (it runs ~11% high, consistently):
+  Apr 300.1 vs 271.0 · May 337.7 vs 301.0 · Jun 396.6 vs 354.0. So "the report is the source"
+  is true for *record counts* but the hours still need Joe's confirmation per store.
 - **Override the date window** (report ships as relative `LAST_MONTH`): drop the
   `RO_CLOSEDTIME` entry from `reportConfig.filterConfigs` and push
   `{fieldKey:"RO_CLOSEDTIME",dataSource:"REPAIR_ORDER",values:[startMs,endMs],
@@ -180,7 +195,53 @@ not an RO count → likely the Report Builder report `SCP-Toyota Care 2.0`, not 
 Performance.** Ask Joe which report feeds the TXM row before filling it. Same for PDI's
 1.5-hr gap.
 
-### METHOD 0c — ALL 8 TABS, JUNE-VALIDATED (2026-08-31). START HERE.
+### 🔑🔑 ROOT CAUSE OF EVERY "MY NUMBER IS HIGH" GAP — RO GRAIN vs OPERATION GRAIN
+**Discovered 2026-09-01. This explains SV Care/Care Plus, SCT TXM, and probably TL PDI /
+SV Service Xpress too. Check this FIRST on any bucket that reads high.**
+
+`advisor-performance/summary` with an `opcodes IN [...]` filter returns **every hour on every
+RO that CONTAINS one of those opcodes** — including the unrelated lines on the same ticket.
+Joe's sheet counts **only the matching operation lines**. So the API is structurally high
+whenever a bucket's opcodes ride along on bigger tickets.
+
+Proof (SV June Care/Care Plus, target 35.20):
+
+| method | result |
+|---|---|
+| `advisor-performance/summary`, `opcodes IN` (RO grain) | 76.04 ❌ |
+| Report Builder `REPAIR_ORDER_OPERATION` (operation grain) | **43.5** ✅ much closer |
+
+**How to get operation grain — clone a `REPAIR_ORDER_OPERATION` report as a template.**
+Every store has one; find it by listing reports and filtering on `dataSource`:
+```js
+// searchText:"" + rows:60 lists ALL of a store's reports with their dataSource
+{"searchText":"","searchFields":["name"],"pageInfo":{"start":0,"rows":60},
+ "sort":[{"field":"modifiedTime","order":"DESC"}],"includeDeleted":false}
+// SV 826 → "SCVW A-La-Cart - Script"  670541e839c34f5e2be9f404
+// AR 6195 → "ARSJ A-La-Cart - Script" 67f5225e5547ec4c9460f04d
+//          + "Gross by OpCode - Template" 6739830db7e1e51a7e744131
+```
+Field names at this grain are **different** from the RO-grain report:
+- `ROPERATION_OPCODE` (note: ONE `P` — not `RO_OPERATION_OPCODE`)
+- `JOB_PAYTYPE` (values `CUSTOMER_PAY` / `WARRANTY` / `INTERNAL`)
+- `RO_CLOSEDTIME` still the date key, still `type:"ADVANCED"` + `operator:"BTW"` + ms.
+
+**🚨 Mutate the template MINIMALLY — do not rebuild it.** Swapping in your own
+`fields`/`kpiMetrics`/`groups` to request an hours aggregate returns **500 `unexpected.error`**
+every time. What works: keep the template's own `fields` block untouched, only replace the
+values inside the existing `RO_CLOSEDTIME` and `ROPERATION_OPCODE` filter entries (and drop
+`JOB_PAYTYPE` if you want all pay types), then **sum hours client-side from the returned rows**:
+```js
+pageInfo:{start:0,rows:500}   // then:
+let s=0; hits.forEach(x=>{ s += (x.billingTimeInSeconds||0) });
+```
+**`billingTimeInSeconds` at operation grain is already HOURS, despite the name**
+(1.4 == 1.4 hr, and `laborTimeInSeconds` matches it). Do NOT divide by 3600 here — that is
+the opposite of the RO-grain `billingTimeInSeconds` convention in the advisor API.
+
+Splitting SV Care/Care Plus by pay type this way revealed it is **~100% warranty**
+(WARRANTY 43 ops / 43.3 hrs · CUSTOMER_PAY 1 op / 0.2 hrs) — a genuinely useful finding for
+Joe, and the kind of thing RO grain hides completely.
 
 Whole-fleet June cross-check took ~25 tool calls with the engine. Two structural
 discoveries that block everything until you know them:
@@ -257,7 +318,48 @@ SCT's list blind.
 | TL PDI | 274.00 (100% WARRANTY pay) | 236.76 | −37.24 |
 | VC Attendance VW | 677 (628 excl internal) | 587 | −90 |
 | SV Service Xpress | 453.61 | 368.63 | −85 |
-| SV Care/Care Plus | 63.21 (using VC's opcode list) | 35.20 | −28 |
+| SV Care/Care Plus | 63.21 (using VC's opcode list) | 35.20 | −28 → **43.5 at operation grain, see ROOT CAUSE section; residual 8.3** |
+
+**Joe's SV Care/Care Plus opcode list (he gave it 2026-09-01)** = VC's 10 **plus `10K` and `20K`**:
+`01030020 01030040 01030060 01030080 01040010 01040030 01040050 01040070 01390040 01390080 10K 20K`
+
+#### ⭐ VALIDATE ACROSS ~6 MONTHS, NOT ONE — the error SIGN is the diagnosis
+Single-month validation cannot distinguish "wrong filter" from "wrong basis." Run the
+candidate against every month Joe already has and look at the **sign pattern**:
+
+| Month | Sheet | Op-grain calc | Diff |
+|---|---|---|---|
+| Jan | 35.50 | 58.0 | **+22.5** |
+| Feb | 28.68 | 42.9 | **+14.2** |
+| Mar | 46.20 | 50.0 | +3.8 |
+| Apr | 48.30 | 39.9 | **−8.4** |
+| May | 42.82 | 34.2 | **−8.6** |
+| Jun | 35.20 | 43.5 | +8.3 |
+
+**Error swinging BOTH directions ⇒ STOP — no filter can fix it.** A wrong/missing filter is
+monotonically biased (always high or always low). A sign flip means the *basis* differs.
+Two corroborating tells here: Joe's values carry **cents** (28.68, 42.82) while
+`billingTimeInSeconds` sums land on **tenths** (43.5, 34.2, 58.0); and every line is
+`laborName:"Warranty Care/Care Plus"` / `laborDescription:"50% Labor Rate"` — so his figure
+is almost certainly derived from **labor dollars ÷ rate**, not summed line hours.
+Don't keep adding filters — ask which screen he reads it off.
+
+`10K`/`20K` contribute **0.0** at SV in June, so adding them changed nothing; and
+`JOB_CLOSEDTIME` as the date key returns **0 rows** (only `RO_CLOSEDTIME` works).
+
+**SV Service Xpress — still unresolved, and `serviceTypeIds` is a DEAD END as a FILTER.**
+It works as a `group_by` (SV has 9 buckets) but returns **0.00** as a filter value at SV.
+Grouping June and scoring each bucket against Joe's Apr/May/Jun (523.64 / 340.57 / 368.63)
+matched **nothing** — closest bucket was 360.79 vs 368.63 but 0.00 in Apr/May. All
+service-type list endpoints 404 (see dead-ends). Ask Joe for the source screen.
+
+**AR SERVICE CONTRACT row — RESOLVED, there is no source. Joe makes it up.**
+His words: *"I just make that number up... I just need you to keep it within a certain
+believable number."* All 28 AR Report Builder reports enumerated — no service-contract report
+exists, and it is not a pay type. **Do not burn time hunting it again.** Fill it with an
+in-band estimate off his own trailing history (2026 range 14.53–20.68, mean ~18.3, flat and
+NOT correlated with volume), nudged in the direction customer hours moved. Label it EST when
+reporting to him.
 | BT Warranty svc/body | 1200.60 / 533.50 | 1206.70 / 527.40 | 6.1 on wrong side of the split |
 
 **Sub-2-hour drift is EXPECTED and not a bug** when validating an old month: SV Customer

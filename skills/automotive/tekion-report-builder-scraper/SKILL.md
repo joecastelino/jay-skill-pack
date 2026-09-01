@@ -33,13 +33,73 @@ Production pipeline (proven 2026-06-12, "SCT Menu Sales Opened", 8/8 records):
 
 ## CRITICAL FINDINGS — do not rediscover these
 
-### Report data is DOM-only. No data API exists.
-- Playwright `page.on("response")` captures **zero** report-data calls on the
-  detail page (service worker swallows traffic; `service_workers="block"` +
-  `ctx.route("**/*")` made it WORSE — page rendered blank with 0 calls).
-- In-page `fetch()` of reportbuilder endpoints → 500/405. Blind endpoint
-  probing (`/execute`, `/data`, `/preview`, `/generate`) → all 404/405.
-- THE answer: let the SPA render, then parse `document.body.innerText`.
+### ~~Report data is DOM-only~~ — **WRONG, CORRECTED 2026-09-01. A DATA API EXISTS.**
+
+The old claim ("no data API, parse innerText") was FALSE — blind endpoint
+probing missed it because the path needs a **query string** and the **entire
+reportConfig object as the body**. DOM scraping is now a FALLBACK only.
+
+```
+POST /api/reportbuilder/u/execute/withOptions?preview=false
+{"reportConfig": <the FULL hit object from report/search, unmodified>,
+ "reportExecutionOptions":{"sort":[],"filters":[],"searchText":"",
+   "groupBy":[],"includeFields":[],"excludeFields":[],
+   "pageInfo":{"start":0,"rows":500}}}
+```
+Returns `data.count`, `data.hits[]` (full row objects), `data.projections`
+(the KPI totals), `data.groups[]`. Paginate with `pageInfo.start` += 500.
+
+**How to find the endpoint if it ever moves:** hook `window.fetch` BEFORE
+navigating (`nav()` then hook then `pushState`), because the report call is
+FETCH not XHR — an XHR-only hook captures nothing and produces the false
+"no API exists" conclusion. Capture `.u` + `.b` of every call.
+
+#### Date-window override — only ONE filter shape works
+Replace the report's own date filter (drop by `fieldKey`, then push):
+```js
+{fieldKey:"RO_CLOSEDTIME", dataSource:<cfg.dataSource>, field:null,
+ values:[startMs,endMs], type:"ADVANCED", subType:"FILTER_RULE",
+ operator:"BTW", booleanOperator:"AND", period:null, filterConfigs:null,
+ relativeDate:0, groupExpandFilter:false, relativeDateType:null}
+```
+- `type:"DATE_RANGE"` + `operator:"BTW"` → **400 unexpected.error**
+- `type:"DATE"` + `operator:"BETWEEN"` → **400**
+- editing `relativeDate` on a `DATE_RELATIVE/LAST_MONTH` filter → **silently
+  ignored**, returns the same numbers for 0/1/2
+- epoch **seconds** → 0 rows; `"YYYY-MM-DD"` → wrong count. Use **epoch ms**
+  (ISO-8601 with offset also works).
+
+VERIFY equivalence before trusting an override: run the report BOTH natively
+(untouched config) and with your explicit window for the same period — they
+must match exactly. Mine did (Aug 796/362.1 both ways).
+
+#### ⚠️ Report Builder is a STALE ES INDEX — always check before reporting
+Its index lags **4–7 days, and the lag differs per dealer**. Symptom: the tail
+of the month returns **zero** rows while the store was demonstrably open.
+- Check freshness: `max(hit.ingestionTime)` across the rows.
+- Cross-check the same window against a live source (advisor-performance
+  `summary`). Real case: report returned 0 records for Aug 26–31 at 3 stores
+  while live data showed **1,248 / 1,508 / 1,293** ROs closed in that window.
+- Tell the user the number matches their screen but understates the month.
+
+#### Operation-level vs RO-level — the #1 cause of "my number is too high"
+`dataSource:"REPAIR_ORDER"` aggregates **whole ROs**; a report on
+`REPAIR_ORDER_OPERATION` returns **individual operation lines**. Summing RO
+hours for an opcode filter inflates the answer (it counts every hour on any RO
+that merely *touches* the opcode). Real case: 76.04 (RO-level) vs 43.5
+(op-level) vs 35.20 (user's true figure).
+- Hours field on operation rows = **`billingTimeInSeconds`** (misnamed — it is
+  already HOURS, e.g. `1.4`; `laborTimeInSeconds` matches it). `projections`
+  will NOT contain hours unless the report defines that metric — sum the field
+  off `hits[]` client-side instead.
+- Find an op-level template to clone: search reports and filter
+  `dataSource==="REPAIR_ORDER_OPERATION"`. Its opcode field is
+  **`ROPERATION_OPCODE`** (note: no `_` after RO) and pay type is `JOB_PAYTYPE`.
+- Building a config from scratch → 500. **Clone an existing report and mutate
+  only `filterConfigs`.** Same for adding metric fields — a hand-built
+  `fields`/`kpiMetrics` array 500s.
+- Useful row fields for diagnosis: `laborName`, `laborDescription`
+  (e.g. `"Warranty Care/Care Plus"` / `"50% Labor Rate"`), `opcodeDescription`.
 
 ### Finding the report id + full config (this part DOES have an API)
 Capture internal headers once from a Playwright session (`page.on("request")`
@@ -103,6 +163,21 @@ needed for things the API truly lacks (e.g. Report Builder custom reports
 themselves, GL until correct path found). RO-level
 reporting must go through Report Builder scraping or the session scraper.
 The partner docs portal (apc.tekioncloud.com) needs its own login we don't have.
+
+## Cross-store: reports are per-dealer COPIES with different definitions
+The same conceptual report exists separately at each store, with a different
+id, different name, and **different filters**. Never assume one store's copy
+applies fleet-wide — search each dealer and diff `filterConfigs`.
+Real case: `SCP-Toyota Care 2.0` = SCT `6a45095462e5ff667243d553` (created
+2026-07-01, category `["Vehicle","Maintenance"]`) vs BT `66227a89735ee81a7ca35bad`
+(created 2024) vs TL, which names it `SCP OP Code-ToyotaCare (TXM)`
+(created 2023, `["Vehicle"]` only, and has **no billable-hours field at all**).
+
+A report **cannot reproduce months before its own `createdTime`** — SCT's copy
+was created 7/1/2026, so querying June through it returns a plausible-looking
+but wrong number (208.80 vs the true 744.96). ALWAYS check `createdTime`
+before back-testing, and note `createdTime == modifiedTime` proves the
+definition was never edited (rules out "someone changed the filter").
 
 ## Adapting to a new report/store
 Copy `sct_menu_sales.py`; change REPORT_ID (find via report/search POST),
