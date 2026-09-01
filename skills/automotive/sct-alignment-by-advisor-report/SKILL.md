@@ -994,6 +994,8 @@ turn loop — every `wait` timeout burns an iteration, and when they run out, th
 tail is simply never reached. Nothing errored, nothing alerted.
 
 **FIX — never babysit again. Use the runner:**
+(General pattern + reusable template for ALL long report crons:
+skill `tekion-report-cron-self-contained-runner`.)
 ```
 /usr/bin/bash /home/itadmin/tekion-reports/run_sct_alignbg.sh [scan-args]
 ```

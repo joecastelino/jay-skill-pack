@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-01T06:30:33",
- "skill_count": 204,
+ "generated": "2026-09-01T06:45:04",
+ "skill_count": 205,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -1103,6 +1103,14 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-report-cron-self-contained-runner",
+   "path": "automotive/tekion-report-cron-self-contained-runner",
+   "category": "automotive",
+   "description": "Build any long-running (>20 min) Tekion report cron as a self-contained shell runner (scan -> render -> email in ONE flock'd process) instead of an agent-babysat background job. Use when creating a new report cron, when a report \"ran but Joe got no email\", or when a cron's data landed on disk but the render/email tail never executed. Includes the recovery drill for orphaned scan JSON.",
    "times_used": 0,
    "last_used": null
   },
