@@ -256,6 +256,11 @@ Work dir: `/home/itadmin/tekion-reports`
         confirmed a real 18:06 send with `MIME=REAL-multipart`, PDF attached.
      Moving the prose body out of the ask is what keeps it short enough not to stall
      her. Prefer this over draft→send-by-ID; it's 1 call instead of 3-4.
+     ✅ **Re-confirmed 2026-08-31 (month-end): body-file + one short send ask worked first try**
+     (`OK BYTES=161449`, byte-exact vs `ls -la`; Sent showed 18:03, `MIME=REAL-multipart`,
+     PDF attached, body TOTAL figure confirmed). Whole email stage = 3 calls, no draft,
+     no rebuild. Note month-end (8/31) invoiced **781 closed ROs** vs the usual ~230 —
+     a large RO count is normal on the last day of the month, not a paging bug.
      ✅ **Re-confirmed 2026-08-27: same body-file + one short send ask worked first try**
      (`OK BYTES=155444`, byte-exact; Sent showed 18:03, `MIME=REAL-multipart`, PDF
      attached). Three calls total for the whole email stage (send, Sent list, MIME check).
