@@ -926,6 +926,26 @@ outage recurs):
   section below were all re-confirmed multiple times during this outage — they
   are evergreen Stacey-pipeline gotchas, not outage-specific.
 
+## DEALER_QUOTA RECURRED 2026-09-01 (noon Opened run) — outage is NOT permanently fixed
+
+At 12:02 PDT on 2026-09-01 the Opened scrape wrote a clean-looking
+`complete:true` / **0-menu** file from 113 ROs. The free OPCODE-tags prefilter
+found **3 real TEK candidates** (582357 TEK20000BNM, 582351 TEK50000VNM,
+582341 TEK60000BNM) → false zero. Deep probe confirmed the exact 8/1-8/9
+signature: `repair-orders:search` 200, `/jobs` 200, **every `/operations` call
+429 `"Limit exhausted for type : DEALER_QUOTA."`**. Actions taken (the correct
+playbook): flagged both JSON files `complete:false` + `note`, did NOT render,
+did NOT email, launched a flock-guarded 5h watcher
+(`wait_ops_then_scrape_20260901.sh` + `_ops_probe_20260901.py`, polls the DEEP
+`/operations` link every 10 min, log
+`data/sct-opened-quota-recovery-2026-09-01.log`), and reported the outage with
+last-known-good labeled by date. Reusable: `_ops_probe_<date>.py` exits 0 only
+when `/operations` returns 200 — copy it, don't rewrite. Last known-good Opened
+before this outage: **8/31/26 — 10 menus, $3,451.90 labor / $1,420.16 parts =
+$4,872.06 total.** Lesson reinforced: the 8/12 "outage fully cleared" note does
+NOT mean it stays cleared — ALWAYS run the tags prefilter check before trusting
+any 0-menu day.
+
 ## [Condensed above — see "DEALER_QUOTA outage of 2026-08-01 through 2026-08-09
 (RESOLVED — condensed)" section for the durable lessons from this whole
 episode. Full daily blow-by-blow entries removed from this file for size;

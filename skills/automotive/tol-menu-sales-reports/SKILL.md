@@ -800,6 +800,23 @@ SKILL.md under its size limit. Consensus of those runs: the full prevention word
 produces a clean one-shot draft the large majority of the time; verification asks are
 still mandatory; the $0 opened streak ran 8/23–8/25 (6 half-day slots) and broke 8/26.
 
+## (9/01 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, all 4 asks first try
+First run of September. Hand-off RC=0 FIRST TRY in 122s; draft correct FIRST TRY at IMAP UID 111,
+no dedupe needed (0 prior drafts with today's exact subject). All 3 verification asks returned
+FIRST try with "use raw IMAP, NOT the Gmail API" leading + the 3-line numbered part probe:
+subject-list 32s, part-probe 52s, Sent-check 47s. Part sizes DECODED and EXACT on-disk
+(PNG 50,672 / PDF 45,169). BOGUS-UID trap did NOT recur (reported UID 111 == subject-list UID 111).
+Sent-check = 4 hits, all old em-dash-era sends (06/30-07/03), zero today = no leak.
+NEW-MONTH NOTE: no new-month setup was needed for the OPENED pipeline (that's only a Closed-MTD
+concern) — the opened script ran clean on 9/01 with no master/seed involvement.
+DATA: 115 opened ROs scanned, **1 menu / $55.10** ($29.32 labor + $25.78 parts) — a thin but
+GENUINE day (`complete: true`, `expected_records: 1`). Gustavo Alatorre 1/$55.10 (100% share):
+RO 399532 TEK35000BNM 2025 RAV4, 31,635 mi. `records` empty (0) while `rows` had the entry —
+the 8/26 quirk STILL RECURS every run; ALWAYS read `rows`, never `records`.
+`totals.parts_price` ($49.68) != `parts_gross` ($25.78) — scorecard/email use GROSS.
+Opened drafts stack = 13 (08/21-09/01 + perennial 08/02 em-dash UID 19; 08/28 UID 91 also
+em-dash). No true dupes. Flag to Joe: 12 unsent August Opened drafts are accumulating.
+
 ## (8/31 8:05PM, Closed MTD) NEW HIGH-VALUE PITFALL: part-probe fetched the WRONG draft
 Draft itself was a clean one-shot (hand-off RC=0 first try in 98s, himalaya id 42877 / IMAP
 UID 109, no dedupe needed). But the MIME part-probe INSPECTED A DIFFERENT DRAFT and reported
