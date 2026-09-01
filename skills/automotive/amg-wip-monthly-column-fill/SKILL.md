@@ -443,6 +443,33 @@ discoveries that block everything until you know them:
 >
 > Keep the advisor-UUID split below ONLY as a cross-check for the **Hours Sold** rows,
 > which were validated with it. Prefer `departmentId` for anything new.
+>
+> ### 🚨🚨 RE-CORRECTED 2026-09-01 — **`departmentId` IS WRONG FOR ELR. USE THE ADVISOR SPLIT.**
+> The box above ("prefer departmentId for anything new") over-generalized from two warranty
+> rows. **The two dimensions are NOT interchangeable, and which one is right depends on the
+> BLOCK:**
+>
+> | Block | Correct BT split | Proof (June 2026) |
+> |---|---|---|
+> | Workshop Analysis (METHOD 0c, Tech Performance) | **`departmentId`** — endpoint is keyed by techId, advisor IDs do nothing | body prod 1,355.40 = sheet ✅ |
+> | **ELR (METHOD 0d) + Hours Sold** | **`primaryAdvisorId` NIN/IN `BT_BODY`** | CP ELR **132.74 = sheet EXACT** ✅ |
+>
+> Side-by-side on BT ELR CP, YTD-thru-June (sheet = **132.74**):
+> ```
+> departmentId IN  1249_department_3  → 148.82   ❌ off by 16
+> primaryAdvisorId NIN BT_BODY        → 132.74   ✅ exact
+> ```
+> Both "work" (neither errors, both return plausible hours) — `departmentId` just answers a
+> different question. **WARRANTY happens to agree under both** (240.00/240.13), which is
+> exactly how the wrong generalization got written: it was validated on the one row that
+> can't distinguish them. Body-shop ELR likewise needs `IB`: OTHER INTERNAL **29.63 = sheet
+> exact** via `IB + makeId NIN [toyota,scion]`.
+>
+> **LESSON — don't promote a filter from "correct on the row I tested" to "correct
+> everywhere." Validate a newly-found dimension on a row where the ALTERNATIVES DISAGREE,
+> not on the row that first revealed it.** Warranty was the worst possible validation row
+> here. Pick a row where the two candidate filters give different numbers, then see which
+> matches the sheet.
 
 "Toyota of Fresno" (BT service) and "Blackstone Body Shop" are both dealer **1249**.
 (Historical note — superseded by the box above:) `tek-siteId` IS ignored for dealer 1249
@@ -646,8 +673,36 @@ with inserts instead of patching in place.
 JSON it came from, and that blocked buckets are `None` (not 0, not stale). Report the
 mismatch count — target 0.
 
+**6. 🚨 WRITE BY ROW LABEL, NEVER BY ROW NUMBER.** Burned 2026-09-01: I built the write map
+from SCT's row numbers and applied it to all 8 tabs. The VW tabs shift everything up ~1 row
+and AR has fewer rows, so values landed on the WRONG METRICS on 5 tabs — and it looked fine,
+because every target cell was numeric and populated. Caught only by the verify pass.
+```python
+LABELS = {"CUSTOMER":..., "WARRANTY":..., "TOYOTA PDI":...}
+rowmap = {str(ws.cell(r,1).value).strip().upper(): r for r in range(1, ws.max_row+1)}
+target_row = rowmap.get(label)          # per tab, resolved fresh
+```
+The non-SCT row maps listed elsewhere in this skill are a **reference, not a write map** —
+resolve labels live every run; Joe edits rows. Dump `rows 1–70 → (label, prior-month value)`
+per tab once at the start and eyeball it.
+
+**7. Where the numbers went (2026-09-01 run, for reuse):** Aug column **inserted at col 48**
+(May stayed 47, Joe's notes column shifted right); API-sourced cells filled yellow
+`PatternFill("solid", fgColor="FFF2CC")` so Joe can see at a glance which are Jay's;
+**187 of 223 cells populated, 36 blank** (21 = Joe's TXM block, 4 = legitimate N/A, 11 = real
+gate failures). Delivered `/home/itadmin/amg-wip/AMG-WIP-AUG2026-JAY.xlsx` via
+## ⭐ BEFORE SWEEPING FILTERS, READ THE PRIOR RUN'S SCRIPT
+This is what actually broke the BT deadlock on 2026-09-01, after ~6 failed exclusion sweeps.
+`/home/itadmin/tekion-reports/wip_aug.py` is last month's working script — and it was
+splitting BT by **advisor**, which is the answer the skill had (wrongly) told me to abandon.
+
+**Standing order: read the previous run's script before probing a bucket that "won't
+reconcile."** The last person to solve it was you, and the working filter is sitting in a
+file. A prose skill note can be stale or over-generalized; **the script that produced Joe's
+accepted numbers cannot be.** Treat committed code as higher-authority evidence than skill
+prose when the two disagree — then patch the prose.
+
 ## FAST PATH — the whole workbook in ~4 minutes
-`/home/itadmin/tekion-reports/wip_aug.py` (misnamed; takes any month):
 ```bash
 python3 ~/tekion-reports/wip_aug.py 2026-08 9225 > ~/amg-wip/aug2026.json
 ```
@@ -1011,7 +1066,31 @@ Counts differ wildly per store — SCT TXM 25 / TAC 15 · BT TXM 15 / TAC 3 · T
 Cached at `/tmp/store_ops.json`. **`r49–55 are Excel formulas** (`=AV35`…) — they auto-fill
 off r35–41; do not compute them. Exception: **TL r49 is hardcoded.**
 
-### ❌ 6 CELLS THAT WOULD NOT RECONCILE (BT/TL only) — ASK, DON'T GRIND
+### ❌→✅ 4 OF THE 6 "UNRECONCILABLE" BT/TL ELR CELLS WERE SOLVED 2026-09-01
+Updated status — **do not re-grind the solved ones, and do not trust the sheet on TL PDI:**
+
+| Cell | Old miss | Resolution |
+|---|---|---|
+| BT r35 CUSTOMER | 148.82 vs 132.74 | ✅ **advisor split, not departmentId** → 132.74 exact (see DISCOVERY 1 re-correction) |
+| BT r41 PDI | — | ✅ `opcodes IN [PDI]`, **NO payType filter**, YTD → 242.62 exact |
+| SCT r41 PDI | — | ✅ same recipe → 286.16 exact |
+| TL r41 PDI | 236.76 vs 154.29 | ✅ **JOE'S SHEET IS WRONG.** His cell mirrors r37 INTERNAL (both read 154.29 — a copy/paste). Joe confirmed verbatim: *"the 236 is correct, mine is wrong."* Write **236.73**. |
+| BT r37 INTERNAL | 130.93 vs 151.32 | ⚠️ 148.56 under advisor split (1.8% reopened-RO drift) — acceptable |
+| BT r38 / TL r38 TXM | low | ❌ still open — Joe took TXM back ("STOP WITH TXM. I WILL DO THAT MYSELF") |
+| TL r39 TOYOTA CARE | 171.75 vs 114.77 | ❌ still open; `TAC\d+` 15-code subset = 166.82, still too wide |
+
+🔑 **PDI recipe correction:** the Hours Sold PDI row uses `opcodes IN [PDI] + payType IN
+[INTERNAL]`, but the **ELR PDI row uses NO pay-type filter** — adding INTERNAL breaks it.
+PDI YTD thru Aug 2026: SCT 286.58 · BT 242.59 · **BC 258.56** · TL 236.73 · SV 278.95 (1 RO)
+· AR 264.00 (3 ROs) · VC none. `PDICILAJET` = zero activity, ignore it.
+**Surface the BC one** — BC runs PDI (937 ROs YTD) but the Fresno GM tab has no PDI row.
+
+🚨 **A GATE FAILURE CAN MEAN JOE'S SHEET IS WRONG, NOT YOUR QUERY.** I chased TL PDI for
+several calls assuming my filter was broken. The tell was that **the target number appeared
+TWICE in the same column** (r37 and r41 both 154.29) — a duplicated value in a hand-filled
+sheet is a copy/paste artifact, not a coincidence. **When a gate fails, grep the prior
+column for your target value elsewhere on the tab before assuming your query is at fault.**
+One question to Joe settled it instantly.
 Everything else in the ELR block validated. These resisted every exclusion combo tried
 (±TAC, ±TSC, ±TXM, ±make filter, ±department, YTD vs MTD):
 
