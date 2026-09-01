@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-31T18:30:04",
+ "generated": "2026-08-31T18:45:42",
  "skill_count": 204,
  "skills": [
   {
@@ -103,8 +103,8 @@
    "path": "automotive/bc-menu-sales-reports",
    "category": "automotive",
    "description": "Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards \u2014 Daily Closed (2x/day) and Closed Month-To-Date (1x/day) \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben Estrada (Restrada@blackstonegm.com). This is the GM-store sibling of the SCT/Kevin pipeline (sct-menu-sales-api-scorecard). Use for any \"BC menu report\", \"Blackstone Chevy/Cadillac menu sales\", or Ruben report request.",
-   "times_used": 36,
-   "last_used": "2026-08-29"
+   "times_used": 37,
+   "last_used": "2026-08-31"
   },
   {
    "name": "sct-alignment-by-advisor-report",
