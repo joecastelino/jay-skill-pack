@@ -1,14 +1,14 @@
 {
- "generated": "2026-09-01T09:45:07",
- "skill_count": 205,
+ "generated": "2026-09-01T10:00:23",
+ "skill_count": 206,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 255,
-   "last_used": "2026-08-31"
+   "times_used": 256,
+   "last_used": "2026-09-01"
   },
   {
    "name": "persistent-browser-server",
@@ -1095,6 +1095,14 @@
    "path": "automotive/tekion-parts-shortage-diagnosis",
    "category": "automotive",
    "description": "[DEPRECATED \u2014 use tekion-parts-autoorder-diagnosis] Old name for the Tekion parts stock-out / why-didn't-this-auto-order diagnosis. All content was merged into tekion-parts-autoorder-diagnosis (the canonical, fuller skill). This file is a redirect only.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-parts-so-gl-account-routing",
+   "path": "automotive/tekion-parts-so-gl-account-routing",
+   "category": "automotive",
+   "description": "Diagnose \"this parts Sales Order / counter sale is hitting the WRONG GL account\" (e.g. a Wholesale SO posting to a retail parts sales account). Covers the GLAM Fixed Operations > Part & Accessories > Parts-Counter mapping table, its 6 keying dimensions, the customer.taxable master-flag gotcha, and the internal API endpoints to pull a full SO for evidence. Use for any \"why did SO X go to retail instead of wholesale\" question.",
    "times_used": 0,
    "last_used": null
   },

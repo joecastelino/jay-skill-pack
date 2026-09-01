@@ -314,7 +314,24 @@ cd /home/itadmin/tekion-auth && \
 Bare `login.py` reuses a live session ("session ALIVE — reusing" → `REUSED`)
 rather than re-logging in — safe to call before accounting recon.
 
+## Counter SALES ORDERS are a different table — don't diagnose them here
+
+If the question is about a **parts Sales Order / counter sale** ("SO 331990 is hitting
+retail sales"), the routing table is GLAM → Fixed Operations → **Part & Accessories →
+Parts-Counter**, NOT Services-Internal and NOT cost centers. It keys on 6 dims
+(Service Type · Source Code · **Customer Tax Status** · Sale Type (Fixed Ops) ·
+Sales Subtype · Department) and the deciding dimension is usually **Customer Tax
+Status**, read off the customer master `taxable` flag rather than the invoice's actual
+tax. SCT's `All/All/Taxable/Wholesale/All/All` row points at `4740 SLS PRT COUNTER
+RTL-TOY` (a retail account). Full method + traps → skill
+**`tekion-parts-so-gl-account-routing`**.
+
+SCT's Part & Accessories sub-tables: `Parts-Customer Pay`, `Parts-Toyota Care`,
+`Parts-Internal`, `Parts-Warranty`, `Online Parts Payments`, `Parts-Counter`.
+Parts on an RO use the first four; a counter SO uses Parts-Counter.
+
 ## Related skills
+- `tekion-parts-so-gl-account-routing` (counter Sales Order → GL account; Parts-Counter table)
 - `tekion-department-opcode-census` (which opcodes a department actually uses, and
   whether a Service-Type mapping row will really capture them — run this BEFORE
   promising a GL change covers a department)

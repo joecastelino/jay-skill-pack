@@ -19,6 +19,17 @@ Source: Tekion "Jump Start" webinar, Parts Workflows & Pricing (Emily Shaw, CVA 
 
 > **NEVER-GUESS RULE:** On parts-pricing troubleshooting, if you hit something not covered here, STOP and ask Joe — do not invent a plausible answer. He is deeply parts-knowledgeable and rejects wrong root-cause diagnoses instantly.
 
+> **"This SO is hitting RETAIL SALES / wrong GL account" → load skill
+> `tekion-parts-so-gl-account-routing`.** Short version: counter sales route through
+> GLAM → Fixed Operations → Part & Accessories → **Parts-Counter**, keyed on 6 dims
+> (Service Type · Source Code · **Customer Tax Status** · Sale Type · Sales Subtype ·
+> Department). At SCT the row `All/All/Taxable/Wholesale/All/All → 4740 SLS PRT COUNTER
+> **RTL**-TOY` sends taxable WHOLESALE sales to the RETAIL account. Customer Tax Status
+> reads the **customer master `taxable` flag, not whether tax was charged** — a $0-tax
+> NO-TAX order still routes "taxable." Also note the SO list's default status filter
+> EXCLUDES CLOSED (closed SOs show "No rows found"), and old orderNos can collide with
+> 2019 migrated ghosts (`partCounterPersonName:"System"`).
+
 > **SALES TAX $0 / "tax isn't calculating" on a Sales Order → load skill
 > `tekion-parts-tax-not-calculating-diagnosis`.** Short version: Parts tax config lives at
 > `GET /api/parts-settings/u/tax-setup` (UI `/parts/tax-code-setup`), NOT under `/api/tax-codes/u/*`
