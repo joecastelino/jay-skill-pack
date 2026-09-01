@@ -925,8 +925,45 @@ response is a one-line "stale replay, nothing to do" plus the evidence (file mti
 Stacey's verified `DRAFTS_COUNT=1 | TO_HEADER=... | SENT_TODAY=0`); do NOT re-render, do
 NOT re-ask Stacey (a second handoff would create a duplicate draft for that night).
 
+## COMPANION REPORT: Alignment + BG MENU SALES (built 2026-08-31, Joe's ask)
+Joe asked for "total alignment sales with the BG menus." SCT has NO BG-branded alignment
+opcode — BG at SCT = the BG Products chemical/fluid service line (17 opcodes seen in Aug:
+BGCF, BGBFX, BGTF, BGCVTF, BGCFX, BGRDIFF, BGTC, BGATFX, BGFDIFF, BGAC, BGPSX, BGBAT,
+BG208, BGETH, BGTBINJ, BGFINJ, BGMAF). So "alignment sales WITH the BG menus" = the
+alignment report PLUS the BG service line, in DOLLARS not just units, with the
+cross-sell attach rate (ROs carrying both).
+- **Scan:** `sct_align_bg_scan.py` — REUSES that day's `sct-mtd-<tag>-closed-index.json`
+  (zero extra index calls; set `TAG=YYYY-MM-DD`). Candidate set = ALIGN ∪ BG ∪ TEK.
+  Captures `labor.saleAmount` + summed operation `parts saleAmount` (BOTH CENTS) per line.
+  Checkpoint `data/sct-alignbg-<tag>-scan.json`, resumable, `_get()` has the mandatory
+  dict-guard + OVERALL_RATELIMIT/OVERALL_QUOTA/DEALER_QUOTA hard-backoff.
+- **Render:** `render_sct_align_bg.py` → 3 pages: p1 advisor ranking (align units/$, BG
+  units/$, attach ROs, combined $), p2 BG product mix ranked by revenue, p3 RO-level chips
+  (red=dedicated, blue=TEK-bundled, green=BG) each stamped with its dollar amount.
+  Output stem `SCT-Alignment-BG-Sales-By-Advisor-<date>.{png,pdf}`.
+- **NEVER run it concurrently with `sct_align_mtd.py`** — same rate-limit bucket; a
+  collision breaks Kevin's nightly. `pgrep -af sct_align_mtd` must be empty first.
+- Operations endpoint returns `data.roOperations` (NOT `data.operations`), and
+  `O.call()` returns a `(status, body)` TUPLE — both bite immediately if you copy the
+  jobs-endpoint shape. Parts are a LINK: `/repair-orders/{rid}/jobs/{jid}/operations/{oid}/parts`
+  → `data.parts[].saleAmount`, one extra call per BG line.
+- Aug 2026 reference scale: 5,094 closed ROs → 275 with a BG opcode, 200 of those carry
+  NO align/TEK op (invisible to the alignment scan), 64 ROs sold BOTH.
+
+## BUG FOUND + FIXED 2026-08-31 — ALIGN00**R**BA vs ALIGN00**B**RA
+`ALIGN_OPC` had `ALIGN00BRA`, but the opcode SCT actually uses is **`ALIGN00RBA`** (R and
+B transposed). That code appears 107 times across the July+August indexes and **ZERO**
+`ALIGN00BRA` ever existed — so every one of those alignments was silently uncounted, and
+in August 5 of them weren't even candidates (no ALIGN/OKAL/TEK op on the RO, so the
+fan-out never looked at them). Patched all four scanners to accept BOTH spellings:
+`align_scan.py`, `align_scan_june.py`, `sct_align_full_june.py`, `sct_align_mtd.py`.
+Effect is small (~5/month at SCT) but it means historical alignment totals in prior
+reports are LOW by the ALIGN00RBA count for that month. Lesson: derive the opcode set
+from the live index (`collections.Counter` over `r['opc']`) rather than trusting a
+hardcoded literal — a transposed character produces a silent zero, not an error.
+
 ## Pitfalls recap
-- Opcode set is SCT-specific (ALIGN/OKAL/ALIGN00BRA). Other stores differ — see
+- Opcode set is SCT-specific (ALIGN/OKAL/ALIGN00RBA — note the R-B order). Other stores differ — see
   `tekion-alignment-by-advisor-report` + `tol-alignment-by-advisor-report`.
 - The `_get()` dict-guard + OVERALL_RATELIMIT hard-backoff is MANDATORY — without it the
   scan dies on a string error body.
