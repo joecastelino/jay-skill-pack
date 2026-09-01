@@ -25,6 +25,36 @@ r4-10 Hours Sold: CUSTOMER / TXM / TOYOTA CARE / PREPAIRD MAINTENANCE / WARRANTY
 
 **TELL for an unfilled month:** the new column is an exact COPY of the prior month (every cell identical). Diff col N vs N-1 before assuming it's done.
 
+## 🚨🚨 STEP ZERO — COVERAGE AUDIT. DO THIS BEFORE YOU PULL A SINGLE NUMBER.
+**Burned 2026-09-01. I reported "91/93 cells filled" — the real denominator was ~194.
+I filled 2 of 6 blocks per tab and MISSED 103 CELLS. Joe's reply: "dude. JAY, WTF. you
+missed like half the sheet."** The bug was not the data. The bug was that my verification
+loop only scanned **rows 3–15**, so it validated against my own assumption instead of the
+sheet. A self-consistent check over the wrong range is worse than no check — it produces
+a confident, wrong completion report.
+
+**Every tab has SIX blocks. Rows 4–14 are only the first two.**
+
+| # | Block | SCT rows | Source |
+|---|---|---|---|
+| 1 | Hours Sold | 4–10 | advisor-perf API (METHOD 0) |
+| 2 | Vehicle Attendance | 13–14 | advisor-perf API, `roCount`, no status filter |
+| 3 | **Workshop Analysis** | 17–21 | **Tech Performance API — see METHOD 0c** |
+| 4 | **Labor Rates + WIP $** | 24–32 | manual settings / carry forward; WIP $ source unknown |
+| 5 | **ELR (YTD)** incl TXM/OTHER/ACCESSORY | 34–55 | advisor-perf API, **YTD window** — see METHOD 0d |
+| 6 | **TXM COUNT/SALE/COST/GROSS + parts** | 57–67 | Report Builder `SCP-Toyota Care 2.0` |
+
+Run this FIRST, and again as the final gate before reporting done:
+```python
+# for each sheet: every row where the PRIOR month has a value but target month is blank
+for r in range(2, ws.max_row+1):
+    prior, target = ws.cell(r,c_prior).value, ws.cell(r,c_target).value
+    if isinstance(prior,(int,float)) and target in (None,""):
+        print(s, r, ws.cell(r,1).value, prior)
+```
+**Report completion as `filled / (filled+missing)` from THIS audit — never from the count
+of cells you happened to write.** Blocks 3–6 are ~60% of the workbook.
+
 ## ⭐ METHOD 0 — THE ADVISOR-PERFORMANCE API (2026-08-31, USE THIS FIRST)
 **This supersedes all the UI/calendar-clicking below for every Hours Sold / Attendance /
 ELR row. Joe's complaint that drove this: the UI path burned ~5 hours and didn't finish
@@ -626,11 +656,96 @@ SAVED-GROUP PITFALLS: loaded groups carry STALE dates (reset every time) and pos
 ### 3b. Bucket mapping via DB (cross-check only — never guess)
 RO data exposes only THREE payTypes: CUSTOMER_PAY / WARRANTY / INTERNAL. The sheet splits 7 ways. Observed: TAC15–TAC80 opcodes under CP = TOYOTA CARE row (matches sct-toyotacare-billed-hours-report skill, "not Warranty" rule); TSC* opcodes under CP ≈ prepaid maintenance candidate; TXM* opcodes appear under WARRANTY. **PDI/TXM/PPM bucket definitions must come from Joe's saved Advisor Performance filters — ASK, don't infer.** (Asked 2026-08-03, answer pending — record it here when given.)
 
-### 4. Workshop hours (avail/prod/unapplied)
-Tekion Tech Performance report (see tekion-standard-reports-performance skill), flag-date window = calendar month.
+### 4. Workshop hours (avail/prod/unapplied) — ⭐ SOLVED VIA API, see METHOD 0c below
+(Legacy: the Tech Performance report UI. Don't click it — replay the API.)
 
 ### 5. Labor Rates rows
 Manual/rare — carry forward prior month unless Joe says changed.
+
+## ⭐ METHOD 0c — WORKSHOP ANALYSIS BLOCK (rows 17–21) — SOLVED 2026-09-01
+Joe: *"I get the available hours/productive hours from the technician performance reports."*
+One API call per store. **Exact to the cent on 6 of 7 dealers on the first attempt.**
+
+```python
+POST /api/service-module/u/reporting/technician
+{"reportName":"FLAG_TIME_REPORT","reportGroup":"FLAG_REPORT","metrics":[],
+ "pageInfo":{"start":0,"rows":300},
+ "filters":[{"field":"payDay","operator":"BTW","values":[monthStartMs, monthEndMs]}]}
+→ data.lineItems[]   # techId "-1" is the TOTAL row
+```
+Same 2-header cross-store swap (`dealerId`, `tek-siteId: -1_<id>`) as the advisor API.
+
+| Sheet row | Field | Note |
+|---|---|---|
+| TOTAL AVAIL HOURS | `attendanceTimeInSeconds` / 3600 | |
+| TOTAL PROD HOURS | `assignedBillingTimeInSeconds` / 3600 | **NOT** `flagTimeInSeconds` / `clockTimeInSeconds` |
+| UNAPPLIED | AVAIL − PROD | derive it; don't use `unAppliedTimeInSeconds` (it's signed/different) |
+
+**Note the date field is `payDay`** — not `payTypeFirstClosedTime`. This is the flag-date
+window. Hours here ARE in seconds (unlike operation-grain Report Builder).
+
+June 2026 validation: SCT 7747.94/7008.48 ✅ · SV 2112.45/1518.06 ✅ · TL 3783.05/4204.85 ✅ ·
+VC 2358.91/1243.83 ✅ · AR 713.27/599.61 ✅ · BC 3356.87 ✅/4079.80 (−1.0) · BT ✗ (see below).
+
+**Self-check built into the sheet:** AVAIL − PROD == UNAPPLIED exactly (7747.94 − 7008.48
+= 739.46). If your two numbers don't reproduce the prior month's UNAPPLIED, you picked the
+wrong fields — verify before pulling all 8 tabs.
+
+### ⚠️ BT is UNSOLVED in this API — the advisor split does NOT apply here
+Tech Performance returns **both BT tabs combined** (4,592 avail / 7,138 prod vs the
+service tab's 4,451 / 5,783). The `BT_BODY` advisor-ID trick from DISCOVERY 1 does **not**
+work — this endpoint is keyed by **techId**, not advisorId, and exposes no advisor field.
+
+Dead ends confirmed here (do not re-probe):
+- `departmentId IN [...]` is an ACCEPTED field (returns 0 rows, not an error) but no value
+  works; `department`/`departmentIds`/`laborType`/`techDepartment` → 400.
+- `serviceMode IN [SERVICE]` → returns techs but prod 0.
+- `groupBy` must be a LIST (`[{field,size}]`) — a bare string 400s. But grouping by
+  `departmentId`/`serviceMode` does NOT bucket; returns the same single total.
+- No departments endpoint exists: `/api/service-module/u/departments` and 9 other
+  candidates all 404.
+- Tech-name resolution: `/api/users/u/<id>` → 404, and `/api/{u/employees,users,employee}/search`
+  all 404. `lineItems[]` carries **only `techId`** — no name field.
+
+Subset-sum finds an exact split (body = 140.65 avail / 1,354.60 prod: one attendance tech
+`88a51dbb` + 10 of 17 zero-attendance techs) but **10-of-17 is too many combinations to be
+meaningful — do not write it.** ASK JOE how he separates BT service from body shop on the
+Tech Performance screen (department filter in the funnel? a saved tech list?).
+
+## ⭐ METHOD 0d — THE FULL ELR BLOCK (rows 34–55) — SOLVED 2026-09-01
+**ELR is the ONLY YTD block** (`W.ytd_ms(y,m)` = Jan 1 → EOM target). Joe flagged this
+directly: *"ELR???? that is a YTD number for all the toyota stores."*
+
+🔑 **The asymmetry that breaks a naive pass: rows 35–41 are STORE-WIDE (no make filter),
+rows 43–45 filter to NON-Toyota.** "TOYOTA CUSTOMER" does *not* mean `makeId IN [toyota]`
+— adding that filter gives 174.93 instead of 174.77. The `OTHER *` rows are the only
+make-filtered ones. Read `elrValue` off the `-1` total row.
+
+| Row | Filter (+ `CL` + YTD window) | June | Got |
+|---|---|---|---|
+| r35 TOYOTA CUSTOMER | `payType CP` + `opcodes NIN [TAC*+TSC*]` | 174.77 | **174.77** ✅ |
+| r36 TOYOTA WARRANTY | `payType WARRANTY` | 304.78 | 300.04 ⚠️ |
+| r37 TOYOTA INTERNAL | `payType INTERNAL` + `opcodes NIN [PDI]` | 147.92 | **147.92** ✅ |
+| r38 TOYOTA TXM | `opcodes IN [TXM 30-set]` | 291.76 | **291.76** ✅ |
+| r39 TOYOTA CARE | `opcodes IN [TAC*]` | 117.47 | 117.49 ✅ |
+| r40 TOYOTA PREPAID | `opcodes IN [TSC*]` | 118.75 | 118.72 ✅ |
+| r41 TOYOTA PDI | `opcodes IN [PDI]` | 286.16 | **286.16** ✅ |
+| r43 OTHER CUSTOMER | `payType CP` + `makeId NIN [toyota,scion]` | 163.15 | **163.15** ✅ |
+| r45 OTHER INTERNAL | `payType INTERNAL` + `makeId NIN [toyota,scion]` | 196.87 | **196.87** ✅ |
+
+Note r35/r37 reuse the **same exclusions as their Hours Sold counterparts** (CP excludes
+TAC/TSC; INTERNAL excludes PDI) — mirror the block-1 recipe, just swap the window to YTD
+and read `elrValue` instead of hours. r36 warranty runs ~1.5% low (reopened ROs, expected
+drift on an old month). r44 OTHER WARRANTY is 0.00 in the sheet — don't chase it.
+
+### TXM COUNT/SALE/COST block (rows 57–67) — grain confirmed, opcode set incomplete
+The advisor API with the TXM 30-opcode group returns `roCount` **1,007 vs the sheet's
+1,442** for June, and EVERY dollar field is low by that same ~70% ratio
+(labor sale 156,611 vs 215,399; parts sale 38,760 vs 48,333). **Same root cause as the
+TXM hours gap** — the saved opcode set is missing members. Confirms the block is
+operation-grain and must come from Report Builder `SCP-Toyota Care 2.0`, not this API.
+Money fields come back as **strings** in some rows — coerce with `float()` before dividing
+by 100 (a raw `row[k]/100` throws `TypeError: unsupported operand type(s) for /: 'str'`).
 
 ## Sanity-check protocol (Joe asked for this explicitly)
 **Reproduce the PRIOR month's column first (see METHOD 0's validation table) and show Joe

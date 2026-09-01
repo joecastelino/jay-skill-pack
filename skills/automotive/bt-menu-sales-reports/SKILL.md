@@ -256,6 +256,28 @@ it finished well inside 170s with no backoff.
 MTD advisor leaders: Erick Villasenor Gonzalez 15/$21,868.08, Jon Lo 53/$17,297.86, Jason Davis
 76/$11,596.43, Michael Rankin 42/$11,344.55, Gio Elenes 12/$8,206.70 (14 advisors on the board).
 
+### (9/01 run, for Mon 8/31) MONTH-END FINAL + port 465 dead, 587/STARTTLS rescued it
+Month-boundary run: yesterday = 8/31, so this finalized the August master and the email covered
+the FULL month (subject "August 1-31, 2026"). 451 closed ROs (biggest of the month), 29 prefilter
+hits, 28 new rows, `all candidate ROs scanned`. Master 356 -> **384 rows / $105,864.62**
+($77,309.11 labor + $28,555.51 parts). 8/31-dated rows alone = 15 menus / $6,184.20 (rest of the
++$10,634.18 delta = store closing older invoiced ROs) — state both numbers, same as prior runs.
+**NEW SMTP FAILURE MODE:** Stacey's first FOUR send attempts on **port 465/SSL** all dropped the
+connection (three at MAIL FROM / mid-DATA, one bare disconnect). The DO-NOT-DOUBLE-SEND paragraph
+worked exactly as designed — after error #1 she IMAP-checked Sent Mail (empty), then debugged
+rather than blind-retrying: a tiny plain-text 465 send succeeded, so she diagnosed it as MIME size
+(~600KB) plus likely Google rate-limiting, waited ~10s, and switched to **port 587 with STARTTLS**,
+which sent on the first attempt. Result: exactly ONE email (Message-ID <178826819896...>, 06:09:58
+PDT). LESSON: on repeated 465 drops with a large MIME, 587/STARTTLS is the working fallback — but
+never let her retry 465 blindly; the Sent-Mail pre-check between attempts is what kept this from
+becoming an 8/22-style duplicate. Hand-off ran 2m57s (19 tool calls), verification 42s first try.
+IMAP Sent-check = 9 hits, exactly one with today's subject (Aug 1-31); other 8 all prior sends
+(Jul 1-28, Jul 1-30, Aug 1-8, 1-18, 1-24, 1-25, 1-26, 1-27) — usual token-match trap.
+MTD advisor leaders (FINAL August): Erick Villasenor Gonzalez 16/$23,521.14, Jon Lo 60/$18,557.66,
+Jason Davis 84/$15,229.05, Michael Rankin 45/$12,594.65, Gio Elenes 12/$8,206.70 (14 advisors).
+NOTE: September's first run will auto-create a fresh MASTER-2026-09.json — a tiny master early in
+the month is normal, not the unseeded-master pitfall.
+
 ### Verification ask wording that works first try
 Lead with `IMPORTANT: print the answer as plain text IN THIS REPLY` AND
 `Use himalaya / raw IMAP against "[Gmail]/Sent Mail" (NOT the Gmail API)` — the

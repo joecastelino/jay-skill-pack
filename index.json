@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-01T06:00:39",
+ "generated": "2026-09-01T06:15:31",
  "skill_count": 204,
  "skills": [
   {
@@ -63,7 +63,7 @@
    "path": "automotive/tekion-autonomous-login",
    "category": "automotive",
    "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
-   "times_used": 45,
+   "times_used": 46,
    "last_used": "2026-09-01"
   },
   {
@@ -191,7 +191,7 @@
    "path": "automotive/amg-wip-monthly-column-fill",
    "category": "automotive",
    "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
-   "times_used": 19,
+   "times_used": 20,
    "last_used": "2026-09-01"
   },
   {
@@ -251,6 +251,14 @@
    "last_used": "2026-08-07"
   },
   {
+   "name": "tekion-report-builder-scraper",
+   "path": "automotive/tekion-report-builder-scraper",
+   "category": "automotive",
+   "description": "Scrape any Tekion Report Builder CUSTOM report (e.g. \"SCT Menu Sales Opened\") headlessly \u2014 find the report id, open it under the right dealer, expand grouped rows, parse to JSON, render a manager-ready scorecard (PNG+PDF), and email it via Stacey. Use whenever Joe/managers want recurring Tekion report data without downloading PDFs from Tekion's emailed reports.",
+   "times_used": 14,
+   "last_used": "2026-09-01"
+  },
+  {
    "name": "tekion-advisor-closed-gross-api-report",
    "path": "automotive/tekion-advisor-closed-gross-api-report",
    "category": "automotive",
@@ -281,14 +289,6 @@
    "description": "Tekion Parts Sales Orders (counter sales) + Parts RO Sales (parts on repair orders) + the full parts PRICING system (hierarchy, price codes, price breaks/formulas, matrices, defaults). Covers /parts/sales-order, P&A vs Fulfillment, cores, prepaid parts, core returns (CM credit memos), and the 5-tier pricing hierarchy where manual override is \"king of kings.\" Load for counter-sale, parts-on-RO, or parts-pricing questions.",
    "times_used": 13,
    "last_used": "2026-08-24"
-  },
-  {
-   "name": "tekion-report-builder-scraper",
-   "path": "automotive/tekion-report-builder-scraper",
-   "category": "automotive",
-   "description": "Scrape any Tekion Report Builder CUSTOM report (e.g. \"SCT Menu Sales Opened\") headlessly \u2014 find the report id, open it under the right dealer, expand grouped rows, parse to JSON, render a manager-ready scorecard (PNG+PDF), and email it via Stacey. Use whenever Joe/managers want recurring Tekion report data without downloading PDFs from Tekion's emailed reports.",
-   "times_used": 13,
-   "last_used": "2026-08-31"
   },
   {
    "name": "tekion-warranty-admin-closings",
