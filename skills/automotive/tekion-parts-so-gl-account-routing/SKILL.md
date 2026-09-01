@@ -58,25 +58,66 @@ All | 990 - GOG      | All         | Internal  | All | All        | 4774 SLS GAS
 All | All            | All         | Internal  | All | 05 - P&A   | 4730 SLS PRT RO INTERNAL RTL-TOY
 ```
 
-## ⭐ THE ANSWER (SCT, and likely fleet-wide): **Customer Tax Status is the tie-breaker**
+## ⭐ WHICH ROW MATCHES: **Customer Tax Status is the tie-breaker**
 
 `All / All / **Taxable** / Wholesale / All / All → 4740 SLS PRT COUNTER **RTL**-TOY`
 
-**A Wholesale sale whose CUSTOMER is flagged Taxable maps to the RETAIL counter
-account.** That row exists and duplicates the Retail/Taxable destination. Sale Type =
-Wholesale is NOT sufficient to land in 4750.
+**A Wholesale sale evaluated as Taxable maps to the RETAIL counter account.** That row
+exists and duplicates the Retail/Taxable destination. Sale Type = Wholesale is NOT
+sufficient to land in 4750. That part is solid.
 
-### The nuance that makes it non-obvious — and the thing to state explicitly
+### 🛑 RETRACTED 2026-09-01 — `customer.taxable` is NOT the customer master flag
 
-`Customer Tax Status` reads the **customer master `taxable` flag**, NOT whether tax was
-actually charged on the invoice.
+**I reported "De Laveaga's master record is flagged Taxable" and had to retract it to
+Joe in the same session. Do not repeat this.**
 
-Verified proof (SO 331990, De Laveaga Service): `customer.taxable = true`, yet
-`taxConfiguration` was the **"NO TAX"** tax code on all five components
-(PARTS/CORE_SALE/CORE_RETURN/FEES/LABOUR), `taxExempt:false`, `totalTaxAmount 0.00` on
-$4,661.81. Zero tax collected → still matched the **Taxable** row → retail account.
-If the dimension read the transaction outcome, $0 tax would have matched Non-taxable
-and gone to 4750. It didn't. **The flag wins.**
+`data.salesOrder.customer.taxable` on the SO payload is a **per-order snapshot stamped
+at order creation** — it is NOT the customer master record. Reading it and calling it
+"the master" is a confident wrong answer.
+
+**The actual master lives at:**
+```
+GET /api/cms/u/customers/<customerId>
+  → data.taxInformation.partsTaxInfo[0].taxExempted     <-- the one that governs parts
+  → data.taxInformation.serviceTaxInfo[0].taxExempted
+  → data.taxInformation.salesTaxInfo[0].taxExempted
+     (+ .reasonForTaxExemption, .taxExemptNumber, .taxPercentage, .overrideTaxPercentage)
+GET /api/cms/u/tax-code-setup/<customerId>              <-- exempt tax-code grid
+```
+UI: **Customer Management → open customer → left-nav "Tax Exemptions" → Parts sub-tab.**
+
+**What the masters actually said (both SCT customers, verified):**
+
+| | De Laveaga 1243835 | Crash Champions n555 116053 |
+|---|---|---|
+| `partsTaxInfo.taxExempted` | **true** (resale, 101201554-10000) | **true** (resale, 209912384) |
+| `serviceTaxInfo.taxExempted` | true | false (9.375%) |
+| `salesTaxInfo.taxExempted` | false | false (9.375%) |
+
+**BOTH are Parts tax-exempt — identical on the dimension that matters.** So the customer
+master does NOT explain why one went retail and one went wholesale. The list-view columns
+agree: both show `Parts Tax Exempted - Yes`.
+
+### What actually differs (OPEN — unresolved, do not guess)
+
+The `taxable` value **snapshotted onto each order**, plus tax regime:
+
+| | SO 331990 → retail | SO 323623 → wholesale |
+|---|---|---|
+| `customer.taxable` (order snapshot) | `true` | `false` |
+| `taxRegime` | **`null`** | `SALES_TAX` |
+| `taxConfiguration` | NO TAX on all 5 components, `taxExempt:false` | — |
+| `taxSummary.totalTaxAmount` | `0.00` on $4,661.81 | — |
+
+Same master exemption status, different snapshot. Unverified leads, in strength order:
+1. **`/api/cms/u/tax-code-setup/<id>` differs materially** — De Laveaga's response is
+   9,356 bytes vs Crash Champions' 3,026. Parse and diff these first.
+2. **`taxRegime: null` on 331990** — a null regime may fall through to the Taxable branch.
+3. **Timing** — De Laveaga master last modified Oct 30 2025; SO created Aug 24 2026. If
+   the order captured a stale/default `taxable`, that's a Tekion snapshot bug.
+
+Per Joe's NEVER-GUESS rule: present the leads and ask which to chase. Do not pick one and
+assert it.
 
 So the counter-intuitive summary: *"the order charged no tax but is treated as taxable
 for GL routing, because routing reads the customer record."*
@@ -89,7 +130,8 @@ for GL routing, because routing reads the customer record."*
 | saleType / saleSubTypeId | WHOLESALE / WHOLESALE | WHOLESALE / WHOLESALE |
 | departmentName | 05 – PARTS & ACCESSORIES | 05 – PARTS & ACCESSORIES |
 | price code | `698df942ab268c104c3d14ca` (37 \| list-37%) | `630e11f47d560d0007a8c2d3` |
-| **customer.taxable** | **true** | **false** |
+| **customer.taxable** (order snapshot, NOT master) | **true** | **false** |
+| **master `partsTaxInfo.taxExempted`** | **true** | **true** ← identical, explains nothing |
 | → GL | **4740 RETAIL** | **4750 WHOLESALE** |
 
 **Source code was ruled out conclusively, not by assumption:** source
