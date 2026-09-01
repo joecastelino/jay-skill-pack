@@ -621,15 +621,23 @@ index.md (2 new session lines) → `git add -A` → commit said "nothing to comm
 (session-end-sync had already committed it; `git log --oneline -3` showed its `session:` /
 `skill backfill:` commits on top) → the mandatory step-6 re-import then reported **0 pages imported /
 0 chunks / 0 stale**. That LOOKS like index.md's new wikilinks never got re-embedded, and it's exactly
-the shape that tempts a needless newline-bump. It's fine: the same sync pass that stole the commit also
-ran its own `gbrain import`, so the DB already had the edit. **VERIFY instead of remediating** — compare
+the shape that tempts a needless newline-bump. **A hijacked commit does NOT guarantee the DB is current
+— it goes BOTH ways, so always run the check, never assume.** If the sync's own `gbrain import` ran
+AFTER your edit landed, the DB already has it (2026-08-31 case). If it ran BEFORE, the sync committed
+your edit but never ingested it, and the DB is stale (2026-09-01 09:32 cron: commit hijacked, then
+DB grep = 2 vs disk = 3 — a real gap). **VERIFY instead of remediating** — compare
 DB vs disk directly:
 ```bash
 HOME=/home/itadmin gbrain get index | grep -c 'session-<YYYYMMDD>_<hh>'   # DB copy
 grep -c 'session-<YYYYMMDD>_<hh>' /home/itadmin/brain/index.md            # disk copy
 ```
 Equal counts (2 == 2 here) = index.md is current in the brain; move on to the orphan re-check. Only if
-DB < disk is there a real skip (then plain re-import, and only then the newline-bump). Contrast: the very
+DB < disk is there a real skip (then plain re-import, and only then the newline-bump). **DB<disk branch
+walked end-to-end 2026-09-01: the plain re-import reported "3 pages imported / 30 chunks" — index.md
+PLUS two latecomer session pages it swept in at the same time — DB grep then matched disk (3==3), and
+`orphans` immediately named those same 2 latecomers. So the fix for a stale index.md and the latecomer
+sweep are the SAME plain re-import; expect the imported-page count to exceed 1 and expect fresh orphans
+right after (rule 2b). No newline-bump was needed.** Contrast: the very
 next round's commit was NOT hijacked, and its re-import behaved textbook — "1 page imported / 27 chunks"
 for index.md re-chunking + `embed --stale` 1 chunk. So both readings are normal; which one you get just
 depends on whether a 15-min sync pass overlapped your commit.
