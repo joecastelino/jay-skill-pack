@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-01T09:15:27",
+ "generated": "2026-09-01T09:31:16",
  "skill_count": 205,
  "skills": [
   {
@@ -31,8 +31,8 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 87,
-   "last_used": "2026-08-31"
+   "times_used": 89,
+   "last_used": "2026-09-01"
   },
   {
    "name": "tekion-sitemap",
@@ -127,7 +127,7 @@
    "path": "automotive/amg-wip-monthly-column-fill",
    "category": "automotive",
    "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
-   "times_used": 29,
+   "times_used": 30,
    "last_used": "2026-09-01"
   },
   {
@@ -227,6 +227,14 @@
    "last_used": "2026-07-12"
   },
   {
+   "name": "tekion-report-builder-scraper",
+   "path": "automotive/tekion-report-builder-scraper",
+   "category": "automotive",
+   "description": "Scrape any Tekion Report Builder CUSTOM report (e.g. \"SCT Menu Sales Opened\") headlessly \u2014 find the report id, open it under the right dealer, expand grouped rows, parse to JSON, render a manager-ready scorecard (PNG+PDF), and email it via Stacey. Use whenever Joe/managers want recurring Tekion report data without downloading PDFs from Tekion's emailed reports.",
+   "times_used": 17,
+   "last_used": "2026-09-01"
+  },
+  {
    "name": "tekion-opcode-default-pricing",
    "path": "automotive/tekion-opcode-default-pricing",
    "category": "automotive",
@@ -241,14 +249,6 @@
    "description": "Build a \"parts sold\" report (e.g. tires) for any Tekion store and period with ACTUAL invoiced dollars, split RO vs Sales Order (counter), by counterperson, from the internal part transaction ledger (activity-log API) \u2014 zero OpenAPI quota. Use when Joe asks \"how many X did we sell\" for a parts category, or when the OpenAPI quota is exhausted and RO-level pulls are blocked.",
    "times_used": 15,
    "last_used": "2026-08-31"
-  },
-  {
-   "name": "tekion-report-builder-scraper",
-   "path": "automotive/tekion-report-builder-scraper",
-   "category": "automotive",
-   "description": "Scrape any Tekion Report Builder CUSTOM report (e.g. \"SCT Menu Sales Opened\") headlessly \u2014 find the report id, open it under the right dealer, expand grouped rows, parse to JSON, render a manager-ready scorecard (PNG+PDF), and email it via Stacey. Use whenever Joe/managers want recurring Tekion report data without downloading PDFs from Tekion's emailed reports.",
-   "times_used": 15,
-   "last_used": "2026-09-01"
   },
   {
    "name": "tekion-parts-autoorder-diagnosis",
@@ -587,6 +587,14 @@
    "last_used": "2026-07-07"
   },
   {
+   "name": "sct-toyotacare-billed-hours-report",
+   "path": "automotive/sct-toyotacare-billed-hours-report",
+   "category": "automotive",
+   "description": "Pull the ToyotaCare (TAC) billed-hours number from Tekion's Advisor Performance report (Reports module) for SCT or any store, using Joe's saved TAC/ToyotaCare filter \u2014 and roll it out to the other 6 AMG stores. Use when Joe asks for ToyotaCare / TAC billed hours, or is building his monthly SCT fixed-ops sheet (\"first number, Toyota Care\").",
+   "times_used": 3,
+   "last_used": "2026-09-01"
+  },
+  {
    "name": "tekion-browser-navigation",
    "path": "automotive/tekion-browser-navigation",
    "category": "automotive",
@@ -841,14 +849,6 @@
    "description": "Maintain the PUBLIC skill-pack repo github.com/joecastelino/jay-skill-pack \u2014 the auto-synced, secret-redacted mirror of Jay's entire skill library, README sorted by usage count. Use when Joe asks about the skill pack repo, when a sync fails, when a new secret needs redaction, or when installing Jay's skills into another agent.",
    "times_used": 1,
    "last_used": "2026-07-23"
-  },
-  {
-   "name": "sct-toyotacare-billed-hours-report",
-   "path": "automotive/sct-toyotacare-billed-hours-report",
-   "category": "automotive",
-   "description": "Pull the ToyotaCare (TAC) billed-hours number from Tekion's Advisor Performance report (Reports module) for SCT or any store, using Joe's saved TAC/ToyotaCare filter \u2014 and roll it out to the other 6 AMG stores. Use when Joe asks for ToyotaCare / TAC billed hours, or is building his monthly SCT fixed-ops sheet (\"first number, Toyota Care\").",
-   "times_used": 1,
-   "last_used": "2026-08-03"
   },
   {
    "name": "slack-store-thread-cron-retarget",
