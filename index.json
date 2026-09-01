@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-01T07:31:22",
+ "generated": "2026-09-01T07:45:26",
  "skill_count": 205,
  "skills": [
   {
@@ -167,7 +167,7 @@
    "path": "automotive/amg-wip-monthly-column-fill",
    "category": "automotive",
    "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
-   "times_used": 25,
+   "times_used": 26,
    "last_used": "2026-09-01"
   },
   {

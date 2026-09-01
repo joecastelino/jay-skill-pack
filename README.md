@@ -2,7 +2,7 @@
 
 Skill library for **Jay**, the Tekion DMS specialist agent at American Motors Group — plus general-purpose agent skills. Built for the [Hermes Agent](https://github.com/NousResearch) skill system (`SKILL.md` + YAML frontmatter, with optional `references/`, `scripts/`, `templates/`).
 
-**205 skills** · auto-synced from the live agent · last sync: 2026-09-01 07:31
+**205 skills** · auto-synced from the live agent · last sync: 2026-09-01 07:45
 
 ## Install into another agent
 
@@ -37,7 +37,7 @@ Secrets (passwords, app passwords, tokens) are redacted with `<PLACEHOLDER>` mar
 | 18 | [`tekion-scheduling`](skills/automotive/tekion-scheduling/SKILL.md) | automotive | 28 | 2026-08-26 | Tekion Service Scheduling Settings — appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the "lowest ceiling wins" capacity model,... |
 | 19 | [`tekion-service-menu-setups`](skills/automotive/tekion-service-menu-setups/SKILL.md) | automotive | 27 | 2026-07-15 | Navigate to, read, and inspect Tekion Service Menu Setups (the service-menu builder where interval menus, tiers, tags, opcodes, included services and inspections are configured). Covers the non-obvious nav path, the p... |
 | 20 | [`tekion-service-settings`](skills/automotive/tekion-service-settings/SKILL.md) | automotive | 27 | 2026-08-27 | Reference map of Tekion's Service Settings application (App Grid > Settings > Service Settings) — the master config for service/RO workflows: General Setup, Job Sequence, Flag Tech on, Round-Up rules, Default Service ... |
-| 21 | [`amg-wip-monthly-column-fill`](skills/automotive/amg-wip-monthly-column-fill/SKILL.md) | automotive | 25 | 2026-09-01 | Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data — hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hour... |
+| 21 | [`amg-wip-monthly-column-fill`](skills/automotive/amg-wip-monthly-column-fill/SKILL.md) | automotive | 26 | 2026-09-01 | Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data — hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hour... |
 | 22 | [`sct-backcounter-ro-sales-countsheet`](skills/automotive/sct-backcounter-ro-sales-countsheet/SKILL.md) | automotive | 24 | 2026-08-26 | Build Joe's daily SCT Back Counter Bin Check count sheet — cross-reference a day's RO part sales (Tekion OpenAPI) against parts that stock in a back-counter bin (5000 section) and render a Tekion-bin-check-style sheet... |
 | 23 | [`tekion-declined-deferred-services-report`](skills/automotive/tekion-declined-deferred-services-report/SKILL.md) | automotive | 22 | 2026-08-26 | Pull declined/deferred services (recommendations customers said no to) for any/all AMG Tekion stores via the internal recommendation/search reporting API. Powers "most declined service", declined-services marketing li... |
 | 24 | [`tekion-vi-api-migration`](skills/automotive/tekion-vi-api-migration/SKILL.md) | automotive | 22 | 2026-07-12 | Migrate the Vehicle Inventory ("The Goods") browser scraper to the Tekion OpenAPI (vehicle-inventory:search) producing per-store JSON that byte-matches the legacy schema. Covers field mapping, the SOLD-pending rule, P... |
