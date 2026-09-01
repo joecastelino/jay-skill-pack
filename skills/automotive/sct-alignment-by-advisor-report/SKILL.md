@@ -982,6 +982,50 @@ cross-sell attach rate (ROs carrying both).
   Pacific (job `733827598a50`, first run for August 2026 final on 2026-09-01) so the
   ~19:01→~20:04 nightly is well clear. Still `pgrep -af sct_align_mtd` before launching.
 
+### ⚠️ AGENT-BABYSAT SCAN DIED MID-WAIT — FIXED with a self-contained runner (2026-09-01)
+**What happened (first run of this job, Aug-2026-final):** the 21:16 cron launched the scan
+as a background process and then sat in `process(action='wait')` loops. The scan itself
+finished FINE at 23:19 (5,094 ROs, 1,798 candidates, 0 failed, correct totals written to
+`data/sct-alignbg-2026-08-31-by-advisor.json`) — but the agent session hit its iteration
+ceiling on the 180-s wait timeouts and ended before render + email. **Joe woke up to
+nothing** and had to ask "were you able to finish this report?" The data was on disk for 7
+hours untouched. Root cause is architectural: a 2-hour scan cannot be babysat by an agent
+turn loop — every `wait` timeout burns an iteration, and when they run out, the render/email
+tail is simply never reached. Nothing errored, nothing alerted.
+
+**FIX — never babysit again. Use the runner:**
+```
+/usr/bin/bash /home/itadmin/tekion-reports/run_sct_alignbg.sh [scan-args]
+```
+It does scan → render → email as ONE flock-guarded shell process (`/tmp/sct-alignbg.lock`),
+logging to `data/_sct_alignbg_run.log`. Launch it with `terminal(background=true,
+notify_on_complete=true)` and then STOP — do not poll in a wait loop. Even if the agent
+session dies the instant after launch, the email still goes out.
+Emailer = `sct_alignbg_email.py <by-advisor.json> <png> <pdf>` — uses `jay_mail.send_report`
+(SMTP, CID inline PNG, PDF attached), so no Stacey handoff and none of the 29 Stacey traps
+above apply to this report. Recipient is Joe until he approves the format.
+
+**Recovery drill if a scan JSON exists but no email went out:** don't re-scan (burns quota
+for identical data). Just render + email the existing file:
+```
+cd /home/itadmin/tekion-reports
+PY=/home/itadmin/.hermes/hermes-agent/venv/bin/python3.11
+$PY render_sct_align_bg.py data/sct-alignbg-<tag>-by-advisor.json
+$PY sct_alignbg_email.py data/sct-alignbg-<tag>-by-advisor.json \
+   data/SCT-Alignment-BG-Sales-By-Advisor-<tag>.png \
+   data/SCT-Alignment-BG-Sales-By-Advisor-<tag>.pdf
+```
+Total round trip ~30 s. Always `vision_analyze` the PNG header first (logo trap: `logo_0.png`
+IS Stevens Creek Toyota, correct for this store only).
+
+**Aug 2026 final figures of record (delivered 2026-09-01 06:29):** 448 alignments
+(404 dedicated + 44 bundled) / $84,324; 358 BG units on 275 ROs / $92,269; combined
+**$176,592**; 65 attach ROs; 16 advisors. Top: Chris Mai $26,714, Artist Battle $19,291,
+Cristian Gonzalez $16,606, Brian Keat $15,431, Robin Porter $13,723. Top BG by revenue:
+BGBFX (84 / $25,680), BGCF (106 / $14,633). Note the alignment total here (448) exceeds the
+main nightly's 443 because this scan's candidate set is ALIGN ∪ BG ∪ TEK — it catches
+alignments on ROs the align-only scan never fans out to.
+
 ## BUG FOUND + FIXED 2026-08-31 — ALIGN00**R**BA vs ALIGN00**B**RA
 `ALIGN_OPC` had `ALIGN00BRA`, but the opcode SCT actually uses is **`ALIGN00RBA`** (R and
 B transposed). That code appears 107 times across the July+August indexes and **ZERO**

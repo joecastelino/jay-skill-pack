@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-01T06:15:31",
+ "generated": "2026-09-01T06:30:33",
  "skill_count": 204,
  "skills": [
   {
@@ -191,7 +191,7 @@
    "path": "automotive/amg-wip-monthly-column-fill",
    "category": "automotive",
    "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
-   "times_used": 20,
+   "times_used": 21,
    "last_used": "2026-09-01"
   },
   {
@@ -223,8 +223,8 @@
    "path": "automotive/tekion-standard-reports-performance",
    "category": "automotive",
    "description": "Pull Tekion Standard Reports from the REPORTS module (/core/reports) via the :9223 authenticated browser \u2014 especially the fixed-ops performance suite (Advisor Performance, Tech Performance / proficiency = assigned-billed vs attendance hours). Covers the filter funnel (Flag Date range, Make filter), Group By, and Export. Use when Joe wants advisor/tech performance numbers, or ANY report that is NOT a custom Report Builder report.",
-   "times_used": 16,
-   "last_used": "2026-08-31"
+   "times_used": 17,
+   "last_used": "2026-09-01"
   },
   {
    "name": "tekion-opcode-default-pricing",

@@ -39,10 +39,15 @@ a confident, wrong completion report.
 |---|---|---|---|
 | 1 | Hours Sold | 4–10 | advisor-perf API (METHOD 0) |
 | 2 | Vehicle Attendance | 13–14 | advisor-perf API, `roCount`, no status filter |
-| 3 | **Workshop Analysis** | 17–21 | **Tech Performance API — see METHOD 0c** |
-| 4 | **Labor Rates + WIP $** | 24–32 | manual settings / carry forward; WIP $ source unknown |
-| 5 | **ELR (YTD)** incl TXM/OTHER/ACCESSORY | 34–55 | advisor-perf API, **YTD window** — see METHOD 0d |
-| 6 | **TXM COUNT/SALE/COST/GROSS + parts** | 57–67 | Report Builder `SCP-Toyota Care 2.0` |
+| 3 | **Workshop Analysis** | 17–21 | **Tech Performance API — see METHOD 0c** ✅ all 8 tabs solved |
+| 4 | **Labor Rates + WIP $** | 24–32 | manual settings / carry forward; **WIP $ source still unknown — ASK** |
+| 5 | **ELR (YTD)** incl TXM/OTHER/ACCESSORY | 34–55 | advisor-perf API, **YTD window** — see METHOD 0d. **~16 rows, not 6** |
+| 6 | **TXM COUNT/SALE/COST/GROSS + parts** | 57–67 | Report Builder — see the TXM report table (3 candidates at SCT) |
+
+**Blocks 4 and 6 are the only ones still needing Joe.** Block 4: do the Labor Rates carry
+forward from the prior month, and where does WIP $ come from (an accounting screen)?
+Block 6: does he change the date on the TXM report or run it as-is post-month-end?
+Ask all of these in ONE message — they're 60-second answers that unblock ~40 cells.
 
 Run this FIRST, and again as the final gate before reporting done:
 ```python
@@ -54,6 +59,30 @@ for r in range(2, ws.max_row+1):
 ```
 **Report completion as `filled / (filled+missing)` from THIS audit — never from the count
 of cells you happened to write.** Blocks 3–6 are ~60% of the workbook.
+
+### 🔁 WHY THIS RECURRED — and the standing order that prevents it
+Joe's exact words on delivery: *"dude. JAY, WTF. you missed like half the sheet.
+ELR???? that is a YTD number for all the toyota stores."* Two separate failures in one
+delivery, and BOTH were detectable before sending:
+
+1. **Wrong denominator.** I verified 91 cells against the 93 I intended to write, not
+   against the ~194 the sheet actually has. **A verification whose row range is derived
+   from your own plan can only ever confirm your plan.** Derive the range from the
+   PRIOR MONTH'S FILLED CELLS — that is the only ground truth for "what belongs here."
+2. **Partial block = silent wrong answer.** I filled 6 of ~16 ELR rows. A partially-filled
+   block looks *more* finished than an empty one and is far less likely to get caught.
+   **Never ship a partially-filled block** — either complete it or leave it entirely blank
+   and name it in the delivery message.
+
+**Standing order: run the coverage audit TWICE — once before pulling data (to scope the
+work) and once immediately before delivering (as the gate). Paste the resulting
+missing-cell count into the message to Joe.** If that number is not zero, lead with it
+rather than burying it. He is far more tolerant of "62 cells still blank, here's why" than
+of a confident "done" that isn't.
+
+**Corollary — when Joe names a specific row in anger, treat it as a category, not an
+instance.** "ELR???? that is a YTD number" wasn't only about ELR being YTD (it already was);
+the real signal was *the ELR block is incomplete*. Re-audit the whole block he points at.
 
 ## ⭐ METHOD 0 — THE ADVISOR-PERFORMANCE API (2026-08-31, USE THIS FIRST)
 **This supersedes all the UI/calendar-clicking below for every Hours Sold / Attendance /
@@ -143,21 +172,51 @@ Joe confirmed the source is Report Builder **`SCP-Toyota Care 2.0`** (operation-
 `RO_OPERATION_OPCODE STARTS_WITH "TEK"`), NOT Advisor Performance.
 
 **⭐ HOW TO RUN ANY REPORT BUILDER REPORT HEADLESSLY (2026-09-01, big unlock):**
+
+🚨 **THE 500 `RB3` TRAP — the execute body MUST be WRAPPED. Read this before debugging.**
+Burned ~10 tool calls on 2026-09-01. Symptom: *every* report 500s with
+`{"errorCode":"RB3","key":"request.execution.failed"}` — **including reports that worked
+in a previous session**, which makes it look like Tekion broke or the reports are corrupt.
+They aren't. The cause is POSTing the **bare report object** as the body:
+
+```js
+// ❌ 500 RB3 every time — this is the report object, not the request
+fetch("/api/reportbuilder/u/execute/withOptions?preview=false",{body:JSON.stringify(rep)})
+// ✅ must be wrapped in the two-key envelope
+{"reportConfig": rep, "reportExecutionOptions": {...}}
 ```
-1) POST /api/reportbuilder/u/report/search
-   {"searchText":"SCP-Toyota Care 2.0","searchFields":["name"],
-    "sort":[{"field":"modifiedTime","order":"DESC"}],
-    "pageInfo":{"start":0,"rows":5},"includeDeleted":false}
-   → data.esResponse.hits[0]  = the full reportConfig object
+Both `GET /api/reportbuilder/u/report/list` and `POST /report/search` hand you a bare
+report object, so it is very natural to POST it directly and conclude the report is broken.
+**If you see RB3, check the envelope before anything else.**
+
+**When in doubt, capture the UI's real payload instead of reconstructing it** (this is what
+finally resolved it):
+1. Navigate to `/report-manager`, then **arm the XHR hook AFTER the nav** — navigation wipes
+   an earlier hook, and you'll get an empty `__XH` and wrongly conclude the page fires no XHR.
+2. Click the report row → it fires the real `execute/withOptions`.
+3. Read `JSON.parse(capturedCall.b)` → stash as `window.__TPL` and mutate *that*.
+
+```
+1) GET /api/reportbuilder/u/report/list        → data[] (all reports; has id/name/dataSource)
+   or POST /api/reportbuilder/u/report/search  → data.esResponse.hits[]
+   (POST /report/list → 405; GET /report/search → 405; /reports, /report/all → 404)
 2) POST /api/reportbuilder/u/execute/withOptions?preview=false
-   {"reportConfig":<that hits[0] verbatim>,
+   {"reportConfig": <report object>,
     "reportExecutionOptions":{"sort":[],"filters":[],"searchText":"","groupBy":[],
-      "includeFields":[],"excludeFields":[],"pageInfo":{"start":0,"rows":1}}}
+      "includeFields":[],"searchableFields":[],"excludeFields":[],
+      "pageInfo":{"start":0,"rows":500}}}
    → data.count           = record count (OPERATION grain, not RO)
    → data.projections     = the totals block, e.g.
      REPAIRORDER_OPERATION_ASSIGNED_BILL_HOURS__SUM  (already HOURS, not seconds)
-     REPAIRORDER_OPERATION_LABOR_PRICE__SUM / _PARTS_PRICE__SUM (CENTS)
+     REPAIRORDER_JOB_OPERATION_BILLING_TIME__SUM     (already HOURS)
+     RO_CP_LABOR_TOTAL_AMOUNT__SUM / RO_WP_LABOR_TOTAL__SUM (CENTS)
+     groupMetrics__RO_NUMBER__VALUE_COUNT / __RO_CLOSEDTIME__MAX
 ```
+**Filters live in `reportConfig.filterConfigs`, NOT `reportConfig.filters`.** Mutating a
+non-existent `filters` key is a silent no-op — the report runs fine and returns its default
+window, so you get a plausible wrong number with no error. Sanity-check every windowed run
+against `projections["groupMetrics__RO_CLOSEDTIME__MAX"]` — if that date isn't inside your
+target month, your override didn't take.
 - **Cross-store:** same 2-header swap (`dealerId`, `tek-siteId`). Each store has its OWN
   copy, and **the names differ — search `"SCP"`, not the exact title:**
 
@@ -166,6 +225,49 @@ Joe confirmed the source is Report Builder **`SCP-Toyota Care 2.0`** (operation-
 | SCT 876 | `SCP-Toyota Care 2.0` | `6a45095462e5ff667243d553` | 2026-07-01 | Vehicle + Maintenance | ✅ |
 | BT 1249 | `SCP-Toyota Care 2.0` | `66227a89735ee81a7ca35bad` | 2024-04 | Vehicle + Maintenance | ✅ |
 | TL 1092 | `SCP OP Code-ToyotaCare (TXM)` | `6585c492ee94990ac065f290` | 2023-12 | **Vehicle only** | ❌ **returns 0** |
+
+### ⭐ A BETTER TXM SOURCE EXISTS AT SCT — report **`TXM`** `65bbe1cc93de29200c569725`
+Found 2026-09-01 by listing ALL reports rather than searching `"SCP"`. **Its `kpiMetrics`
+are an exact match for the sheet's TXM block** — which `SCP-Toyota Care 2.0` is not:
+```
+RO_CP_LABOR_COST_AMOUNT · RO_CP_LABOR_TOTAL_AMOUNT
+RO_WP_LABOR_COST_AMOUNT · RO_WP_LABOR_TOTAL
+REPAIRORDER_JOB_OPERATION_BILLING_TIME        (already HOURS)
+groupMetrics: RO_NUMBER (count), RO_CLOSEDTIME, RO_CREATEDTIME
+filterConfigs: RO_CLOSEDTIME DATE_RELATIVE/LAST_MONTH
+             + RO_OPERATION_OPCODE STARTS_WITH "txm"     ← note: txm-prefix, NOT "TEK"
+```
+Created 2024-02, description *"TXM for the Month"*. Compare against `SCP-Toyota Care 2.0`
+(created **2026-07-01**, `STARTS_WITH "TEK"` + category Vehicle/Maintenance) which
+structurally **cannot** reproduce any month before July 2026. SCT also has a third,
+`TXM Report` `64f22a4f36d1a00007ac9d20` (2023-09, hardcoded 21-opcode `Txm*` list, CP/IP/WP
+cost+total metrics).
+
+**Enumerate before assuming** — `searchText:"SCP"` finds only one of these three:
+```js
+GET /api/reportbuilder/u/report/list   // → data[], filter client-side on name/dataSource
+// SCT 876 : "TXM Report" 64f22a4f36d1a00007ac9d20 | "TXM" 65bbe1cc93de29200c569725
+//           | "SCP-Toyota Care 2.0" 6a45095462e5ff667243d553
+// TL 1092 : "SCP OP Code-ToyotaCare (TXM)" | "txm @ PRICE 11" 64a813f2128394000784360c
+//           | "TOYOTA CARE MECH LABOR (TAC)" 67a1536b7b113e771d98224e  (REPAIR_ORDER_JOB!)
+// BT 1249 : "SCP-Toyota Care 2.0" 66227a89735ee81a7ca35bad | "SCP-Toyota Care" 659488f80a75803d99131b76
+```
+
+### ⚠️ UNRESOLVED: the `TXM` report ignores every date override (ASK JOE FIRST)
+Once the RB3 envelope bug was fixed the report executes, but **the June window is silently
+ignored** — returns count 4,302 with `RO_CLOSEDTIME__MAX` in **May**, vs the sheet's 1,442.
+Tried and all identical-wrong (4,302 / May):
+`filterConfigs` RO_CLOSEDTIME as `DATE_STANDARD`+BTW (ms num **and** ms string),
+`ADVANCED`+BTW, `ADVANCED`+`subType:FILTER_RULE`+BTW, and clearing
+`period`/`relativeDateType`. Pushing the window into `reportExecutionOptions.filters`
+instead **does** change the result (count 2,902, max close 08-26) but still isn't the month.
+
+**Before burning more calls: ask Joe whether he changes the date at all.** The report ships
+as relative `LAST_MONTH`, so if he simply runs it as-is just after month-end, **no override
+is needed** — run it unmodified and read the totals. That one question is far cheaper than
+reverse-engineering the filter grammar. (Consistent with the METHOD 0 lesson: the
+`SCP-Toyota Care 2.0` override *did* work via `ADVANCED`/BTW, so the grammar differs
+per report — likely `RO_CLOSEDTIME` is not this report's `primaryDateFieldKey`.)
 
   (Corrects an earlier note claiming TL has no such report — it does, just named differently.
   Find it with `searchText:"SCP"`, then match on `id`.)
@@ -691,26 +793,60 @@ VC 2358.91/1243.83 ✅ · AR 713.27/599.61 ✅ · BC 3356.87 ✅/4079.80 (−1.0
 = 739.46). If your two numbers don't reproduce the prior month's UNAPPLIED, you picked the
 wrong fields — verify before pulling all 8 tabs.
 
-### ⚠️ BT is UNSOLVED in this API — the advisor split does NOT apply here
-Tech Performance returns **both BT tabs combined** (4,592 avail / 7,138 prod vs the
-service tab's 4,451 / 5,783). The `BT_BODY` advisor-ID trick from DISCOVERY 1 does **not**
-work — this endpoint is keyed by **techId**, not advisorId, and exposes no advisor field.
+### ✅ BT service-vs-body split — SOLVED 2026-09-01 via `departmentId`
+Joe: *"in the filters, there is a filter for department. I put collision center."*
+Tech Performance returns **both BT tabs combined** by default (4,592 avail / 7,138 prod).
+The `BT_BODY` advisor-ID trick from DISCOVERY 1 does **not** work here — this endpoint is
+keyed by **techId**, not advisorId. The real dimension is `departmentId`:
+
+```python
+D3N = {"field":"departmentId","operator":"NIN","values":["1249_department_3"]}  # → BODY SHOP tab
+D3I = {"field":"departmentId","operator":"IN", "values":["1249_department_3"]}  # → SERVICE tab
+```
+June 2026: body prod **1,355.40** = sheet **1,355.40** ✅ exact · service prod 5,782.92 vs
+sheet 5,783.72 ✅ (0.80 reopened-RO drift).
+
+🚨 **THE NAMING TRAP — the operator is inverted from what the group name implies.** Joe's
+saved group is called **"Toyota Body Shop"** but its filter is `departmentId **NIN**
+["1249_department_3"]`. So `1249_department_3` **IS main service**, and *excluding* it is
+what leaves collision. If you read the group name and write `IN`, you silently get the
+service tab's number on the body tab. Same lesson as the ADVISOR_PERFORMANCE `PDI` group:
+**read the literal operator, never infer from the name.**
+
+🔑 **How the ID was found (reuse this for any multi-department store):**
+```
+GET /api/sales/settings/u/v1.0.0/groupFilter/TECH_PERFORMANCE/filter/preference/list
+→ data[] = {groupName, filters:[{field,operator,values}]}
+```
+BT returns `Toyota Body Shop` (the NIN rule above) + `Toyota Service Main` (no dept filter).
+**Do not guess department IDs and do not hunt for a departments endpoint** — read Joe's own
+saved group and lift the value verbatim. This is the TECH_PERFORMANCE sibling of the
+ADVISOR_PERFORMANCE_REPORT_SUMMARY group-filter endpoint documented in METHOD 0.
+
+**Only BT has a department split.** Full sweep of the TECH_PERFORMANCE groups:
+SCT `Xpress RTH` / `Main shop RTH` (techId lists) · SV `Xpress RTH` / `RTH` / `Tech RTH` ·
+BC `Main RTH` · TL `Team C Dispatch` · **VC and AR have none.** Every non-BT store is
+single-department, which is why they all validated clean without a filter.
+
+⚠️ **The department filter splits PRODUCTIVE hours but NOT attendance** — both branches
+return avail 4,451.53. That's why the sheet's Body Shop avail is a round **1,300** (manual
+capacity, not from Tekion). Carry Joe's manual figure forward; don't overwrite it.
 
 Dead ends confirmed here (do not re-probe):
-- `departmentId IN [...]` is an ACCEPTED field (returns 0 rows, not an error) but no value
-  works; `department`/`departmentIds`/`laborType`/`techDepartment` → 400.
+- Guessing dept values: `departmentId IN ["SERVICE"]` → 0 rows (field is valid, value wasn't).
+  `department`/`departmentIds`/`laborType`/`techDepartment` → 400.
 - `serviceMode IN [SERVICE]` → returns techs but prod 0.
-- `groupBy` must be a LIST (`[{field,size}]`) — a bare string 400s. But grouping by
+- `groupBy` must be a LIST (`[{field,size}]`) — a bare string 400s. Grouping by
   `departmentId`/`serviceMode` does NOT bucket; returns the same single total.
-- No departments endpoint exists: `/api/service-module/u/departments` and 9 other
-  candidates all 404.
+- No departments endpoint exists: `/api/service-module/u/departments` + 13 other candidates
+  all 404/500. **The saved-group endpoint is the only way in.**
 - Tech-name resolution: `/api/users/u/<id>` → 404, and `/api/{u/employees,users,employee}/search`
   all 404. `lineItems[]` carries **only `techId`** — no name field.
-
-Subset-sum finds an exact split (body = 140.65 avail / 1,354.60 prod: one attendance tech
-`88a51dbb` + 10 of 17 zero-attendance techs) but **10-of-17 is too many combinations to be
-meaningful — do not write it.** ASK JOE how he separates BT service from body shop on the
-Tech Performance screen (department filter in the funnel? a saved tech list?).
+- **Subset-sum is a trap.** Before finding the department filter I got an exact arithmetic
+  split (body = 140.65 avail / 1,354.60 prod: one attendance tech + 10 of 17 zero-attendance
+  techs). 10-of-17 has too many combinations for an exact hit to mean anything. It happened
+  to be right, but it was unfalsifiable — refusing to write it and asking Joe instead took
+  one message and produced the real, reusable answer.
 
 ## ⭐ METHOD 0d — THE FULL ELR BLOCK (rows 34–55) — SOLVED 2026-09-01
 **ELR is the ONLY YTD block** (`W.ytd_ms(y,m)` = Jan 1 → EOM target). Joe flagged this

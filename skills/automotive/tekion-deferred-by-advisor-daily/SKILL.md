@@ -140,6 +140,23 @@ the renderer) — the name is baked in at pull time.
 Note some ids resolve to non-advisor personas (e.g. BC `8c0d2da8…` = Dale Alexander, INVENTORY_MANAGER)
 — they still carry deferred lines as RO primary advisor; keep them but don't assume they're writers.
 
+## Reference run (BC / 1251, Mon 8/31/2026) — RECORD DAY
+**90 declined lines · 45 ROs · $101,725.62 · 27 Critical** — ~2.8x the prior trailing-7 peak
+(Fri 8/28 $36,868.51) and the largest BC deferred day observed. Dimetri Reynoso #1 $26,059.10
+(10 lines / 4 ROs, incl. RO 99614 at $11,219.79 + $6,583.95), Juan Ramirez $21,535.75,
+Michael Reyes $14,605.62 (RO 81379 single line $13,426.49 — biggest line of the day),
+Humberto Dominguez $10,336.98, Dale Alexander $10,241.69 (21 lines / **18 of the 27 Criticals**),
+Jeremia Navarro $6,725.00, Houa Moua $3,733.98, Louie Vallejo Jr $3,218.13,
+Jacob Debussey $2,845.03, Erik Mercado $2,249.14, **Phillip Stafford $175.20 (NEW id
+`16f190a9-55bc-4833-b1b5-162cff16fbe3` = SERVICE_MANAGER)**. Draft UID 42906. PDF = 12 pages.
+Notes: (1) STEP ZERO-0 fixed the 401 in ~30s — header token had 28 days of headroom yet still
+401'd, so **headroom is NOT a validity test**; a token can be unexpired and still rejected.
+Just merge the session-file token whenever the pull 401s, don't reason about `exp`.
+(2) BC now has THREE non-writer personas in the ranking (Dale Alexander INVENTORY_MANAGER,
+Louie Vallejo Jr SERVICE_MANAGER, Phillip Stafford SERVICE_MANAGER) — call all three out.
+(3) Top-3 line amounts all carry severity `CAUTION`, not CRITICAL — the Critical count is
+concentrated in Dale Alexander's low-dollar lines, so don't equate Critical with big dollars.
+
 ## Reference run (BC / 1251, Fri 8/28/2026)
 31 declined lines · 16 ROs · $36,868.51 · 13 Critical — **trailing-7 peak**, above Mon 8/24's $35,836.63.
 Houa Moua #1 $9,380.40, Juan Ramirez $8,169.24, Michael Reyes $4,829.20, Jeremia Navarro $4,435.72,
