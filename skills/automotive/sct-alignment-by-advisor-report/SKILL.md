@@ -949,6 +949,79 @@ response is a one-line "stale replay, nothing to do" plus the evidence (file mti
 Stacey's verified `DRAFTS_COUNT=1 | TO_HEADER=... | SENT_TODAY=0`); do NOT re-render, do
 NOT re-ask Stacey (a second handoff would create a duplicate draft for that night).
 
+## ⚠️ READ FIRST — WHICH SCRIPT DOES JOE ACTUALLY WANT? (2026-09-01)
+
+When Joe asks for "alignments sold, service menus and a la carte", he means the **report that already
+exists**: `sct_align_mtd.py` (scan) + `render_sct_align.py` (render) — *"Alignment Sales by Advisor"*,
+closed **MTD**, Dedicated / Bundled / Total / ROs. Do NOT build a new renderer. He said plainly:
+*"I need it MTD. for the prior month. I think you had that as a skill prior"* — and he was right.
+
+- **"a la carte"** = the existing **Dedicated** column (ALIGN / OKAL / ALIGN00RBA)
+- **"service menus"** = the existing **Bundled** column (TEK\*BNM/VNM/PSM)
+
+His vocabulary changed; the report did not. Map his words onto the existing columns instead of
+inventing a variant. To re-cut a prior month from an alignbg scan with **no re-scrape**, reshape the
+JSON to `{advisor, dedicated, bundled, total, ros, detail}` (drop `kind=="bg"`) and feed
+`render_sct_align.py`. Back up any file you overwrite (`.bak-<oldtotal>`).
+
+### BUG THIS UNCOVERED — the 8/31 nightly emailed 443, truth was 448
+`sct_align_mtd.py` was patched at **19:23** Aug 31 for the `ALIGN00RBA` vs `ALIGN00BRA` typo, but the
+nightly cron had already fired at **19:01** — so Kevin's emailed August number came from the buggy
+build and dropped 5 ROs (577147, 578500, 579093, 579597, 581768), all tagged `ALIGN00RBA` and present
+in the closed-index the whole time. **After ANY opcode-set patch, re-run the current period's report
+and reissue it** — a same-day patch does not retroactively fix an already-sent email.
+
+### RULE: never hand-wave a count discrepancy
+I first explained 448-vs-443 as "different candidate scope (ALIGN ∪ BG ∪ TEK)". That was plausible
+and WRONG — it was the opcode typo. Always run the two-way set diff on `(ro, opcode)` and then look up
+the offending ROs in the closed-index to see their real tags:
+```python
+sB - sA   # extra rows -> inspect idx tags for each RO before theorizing
+sA - sB   # missing rows; if empty, one side is a strict superset
+```
+Joe accepts "I don't know yet"; he does not accept a confident wrong explanation.
+
+## VARIANT: ALIGNMENTS ONLY WITH DOLLARS, A LA CARTE vs SERVICE MENU (secondary — only if $ requested)
+
+Joe explicitly does NOT want BG in the alignment report: *"I don't need bg sales, I need just the
+alignments sold, INCLUDING SERVICE MENUS AND A LA CARTE."* Default to THIS cut, not the BG companion.
+
+Renderer: `render_sct_alignments_only.py <by-advisor.json>` — accepts an **alignbg-shaped** JSON and
+ignores `kind=="bg"`, so an existing alignbg scan can be re-cut with **no re-scrape / zero quota**.
+Writes `SCT-Alignments-Sold-By-Advisor-<date>.{png,pdf}` + `sct-alignments-only-<date>.json`.
+
+Terminology (use Joe's exact words as column labels):
+- **A la carte** = `kind=="dedicated"` = ALIGN / OKAL / ALIGN00RBA
+- **In a service menu** = `kind=="bundled"` = alignment inside a TEK\*BNM/VNM/PSM package
+
+### ⚠️ THE MENU-DOLLAR TRAP — NEVER SUM THE TWO DOLLAR COLUMNS
+Tekion bills a service menu as **ONE line**, so a menu alignment has **no separately priced alignment
+amount**. `cents` on a bundled row is the **entire package price**, not the alignment's share.
+
+Tell — run this before trusting any menu dollars:
+```python
+statistics.median([x['cents'] for x in dedicated])/100   # -> 139.99  one clean price
+statistics.median([x['cents'] for x in bundled])/100     # -> 553.80  up to $1,553.81 (TEK60000PSM)
+```
+Bundled median several multiples of the a-la-carte price = you are looking at package revenue.
+Aug 2026: summing them would have overstated alignment revenue by **$28,354 on $55,970 (+51%)**.
+Renderer therefore shows a greyed **"Menu Package $ (not align $)"** column, keeps **"A La Carte $"**
+as the only money-styled column, prints a warning note, and labels menu chips `pkg $N`.
+True alignment revenue = the a-la-carte column ONLY.
+
+Menu rows still count as **UNITS** — a menu alignment IS an alignment sold. Units add; dollars do not.
+
+### Reconciling 448 (this cut) vs 443 (Kevin's nightly align-only)
+alignbg candidate set is ALIGN ∪ BG ∪ TEK, so it opens ROs the align-only scan never touches.
+Delta = exactly 5 `ALIGN00RBA` lines (ROs 577147, 578500, 579093, 579597, 581768), and
+`set(nightly) - set(alignbg) == ∅`. 448 is the more complete number. Always run that two-way set
+diff on `(ro, opcode)` before explaining a discrepancy — never guess at it.
+
+### Coaching angle Joe responds to
+Report per-advisor **menu attach share** (menu units ÷ total). Advisors at 0% menu alignments
+(Aug: Jaime Sanchez, Juan Jose Perez, Michael Parayo) have a menu-PRESENTATION gap, not an alignment
+gap — that's the actionable read, not the raw ranking.
+
 ## COMPANION REPORT: Alignment + BG MENU SALES (built 2026-08-31, Joe's ask)
 Joe asked for "total alignment sales with the BG menus." SCT has NO BG-branded alignment
 opcode — BG at SCT = the BG Products chemical/fluid service line (17 opcodes seen in Aug:

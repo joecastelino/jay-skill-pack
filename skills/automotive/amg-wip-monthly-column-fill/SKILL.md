@@ -226,9 +226,30 @@ target month, your override didn't take.
 | BT 1249 | `SCP-Toyota Care 2.0` | `66227a89735ee81a7ca35bad` | 2024-04 | Vehicle + Maintenance | ✅ |
 | TL 1092 | `SCP OP Code-ToyotaCare (TXM)` | `6585c492ee94990ac065f290` | 2023-12 | **Vehicle only** | ❌ **returns 0** |
 
-### ⭐ A BETTER TXM SOURCE EXISTS AT SCT — report **`TXM`** `65bbe1cc93de29200c569725`
-Found 2026-09-01 by listing ALL reports rather than searching `"SCP"`. **Its `kpiMetrics`
-are an exact match for the sheet's TXM block** — which `SCP-Toyota Care 2.0` is not:
+### ❌ ELIMINATED 2026-09-01 — report **`TXM`** `65bbe1cc93de29200c569725` is NOT the sheet's source
+**Read this before re-getting excited about this report.** Its `kpiMetrics` look like a
+*perfect* structural match for the sheet's TXM block, which is exactly why it's a trap. Once
+the date override actually worked (see above), it does **not** reconcile — off by ~2.7× on
+count and ~245× on dollars, and hours move the WRONG WAY:
+
+| SCT June | Sheet | `TXM` report |
+|---|---|---|
+| COUNT | 1,442 | **4,289** |
+| LABOR SALE | $215,399 | **$527,627** (cpSale 52,762,721¢) |
+| BILL HRS | 744.96 | **382.20** |
+
+Count 3× high while hours are 2× LOW is not a filter gap — it's a different grain and a
+different metric. `opcode STARTS_WITH "txm"` is far broader than Joe's bucket.
+**Do not write these numbers.** All three SCT candidates are now eliminated or unusable:
+`TXM` (above) · `SCP-Toyota Care 2.0` (created **2026-07-01**, structurally cannot produce
+June) · `TXM Report` 64f22a4f36d1a00007ac9d20 (hardcoded 21-opcode list).
+
+**Next step is a QUESTION, not another report.** Ask Joe for the report name + the 5 numbers
+he reads (count, labor sale, labor cost, parts sale, parts cost) for ONE store at a date he
+already has. That is a 2-minute look for him versus indefinite guessing. Kept below only so
+nobody re-walks the enumeration:
+
+#### (historical) the `kpiMetrics` that made this look right
 ```
 RO_CP_LABOR_COST_AMOUNT · RO_CP_LABOR_TOTAL_AMOUNT
 RO_WP_LABOR_COST_AMOUNT · RO_WP_LABOR_TOTAL
@@ -253,21 +274,35 @@ GET /api/reportbuilder/u/report/list   // → data[], filter client-side on name
 // BT 1249 : "SCP-Toyota Care 2.0" 66227a89735ee81a7ca35bad | "SCP-Toyota Care" 659488f80a75803d99131b76
 ```
 
-### ⚠️ UNRESOLVED: the `TXM` report ignores every date override (ASK JOE FIRST)
-Once the RB3 envelope bug was fixed the report executes, but **the June window is silently
-ignored** — returns count 4,302 with `RO_CLOSEDTIME__MAX` in **May**, vs the sheet's 1,442.
-Tried and all identical-wrong (4,302 / May):
-`filterConfigs` RO_CLOSEDTIME as `DATE_STANDARD`+BTW (ms num **and** ms string),
-`ADVANCED`+BTW, `ADVANCED`+`subType:FILTER_RULE`+BTW, and clearing
-`period`/`relativeDateType`. Pushing the window into `reportExecutionOptions.filters`
-instead **does** change the result (count 2,902, max close 08-26) but still isn't the month.
+### ✅ RESOLVED 2026-09-01 — the date override needs **`"YYYY-MM-DD"` strings**, and the END DATE IS EXCLUSIVE
+Joe: *"I change the date, but I go to report builder to do it."* So an override IS required
+(he does not run it as-is post-month-end).
 
-**Before burning more calls: ask Joe whether he changes the date at all.** The report ships
-as relative `LAST_MONTH`, so if he simply runs it as-is just after month-end, **no override
-is needed** — run it unmodified and read the totals. That one question is far cheaper than
-reverse-engineering the filter grammar. (Consistent with the METHOD 0 lesson: the
-`SCP-Toyota Care 2.0` override *did* work via `ADVANCED`/BTW, so the grammar differs
-per report — likely `RO_CLOSEDTIME` is not this report's `primaryDateFieldKey`.)
+**The grammar differs per report — this is the whole trap.** On the `TXM` report
+`65bbe1cc93de29200c569725`, **milliseconds are silently ignored** (every ms variant returned
+the identical wrong 4,302 / May: `DATE_STANDARD`+BTW ms-num, ms-string, `ADVANCED`+BTW,
+`ADVANCED`+`subType:FILTER_RULE`+BTW, and clearing `period`/`relativeDateType`).
+What works:
+
+```js
+const f = tpl.reportConfig.filterConfigs.filter(x=>x.fieldKey=="RO_CLOSEDTIME")[0];
+f.type="DATE_STANDARD"; f.operator="BTW";
+f.period=null; f.relativeDateType=null;
+f.values=["2026-06-01","2026-07-01"];   // ← ymd STRINGS, end date EXCLUSIVE
+```
+Proof the window is honored (read `groupMetrics__RO_CLOSEDTIME__MAX` every time):
+`06-01→06-30` ⇒ max close **06-29**, count 3,998 · `06-01→07-01` ⇒ max close **06-30**,
+count 4,289 · `08-01→08-31` ⇒ max close 08-26 (index lag, see below).
+**`operator:"BETWEEN"` 400s — it must be `BTW`.**
+
+🔑 **This retro-explains the older `SCP-Toyota Care 2.0` note claiming *"ymd strings return a
+DIFFERENT (smaller) number than ms — use ms."*** The ymd number was smaller because the end
+date is **exclusive**, not because ymd is wrong. Don't trust that older advice blindly;
+verify per report with the `__MAX` check.
+
+Pushing the window into `reportExecutionOptions.filters` instead is a **dead end** — it
+overrides the whole filter set including the opcode rule, returning 177,511 records
+(the entire store).
 
   (Corrects an earlier note claiming TL has no such report — it does, just named differently.
   Find it with `searchText:"SCP"`, then match on `id`.)
@@ -605,6 +640,34 @@ Emits all 8 tabs keyed `"r4 CUSTOMER": 2466.6`, with unresolved buckets as a
 going to the wrong browser, this is why.
 
 ## MANDATORY PROTOCOL (Joe context)
+
+### ⭐ WHEN AN API PAYLOAD SHAPE IS UNKNOWN: SWEEP IT PROGRAMMATICALLY, DON'T DRIVE THE UI
+This is the single highest-leverage lesson from 2026-09-01 and it generalizes past this sheet.
+
+I spent ~20 minutes losing a fight with the Report Builder filter popover trying to set a
+date by hand: found the right container (`ant-v5-popover` / `[class*=popover-inner-content]`,
+**not** `.ant-popover`), set the Standard Date toggle, set Filter Operator = "Between" — then
+the **Filter Criteria dropdown would not commit** (label stayed "Select", the visible-option
+query returned `[]`, and a stray AND row got added). Then I gave up on the UI and brute-forced
+the payload instead: **~8 candidate shapes in ONE `execute_code` call, each validated by
+reading `groupMetrics__RO_CLOSEDTIME__MAX` back.** Answer in one call.
+
+```python
+for shape in CANDIDATES:                 # vary type / operator / values format
+    f = deepcopy(tpl); apply(shape, f)
+    r = run(f)
+    print(shape, r["count"], r["projections"]["groupMetrics__RO_CLOSEDTIME__MAX"])
+```
+**Rule: the moment a UI control resists 2 attempts, stop and sweep the payload.** A sweep is
+cheap, parallel, self-verifying, and rerunnable; UI clicking is none of those. This is the
+same lesson as the top-level "do NOT drive the report screen" — it applies to *filter entry*,
+not just report execution. (Related dead end: the Filter Criteria select in this popover is
+not scriptable by synthetic clicks at all — don't retry it.)
+
+**Always validate a windowed run by reading the date back.** A silently-ignored filter
+returns a plausible number with no error — the `__MAX` date is the only proof the override
+took. This one check is what distinguished "ms ignored" from "ms works."
+
 Joe's benchmark: **he fills all 8 tabs by hand in ~3 hours.** A prior attempt burned
 5 hours and did not finish one tab (UI/date-picker clicking). If you are past ~30 min
 without a validated column, you are on the wrong path — switch to METHOD 0 below.

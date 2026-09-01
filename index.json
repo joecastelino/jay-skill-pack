@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-01T06:45:04",
+ "generated": "2026-09-01T07:00:53",
  "skill_count": 205,
  "skills": [
   {
@@ -39,8 +39,8 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 75,
-   "last_used": "2026-08-31"
+   "times_used": 76,
+   "last_used": "2026-09-01"
   },
   {
    "name": "tol-menu-sales-reports",
@@ -99,18 +99,18 @@
    "last_used": "2026-08-21"
   },
   {
-   "name": "bc-menu-sales-reports",
-   "path": "automotive/bc-menu-sales-reports",
-   "category": "automotive",
-   "description": "Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards \u2014 Daily Closed (2x/day) and Closed Month-To-Date (1x/day) \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben Estrada (Restrada@blackstonegm.com). This is the GM-store sibling of the SCT/Kevin pipeline (sct-menu-sales-api-scorecard). Use for any \"BC menu report\", \"Blackstone Chevy/Cadillac menu sales\", or Ruben report request.",
-   "times_used": 37,
-   "last_used": "2026-08-31"
-  },
-  {
    "name": "sct-alignment-by-advisor-report",
    "path": "automotive/sct-alignment-by-advisor-report",
    "category": "automotive",
    "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
+   "times_used": 38,
+   "last_used": "2026-09-01"
+  },
+  {
+   "name": "bc-menu-sales-reports",
+   "path": "automotive/bc-menu-sales-reports",
+   "category": "automotive",
+   "description": "Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards \u2014 Daily Closed (2x/day) and Closed Month-To-Date (1x/day) \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben Estrada (Restrada@blackstonegm.com). This is the GM-store sibling of the SCT/Kevin pipeline (sct-menu-sales-api-scorecard). Use for any \"BC menu report\", \"Blackstone Chevy/Cadillac menu sales\", or Ruben report request.",
    "times_used": 37,
    "last_used": "2026-08-31"
   },
@@ -171,6 +171,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "amg-wip-monthly-column-fill",
+   "path": "automotive/amg-wip-monthly-column-fill",
+   "category": "automotive",
+   "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
+   "times_used": 22,
+   "last_used": "2026-09-01"
+  },
+  {
    "name": "tekion-declined-deferred-services-report",
    "path": "automotive/tekion-declined-deferred-services-report",
    "category": "automotive",
@@ -187,20 +195,20 @@
    "last_used": "2026-07-12"
   },
   {
-   "name": "amg-wip-monthly-column-fill",
-   "path": "automotive/amg-wip-monthly-column-fill",
-   "category": "automotive",
-   "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
-   "times_used": 21,
-   "last_used": "2026-09-01"
-  },
-  {
    "name": "tekion-opcode-create",
    "path": "automotive/tekion-opcode-create",
    "category": "automotive",
    "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
    "times_used": 18,
    "last_used": "2026-08-28"
+  },
+  {
+   "name": "tekion-standard-reports-performance",
+   "path": "automotive/tekion-standard-reports-performance",
+   "category": "automotive",
+   "description": "Pull Tekion Standard Reports from the REPORTS module (/core/reports) via the :9223 authenticated browser \u2014 especially the fixed-ops performance suite (Advisor Performance, Tech Performance / proficiency = assigned-billed vs attendance hours). Covers the filter funnel (Flag Date range, Make filter), Group By, and Export. Use when Joe wants advisor/tech performance numbers, or ANY report that is NOT a custom Report Builder report.",
+   "times_used": 18,
+   "last_used": "2026-09-01"
   },
   {
    "name": "tekion-internal-cost-center-gl-routing",
@@ -217,14 +225,6 @@
    "description": "Add vehicle/part override rows to a Tekion opcode (Overrides tab) using the verified browser-tool cascading react-select method. This is the batch workflow used for cabin-filter part overrides (RACF etc.) \u2014 Make/Model/Year/ Trim/Part per row, driven by the __buildRow() helper toolkit. Covers the real-click trim rule, the Save Changes confirmation modal, and mandatory reload+API verification. The most complex Tekion workflow we run.",
    "times_used": 17,
    "last_used": "2026-07-12"
-  },
-  {
-   "name": "tekion-standard-reports-performance",
-   "path": "automotive/tekion-standard-reports-performance",
-   "category": "automotive",
-   "description": "Pull Tekion Standard Reports from the REPORTS module (/core/reports) via the :9223 authenticated browser \u2014 especially the fixed-ops performance suite (Advisor Performance, Tech Performance / proficiency = assigned-billed vs attendance hours). Covers the filter funnel (Flag Date range, Make filter), Group By, and Export. Use when Joe wants advisor/tech performance numbers, or ANY report that is NOT a custom Report Builder report.",
-   "times_used": 17,
-   "last_used": "2026-09-01"
   },
   {
    "name": "tekion-opcode-default-pricing",
@@ -795,6 +795,14 @@
    "last_used": "2026-06-29"
   },
   {
+   "name": "tekion-pipeline-operations",
+   "path": "automotive/tekion-pipeline-operations",
+   "category": "automotive",
+   "description": "Audit, diagnose, and repair the Tekion scraper pipeline including OTP fetching, session reuse, lock starvation, and Puppeteer navigation timeouts.",
+   "times_used": 2,
+   "last_used": "2026-09-01"
+  },
+  {
    "name": "tekion-vehicle-override-row-builder",
    "path": "automotive/tekion-vehicle-override-row-builder",
    "category": "automotive",
@@ -891,14 +899,6 @@
    "last_used": "2026-07-06"
   },
   {
-   "name": "tekion-pipeline-operations",
-   "path": "automotive/tekion-pipeline-operations",
-   "category": "automotive",
-   "description": "Audit, diagnose, and repair the Tekion scraper pipeline including OTP fetching, session reuse, lock starvation, and Puppeteer navigation timeouts.",
-   "times_used": 1,
-   "last_used": "2026-08-05"
-  },
-  {
    "name": "tekion-recommendation-part-not-found-diagnosis",
    "path": "automotive/tekion-recommendation-part-not-found-diagnosis",
    "category": "automotive",
@@ -913,6 +913,14 @@
    "description": "Reopen a CLOSED Tekion repair order (RO) when the UI shows no \"Reopen\" option. Verified live at VW of Clovis (dealer 1891) on RO 141673, 2026-08-27 \u2014 flipped CLOSED \u2192 READY_FOR_INVOICE via the internal reopen endpoint.",
    "times_used": 1,
    "last_used": "2026-08-27"
+  },
+  {
+   "name": "tekion-report-cron-self-contained-runner",
+   "path": "automotive/tekion-report-cron-self-contained-runner",
+   "category": "automotive",
+   "description": "Build any long-running (>20 min) Tekion report cron as a self-contained shell runner (scan -> render -> email in ONE flock'd process) instead of an agent-babysat background job. Use when creating a new report cron, when a report \"ran but Joe got no email\", or when a cron's data landed on disk but the render/email tail never executed. Includes the recovery drill for orphaned scan JSON.",
+   "times_used": 1,
+   "last_used": "2026-09-01"
   },
   {
    "name": "tekion-tech-clock-time-by-opcode",
@@ -1103,14 +1111,6 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tekion-report-cron-self-contained-runner",
-   "path": "automotive/tekion-report-cron-self-contained-runner",
-   "category": "automotive",
-   "description": "Build any long-running (>20 min) Tekion report cron as a self-contained shell runner (scan -> render -> email in ONE flock'd process) instead of an agent-babysat background job. Use when creating a new report cron, when a report \"ran but Joe got no email\", or when a cron's data landed on disk but the render/email tail never executed. Includes the recovery drill for orphaned scan JSON.",
    "times_used": 0,
    "last_used": null
   },
