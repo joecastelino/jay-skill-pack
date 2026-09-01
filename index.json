@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-01T07:15:53",
+ "generated": "2026-09-01T07:31:22",
  "skill_count": 205,
  "skills": [
   {
@@ -39,7 +39,7 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 77,
+   "times_used": 78,
    "last_used": "2026-09-01"
   },
   {
@@ -75,6 +75,14 @@
    "last_used": "2026-08-27"
   },
   {
+   "name": "sct-alignment-by-advisor-report",
+   "path": "automotive/sct-alignment-by-advisor-report",
+   "category": "automotive",
+   "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
+   "times_used": 40,
+   "last_used": "2026-09-01"
+  },
+  {
    "name": "sct-menu-sales-api-scorecard",
    "path": "automotive/sct-menu-sales-api-scorecard",
    "category": "automotive",
@@ -97,14 +105,6 @@
    "description": "Diagnose a Tekion Service Menu pricing problem (e.g. \"a rotation is charging $449.45\") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLODE the menu into individual opcodes using the \"Add Menu Services as separate operations\" setting to find which opcode carries the bad price and its labor-rate method (Fixed vs Service Catalog Pro Dynamic Pricing). Use when Joe flags a wrong/inflated price on a maintenance menu line for a specific RO/vehicle.",
    "times_used": 40,
    "last_used": "2026-08-21"
-  },
-  {
-   "name": "sct-alignment-by-advisor-report",
-   "path": "automotive/sct-alignment-by-advisor-report",
-   "category": "automotive",
-   "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
-   "times_used": 39,
-   "last_used": "2026-09-01"
   },
   {
    "name": "bc-menu-sales-reports",
@@ -163,20 +163,20 @@
    "last_used": "2026-08-27"
   },
   {
+   "name": "amg-wip-monthly-column-fill",
+   "path": "automotive/amg-wip-monthly-column-fill",
+   "category": "automotive",
+   "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
+   "times_used": 25,
+   "last_used": "2026-09-01"
+  },
+  {
    "name": "sct-backcounter-ro-sales-countsheet",
    "path": "automotive/sct-backcounter-ro-sales-countsheet",
    "category": "automotive",
    "description": "Build Joe's daily SCT Back Counter Bin Check count sheet \u2014 cross-reference a day's RO part sales (Tekion OpenAPI) against parts that stock in a back-counter bin (5000 section) and render a Tekion-bin-check-style sheet with Primary Bin and Back Counter Bin write-in Count boxes, emailed via Stacey. Use when Joe asks to \"verify counts daily\", \"which back counter parts sold today\", or re-run the back-counter check for a date. KEY DESIGN INSIGHT (Joe corrected me 2026-07-04): a bin-snapshot DIFF can NEVER catch a back-counter pull \u2014 Tekion only relieves the PRIMARY bin (2420), so the 5000s bin doesn't move when the sale posts. Detection must be sales-driven: today's RO parts INTERSECT back-counter roster.",
    "times_used": 24,
    "last_used": "2026-08-26"
-  },
-  {
-   "name": "amg-wip-monthly-column-fill",
-   "path": "automotive/amg-wip-monthly-column-fill",
-   "category": "automotive",
-   "description": "Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data \u2014 hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hours, WIP $, ELRs. Includes the quota-free dealer-detail DB method for operation-level hours. Use when Joe says he needs to \"finish\" or \"work on\" the AMG WIP sheet for a month.",
-   "times_used": 23,
-   "last_used": "2026-09-01"
   },
   {
    "name": "tekion-declined-deferred-services-report",
@@ -199,7 +199,7 @@
    "path": "automotive/tekion-standard-reports-performance",
    "category": "automotive",
    "description": "Pull Tekion Standard Reports from the REPORTS module (/core/reports) via the :9223 authenticated browser \u2014 especially the fixed-ops performance suite (Advisor Performance, Tech Performance / proficiency = assigned-billed vs attendance hours). Covers the filter funnel (Flag Date range, Make filter), Group By, and Export. Use when Joe wants advisor/tech performance numbers, or ANY report that is NOT a custom Report Builder report.",
-   "times_used": 19,
+   "times_used": 20,
    "last_used": "2026-09-01"
   },
   {
