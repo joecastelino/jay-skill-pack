@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-01T11:15:15",
+ "generated": "2026-09-01T11:30:37",
  "skill_count": 208,
  "skills": [
   {
@@ -819,6 +819,14 @@
    "last_used": "2026-09-01"
   },
   {
+   "name": "tekion-rebuild-broken-report-builder-report",
+   "path": "automotive/tekion-rebuild-broken-report-builder-report",
+   "category": "automotive",
+   "description": "Diagnose a Tekion Report Builder custom report that a manager says is \"not working\" (wrong/low numbers, blank, zero rows), then REBUILD it as a live OpenAPI-sourced report. Covers pulling the report's real definition, running it natively via the RB execute API, proving index staleness vs a definition bug, and shipping an API replacement + PNG/PDF scorecard by email.",
+   "times_used": 2,
+   "last_used": "2026-09-01"
+  },
+  {
    "name": "tekion-vehicle-override-row-builder",
    "path": "automotive/tekion-vehicle-override-row-builder",
    "category": "automotive",
@@ -913,14 +921,6 @@
    "description": "Build the \"parts ordered/shipped and NOT received\" report for a Tekion store (outstanding part lines on open POs, with aging + $ value). Uses the Parts Receiving \"Orders Not Received\" queue and an XHR hook on partTrade/u/purchase/search to harvest full per-part JSON (ordered/received/backorder/cancelled qty, unit cost, ref RO/SO, customer). Verified SCT 2026-07-06 (400 POs, 1127 lines, $180K). Load when Joe asks for shipped-not-received, unreceived parts, open PO parts, or PO aging reports.",
    "times_used": 1,
    "last_used": "2026-07-06"
-  },
-  {
-   "name": "tekion-rebuild-broken-report-builder-report",
-   "path": "automotive/tekion-rebuild-broken-report-builder-report",
-   "category": "automotive",
-   "description": "Diagnose a Tekion Report Builder custom report that a manager says is \"not working\" (wrong/low numbers, blank, zero rows), then REBUILD it as a live OpenAPI-sourced report. Covers pulling the report's real definition, running it natively via the RB execute API, proving index staleness vs a definition bug, and shipping an API replacement + PNG/PDF scorecard by email.",
-   "times_used": 1,
-   "last_used": "2026-09-01"
   },
   {
    "name": "tekion-recommendation-part-not-found-diagnosis",
