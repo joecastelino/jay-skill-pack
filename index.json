@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-01T10:46:09",
+ "generated": "2026-09-01T11:00:33",
  "skill_count": 208,
  "skills": [
   {
@@ -31,7 +31,7 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 89,
+   "times_used": 90,
    "last_used": "2026-09-01"
   },
   {
@@ -219,20 +219,20 @@
    "last_used": "2026-08-28"
   },
   {
+   "name": "tekion-report-builder-scraper",
+   "path": "automotive/tekion-report-builder-scraper",
+   "category": "automotive",
+   "description": "Scrape any Tekion Report Builder CUSTOM report (e.g. \"SCT Menu Sales Opened\") headlessly \u2014 find the report id, open it under the right dealer, expand grouped rows, parse to JSON, render a manager-ready scorecard (PNG+PDF), and email it via Stacey. Use whenever Joe/managers want recurring Tekion report data without downloading PDFs from Tekion's emailed reports.",
+   "times_used": 18,
+   "last_used": "2026-09-01"
+  },
+  {
    "name": "tekion-opcode-overrides",
    "path": "automotive/tekion-opcode-overrides",
    "category": "automotive",
    "description": "Add vehicle/part override rows to a Tekion opcode (Overrides tab) using the verified browser-tool cascading react-select method. This is the batch workflow used for cabin-filter part overrides (RACF etc.) \u2014 Make/Model/Year/ Trim/Part per row, driven by the __buildRow() helper toolkit. Covers the real-click trim rule, the Save Changes confirmation modal, and mandatory reload+API verification. The most complex Tekion workflow we run.",
    "times_used": 17,
    "last_used": "2026-07-12"
-  },
-  {
-   "name": "tekion-report-builder-scraper",
-   "path": "automotive/tekion-report-builder-scraper",
-   "category": "automotive",
-   "description": "Scrape any Tekion Report Builder CUSTOM report (e.g. \"SCT Menu Sales Opened\") headlessly \u2014 find the report id, open it under the right dealer, expand grouped rows, parse to JSON, render a manager-ready scorecard (PNG+PDF), and email it via Stacey. Use whenever Joe/managers want recurring Tekion report data without downloading PDFs from Tekion's emailed reports.",
-   "times_used": 17,
-   "last_used": "2026-09-01"
   },
   {
    "name": "tekion-parts-sales-orders",
@@ -515,6 +515,14 @@
    "last_used": "2026-08-21"
   },
   {
+   "name": "sct-toyotacare-billed-hours-report",
+   "path": "automotive/sct-toyotacare-billed-hours-report",
+   "category": "automotive",
+   "description": "Pull the ToyotaCare (TAC) billed-hours number from Tekion's Advisor Performance report (Reports module) for SCT or any store, using Joe's saved TAC/ToyotaCare filter \u2014 and roll it out to the other 6 AMG stores. Use when Joe asks for ToyotaCare / TAC billed hours, or is building his monthly SCT fixed-ops sheet (\"first number, Toyota Care\").",
+   "times_used": 5,
+   "last_used": "2026-09-01"
+  },
+  {
    "name": "tekion-alignment-by-advisor-report",
    "path": "automotive/tekion-alignment-by-advisor-report",
    "category": "automotive",
@@ -553,14 +561,6 @@
    "description": "Fix an AMG Hermes agent that is silent on Slack because its SLACK_BOT_TOKEN/SLACK_APP_TOKEN are missing or wrong in the profile .env \u2014 including recovering LOST tokens from old session transcripts without asking Joe to regenerate them at api.slack.com. Use when an agent's service is running but it never answers Slack messages (Autumn case, 2026-07-14).",
    "times_used": 4,
    "last_used": "2026-07-14"
-  },
-  {
-   "name": "sct-toyotacare-billed-hours-report",
-   "path": "automotive/sct-toyotacare-billed-hours-report",
-   "category": "automotive",
-   "description": "Pull the ToyotaCare (TAC) billed-hours number from Tekion's Advisor Performance report (Reports module) for SCT or any store, using Joe's saved TAC/ToyotaCare filter \u2014 and roll it out to the other 6 AMG stores. Use when Joe asks for ToyotaCare / TAC billed hours, or is building his monthly SCT fixed-ops sheet (\"first number, Toyota Care\").",
-   "times_used": 4,
-   "last_used": "2026-09-01"
   },
   {
    "name": "tekion-notification-settings-audit",
@@ -915,6 +915,14 @@
    "last_used": "2026-07-06"
   },
   {
+   "name": "tekion-rebuild-broken-report-builder-report",
+   "path": "automotive/tekion-rebuild-broken-report-builder-report",
+   "category": "automotive",
+   "description": "Diagnose a Tekion Report Builder custom report that a manager says is \"not working\" (wrong/low numbers, blank, zero rows), then REBUILD it as a live OpenAPI-sourced report. Covers pulling the report's real definition, running it natively via the RB execute API, proving index staleness vs a definition bug, and shipping an API replacement + PNG/PDF scorecard by email.",
+   "times_used": 1,
+   "last_used": "2026-09-01"
+  },
+  {
    "name": "tekion-recommendation-part-not-found-diagnosis",
    "path": "automotive/tekion-recommendation-part-not-found-diagnosis",
    "category": "automotive",
@@ -1127,14 +1135,6 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tekion-rebuild-broken-report-builder-report",
-   "path": "automotive/tekion-rebuild-broken-report-builder-report",
-   "category": "automotive",
-   "description": "Diagnose a Tekion Report Builder custom report that a manager says is \"not working\" (wrong/low numbers, blank, zero rows), then REBUILD it as a live OpenAPI-sourced report. Covers pulling the report's real definition, running it natively via the RB execute API, proving index staleness vs a definition bug, and shipping an API replacement + PNG/PDF scorecard by email.",
    "times_used": 0,
    "last_used": null
   },
