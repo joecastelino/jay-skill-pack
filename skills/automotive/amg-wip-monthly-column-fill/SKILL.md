@@ -108,10 +108,66 @@ Reproduce last month's column first; report the match table to Joe. SCT June 202
    sheet is 1,000.80 = WARRANTY minus the 30 TXM opcodes (WARRANTY∩TXM = 519.10). This
    reconciles the old "is Warranty TXM-contaminated?" thread — the exclusion is real.
 
-### ✅ TXM ROW — RESOLVED 2026-08-31 (see METHOD 0b for the full recipe)
+### ⚠️ TXM ROW — REPORT BUILDER API CRACKED 2026-09-01, BUT THE SOURCE IS STALE
 Joe confirmed the source is Report Builder **`SCP-Toyota Care 2.0`** (operation-grain,
-`RO_OPERATION_OPCODE STARTS_WITH "TEK"`), NOT Advisor Performance. The elimination log
-below is kept only so nobody re-walks it:
+`RO_OPERATION_OPCODE STARTS_WITH "TEK"`), NOT Advisor Performance.
+
+**⭐ HOW TO RUN ANY REPORT BUILDER REPORT HEADLESSLY (2026-09-01, big unlock):**
+```
+1) POST /api/reportbuilder/u/report/search
+   {"searchText":"SCP-Toyota Care 2.0","searchFields":["name"],
+    "sort":[{"field":"modifiedTime","order":"DESC"}],
+    "pageInfo":{"start":0,"rows":5},"includeDeleted":false}
+   → data.esResponse.hits[0]  = the full reportConfig object
+2) POST /api/reportbuilder/u/execute/withOptions?preview=false
+   {"reportConfig":<that hits[0] verbatim>,
+    "reportExecutionOptions":{"sort":[],"filters":[],"searchText":"","groupBy":[],
+      "includeFields":[],"excludeFields":[],"pageInfo":{"start":0,"rows":1}}}
+   → data.count           = record count (OPERATION grain, not RO)
+   → data.projections     = the totals block, e.g.
+     REPAIRORDER_OPERATION_ASSIGNED_BILL_HOURS__SUM  (already HOURS, not seconds)
+     REPAIRORDER_OPERATION_LABOR_PRICE__SUM / _PARTS_PRICE__SUM (CENTS)
+```
+- **Cross-store:** same 2-header swap (`dealerId`, `tek-siteId`). Each store has its OWN
+  copy of the report — **BT (1249) has `SCP-Toyota Care 2.0`; TL (1092) does NOT.**
+- **Override the date window** (report ships as relative `LAST_MONTH`): drop the
+  `RO_CLOSEDTIME` entry from `reportConfig.filterConfigs` and push
+  `{fieldKey:"RO_CLOSEDTIME",dataSource:"REPAIR_ORDER",values:[startMs,endMs],
+    type:"ADVANCED",subType:"FILTER_RULE",operator:"BTW",booleanOperator:"AND"}`.
+  **Only `type:"ADVANCED"` + `operator:"BTW"` works.** `DATE_RANGE`/`BTW` and
+  `DATE`/`BETWEEN` both 400 `unexpected.error`; epoch **seconds** silently return 0;
+  `"YYYY-MM-DD"` strings return a DIFFERENT (smaller) number than ms — use **ms** or full
+  ISO w/ offset. Mutating `relativeDate` 0/1/2 does nothing.
+  Equivalence proven: override-Aug == native LAST_MONTH-Aug (796 / 362.1 both ways).
+
+**🚨 THE TRAP — the Report Builder ES index lags ~4 DAYS. Verify before trusting it.**
+On 2026-09-01 the report returned **0 records for Aug 26–31** while the advisor API showed
+the store closed **1,606 ROs** in that window; `hits[].ingestionTime` maxed at 08-28 01:47.
+So its month total is **understated and drifts depending on when you open it**.
+**Always** run this check before writing a Report-Builder-sourced cell:
+```python
+# 1. tail-window check: does the report see the last ~5 days of the month?
+# 2. compare hits[].ingestionTime max vs now
+```
+If it's stale → **leave the cell blank and tell Joe**, don't write a number you know is low.
+
+**Why June can never validate this report:** it was **created 2026-07-01**
+(`createdTime == modifiedTime == 1782909268489`). Running it over June yields 448 / 208.80
+vs Joe's 744.96 — not a filter bug, the data simply predates the report.
+
+**TXM candidate definitions vs Joe's own history** (still unresolved — ASK, DON'T GUESS):
+| definition | Apr | May | Jun (target 744.96) |
+|---|---|---|---|
+| `TXM REVISED 9/1` 30-opcode group | 762.00 | **769.55 ✅exact** | 541.96 ❌ |
+| TEK opcodes w/ `category==VEHICLE` (52) | 0.00 | 0.00 | 271.20 |
+| TXM30 + TEK-VEHICLE | 762.00 | 769.55 | 813.16 |
+
+The saved group matches May **to the cent** then breaks in June → the opcode mix changed
+mid-year. `TXMPLUS` is a huge bundle (3,495 hrs alone) — never add it.
+`TXMPLUS00TFL` / `TXMROTATE` return 0. **Fastest close-out: ask Joe to open the SCP report
+on a month he already has and read the number.**
+
+The elimination log below is kept only so nobody re-walks it:
 
 #### (historical) why no Advisor-Performance filter could ever match
 June target 744.96 hrs / 1,442 count / $215,399 sale. Ruled out exhaustively:
@@ -259,6 +315,60 @@ Say this explicitly instead of hunting it — same-day pulls won't have it.
 - **Toyota of Lancaster:** SCT-like; TXM block r57-64.
 - **Alfa Romeo SJ:** r4 CUSTOMER, r5 WARRANTY/ROAD READY, r6 INTERNAL, r7 QUICK SERVICE,
   r8 SERVICE CONTRACT, r9 MOPAR EXPRESS(N/A) · r13 ALFA ROMEO, r14 OTHERS.
+
+## 🚨 WRITING INTO THE WORKBOOK — READ THIS BEFORE ANY `openpyxl` SAVE
+Learned the hard way 2026-09-01 (caught before delivery, but only just).
+
+**1. Joe keeps a SOURCE-REFERENCE NOTE COLUMN immediately right of the last date column.**
+On SCT it's col 50 holding `C7`,`w3`,`c1`,`c2`,`w4`,`I5`,`I6` and `elr/ytd` ×5 — his
+shorthand for which report/tab each row came from. Same on Toyota of Fresno (col 49:
+`C3`,`w4`,…), TL (col 49), SV (col 50: `c/w`,`w`).
+**Writing the new month to `max(date_cols)+1` SILENTLY DESTROYS IT.**
+→ **Always `ws.insert_cols(target)`** so the notes shift right, never overwrite.
+→ Audit first: for each sheet, print cols `lastdate+1 .. lastdate+3` rows 1–45 and look
+  for short text values. A cell reading `w3` where you expected a number = you're in the
+  note column.
+
+**2. The unfilled-month TELL is real and it bit here.** In `AMG-WIP-live.xlsx` the July
+column was an exact copy-paste of June on EVERY tab (SCT CUST 2666.82 / TXM 744.96 /
+WARR 1000.8 identical). Real July was materially different (CUST 2275.73, WARR 1420.70).
+**Diff col N vs N-1 before assuming a month is done** — and if it's a copy, fill it too,
+then TELL Joe you overwrote a placeholder so he can reconcile against his own records.
+
+**3. Don't clear cells you didn't write.** First instinct on a stale copied value was
+`cell.value=None` — that's how the note column got hit. Rebuild from the pristine file
+with inserts instead of patching in place.
+
+**4. Preserve formatting:** load with `data_only=False` (keeps formulas), copy
+`number_format` from the June cell of the same row, and write the header as
+`datetime(y,m,26)` (Joe's columns are dated the 26th though the window is calendar-month).
+
+**5. Verify after save:** reload `data_only=True` and assert every written cell equals the
+JSON it came from, and that blocked buckets are `None` (not 0, not stale). Report the
+mismatch count — target 0.
+
+## FAST PATH — the whole workbook in ~4 minutes
+`/home/itadmin/tekion-reports/wip_aug.py` (misnamed; takes any month):
+```bash
+python3 ~/tekion-reports/wip_aug.py 2026-08 9225 > ~/amg-wip/aug2026.json
+```
+Emits all 8 tabs keyed `"r4 CUSTOMER": 2466.6`, with unresolved buckets as a
+`"BLOCKED — ..."` string so the writer skips them instead of writing junk. Run two months
+(prior + target) and diff. Whole 8-tab pull ≈ 3 min wall clock.
+
+### Session bootstrap when `:9223` is busy (this is the normal case at night)
+`:9223` is owned by the nightly Caliber `cron-tekion.sh` (starts ~1:16AM, runs 12+hrs, and
+**drifts the dealer context**). `:9225` is usually logged out. Do NOT fight over `:9223`:
+1. `python3 ~/tekion-auth/login.py --force` (Gmail OTP path; verify himalaya first with
+   `HOME=/home/itadmin himalaya envelope list -a personal -f "[Gmail]/All Mail" -s 3`).
+2. Inject the fresh storage state into `:9225` (cookies + localStorage), then `/navigate`
+   to `https://app.tekioncloud.com/home` and confirm `currentActiveDealerId`.
+3. `W.PORT = 9225` before `W.arm()`.
+
+**Engine bug fixed 2026-09-01:** `wip_engine.ev()` / `nav()` had `port=PORT` as a
+**default argument**, so `PORT` was captured at import time and `W.PORT=9225` was ignored
+(every call still hit 9223). Now `port=None` → resolved at call time. If you see calls
+going to the wrong browser, this is why.
 
 ## MANDATORY PROTOCOL (Joe context)
 Joe's benchmark: **he fills all 8 tabs by hand in ~3 hours.** A prior attempt burned
