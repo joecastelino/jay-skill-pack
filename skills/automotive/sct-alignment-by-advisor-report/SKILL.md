@@ -584,6 +584,30 @@ SCT-specific, proven pipeline with the frozen SCT opcode set + scripts.
   `TO_HEADER | SENT_TODAY` → `kstapp@sctoyota.com | 0`. **Two-field asks are the reliable
   granularity** — five fields times out, one field works but wastes round-trips.
   Underscore-stripped keys again throughout.
+  **Confirmed again 2026-08-31 (21st consecutive clean night — FINAL day of August, biggest
+  single-day catch-up of the month):** OPS probe 200 (same validated RO/job pair, unchanged
+  since 8/3); no same-day index pre-run. NOTE: a dealer-detail `sync:all` tsx process HAD been
+  running 7h43m (started 11:18 AM) — per the 8/2 hog note this normally warrants killing, but
+  since the OPS probe returned a clean 200 the quota was NOT being starved, so it was left
+  alone and the scan ran fine. **Lesson: a long-running sync:all is only a problem if the OPS
+  probe is 429 — probe FIRST, kill only if quota is actually blocked.** Index 5,094 closed ROs
+  (up 808 from 8/30's 4,286 — month-end posting surge, by far the largest daily jump; index
+  file 589,909 → 699,924 B), 1,593 candidates, 0 failed, ~63 min (19:01→20:04 — longest run
+  to date, as expected for a full-month window). Window end advanced 1788159599999 →
+  1788245999999; id diff new: 811, dropped: 3 (a few ROs reverted out of CLOSED — normal).
+  443 alignments (399 dedicated + 44 bundled), 443 ROs, 16 advisors. **Jason Sulon takes solo
+  #1 with 50** (Chris Mai 49, Jaime Sanchez 44, Artist Battle 43, Cristian Gonzalez 41) — a
+  new leader on the final day after Chris Mai led 8/28-8/30. Stacey's build clean on the FIRST
+  ask (97s) with paths + on-disk sizes baked in: HTML part 178,062B >= PNG*4/3=131,017B, PDF
+  part 379,886B = EXACT on-disk match. Note-30 verify sequencing worked perfectly again and is
+  now the settled recipe: (1) date-free SUBJECT+DATE enumeration FIRST (104s, 19 matches —
+  18 August nights 8/14→8/31 plus the July leftover, exactly ONE "(through 8/31)") — no
+  DRAFTS_COUNT ask needed at all; (2) `PDF_FILENAME | PDF_DECODED_BYTES` (61s) → correct
+  one-L spelling + exact bytes; (3) `TO_HEADER | SENT_TODAY` (95s) → `To: kstapp@sctoyota.com`
+  | 0. All three answered first-try with only short sleeps (15s/10s/10s), zero timeouts.
+  Underscore-stripped keys again throughout. **Month rollover reminder: the 9/1 run will
+  produce a tiny September MTD report (1 day) — that is CORRECT, not a bug; the MTD window
+  auto-resets to 1st-of-month. August's final figure of record is 443.**
   **Confirmed again 2026-08-16 (6th consecutive clean night, quota fully healthy):**
   pre-flight OPS probe (same validated RO/job pair) returned 200. Index built 2,364
   closed ROs, 771 candidates, 0 failed, ~30 min scan (19:01→19:31, no backoff
