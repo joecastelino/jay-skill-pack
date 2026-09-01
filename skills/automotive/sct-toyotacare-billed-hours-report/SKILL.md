@@ -48,5 +48,33 @@ Dodge the calendar entirely and compute the number from RO data:
 ## Cross-store rollout
 After SCT is confirmed, pull the same TAC billed-hours for the other 6 stores (BC, BT, SV, TL, AR, VC) for the SAME period. Note: **TAC opcodes are Toyota-specific** — only Toyota stores (BT, TL, and SCT) will have them; non-Toyota stores (BC, SV, AR, VC) won't return ToyotaCare data. Confirm with Joe which stores he wants before assuming.
 
+### TL (Toyota of Lancaster, 1092) — verified 2026-09-01
+TL has **16 active TAC opcodes**: `TAC` (bare) + `TAC5, TAC10, TAC15, TAC20,
+TAC25, TAC30, TAC35, TAC40, TAC45, TAC50, TAC55, TAC60, TAC65, TAC70, TAC75`.
+Enumerate per store, don't copy SCT's list:
+`POST /api/service-module/u/opcode/search {"searchText":"TAC","pageInfo":{"start":0,"rows":100},"filters":[],"sort":[]}`
+→ `data.hits[]` with `opcode`/`status`/`description`. Note the split in naming:
+TAC5–TAC30 are "TOYOTA AUTO CARE", TAC35+ are "TOYOTA CARE PLUS" — if Joe asks
+for one and not the other, that's the cut line. **The bare `TAC` opcode is real
+and active (14 ops at TL in Aug) — a `TAC\d+` regex silently drops it.**
+
+### ⚠️ TL's Report Builder report is NOT a TAC report — don't use it as the source
+TL has `SCP OP Code-ToyotaCare (TXM)` (id `6585c492ee94990ac065f290`,
+dataSource REPAIR_ORDER). Despite the name it filters
+`RO_OPERATION_OPCODE STARTS_WITH "TEK"` — the TEK **menu** family, not TAC — plus
+`RO_OPERATION_CATEGORY EQUALS "Vehicle"`, which now matches **zero** rows (live
+ops come back as category `MAINTENANCE`). It is also served off a stale ES index
+(as of 2026-09-01: max ingestion 8/24, latest closed RO 8/22 — 9 days missing).
+Two different reports wearing one name; **confirm TAC-vs-TEK with Joe before
+quoting a number.** Full triage in skill `tekion-report-builder-scraper`.
+
+### Live API replacement (preferred over both the calendar UI and Report Builder)
+`/home/itadmin/tekion-reports/tl_tac_api.py START END [dealer_key]` — closedTime
+bisection + OPCODE-tag prefilter + operations fan-out; reports ops / bill hours /
+labor sale / gross per TAC opcode with advisor id and pay type per line. Zero
+index lag. Runs longer than the 180s foreground cap for a full month → launch
+with `background=true, notify_on_complete=true`. Works for any Toyota store via
+the dealer key (`st`, `bt`, `tl`).
+
 ## Verification one-liner
 Report back per store: `STORE | period | TAC Bill Hrs = N.N | source (browser Advisor Perf / OpenAPI)`.

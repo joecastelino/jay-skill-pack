@@ -82,6 +82,72 @@ of the month returns **zero** rows while the store was demonstrably open.
   while live data showed **1,248 / 1,508 / 1,293** ROs closed in that window.
 - Tell the user the number matches their screen but understates the month.
 
+---
+
+## "MY REPORT ISN'T WORKING" — run this triage IN THIS ORDER (2026-09-01)
+Users say "broken" for four very different things. Diagnose by API in ~5 calls;
+do NOT open the UI, and do NOT rebuild anything until you know which one it is.
+
+**1. Is the config structurally incomplete?**
+`dataSource is None` on the hit = a half-finished report (TL had 8 of 82 like
+this: "ROs in Service", "GSM sold match", "FILTERS SOLD THROUCH ROS"…). Those
+have null `fields`/`filterConfigs`/`groups` too and can never render. Nothing to
+fix server-side — it was never built.
+
+**2. Is the index stale?** (most common — this was the TL TAC answer)
+Run the report NATIVELY (untouched config) and histogram the rows:
+```python
+ing = Counter(ts(x['ingestionTime']) for x in hits if x.get('ingestionTime'))
+cl  = Counter(ts(x['roClosedTime'])  for x in hits if x.get('roClosedTime'))
+print('max ingestion', max(ing), '| closed range', min(cl), '->', max(cl))
+print('tail:', sorted(cl.items())[-8:])
+```
+TL "SCP OP Code-ToyotaCare (TXM)": 563 rows, max ingestion **8/24**, latest
+closed RO **8/22** — the last 9 days of August were simply absent. The report
+"works"; the index is 9 days behind. **Report the gap in days, not just "stale."**
+
+**3. Does one filter now match NOTHING?** Bisect by dropping filters one at a
+time and comparing counts — a filter whose stored VALUE drifted out of the data
+silently zeroes the report:
+```python
+for keep_cat in (True, False):   # drop the suspect filter
+    ...  # same config minus RO_OPERATION_CATEGORY
+```
+TL case: `RO_OPERATION_CATEGORY EQUALS "Vehicle"` → **0 rows**; drop it → 99 rows.
+The operations now come back as category **`MAINTENANCE`**, so the saved value no
+longer exists. A report can sit at 0 for months this way and look "broken."
+
+**4. Does the report actually filter what its NAME says?**
+Always read `filterConfigs` out loud to the user before rebuilding. TL's report
+is named *ToyotaCare (TXM)* but filters `RO_OPERATION_OPCODE STARTS_WITH "TEK"` —
+i.e. the TEK menu family, **not** the TAC opcodes. Get the real opcode family from
+`POST /api/service-module/u/opcode/search {"searchText":"TAC","pageInfo":{"start":0,"rows":100}}`
+(TL: 16 active — `TAC` + `TAC5,10,15…80`). Confirm with the user WHICH set they
+mean before shipping numbers — two different reports were wearing one name.
+
+### Reading operation-level $ and hours off a REPAIR_ORDER report
+`projections` (the KPI totals) can be **0.0 even when the rows have money** —
+at TL, `REPAIRORDER_OPERATION_LABOR_PRICE__SUM` / `PARTS_PRICE__SUM` /
+`LABOR_COST__SUM` all returned `0.0` while
+`REPAIRORDER_JOB_OPERATION_BILLING_TIME__SUM` was correct (245.7). **Never trust
+a 0.0 projection — sum off `hits[]` client-side.**
+Each `REPAIR_ORDER` hit carries nested lists (this is the whole RO, not one op):
+`repairOrderJobs`, `repairOrderJobOperations`, `repairOrderJobOperationParts`,
+`repairOrderOperationTechnicians`, `repairOrderTechClockIns`,
+`repairOrderTechFlagHours`, `recommendations`, `repairOrderNotes`,
+`customerDetails`.
+On `repairOrderJobOperations[]`: `opcode`, `jobOpCodeDescription`, `billHours`
+(HOURS), `billingRate`, **`laborAmount` = CENTS** (14011 → $140.11),
+`operationFlagHours`, `operationJobHours`, `storyLineText`, `roMileage`.
+`labourTimeInSeconds` is **misnamed — it is HOURS** (1.6), matching `billHours`.
+The per-op `opcodeLaborPrice/opcodeLaborGross/costAmount` fields are usually
+`null` — that's why the projections come back 0; cost/gross must come from the
+OpenAPI (`labor.costAmount`) instead.
+**Filtering a whole-RO hit set: you must re-filter the nested ops yourself.**
+A report filtered to opcode `TAC*` still returns ROs with all 9 of their
+operations attached; summing blindly counts unrelated work (the RO-level vs
+operation-level inflation trap above).
+
 #### Operation-level vs RO-level — the #1 cause of "my number is too high"
 `dataSource:"REPAIR_ORDER"` aggregates **whole ROs**; a report on
 `REPAIR_ORDER_OPERATION` returns **individual operation lines**. Summing RO
@@ -113,6 +179,43 @@ POST /api/reportbuilder/u/report/search   (dealerid header = store, e.g. 876 SCT
 ```
 → hits contain id, dataSource, full `filterConfigs`, `groups`, `fields`,
 `schedulingConfigs`. This is how you verify WHAT a report filters on.
+
+#### 30-second header bootstrap (do this FIRST — 2026-09-01)
+`/home/itadmin/tekion-reports/api-headers-live.json` exists but its
+`tekion-api-token` is almost always **STALE** → `401 AUTH401
+"Login user session is expired."` Don't re-capture via Playwright; graft a live
+token off the `:9223` browser and retarget the dealer:
+```python
+r=subprocess.run(["curl","-s","-m","15","http://127.0.0.1:9223/eval",
+  "-H","Content-Type: application/json",
+  "-d",json.dumps({"js":"localStorage.getItem('t_token')"})],capture_output=True,text=True)
+tok=json.loads(r.stdout)["result"]
+h=dict(json.load(open('/home/itadmin/tekion-reports/api-headers-live.json')))
+h['tekion-api-token']=tok
+h['dealerId']='1092'; h['tek-siteId']='-1_1092'   # target store, NOT whatever :9223 is on
+h['Content-Type']='application/json'
+```
+The `:9223` **/eval endpoint takes `{"js": ...}` — `{"expression": ...}` returns
+`{"error":"js is required"}`.** The browser's own active dealer is irrelevant;
+these are plain header-scoped REST calls, so no dealer switch / no UI popover
+needed just to read or execute a report. (Confirmed working from BC-1251
+browser against TL-1092.)
+
+#### Response is nested: `data.esResponse`, not `data`
+`report/search` → `out["data"]["esResponse"]["hits"|"count"]`.
+`execute/withOptions` → `out["data"]["hits"|"count"|"projections"|"groups"]`.
+Different envelopes on the two calls — `data['hits']` on search returns nothing
+and looks like "0 reports at this dealer."
+
+#### DON'T search by name — list everything and grep locally
+`searchText` + `searchFields:["name"]` is token-ish and unreliable: at TL,
+`"TOL"`→16 hits, `"SCP"`→5, but **`"TAC"`, `"Toyota"`, `"Care"` all → count 0**
+even though `SCP OP Code-ToyotaCare (TXM)` exists. Pull the whole list with
+`searchText:""` (paginate `pageInfo.start` += 50) and filter in Python. Use
+`includeDeleted:true` to see soft-deleted copies (TL: 82 active vs 90 total) —
+a manager's "broken report" is sometimes a deleted twin of a live one.
+To find which report uses an opcode, grep the configs you already pulled:
+`[x for x in hits if 'TAC' in json.dumps(x.get('filterConfigs') or []).upper()]`.
 
 ### Dealer context is everything
 - Custom reports are dealer-scoped. Browser lands on BC (1251) by default; the
@@ -184,6 +287,25 @@ Copy `sct_menu_sales.py`; change REPORT_ID (find via report/search POST),
 DEALER_NAME, and the per-row field layout in `parse_report_text` (count the
 report's columns; money-cell count = number of $ fields). Everything else
 (login, switch, expand, verify) is generic.
+
+## Replacing a stale RB report with a LIVE OpenAPI equivalent (the real deliverable)
+Per Joe's automation mandate: once RB is proven unreliable, **stop diagnosing the
+screen and ship an API-sourced replacement** — don't hand back a config fix.
+Reference implementation: **`/home/itadmin/tekion-reports/tl_tac_api.py`**
+(`tl_tac_api.py START END [dealer_key]`, opcode-family report: ops / bill hours /
+labor sale / gross per opcode + advisor id + pay type per line).
+Recipe, reusable for any opcode-family report:
+1. `closedTime BTW [lo,hi]` + `status IN [CLOSED,INVOICED]` via
+   **recursive bisection** — `pageNumber` is ignored and `nextPageToken` drifts
+   out of the window (see tekion-openapi-repair-orders). Dedupe on `documentId`.
+2. Prefilter on the **free OPCODE tags** in the search result; only fan out
+   jobs→operations on candidates (TL Aug: 99 candidates out of the full month).
+3. Sum `labor.saleAmount`/`costAmount` (**CENTS**) and bill hours per opcode.
+4. Windows are on **closedTime**, matching the report's `RO_CLOSEDTIME` filter,
+   so the two are directly comparable — always quote the stale-vs-live delta.
+**Runtime:** a full month exceeds the 180s foreground terminal cap (and the 300s
+`execute_code` cap). Launch with `terminal(background=true,
+notify_on_complete=true)` writing to a log — do NOT retry it in the foreground.
 
 ## Pitfalls
 - `~` in terminal = `/home/itadmin/.hermes/profiles/jay/home/`; scripts live at
