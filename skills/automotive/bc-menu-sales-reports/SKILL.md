@@ -1102,30 +1102,13 @@ Daily-Closed Sent count 0. No stale prior 8/28 draft (noon = first run of the da
 the purely-confirmatory 2026-08-26 noon entry to a 5-line summary to free room, per the
 8/27-MTD pruning note. Continue pruning oldest confirmatory entries — never trap sections.
 
-## 2026-08-28 5pm Daily Closed run — textbook one-shot, 30th consecutive clean "N dollars" build
-8 menus, $1,092.57 labor / $535.33 parts = $1,627.90 (Dimetri Reynoso 4 / $989.63, Humberto
-Dominguez 1 / $350.87, Juan Ramirez 1 / $143.52, Jacob Debussey 1 / $88.53, Houa Moua 1 /
-$55.35 — five advisors). 107 closed ROs → 8 carried TEK menu opcodes; `✓ all candidate ROs
-scanned`; vision KPI band (crop 460px + 2x LANCZOS) matched JSON exactly. Pull via
-`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
-**write_file→background-terminal ask pattern, 5th straight run, returned inside ONE 180s wait**
-(`/tmp/bc_ask_0828_5pm.py`, `subprocess.run` argument list, `timeout 560`). Terse DONE line
-correct with `TOTAL=$1,627.90`, her reported id (42811) MATCHED himalaya's. Her reply DID
-contain the recurring em-dash IMAP-search wrinkle ("the error was only in the post-append
-verification search") — POST-append verification, not a rebuild, so no duplicate; dedupe grep
-confirmed only 42811 + the expected stale noon draft. Verified via the stdlib-`email` parser:
-To=Restrada, Cc real None, From=Joe, Subject auto-decoded with em-dashes, inline PNG
-**byte-for-byte identical** (151,772 bytes), PDF **byte-for-byte identical** (55,083 bytes),
-all 8 figures present exactly once, `<b>$1,627.90</b>` bold, greeting + footer present, zero
-' dollars'/USD/CORRECTION leftovers, leading-digit-stripped variants ($092.57, $627.90, $1.57,
-$1.90, $,092.57, $,627.90) all 0. Deleted the stale noon draft (42800) per the twice-daily
-cadence rule, kept 42811 → exactly 1 draft. Daily-Closed Sent count 0 (both `BC 8/28` Sent
-hits were Stacey's separate auto-sent Daily Opened reports, 14693 + 14727).
-**Noon→5pm delta**: noon showed 5 menus / $1,388.27; the 5pm run added 3 menus but the total
-only rose ~$240 — a higher menu count does not always mean a proportionally higher total.
-**Skill-size housekeeping**: condensed the purely-confirmatory 2026-08-20 5pm and 2026-08-24
-noon entries to stay under the 100k limit. Keep pruning oldest confirmatory entries — never
-trap sections.
+## 2026-08-28 5pm Daily Closed run — textbook one-shot, 30th consecutive clean build
+8 menus, $1,092.57 / $535.33 = $1,627.90 (Dimetri Reynoso 4, Humberto Dominguez 1, Juan
+Ramirez 1, Jacob Debussey 1, Houa Moua 1). All byte-for-byte checks passed, no duplicate;
+deleted the stale noon draft. Her reply had the recurring em-dash IMAP-search wrinkle
+(POST-append verification, not a rebuild) → no duplicate.
+**Noon→5pm delta**: noon 5 menus / $1,388.27 → 5pm 8 menus but total only rose ~$240 — a
+higher menu count does not always mean a proportionally higher total.
 
 ## 2026-08-29 noon Daily Closed run — LOWEST-volume day yet, textbook one-shot, 32nd consecutive clean build
 1 menu, $67.35 labor / $39.24 parts = $106.59 (Juan Ramirez 1 / $106.59 — RO 102161,
@@ -1153,32 +1136,15 @@ digit" line in the ask anyway — it costs nothing and the totals cross 1,000 mo
 Condensed the confirmatory 2026-08-21 MTD and 2026-08-24 MTD entries to free room. Keep
 pruning oldest confirmatory entries — never trap sections.
 
-## 2026-08-29 5pm Daily Closed run — textbook one-shot, 33rd consecutive clean "N dollars" build
-3 menus, $523.10 labor / $332.53 parts = $855.63 (Juan Ramirez 2 / $544.82, Dimetri Reynoso
-1 / $310.81). 75 closed ROs → only 3 carried TEK menu opcodes (~4% attach — Saturday, second
-straight very-low-volume day after the 1-menu noon cut). `✓ all candidate ROs scanned`.
-Vision KPI band (crop 460px + 2x LANCZOS) matched JSON exactly; PNG again only 900px tall.
-Pull via `terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
-**write_file→background-terminal ask pattern, 8th straight run, returned inside ONE 180s
-wait** (`/tmp/bc_ask_0829_5pm.py`, `subprocess.run` argument list, `timeout 560`). Terse DONE
-line correct with `TOTAL=<b>$855.63</b>`, her reported id (42822) MATCHED himalaya's. Her
-reply DID contain the recurring em-dash IMAP-search wrinkle ("the IMAP search for
-verification choked on the em-dash encoding, but the APPEND itself worked fine") — POST-append
-verification, not a rebuild, so no duplicate; dedupe grep confirmed only 42822 + the expected
-stale noon draft. Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe,
-Subject auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (90,330 bytes),
-PDF **byte-for-byte identical** (51,289 bytes), all 5 figures present exactly once,
-`<b>$855.63</b>` bold, greeting + footer present, zero ' dollars'/USD/CORRECTION leftovers,
-all 7 leading-digit-stripped variants = 0. Deleted the stale noon draft (42820) per the
-twice-daily cadence rule, kept 42822 → exactly 1 draft. Daily-Closed Sent count 0 (the single
-`BC 8/29` Sent hit was Stacey's separate auto-sent Daily Opened report, 14774).
-**Noon→5pm delta**: noon showed 1 menu / $106.59; the 5pm run added 2 more (noon's RO 102161
-Silverado carried forward, plus RO 102167 Escalade and RO 102177 Trax). Confirms the noon cut
-is genuinely partial-day even on very light Saturdays.
+## 2026-08-29 5pm Daily Closed run — textbook one-shot, 33rd consecutive clean build
+3 menus, $523.10 / $332.53 = $855.63 (Juan Ramirez 2, Dimetri Reynoso 1). 75 closed ROs → only
+3 menu opcodes (~4% attach — second straight very-low-volume Saturday). All byte-for-byte
+checks passed, no duplicate; deleted the stale noon draft. Her reply had the recurring em-dash
+IMAP-search wrinkle (POST-append verification, not a rebuild) → no duplicate.
+**Noon→5pm delta**: noon 1 menu / $106.59 → 5pm 3 menus. Confirms the noon cut is genuinely
+partial-day even on very light Saturdays.
 **Explicit "leave the older noon draft alone, I will clean it up myself" line worked again** —
-she named 42820 as untouched in her own reply. Keep it on every 5pm ask.
-**Skill-size housekeeping**: condensed the confirmatory 2026-08-25 noon and 2026-08-26 5pm
-entries to fit under the 100k limit. Keep pruning oldest confirmatory entries — never traps.
+she named the noon uid as untouched in her own reply. Keep it on every 5pm ask.
 
 ## 2026-08-30 5pm Daily Closed run — second zero-menu Sunday of the day, textbook one-shot, 35th consecutive clean build
 0 menus, $0.00 labor / $0.00 parts = $0.00. **0 closed ROs** for the second run that day (BC
@@ -1343,3 +1309,42 @@ post-build leftover greps (count 0) confirms no placeholder leaked.
 **Skill-size housekeeping**: SKILL.md was at 99,910 chars pre-append. Condensed the
 purely-confirmatory 2026-08-22 MTD and 2026-08-24 5pm entries to free room. Keep pruning oldest
 confirmatory entries — never trap sections.
+
+## 2026-08-31 5pm Daily Closed run — textbook one-shot, 38th consecutive clean "N dollars" build
+13 menus, $2,630.15 labor / $966.35 parts = $3,596.50 (Jacob Debussey 5 / $1,319.39, Houa Moua
+4 / $1,095.29, Juan Ramirez 2 / $646.22, Erik Mercado 1 / $413.44, Humberto Dominguez 1 /
+$122.16 — five advisors). 167 closed ROs → 13 carried TEK menu opcodes (~8% attach — Monday,
+a big recovery from the ~3.5% noon cut); `✓ all candidate ROs scanned`. Pull via
+`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`. Vision KPI band
+(crop 460px + 2x LANCZOS on a 1226x977 PNG) read all four tiles exactly ($2,630.15 / $966.35 /
+$3,596.50 / 13) and matched JSON.
+**write_file→background-terminal ask pattern, 14th straight run, returned inside ONE 180s wait**
+(`/tmp/bc_ask_0831_5pm.py`, `subprocess.run` argument list, `timeout 560`). Terse DONE line
+correct with `TOTAL=$3,596.50`, her reported id (42873) MATCHED himalaya's, NO self-correction
+text in her reply at all (not even the usual em-dash IMAP-search wrinkle) → no duplicate.
+Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
+auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (190,051 bytes), PDF
+**byte-for-byte identical** (56,388 bytes), all 8 figures present exactly once,
+`<b>$3,596.50</b>` bold, greeting + footer (with real em-dash) present, zero
+' dollars'/USD/EMDASH/CORRECTION/Saturday/Sunday leftovers, all 16 leading-digit-stripped and
+comma-mangled variants = 0. Deleted the stale noon draft (42869) per the twice-daily cadence
+rule, kept 42873 → exactly 1 draft. Daily-Closed Sent count 0 (the single `BC 8/31` Sent hit
+was Stacey's separate auto-sent Daily Opened report, 14894, which fired at 17:07 — note her
+Opened pipeline ran LATE today, after the noon run saw zero Sent hits at 12:23).
+**Noon→5pm delta, largest logged**: noon 3 menus / $823.57 → 5pm 13 menus / $3,596.50 (+10
+menus, 4.4x the dollars). Reinforces that the noon cut is a genuinely partial-day snapshot and
+a low noon number is never a reason to suspect the feed.
+**Ask-authoring note**: this run's ask carried ALL the accumulated prevention lines at once —
+"N dollars" word form + Python-replace instruction, "dollar sign before the FIRST digit
+including the thousands comma", EMDASH token substitution, "leave the older noon draft 42869
+alone, I will clean it up myself", and "if your IMAP verification search errors on the em-dash
+that is fine, do NOT re-append or rebuild, just report it". Result was the cleanest build in
+the series: zero self-correction, zero duplicates, zero corruption. Keep all five lines in
+every ask.
+**Skill-size housekeeping — one prune is often NOT enough, budget ~3KB of headroom**: SKILL.md
+was 99,692 pre-append. I condensed the 2026-08-28 5pm entry first (→98,154), appended this
+run's entry anyway → **101,080, still over the 100k limit**, and had to prune a SECOND
+confirmatory entry (2026-08-29 5pm) to land at 99,515. Lesson: a full run entry is ~2.5-3KB,
+so prune down to **≤97,000 BEFORE appending**, not just "under 100k". And always re-check
+`os.path.getsize()` AFTER the append — the pre-append check alone will lie to you. Prune
+oldest purely-confirmatory run entries; never trap/failure-mode sections.
