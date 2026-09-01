@@ -800,6 +800,62 @@ SKILL.md under its size limit. Consensus of those runs: the full prevention word
 produces a clean one-shot draft the large majority of the time; verification asks are
 still mandatory; the $0 opened streak ran 8/23–8/25 (6 half-day slots) and broke 8/26.
 
+## (8/31 8:05PM, Closed MTD) NEW HIGH-VALUE PITFALL: part-probe fetched the WRONG draft
+Draft itself was a clean one-shot (hand-off RC=0 first try in 98s, himalaya id 42877 / IMAP
+UID 109, no dedupe needed). But the MIME part-probe INSPECTED A DIFFERENT DRAFT and reported
+plausible-looking-but-WRONG values: PNG 105,010 / PDF 88,443 / bolded total **$8,954.44**.
+Those are the exact on-disk sizes and MTD total of the **Aug 1-28** draft — i.e. she matched
+an older Closed-MTD draft from the stack instead of today's.
+ROOT CAUSE: the standing probe wording `UID N (subject "<exact>") ... if that UID is wrong,
+find it by that exact subject instead` is UNSAFE for Closed MTD, because the Drafts stack
+holds several near-identical subjects differing only in the end date (August 1-28 / 1-29 /
+1-30 / 1-31) and her subject matching is substring/token-ish, so it lands on the wrong one.
+(Opened reports don't hit this — their subjects differ by full date.)
+**DETECTION (do this every run):** cross-check the reported PNG/PDF byte sizes against the
+actual on-disk files (`ls -la data/TOL-Menu-Sales-Closed-Scorecard-<today>-Paged.{png,pdf}`)
+AND the bolded total against the JSON total. If either mismatches, she read the wrong draft —
+do NOT rebuild the draft, just re-probe. A fast way to confirm which day she actually read:
+loop the month's `tol-menu-sales-closed-2026-08-*.json` files printing row_count + total; the
+bogus total will match a prior day exactly.
+**FIX that worked in one shot:** re-ask with NO UID at all and an explicit disambiguation —
+"find the draft whose Subject is EXACTLY `TOL Menu Sales - Closed MTD (August 1-31, 2026)`
+(note: August 1-31, the LAST one, not August 1-28 or 1-29 or 1-30. Match the literal string
+'August 1-31'.) Fetch THAT message only." Also ask her to echo back "(1) the UID you fetched"
+as the first answer line. Returned correct in 58s: UID 109, PNG 105,453 / PDF 93,426 (exact
+on-disk), bolded total $10,457.96.
+RECOMMENDATION: for Closed MTD, skip the UID-first form entirely — lead the part-probe with
+the exact-subject + "not the earlier date ranges" disambiguation from the start.
+Subject-list ask returned first try (55s, Count: 4 — Aug 1-28/1-29 em-dash, Aug 1-30/1-31
+hyphen; no true dupes). Sent-check first try (63s) = 6 hits, all old em-dash-era sends
+(06/29-07/03), zero today = no leak. Zero exit-124s across all 4 asks.
+DATA: 286 closed ROs scanned, prefilter 4 of 286 carried a TEK menu opcode, 4 new rows.
+Master 44 -> **48 MTD rows / $10,457.96** ($7,101.19 labor + $3,356.77 parts),
+`✓ all candidate ROs scanned (no truncation)`. Gustavo Alatorre 24/$3,345.34; Michael Hachey
+7/$2,685.16; Eduardo Jimenez 5/$1,152.14; 10 advisors on the board. Today's 4 adds: Alatorre
+RO 399398 TEK10000BNM $110.85, 399419 TEK30000BNM $241.41, 399422 TEK10000BNM $118.47;
+Hachey RO 399475 TEK10000BNM $127.89. Closed JSON has NO `records` key — read `rows`.
+`totals.parts_price` ($7,745.81) != `parts_gross` ($3,356.77) — scorecard/email use GROSS.
+Backgrounded the append defensively (a `tekion-scraper --quick --dealership Toyota of
+Lancaster` launched at 20:20, same minute) — finished well inside 170s with no backoff.
+
+## (8/31 8:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, TRUE dedupe, all 4 asks first try
+Both scripts ran FOREGROUND clean in seconds (no scraper contention). Hand-off RC=0 FIRST TRY
+in 72s; draft correct FIRST TRY, TRUE dedupe (she found+deleted noon draft UID 105 on her own;
+subject-list showed exactly one 08/31 hit). All 3 verification asks returned FIRST try with
+"use raw IMAP, NOT the Gmail API" leading + the 3-line numbered part probe: subject-list 41s,
+part-probe 75s, Sent-check 111s. Part sizes DECODED (PNG 57,557 / PDF 51,397 = exact on-disk).
+MILD BOGUS-UID: her save said UID 109, subject-list said UID 108 — the "if that UID is wrong,
+find it by that exact subject" wording self-healed it. Sent-check = 4 hits, all old em-dash-era
+(06/30-07/03), zero today = no leak.
+DATA: 129 opened ROs scanned, **5 menus / $707.26** ($518.10 labor + $189.16 parts) — best
+opened day since 8/27. Gustavo Alatorre 3/$470.73 (RO 399398 TEK10000BNM 2023 Highlander;
+399419 TEK30000BNM 2024 RAV4; 399422 TEK10000BNM 2018 Tundra 4WD); Michael Hachey 2/$236.53
+(RO 399475 TEK10000BNM 2019 RAV4; 399480 TEK10000BNM 2024 RAV4). `records` empty (0) while
+`rows` had all 5 — the 8/26 quirk STILL RECURS; ALWAYS read `rows`.
+`totals.parts_price` ($399.35) != `parts_gross` ($189.16) — scorecard/email use GROSS.
+Opened drafts stack = 12 (08/21-08/31 + perennial 08/02 em-dash UID 19; 08/28 UID 91 also
+em-dash). No true dupes.
+
 ## (8/31 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, all 4 asks first try
 No concurrent scrapers; both scripts ran FOREGROUND clean in seconds. Hand-off RC=0 FIRST TRY
 in 87s; draft correct FIRST TRY at IMAP UID 105, no dedupe needed (no prior draft with today's
