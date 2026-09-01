@@ -298,6 +298,33 @@ BEFORE flagging it as a missed transfer:
   itself is benign, yet the stale companion negative (2418 = −2) was still sitting there
   uncorrected from prior runs. Report the recurrence count and the unresolved companion, not the
   increase.
+- **STATUS UPDATE 2026-08-31 — BIGGEST CORRECTION DAY EVER RECORDED: bin 5007's two deepest
+  negatives BOTH cleared, and the 17801-F4010 companion case RESOLVED after 20 days.**
+  **87139-YZZ83** (5007): **−93 → +50** (+143 swing) — was the single deepest negative on the board;
+  live Bin Details now reconciles clean (TXM Primary 0 + **4119**=100 + 5007=50 → Total 150 ✓).
+  NOTE its companion roster CHANGED from `['2422','TXM','4115']` to `['TXM','4119']` — a bin
+  re-map accompanied the correction, so don't diff companions blindly. **87139-YZZ09** (5007,
+  Primary=TXM): **−22 → +10** (+32) after **23 consecutive flat days** — TXM Primary now 10,
+  4107=2, 5007=10, Total 22 ✓. Both were tracked multi-day escalations; both are now positive and
+  reconcile. **17801-F4010 (recurrence #14 → RESOLVED):** 5006 4→1 and the stale companion **2418
+  = −2 is GONE** — the part now lists bins 5006 (Primary, 1) + **2417** (1), Total 2 ✓. The
+  companion negative that sat unmoved since 8/11 was corrected AND the companion bin itself changed
+  2418→2417. Stop treating this as an open recurrence unless 2418/2417 goes negative again.
+  Still open/flat: **04500-1** −29 (2nd flat day, single-bin 5005 IS Primary, still outside transfer
+  scope), **31532** −58 (6th flat day; SP-ORD Primary 28→**24**, Total Inventory Qty **−34** —
+  bin-vs-Total divergence persists), **87139-42040** −12 (12th flat day, Primary 2424=0).
+  Negatives dropped **26 → 24** — first change in the count after 13 identical days; per-bin mix
+  now 5005:11, **5007:5** (was 7), 5000:2, 5004:2, 5006:2, 5001:1, 5002:1. 5007 now owns only 2 of
+  the 6 deepest (00475-1BF03 −69, 17801-YZZ10 −51) instead of 4 — the scoped-Bin-Spot-Check
+  recommendation for 5007 is partially actioned but NOT complete. Benign diffs: 87139-YZZ93 5007
+  41→32 (Primary, +4111=30 → Total 62 ✓); 17801-21040 5005 1→0 (Primary 2419=11 → Total 11 ✓).
+  **LESSON: when a tracked escalation CORRECTS, verify via live Bin Details before celebrating —
+  the generate hit's unsigned magnitude makes a −93→+50 flip look identical to a −93→−50 deepening.**
+  Session state: :9223 alive/authenticated, single tab on `/dse-v2/appointments/scheduler/month`,
+  parked on **BC/1251** — recovery was just `/navigate /home` (welcome:true, NO login.py) → dealer
+  pill x1130,y32 → SCT leaf x1074,y344 → 876 in ONE 4s poll (~15s). 7/7 bins tagged+clicked first
+  try via "500" filter + `data-jaybin`, zero scrolling, Apply at x306,y689, Next at x865,y686,
+  4 pages clean, 5 diffs / 174 rows, 65/174 with 24h activity.
 - **STATUS UPDATE 2026-08-30 — WHOLE BOARD FLAT; 04500-1 regression finally PAUSED.** **04500-1**
   (5005, single-bin, 5005 IS Primary) held at **−29** — first non-worsening day after 5 straight
   deepening days post-8/25 correction; report as "paused, still −29, not fixed." **31532** (5001)
