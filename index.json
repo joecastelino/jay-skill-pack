@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-02T04:45:07",
+ "generated": "2026-09-02T05:00:25",
  "skill_count": 208,
  "skills": [
   {
@@ -67,6 +67,14 @@
    "last_used": "2026-09-01"
   },
   {
+   "name": "sct-menu-sales-api-scorecard",
+   "path": "automotive/sct-menu-sales-api-scorecard",
+   "category": "automotive",
+   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters to the frozen 316 TEK* maintenance opcodes, resolves advisor names via the persistent browser session on :9223, renders a light-format PNG+PDF scorecard, vision-verifies, and emails. Use for the daily Menu Sales Opened Performance Report cron.",
+   "times_used": 41,
+   "last_used": "2026-09-02"
+  },
+  {
    "name": "tekion-kb-search-scrape",
    "path": "automotive/tekion-kb-search-scrape",
    "category": "automotive",
@@ -81,14 +89,6 @@
    "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
    "times_used": 40,
    "last_used": "2026-09-01"
-  },
-  {
-   "name": "sct-menu-sales-api-scorecard",
-   "path": "automotive/sct-menu-sales-api-scorecard",
-   "category": "automotive",
-   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters to the frozen 316 TEK* maintenance opcodes, resolves advisor names via the persistent browser session on :9223, renders a light-format PNG+PDF scorecard, vision-verifies, and emails. Use for the daily Menu Sales Opened Performance Report cron.",
-   "times_used": 40,
-   "last_used": "2026-08-18"
   },
   {
    "name": "tekion-ghost-bin-negative-onhand",
@@ -259,20 +259,20 @@
    "last_used": "2026-08-31"
   },
   {
+   "name": "tekion-advisor-closed-gross-api-report",
+   "path": "automotive/tekion-advisor-closed-gross-api-report",
+   "category": "automotive",
+   "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
+   "times_used": 14,
+   "last_used": "2026-09-02"
+  },
+  {
    "name": "tekion-parts-autoorder-diagnosis",
    "path": "automotive/tekion-parts-autoorder-diagnosis",
    "category": "automotive",
    "description": "Diagnose why parts at a Tekion store stocked out / didn't auto-order (forcing local sourcing from Sunnyvale/Capitol/etc.). The CANONICAL parts-replenishment skill (supersedes tekion-parts-shortage-diagnosis). Works from RO numbers OR part numbers. Pulls live Stocking Details (Source Code, Stocking Status, Manual Order, BRP/BSL, Min/Max, On Hand/Order, Open Documents, Transactions ledger) per part, runs the day-supply demand calc, exposes the BSL Round-Down trap and the negative-on-hand backfill trap, and produces a per-part verdict + fix (Min Qty vs source-code BRP/BSL vs in-and-out receiving discipline). Use whenever Joe asks \"why aren't these parts auto ordering / why do we have shortages / why did we have to get parts locally / why is my shelf at 0 when Min is set.",
    "times_used": 14,
    "last_used": "2026-08-07"
-  },
-  {
-   "name": "tekion-advisor-closed-gross-api-report",
-   "path": "automotive/tekion-advisor-closed-gross-api-report",
-   "category": "automotive",
-   "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
-   "times_used": 13,
-   "last_used": "2026-08-31"
   },
   {
    "name": "tekion-clock-time-by-opcode",
@@ -595,6 +595,14 @@
    "last_used": "2026-07-07"
   },
   {
+   "name": "tekion-apc-quota-usage-investigation",
+   "path": "automotive/tekion-apc-quota-usage-investigation",
+   "category": "automotive",
+   "description": "Investigate REAL Tekion OpenAPI quota/429 usage per dealer using the APC portal's Transaction Dashboard (ground truth, not assumptions) \u2014 find which store/endpoint is burning quota, when Joe says \"don't assume, go check the APC portal\". Also covers what Plan Details and Usage Dashboard actually show (and don't).",
+   "times_used": 3,
+   "last_used": "2026-09-02"
+  },
+  {
    "name": "tekion-browser-navigation",
    "path": "automotive/tekion-browser-navigation",
    "category": "automotive",
@@ -721,14 +729,6 @@
    "description": "Diagnose \"I can't add opcode X to RO #NNNNNN\" / the \"Add To RO\" button is greyed out with no error message in Tekion. Root cause is almost always the RO Approval Flow \"Paytype Rules\" setting, NOT the opcode, the RO, or a permission.",
    "times_used": 2,
    "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-apc-quota-usage-investigation",
-   "path": "automotive/tekion-apc-quota-usage-investigation",
-   "category": "automotive",
-   "description": "Investigate REAL Tekion OpenAPI quota/429 usage per dealer using the APC portal's Transaction Dashboard (ground truth, not assumptions) \u2014 find which store/endpoint is burning quota, when Joe says \"don't assume, go check the APC portal\". Also covers what Plan Details and Usage Dashboard actually show (and don't).",
-   "times_used": 2,
-   "last_used": "2026-08-05"
   },
   {
    "name": "tekion-appointment-source-audit",
