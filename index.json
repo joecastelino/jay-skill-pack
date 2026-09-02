@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-01T21:30:05",
+ "generated": "2026-09-01T21:45:35",
  "skill_count": 208,
  "skills": [
   {
@@ -199,7 +199,7 @@
    "path": "automotive/tekion-internal-cost-center-gl-routing",
    "category": "automotive",
    "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
-   "times_used": 20,
+   "times_used": 21,
    "last_used": "2026-09-01"
   },
   {
@@ -239,7 +239,7 @@
    "path": "automotive/tekion-parts-sales-orders",
    "category": "automotive",
    "description": "Tekion Parts Sales Orders (counter sales) + Parts RO Sales (parts on repair orders) + the full parts PRICING system (hierarchy, price codes, price breaks/formulas, matrices, defaults). Covers /parts/sales-order, P&A vs Fulfillment, cores, prepaid parts, core returns (CM credit memos), and the 5-tier pricing hierarchy where manual override is \"king of kings.\" Load for counter-sale, parts-on-RO, or parts-pricing questions.",
-   "times_used": 16,
+   "times_used": 17,
    "last_used": "2026-09-01"
   },
   {
