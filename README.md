@@ -2,7 +2,7 @@
 
 Skill library for **Jay**, the Tekion DMS specialist agent at American Motors Group — plus general-purpose agent skills. Built for the [Hermes Agent](https://github.com/NousResearch) skill system (`SKILL.md` + YAML frontmatter, with optional `references/`, `scripts/`, `templates/`).
 
-**208 skills** · auto-synced from the live agent · last sync: 2026-09-01 18:30
+**208 skills** · auto-synced from the live agent · last sync: 2026-09-01 18:45
 
 ## Install into another agent
 
@@ -30,7 +30,7 @@ Secrets (passwords, app passwords, tokens) are redacted with `<PLACEHOLDER>` mar
 | 11 | [`sct-menu-sales-api-scorecard`](skills/automotive/sct-menu-sales-api-scorecard/SKILL.md) | automotive | 40 | 2026-08-18 | Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters ... |
 | 12 | [`tekion-ghost-bin-negative-onhand`](skills/automotive/tekion-ghost-bin-negative-onhand/SKILL.md) | automotive | 40 | 2026-08-18 | Diagnose a part showing NEGATIVE total on-hand in Tekion that stems from a CDK-migration "ghost bin" (a location-less legacy bin like 5005 / 5000 / 5001 / 5004 / RC1 / RC2 carried over at CDK→Tekion cutover ~4 yrs ago... |
 | 13 | [`tekion-quotes-menu-price-diagnosis`](skills/automotive/tekion-quotes-menu-price-diagnosis/SKILL.md) | automotive | 40 | 2026-08-21 | Diagnose a Tekion Service Menu pricing problem (e.g. "a rotation is charging $449.45") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLO... |
-| 14 | [`bc-menu-sales-reports`](skills/automotive/bc-menu-sales-reports/SKILL.md) | automotive | 38 | 2026-09-01 | Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards — Daily Closed (2x/day) and Closed Month-To-Date (1x/day) — from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben... |
+| 14 | [`bc-menu-sales-reports`](skills/automotive/bc-menu-sales-reports/SKILL.md) | automotive | 39 | 2026-09-01 | Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards — Daily Closed (2x/day) and Closed Month-To-Date (1x/day) — from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben... |
 | 15 | [`bc-gm-menu-build`](skills/automotive/bc-gm-menu-build/SKILL.md) | automotive | 35 | 2026-08-18 | The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-... |
 | 16 | [`amg-wip-monthly-column-fill`](skills/automotive/amg-wip-monthly-column-fill/SKILL.md) | automotive | 31 | 2026-09-01 | Fill a month column of Joe's AMG WIP workbook (the monthly fixed-ops tracker, rows=metrics cols=months, one tab per store) with Tekion data — hours sold by pay type, vehicle attendance, ToyotaCare hours, workshop hour... |
 | 17 | [`tekion-opcode-api`](skills/automotive/tekion-opcode-api/SKILL.md) | automotive | 29 | 2026-08-26 | Read, audit, and VERIFY Tekion opcode override rows directly from the backend REST API using the session's own auth token. This is the AUTHORITATIVE source of truth — the override UI grid frequently renders wrong/empt... |
