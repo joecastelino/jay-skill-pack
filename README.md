@@ -2,7 +2,7 @@
 
 Skill library for **Jay**, the Tekion DMS specialist agent at American Motors Group — plus general-purpose agent skills. Built for the [Hermes Agent](https://github.com/NousResearch) skill system (`SKILL.md` + YAML frontmatter, with optional `references/`, `scripts/`, `templates/`).
 
-**210 skills** · auto-synced from the live agent · last sync: 2026-09-02 11:45
+**210 skills** · auto-synced from the live agent · last sync: 2026-09-02 12:00
 
 ## Install into another agent
 
@@ -39,7 +39,7 @@ Secrets (passwords, app passwords, tokens) are redacted with `<PLACEHOLDER>` mar
 | 20 | [`tekion-service-menu-setups`](skills/automotive/tekion-service-menu-setups/SKILL.md) | automotive | 27 | 2026-07-15 | Navigate to, read, and inspect Tekion Service Menu Setups (the service-menu builder where interval menus, tiers, tags, opcodes, included services and inspections are configured). Covers the non-obvious nav path, the p... |
 | 21 | [`tekion-service-settings`](skills/automotive/tekion-service-settings/SKILL.md) | automotive | 27 | 2026-08-27 | Reference map of Tekion's Service Settings application (App Grid > Settings > Service Settings) — the master config for service/RO workflows: General Setup, Job Sequence, Flag Tech on, Round-Up rules, Default Service ... |
 | 22 | [`sct-backcounter-ro-sales-countsheet`](skills/automotive/sct-backcounter-ro-sales-countsheet/SKILL.md) | automotive | 24 | 2026-08-26 | Build Joe's daily SCT Back Counter Bin Check count sheet — cross-reference a day's RO part sales (Tekion OpenAPI) against parts that stock in a back-counter bin (5000 section) and render a Tekion-bin-check-style sheet... |
-| 23 | [`tekion-opcode-overrides`](skills/automotive/tekion-opcode-overrides/SKILL.md) | automotive | 23 | 2026-09-02 | Add vehicle/part override rows to a Tekion opcode (Overrides tab) using the verified browser-tool cascading react-select method. This is the batch workflow used for cabin-filter part overrides (RACF etc.) — Make/Model... |
+| 23 | [`tekion-opcode-overrides`](skills/automotive/tekion-opcode-overrides/SKILL.md) | automotive | 24 | 2026-09-02 | Add vehicle/part override rows to a Tekion opcode (Overrides tab) using the verified browser-tool cascading react-select method. This is the batch workflow used for cabin-filter part overrides (RACF etc.) — Make/Model... |
 | 24 | [`tekion-declined-deferred-services-report`](skills/automotive/tekion-declined-deferred-services-report/SKILL.md) | automotive | 22 | 2026-08-26 | Pull declined/deferred services (recommendations customers said no to) for any/all AMG Tekion stores via the internal recommendation/search reporting API. Powers "most declined service", declined-services marketing li... |
 | 25 | [`tekion-opcode-create`](skills/automotive/tekion-opcode-create/SKILL.md) | automotive | 22 | 2026-09-02 | Create a NEW opcode from scratch in Tekion's Opcode Management application — the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associ... |
 | 26 | [`tekion-standard-reports-performance`](skills/automotive/tekion-standard-reports-performance/SKILL.md) | automotive | 22 | 2026-09-02 | Pull Tekion Standard Reports from the REPORTS module (/core/reports) via the :9223 authenticated browser — especially the fixed-ops performance suite (Advisor Performance, Tech Performance / proficiency = assigned-bil... |

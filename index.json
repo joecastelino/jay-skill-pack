@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-02T11:45:05",
+ "generated": "2026-09-02T12:00:33",
  "skill_count": 210,
  "skills": [
   {
@@ -183,7 +183,7 @@
    "path": "automotive/tekion-opcode-overrides",
    "category": "automotive",
    "description": "Add vehicle/part override rows to a Tekion opcode (Overrides tab) using the verified browser-tool cascading react-select method. This is the batch workflow used for cabin-filter part overrides (RACF etc.) \u2014 Make/Model/Year/ Trim/Part per row, driven by the __buildRow() helper toolkit. Covers the real-click trim rule, the Save Changes confirmation modal, and mandatory reload+API verification. The most complex Tekion workflow we run.",
-   "times_used": 23,
+   "times_used": 24,
    "last_used": "2026-09-02"
   },
   {
