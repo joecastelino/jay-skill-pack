@@ -84,6 +84,30 @@ and redo the expand. Toggle+Save in ONE quick sequence, then verify with a fresh
 hard reload. Also: running kb_search_scrape.py mid-task navigates :9223 to
 tekion.service-now.com — don't mix KB scraping with a roles edit session.
 
+## "That settings tile isn't there" = permission gate (diagnostic, proven VC 2026-09-02)
+When Joe says a known Settings screen "is not there" (e.g. Pay Types Setup), do NOT assume
+a wrong URL or a store-level feature flag. Two-step confirm, ~3 calls:
+1. **Direct-nav the known URL** on :9223 and read `body.innerText` — a permission-gated
+   screen renders a tiny page (~280 chars) containing
+   **"You do not have the permissions to access the content"**. That string = confirmed gate.
+2. **App Grid search corroborates**: gated tiles are HIDDEN entirely — searching the exact
+   tile name returns "No Match Found" (so absence from the grid ≠ feature doesn't exist).
+Then find the gating pill: `/core/roles` → the user's role → expand the module accordion
+(center pane; disambiguate 'Service' leafs by x>400 — the x<400 one is the left-rail group)
+→ regex-scan innerText for the permission name. Confirm pill state by className:
+`core_switch_selected` present = ON (bg rgb(235,244,255)); absent = OFF (bg white).
+No aria-pressed attr exists — className is the only truth.
+
+**Case solved:** `/ro/paytypes` (Pay Types Setup) is gated by **"View Pay Types Setup"**
+(Service category → Repair Order group). At VW Clovis (1891) the **System Administrator**
+role had it OFF on 2026-09-02 while Job PayType Edit / Internal PayType Change were ON —
+Joe couldn't see the tile at all. Fix = toggle that one pill ON + Save (needs Joe's go
+since it's a role change affecting all holders).
+
+⚠ Timing pitfall: an `/eval` fired immediately after clicking the module accordion can
+hang the whole execute_code script to the 300s kill — put the click and the innerText
+re-read in SEPARATE execute_code calls, and keep curl `-m 40`.
+
 ## Known permission answers
 - **Stop advisors changing the Service Advisor on ROs** (KB0025857/KB0024919): permission
   **"Repair Order SA Edit"** under the **Service** section of a role. Without it the SA
