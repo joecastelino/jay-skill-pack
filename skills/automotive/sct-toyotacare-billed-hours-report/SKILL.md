@@ -14,6 +14,16 @@ triggers:
 
 # SCT ToyotaCare (TAC) Billed-Hours Report
 
+## 🚨 UI PATH DEAD (2026-09-02) — API IS NOW THE ONLY SOURCE
+Tekion replaced the report with **"Advisor Performance Report(3)"**
+(visibility-dashboard engine). The new report has **NO Opcode filter** (17 filter
+fields, none opcode) and **Joe's saved groups are GONE** — the saved-group
+dropdown shows only "Default Filter"; "TAC/TOYOTACARE REVISED 3/1/25" no longer
+exists. The entire "Joe's saved filter" browser method below is HISTORICAL.
+Pull TAC billed hours via the OpenAPI path (`tl_tac_api.py` works for any Toyota
+store via dealer key). Details of the new report:
+`tekion-standard-reports-performance`.
+
 Joe's monthly fixed-ops sheet build starts with the **ToyotaCare billed-hours** number, pulled from Tekion's **Advisor Performance** standard report using a saved filter he built. This skill pulls it reliably and replicates it across all 7 stores.
 
 ## Where the report lives

@@ -41,6 +41,54 @@ these, go straight to `/core/reports`. The custom-report search API and the
 - Find the module URL from the sidebar if unsure: the "R" rail icon's `href` is
   `/core/reports`; "R" at the bottom (`/core/roles`) is Roles, don't confuse them.
 
+## 🚨 REPORT REPLACED — "Advisor Performance Report(3)" (verified 2026-09-02)
+
+Tekion RETIRED the old Advisor Performance report. The Service category now lists
+**"Advisor Performance Report(3)"** running on the **visibility-dashboard engine**
+(URL after opening = `/core/reports/service/service-visibility-dashboard/<id>`,
+SCT id `68f20e5a175cec6153a05014` — same engine as "Ro Actual Time Report").
+Consequences, verified live at SCT 876:
+
+1. **NO OPCODE FILTER.** The funnel's field list is exactly 17 fields:
+   `Service Types · Bill Hours · Total Sale Amount · Department · Ro Status ·
+   Creation Source · Invoice Created Time · Ro Created Time · Ro First Invoiced
+   Time · Ro First Closed Time · Ro Closed Time · Service Mode · Ro Job Count ·
+   Make · Pay Type · Sub Pay Type · Pay Type Status`. Typing "op" in the field
+   search → "No Match Found". Not a config issue — a feature gap in the rebuild.
+2. **Joe's SAVED FILTER GROUPS ARE GONE.** The saved-group dropdown shows only
+   "Default Filter" — TAC/TOYOTACARE REVISED 3/1/25, TXM REVISED 9/1, Customer
+   Pay Hours 10/1/2025, Warranty Hours 11/1, etc. did NOT migrate (they were
+   keyed to the old report id, and depended on the now-missing Opcode field).
+3. Default funnel rows: `Service Advisor In` + `Pay Type Closed Time BTW`.
+   Top bar has a `Service Advisor: Select...` chip. New columns include
+   `Labor Sale With MOT / Without MOT`.
+4. **Every opcode-scoped UI workflow (TAC billed hours, TXM, PDI, prepaid) is
+   dead on this screen.** Route those through the API instead
+   (`tekion-advisor-closed-gross-api-report`, TXM/TAC opcode pulls) and/or file
+   a Tekion ticket for Opcode filter parity.
+
+**Navigation gotcha for the new report:** direct page.goto of the
+visibility-dashboard URL BOUNCES to /home or a stale route — you MUST click
+through `/core/reports` → Service category → the report row. The list is
+virtualized; `scrollIntoView({block:'center'})` the row first, re-read its rect,
+then `/mouse` — a click at a stale y lands on the app-launcher overlay (tell:
+page text shows "Recently Used Apps"). The funnel trigger is still
+`[class*=filterTrigger]` (~x101,y164), but its popover does NOT match
+`.ant-popover` — find it by locating leaf elements with text
+`Apply` / `Add Filter` / `Default Filter` and walking up to the container.
+Field dropdown options = `[class*=option]`; the field-select search input is a
+react-select `input#react-select-N-input`.
+
+**Competing consumer trap (same day):** the :9223 browser was being yanked to
+other pages mid-flow by an in-flight cron (`/tmp/caliber-pipeline.lock` fresh).
+If navigation keeps bouncing, check locks + pgrep, and do report recon on
+**:9225** instead.
+
+Sections below describing the OLD report's top-bar filters, Opcode-based saved
+groups, and `/core/reports/service/advisor-performance` URL are **HISTORICAL** —
+kept for the column definitions and calendar/date-picker mechanics, which still
+apply.
+
 ## The two reports (verified live SCT/876, 2026-07-01)
 
 ### Advisor Performance (Service category)

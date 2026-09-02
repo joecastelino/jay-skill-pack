@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-02T14:30:03",
- "skill_count": 210,
+ "generated": "2026-09-02T14:45:03",
+ "skill_count": 211,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -1135,6 +1135,14 @@
    "path": "automotive/tekion-parts-shortage-diagnosis",
    "category": "automotive",
    "description": "[DEPRECATED \u2014 use tekion-parts-autoorder-diagnosis] Old name for the Tekion parts stock-out / why-didn't-this-auto-order diagnosis. All content was merged into tekion-parts-autoorder-diagnosis (the canonical, fuller skill). This file is a redirect only.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-pdf-print-copies-diagnosis",
+   "path": "automotive/tekion-pdf-print-copies-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose \"the customer invoice prints 2 times\" / duplicate document printing at any AMG Tekion store. Root cause lives in PDF Settings \u2192 Print tab \u2192 AutoPrint Settings: the Quantity column = copies per print event. Also covers: finding which store an employee works at via the OpenAPI users endpoint, and the /ro/pdf-settings nav traps. Verified live at VW Clovis (1891) 2026-09-02 (Joe Mendoza ticket).",
    "times_used": 0,
    "last_used": null
   },
