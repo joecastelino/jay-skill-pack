@@ -98,7 +98,7 @@ UI: **Customer Management → open customer → left-nav "Tax Exemptions" → Pa
 master does NOT explain why one went retail and one went wholesale. The list-view columns
 agree: both show `Parts Tax Exempted - Yes`.
 
-### What actually differs (OPEN — unresolved, do not guess)
+### What actually differs (advanced 2026-09-02 — snapshot contradicts the lines)
 
 The `taxable` value **snapshotted onto each order**, plus tax regime:
 
@@ -109,15 +109,70 @@ The `taxable` value **snapshotted onto each order**, plus tax regime:
 | `taxConfiguration` | NO TAX on all 5 components, `taxExempt:false` | — |
 | `taxSummary.totalTaxAmount` | `0.00` on $4,661.81 | — |
 
-Same master exemption status, different snapshot. Unverified leads, in strength order:
-1. **`/api/cms/u/tax-code-setup/<id>` differs materially** — De Laveaga's response is
-   9,356 bytes vs Crash Champions' 3,026. Parse and diff these first.
-2. **`taxRegime: null` on 331990** — a null regime may fall through to the Taxable branch.
-3. **Timing** — De Laveaga master last modified Oct 30 2025; SO created Aug 24 2026. If
-   the order captured a stale/default `taxable`, that's a Tekion snapshot bug.
+#### ⭐ THE KEY FINDING — header flag and LINE tax codes contradict each other
+
+Joe's follow-up was *"K, so where did the taxable status change?"* The answer is
+**it never changed — and the order disagrees with itself.**
+
+Drill into `partSaleDetails[].taxCodeDetails[0]`:
+
+| SO | header `customer.taxable` | line-level tax code | tax charged |
+|---|---|---|---|
+| 331990 De Laveaga | `true` | **all lines `NO TAX` @ `taxPercentage:"0"`**, `manualTaxCode:false` | $0 |
+| 323623 Crash Champions | `false` | `taxable:true` but **no tax code resolved at all** | $0 |
+
+So on 331990 the resale exemption **did** apply at the line level (NO TAX, 0%) while the
+header simultaneously says taxable. **One order, two contradictory tax facts.**
+
+This is the mechanism to present: `customer.taxable` is a generic per-order snapshot and
+is **not** the parts-exemption resolution — the real exemption lives in the line tax code.
+If GLAM keys Customer Tax Status off that stale header flag rather than the line codes, a
+Wholesale order from a valid resale-cert customer matches
+`Taxable / Wholesale → 4740 …COUNTER RTL…`. Zero tax charged, still booked retail.
+
+**Still NOT proven:** which flag GLAM actually reads (header vs line code). Everything is
+*consistent* with the header, but do not assert it. To close it, pull the posted GL/journal
+lines for both SOs and see which account each actually hit (read-only). Say so plainly —
+Joe accepts "I haven't nailed that yet"; he does not accept a confident wrong answer.
+
+#### Dating the change — `modifiedTime` is the only signal you get
+
+Build a merged timeline from customer-master `modifiedTime` vs SO `createdTime`/`modifiedTime`:
+
+```
+2025-10-30 10:25  De Laveaga master modified
+2026-07-06 13:28  CC SO 323623 created
+2026-07-20 14:09  CC master modified          <-- lands INSIDE 323623's open life
+2026-08-24 11:36  SO 331990 created
+2026-08-27 08:38  SO 331990 modified
+2026-08-31 13:34  CC SO 323623 modified (closed)
+```
+
+**De Laveaga's master was last touched ten months BEFORE SO 331990 existed** — that alone
+refutes "someone changed the customer." Use this negative result; it's the cleanest way to
+exonerate the counter people. Both orders were `saleType=WHOLESALE` /
+`saleSubTypeId=WHOLESALE`, so **nobody picked the wrong sale type** either.
+
+Also surfaced: Crash Champions is **Parts-exempt but Service-NOT-exempt** (asymmetric).
+Flag it as worth a look; don't call it a defect without asking.
+
+Remaining unverified lead: **`/api/cms/u/tax-code-setup/<id>` differs materially** —
+De Laveaga 9,356 bytes vs Crash Champions 3,026. Parse and diff if the JE check is
+inconclusive.
 
 Per Joe's NEVER-GUESS rule: present the leads and ask which to chase. Do not pick one and
 assert it.
+
+### 🚫 The customer Activity Log is NOT an audit trail — don't waste turns there
+
+Customer → left-nav **Compliance → Activity Log** looks like the place to find "who changed
+the tax flag." **It is GDPR-only.** Its Type filter is
+`Request Raised By Customer, Data Exported, Data Deleted, Data Corrected, Data Selling & Sharing Stopped`
+and it read **"Activity log is empty for this customer"** for both customers.
+
+There is **no exposed per-field change history** for customer tax settings. `modifiedTime`
+on the master is all you get. Tell Joe that directly rather than hunting for a log that
+doesn't exist.
 
 So the counter-intuitive summary: *"the order charged no tax but is treated as taxable
 for GL routing, because routing reads the customer record."*
@@ -266,16 +321,99 @@ partSaleDetails[].{sourceCodeId, partNumber, partType, partLineStatus, sellingPr
 Read big `__cap[i].r` / `window.__X` values back in **≤15,000-char slices** (`/eval`
 truncates around 20k) and reassemble.
 
+## ⚡ FAST PATH — header harvest without the UI dance (verified 2026-09-02, `:9223`)
+
+When Joe is waiting, skip the facet-search clicking entirely. Total ~10 calls:
+
+1. **Switch dealer via the UI pill** (setting `localStorage` alone does NOT work).
+   Click the store name pill at `~1145,32`, wait 4s, then enumerate rows:
+   `document.querySelectorAll('[class*="dealerInfoItem"],[class*="dealerItem"]')`
+   filtered `offsetParent!==null`. `/mouse` the leaf row (e.g. `Stevens Creek Toyota@1074,344`),
+   wait ~9s, verify `localStorage.currentActiveDealerId === '876'`.
+
+2. **Navigate to `/parts/sales-order`, THEN arm the XHR hook, THEN click Refresh.**
+   Arming before the navigate = `__cap` empty (page load wipes it). The Refresh button is
+   at `~606,96` — find it with an exact-innerText scan constrained to `rect.width < 160`
+   (a naive leaf-node `children.length===0` scan **misses it**; it's a `BUTTON` wrapping a
+   `DIV`). One click fires 8 XHRs including the search + full axios headers.
+
+3. **Build a generic in-page replayer once**, then reuse for every endpoint:
+```js
+(function(){var h=(window.__cap||[]).map(c=>c.h).filter(x=>x&&x['tekion-api-token'])[0];
+window.__H=h;
+window.__go=function(url,body,method){window.__r=null;
+  var o={method:method||(body?'POST':'GET'),headers:JSON.parse(JSON.stringify(h)),credentials:'include'};
+  if(body)o.body=JSON.stringify(body);
+  fetch(url,o).then(r=>r.text()).then(t=>{window.__r=t;}).catch(e=>{window.__r='ERR '+e;});
+  return 'go';};
+return h?'H-OK':'H-MISSING';})()
+```
+   Then `window.__go(url[,body])`, `sleep 6`, read `window.__r`. **A bare in-page
+   `fetch()` without these headers returns `500 "Token doesn't exist or is invalid"`** —
+   cookies alone are not enough; the axios interceptor's `tekion-api-token` is required.
+
+**Correct endpoints (2026-09-02):**
+```
+POST /api/partTrade/u/sale/order/search      ← NOT /sales-order/search (that one 404s silently → LEN 0)
+GET  /api/partTrade/u/sale/order/<internalId>
+GET  /api/cms/u/customers/<customerId>
+```
+Minimal search body — **drop the `status` filter to see CLOSED orders**:
+```json
+{"sort":[{"field":"modifiedTime","order":"DESC"}],
+ "filters":[{"field":"siteId","key":"siteId","operator":"IN","values":["-1_876"]}],
+ "searchText":"331990","groupBy":[],
+ "includeFields":["id","orderNo","createdTime","modifiedTime","saleType","saleSubTypeId",
+                  "saleAmount","customer","status","partCounterPersonName","departmentName"],
+ "searchableFields":[],"page":{"from":0,"size":5}}
+```
+Response: `data.{count,hits[]}`. Note the page key here is **`page:{from,size}`**;
+the app's own payload uses `pageInfo:{start,rows}` — both were accepted, `page` is simpler.
+
+One-shot tax extractor for a pulled SO (`window.__r` = the SO payload):
+```js
+(function(){var d=JSON.parse(window.__r).data;var codes={};
+(d.partSaleDetails||[]).forEach(function(p){var c=(p.taxCodeDetails&&p.taxCodeDetails[0])||{};
+ var k=(p.taxable?'taxable=T':'taxable=F')+' | code='+(c.taxCode||'none')+' | pct='+(c.taxPercentage||'-');
+ codes[k]=(codes[k]||0)+1;});
+return JSON.stringify({cust:d.customer&&d.customer.name,soTaxable:d.customer&&d.customer.taxable,
+ sale:d.saleType,status:d.status,lines:(d.partSaleDetails||[]).length,
+ taxTotal:d.tax&&d.tax.taxAmount,breakdown:codes});})()
+```
+Grouping the lines into a **counted breakdown** (rather than dumping every line) is what
+made the header-vs-line contradiction obvious at a glance.
+
+11. **`POST /screenshot` does not exist on the `:9223` bridge** (`Cannot POST /screenshot`,
+    and `GET /` is `Cannot GET /` — no route listing). You cannot hand Joe a visual of the
+    GLAM table from that port; reconstruct tables as text via `/eval` innerText scans.
+    Available verified routes: `/health`, `/eval` (body key **`js`**), `/navigate`, `/mouse`, `/type`.
+
+12. **`execute_code` has a hard 300s ceiling** — a chained multi-`/eval` browser script got
+    killed at 300s having made **zero** recorded tool calls. Wrap every curl in
+    `timeout N`, budget 35–50s per `/eval`, and keep each `execute_code` block to a handful
+    of calls. Long browser work must be chunked across blocks, not looped in one.
+
+13. **Don't assume you know which customers the two SOs belong to.** I carried forward an
+    assumption from a prior session that both orders were the same customer and navigated
+    to the wrong customer record first. 331990 = **De Laveaga**, 323623 = **Crash Champions**
+    — two different accounts. Pull `customer.id` off each SO payload *before* opening any
+    customer page.
+
 ## ⚠️ TRAPS (both nearly produced a wrong answer)
 
-1. **DUPLICATE orderNo across eras.** Searching `323623` returned **TWO** hits:
-   - id **519922** — created 2026, SCT wholesale, counterperson STEVEN MARTINEZ ← the real one
-   - id **257325** — created **2019-10-17**, `saleType: RETAIL`, `saleSubTypeId: null`,
-     `departmentName: null`, counterperson **"System"** = a legacy/migrated record.
+1. **DUPLICATE orderNo across eras + FUZZY search.** Searching `323623` returned **FOUR**
+   hits, only two of which had that order number:
+   - id **519922** — orderNo 323623, created 2026, SCT wholesale, STEVEN MARTINEZ ← the real one
+   - id **257325** — orderNo 323623, created **2019-10-17**, `saleType: RETAIL`,
+     `saleSubTypeId: null`, `departmentName: null`, counterperson **"System"** = legacy ghost
+   - id 207592 — orderNo **398217**, Laura Ramirez ← *not even the number you searched*
+   - id 248756 — orderNo **355755**, Laura Ramirez ← *ditto*
 
-   Grabbing the wrong one would have "proved" the same SO number goes both retail and
-   wholesale. **Always disambiguate by `createdTime` + internal `id`; treat
-   `partCounterPersonName:"System"` + null department as a pre-migration ghost.**
+   **`searchText` is fuzzy — `hits[0]` is NOT necessarily your order.** Always filter the
+   hits array on exact `orderNo` yourself, THEN disambiguate survivors by `createdTime` +
+   internal `id`. Treat `partCounterPersonName:"System"` + null department as a
+   pre-migration ghost. Grabbing the wrong record would have "proved" the same SO number
+   goes both retail and wholesale.
 
 2. **The SO list's DEFAULT status filter hides CLOSED orders.** Default filter is
    `status IN [DRAFT, DELIVERED, PARTIALLY_DELIVERED, INVOICED]` — **CLOSED is absent.**
