@@ -298,6 +298,25 @@ BEFORE flagging it as a missed transfer:
   itself is benign, yet the stale companion negative (2418 = −2) was still sitting there
   uncorrected from prior runs. Report the recurrence count and the unresolved companion, not the
   increase.
+- **STATUS UPDATE 2026-09-01 — THE 8/31 CORRECTIONS HELD; QUIETEST RUN ON RECORD (1 diff / 174 rows).**
+  Both 8/31 corrections are STABLE one day later: **87139-YZZ83** 5007 held **+50** (TXM Primary 0 +
+  **4119**=85 + 5007=50 → Total 135 ✓ — note 4119 drew down 100→85, ordinary sales off a non-tracked
+  bin, Primary is TXM at 0 so nothing relieved there); **87139-YZZ09** 5007 held **+10** (TXM Primary
+  10 + 4107=2 + 5007=10 → Total 22 ✓). **17801-F4010 CONFIRMED RESOLVED (2nd clean day)** — 5006
+  Primary=1 + 2417=1 → Total 2 ✓, no companion negative anywhere; the case that ran 14 recurrences
+  8/11–8/30 is closed. Stop opening it every run unless it reappears in a diff. Negatives held at
+  **24** with the identical per-bin mix as 8/31 (5005:11, 5007:5, 5000:2, 5004:2, 5006:2, 5001:1,
+  5002:1). Still open/flat: **04500-1** −29 (4th flat day, single-bin 5005 IS Primary, outside
+  transfer scope, On Order 1), **87139-42040** −12 (**13th** flat day, Primary 2424), **31532** −58
+  (7th flat day in the bin, BUT SP-ORD Primary drew 24→**21** and Total Inventory Qty slid −34→**−37**
+  — the bin-vs-Total divergence is still widening even though the diff shows nothing; this is the one
+  item that keeps moving). ONLY diff in 174 rows: 87139-YZZ93 5007 32→25 (Primary; +4111=30 → Total
+  55 ✓ benign high-churn). 66/174 with 24h activity. Session state: :9223 was on
+  **`/login?redirectTo=/home`** (single tab, 13h-old storage-state) → `login.py --force` clean FIRST
+  TRY (~30s, LOGGED_IN) → cookies added:5 → `localStorage.clear()` → **21/21** keys verified →
+  `/navigate /home` welcome:true on BC/1251 → dealer pill x1130,y32 → SCT leaf x1074,y344 → 876 in ONE
+  poll. 7/7 bins tagged+clicked first try via "500" filter + `data-jaybin`, zero scrolling, **Apply at
+  x314,y689**, 4 pages clean.
 - **STATUS UPDATE 2026-08-31 — BIGGEST CORRECTION DAY EVER RECORDED: bin 5007's two deepest
   negatives BOTH cleared, and the 17801-F4010 companion case RESOLVED after 20 days.**
   **87139-YZZ83** (5007): **−93 → +50** (+143 swing) — was the single deepest negative on the board;

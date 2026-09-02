@@ -800,6 +800,31 @@ SKILL.md under its size limit. Consensus of those runs: the full prevention word
 produces a clean one-shot draft the large majority of the time; verification asks are
 still mandatory; the $0 opened streak ran 8/23–8/25 (6 half-day slots) and broke 8/26.
 
+## (9/01 8:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, TRUE dedupe, all 4 asks first try
+Both scripts ran FOREGROUND clean in seconds (no scraper contention, `ps aux | grep -c
+"[t]ekion-scraper"` = 0). Hand-off RC=0 FIRST TRY in 209s (just inside the 230s timeout);
+draft correct FIRST TRY at IMAP UID 114, and TRUE dedupe — she found and deleted the noon
+draft UID 111 with the identical subject on her own, subject-list confirmed exactly one
+09/01 hit. NOTE: her reply showed a self-correcting rebuild mid-run ("the related wrapper
+shows as multipart/alternative instead of multipart/related. Let me fix that and rebuild")
+— she caught and fixed her own MIME nesting BEFORE finishing; final structure verified
+correct. Treat that as normal self-healing, not a failure.
+All 3 verification asks returned FIRST try with "use raw IMAP, NOT the Gmail API" leading +
+the 3-line numbered part probe: subject-list 59s, part-probe 105s, Sent-check 33s. Part
+sizes DECODED and EXACT on-disk (PNG 50,645 / PDF 45,173); bolded total $55.10 confirmed.
+The part-probe reply included a visible self-correction ("regex was too strict — the <b> tag
+wraps 'TOTAL MENU GROSS: $55.10'") before answering — harmless. BOGUS-UID trap did NOT recur
+(reported 114 == subject-list 114). Sent-check = 4 hits, all old em-dash-era sends
+(06/30-07/03), zero today = no leak.
+DATA: 180 opened ROs scanned, **1 menu / $55.10** ($29.32 labor + $25.78 parts) — thin but
+GENUINE (`complete: true`, `expected_records: 1`, 180 ROs proves no starvation). Gustavo
+Alatorre 1/$55.10 (100% share): RO 399532 TEK35000BNM 2025 RAV4, 31,635 mi — the SAME single
+RO the noon run caught, i.e. zero additional menus written all afternoon/evening.
+`records` empty (0) while `rows` had the entry — the 8/26 quirk STILL RECURS; read `rows`.
+`totals.parts_price` ($49.68) != `parts_gross` ($25.78) — scorecard/email use GROSS.
+Opened drafts stack = 13 (08/21-09/01 + perennial 08/02 em-dash UID 19; 08/28 UID 91 also
+em-dash). No true dupes. Flag to Joe: 12 unsent August Opened drafts still accumulating.
+
 ## (9/01 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, all 4 asks first try
 First run of September. Hand-off RC=0 FIRST TRY in 122s; draft correct FIRST TRY at IMAP UID 111,
 no dedupe needed (0 prior drafts with today's exact subject). All 3 verification asks returned
