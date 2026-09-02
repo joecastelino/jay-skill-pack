@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-02T09:00:08",
+ "generated": "2026-09-02T09:15:54",
  "skill_count": 210,
  "skills": [
   {
@@ -571,6 +571,14 @@
    "last_used": "2026-08-25"
   },
   {
+   "name": "tekion-parts-so-gl-account-routing",
+   "path": "automotive/tekion-parts-so-gl-account-routing",
+   "category": "automotive",
+   "description": "Diagnose \"this parts Sales Order / counter sale is hitting the WRONG GL account\" (e.g. a Wholesale SO posting to a retail parts sales account). Covers the GLAM Fixed Operations > Part & Accessories > Parts-Counter mapping table, its 6 keying dimensions, the customer.taxable snapshot-vs-master trap, the 2026-08-19 store-wide NO-TAX code rollout that flipped every wholesale order to taxable, date-window bisection (search pagination is silently ignored), and the internal API endpoints to pull a full SO for evidence. Use for any \"why did SO X go to retail instead of wholesale\" or \"where did the taxable status change\" question.",
+   "times_used": 4,
+   "last_used": "2026-09-02"
+  },
+  {
    "name": "tekion-ro-traffic-heatmap-report",
    "path": "automotive/tekion-ro-traffic-heatmap-report",
    "category": "automotive",
@@ -665,14 +673,6 @@
    "description": "Restrict Tekion Parts-on-Appointments (Parts RO Sales > Appointments queue) to a subset of opcodes \u2014 e.g. recalls only, per Glade at SCT. Covers the per-opcode \"Consider for Parts preparation on Appointment\" checkbox, Bulk Update, the limited Appointments-tab filters, and how to derive a store's recall keep-list from the opcode list. Load for any \"parts department should only see X appointments\" request.",
    "times_used": 3,
    "last_used": "2026-08-24"
-  },
-  {
-   "name": "tekion-parts-so-gl-account-routing",
-   "path": "automotive/tekion-parts-so-gl-account-routing",
-   "category": "automotive",
-   "description": "Diagnose \"this parts Sales Order / counter sale is hitting the WRONG GL account\" (e.g. a Wholesale SO posting to a retail parts sales account). Covers the GLAM Fixed Operations > Part & Accessories > Parts-Counter mapping table, its 6 keying dimensions, the customer.taxable snapshot-vs-master trap, the 2026-08-19 store-wide NO-TAX code rollout that flipped every wholesale order to taxable, date-window bisection (search pagination is silently ignored), and the internal API endpoints to pull a full SO for evidence. Use for any \"why did SO X go to retail instead of wholesale\" or \"where did the taxable status change\" question.",
-   "times_used": 3,
-   "last_used": "2026-09-02"
   },
   {
    "name": "tekion-tech-flag-hours-pay",
