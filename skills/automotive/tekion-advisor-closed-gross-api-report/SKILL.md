@@ -42,6 +42,106 @@ suffix the filename. Outputs PNG (page-1 summary), PDF (full RO detail), CSV
 - Resolves advisor names via `GET /users/{id}` (cached in-process).
 - Auto-flags **negative-gross** ROs and **partially-closed** ROs in a banner.
 
+## 🚨 ONE QUOTA-BLOCKED STORE USED TO STARVE THE OTHER SIX (fixed 2026-09-02)
+
+**Symptom:** the 3:30 AM fleet run logged only `--- st start 03:30:04 ---` and then
+nothing for 49 minutes. `st SCRAPE FAILED`, and bt/bc/tl/sv/vc/ar **never ran at
+all** — 6 of 7 stores silently lost. A background recovery script exited rc=2.
+
+**Root cause (two compounding bugs, both now fixed):**
+1. `advisor_closed_gross.py::_req` treated **all** 429s identically —
+   `time.sleep(25*(a+1))` × 4 attempts = **250s of sleep per failing call**. SCT's
+   per-dealer 30-day quota was exhausted, so *every* `/operations` + `/parts` call
+   429'd. Under the `ThreadPoolExecutor(6)` fan-out over 47 ROs that hung the scan
+   for ~49 min **while holding `/tmp/advisor-fleet-daily.lock`**.
+2. `get()` swallowed every exception to `{}`. So even when the scan finished, all
+   47 ROs summed to **$0.00 gross** and the script **exited 0 and wrote the file** —
+   a plausible-but-FALSE zero report that would have been rendered and emailed to
+   Joe as real. This is the same false-zero family as the Menu Sales
+   `complete:true`/0-menu trap.
+
+**The fix — distinguish the buckets, fast-fail the hopeless one:**
+```python
+class QuotaBlocked(RuntimeError): ...
+
+# in _req, on a 429:
+detail = e.read().decode("utf-8", "replace")
+if "DEALER_QUOTA" in detail:
+    raise QuotaBlocked(...)      # 30-day dealer ceiling — retrying is futile
+time.sleep(25 * (a + 1)); continue   # OVERALL_RATELIMIT/QUOTA — rolling, do retry
+
+# in get(), re-raise it instead of swallowing to {}:
+except QuotaBlocked: raise
+except Exception:    return {}
+```
+`main()` catches `QuotaBlocked` → **`sys.exit(3)`** and writes NO file.
+`fleet_advisor_daily.sh` now: `timeout -k 30 1200 $PY advisor_closed_gross.py ...`
+then `rc=3` → `QUOTA BLOCKED … skipped`, `rc=124/137` → `TIMED OUT after 20m`,
+both `continue` after a 20s pause. **The 20-min per-store `timeout` is the
+belt-and-braces guard** — no single store may ever consume the fleet window again,
+whatever the failure mode.
+
+Verified live against still-blocked SCT: **1.8s and exit 3** (was 49 min), **no
+file written**. Healthy store regression-checked same run: AR = 6 ROs /
+$5,175.05, exit 0.
+
+**Rule: never let a 429 handler treat DEALER_QUOTA like a rolling rate limit, and
+never let a data-fetch helper swallow a quota error into an empty dict.** A $0.00
+report that exits 0 is worse than a crash.
+
+### Fleet quota probe — run this FIRST on any 429 report (30 seconds)
+Before root-causing anything, establish whether it's one store or the whole app.
+`/home/itadmin/tekion-reports/_fleet_quota_probe_20260902.py` walks all 7 dealers
+doing search → jobs → operations with 8s pacing and prints one line each:
+```
+st  d=  876 search=200 jobs=200 ops=429 DEALER_QUOTA
+bt  d= 1249 search=200 jobs=200 ops=200
+...                                            <- 6 stores clean
+```
+That single output kills or confirms the "is Tekion down / is the app-wide bucket
+drained" question instantly. **Signature to memorize: search 200 + jobs 200 +
+operations 429 = per-dealer quota, one store only.** If ALL stores 429 on search,
+it's `OVERALL_QUOTA` and a completely different problem.
+⚠️ The RO search response key is **`data.results`**, not `data.repairOrders` —
+using the wrong key makes every store report a misleading `NO_ROS`.
+
+### Watcher census — do this before launching ANY recovery watcher
+Self-inflicted watcher pile-up is the #1 cause of a dealer quota that "never
+clears" (see `tekion-apc-quota-usage-investigation`). On 2026-09-02 there were
+**three** dead SCT watchers' lockfiles (`v1`, `v2`, `v3` from 12:04, 17:02, 23:13)
+plus two alignment self-heal locks. Always:
+```bash
+pgrep -af "wait_ops|_ops_probe|selfheal|recovery|watcher"
+ls -la /tmp/*quota*.lock /tmp/*selfheal*.lock /tmp/*recovery*.lock
+for f in /tmp/*quota*.lock; do fuser "$f" 2>/dev/null || echo "$f no holder"; done
+```
+Kill every hit and remove holderless locks BEFORE adding another poller. A v3
+watcher polling every 15 min for 5h logged **19 consecutive 429s and gave up** —
+polling a 30-day dealer ceiling is pure quota burn with zero chance of success.
+
+### Dealer quota is a 30-DAY budget — polling can't fix it, only spending less can
+Plan (`/home/itadmin/dealerdetail/specs/plan-details/dealer-level-apis-full.txt`):
+Enterprise Tier 1, **Overall 2,000,000 calls / 30 days**, throttle 7,500 / 15 min,
+with per-dealer per-API 30-day ceilings on top. `Get Operations` and `Get Parts`
+are the expensive fan-out calls and they are exactly what gets blocked first.
+
+30-day call totals by store, straight from `SyncRun.apiCallCount` (dealer-detail
+DB) — this is the audit that tells you WHO spent the quota:
+```sql
+SELECT s.abbreviation, SUM(r."apiCallCount"), COUNT(*)
+FROM "SyncRun" r JOIN "Store" s ON s.id = r."storeId"
+WHERE r."startedAt" > now() - interval '30 days'
+GROUP BY s.abbreviation ORDER BY 2 DESC;
+```
+Measured 2026-09-02: **BC 107,602 · BST 88,991 · ARSJ 16,241 · SCVW 13,012 ·
+TOL 8,932 · SCT 6,412 · VWC 2,522.** Note SCT's dealer-detail spend is LOW — the
+SCT block is driven by the *other* SCT consumers (Menu Sales 12/17/18h, Alignment
+19h, Back Counter 20h, fleet advisor 3:30, plus dead watchers), not by
+dealer-detail. **Don't assume the biggest sync is the culprit; measure per store.**
+Schema gotchas: the column is `Store.abbreviation` (not `abbrev`) and
+`SyncRun.rosFetched` (not `recordsFetched`); there is no `psql` on this box — query
+via `npx tsx` + Prisma `$queryRawUnsafe` from `apps/web`.
+
 ## 🤖 FLEET AUTOMATION — all 7 stores, nightly, one email per store (live 2026-08-28)
 Joe asked for the whole fleet on a cron with **separate emails by store**. Wired:
 

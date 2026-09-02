@@ -724,4 +724,43 @@ To remove a stale brain page immediately (don't wait for 3 AM orphan-purge): `gb
   as separate terminal calls, or via capture-session.sh.
 - **The brain repo is gitignored in places + shared** — Jay pages live among other agents'; that's
   expected. A future task may split out a Jay-only DB (queued, low priority).
-- Memory tool is FULL (~98%) — put the fuller record in the brain, keep memory for compact facts.
+- Memory tool is AT ITS HARD CAP — put the fuller record in the brain, keep memory for compact facts.
+
+## MEMORY TOOL AT CAP — budget FIRST, never shrink by trial-and-error (learned the hard way 2026-09-02)
+The real limits are **56,000 chars memory / 12,000 user-profile** (NOT the 28000/12000 the
+session-end-sync section above cites — that config raise was superseded). Memory sits at ~99%
+essentially permanently, so **every `memory(action='add')` of a substantial entry WILL be rejected**:
+`Memory at 55,872/56,000 chars. Adding this entry (1686 chars) would exceed the limit.`
+
+**WHAT I DID WRONG (cost ~25 wasted tool calls in one turn):** I tried `add`, got rejected, switched
+to `replace` on an overlapping entry, and then shaved 10-40 chars off the new text and retried —
+**twenty-plus times in a row** (57,172 → 56,623 → 56,547 → ... → 56,001 → success). Each retry is a
+full tool round-trip and the error only ever tells you the projected total, so this converges
+agonizingly slowly. Joe was waiting.
+
+**CORRECT PROCEDURE:**
+1. The rejection error prints `current_entries` (the FULL list) plus `usage`. Read it once — that's
+   your whole working set, no extra call needed.
+2. **Compute the budget before writing anything.** The `replace` action's arithmetic is
+   `new_total = current_total - len(old_entry) + len(new_entry)`. So:
+   `max_new_len = 56000 - current_total + len(old_entry_being_replaced)`.
+   Find the entry you're superseding in `current_entries`, get its length, do the subtraction, and
+   write to that number **on the first attempt**.
+3. **Prefer CONSOLIDATING REPLACE over ADD.** New knowledge usually supersedes or extends an existing
+   entry. Merging the old + new into one replace often nets *negative* growth. The 2026-09-02 case:
+   a new Tekion `DEALER_QUOTA` finding merged into the existing `OVERALL_QUOTA` entry — same topic,
+   one entry, three buckets documented instead of two overlapping entries.
+4. `old_text` only needs a **short unique substring** of the target entry — but note it matches the
+   entry *containing* it, so a longer prefix does NOT reduce the replacement size. Lengthening
+   `old_text` to try to "consume" more budget does nothing; only the *entry's* full length counts.
+5. If even a consolidated replace won't fit, **evict**: `action='remove'` an entry whose content is
+   already fully captured in a skill (memory should not duplicate skill bodies), then add.
+6. **Escape hatch — don't fight the cap at all.** If the knowledge is >~1,200 chars or narrative,
+   it belongs in a SKILL or a brain page, not memory. Memory is for compact always-injected facts
+   that change behavior. A long incident writeup goes to a skill + gets auto-embedded into GBrain
+   within 15 min (see the auto-ingest sections above). Reserve memory edits for the one-or-two-line
+   distillation that must be in-context every turn.
+
+**Verify after:** the success response echoes `usage` (e.g. `99% — 55,989/56,000`) and the full
+`entry_count`. Confirm the entry you intended to supersede is GONE from the returned list — a
+`replace` that silently matched a different entry is the failure mode to watch for.

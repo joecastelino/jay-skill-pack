@@ -16,6 +16,43 @@ DATA instead of inference from our own scraper logs. Joe explicitly wants "go on
 Tekion APC and see what's actually going on, I don't want assumptions" — this skill
 is how you answer that with live evidence.
 
+## Step 0 (DO THIS FIRST): local fleet probe beats the portal for "which store"
+
+Before touching APC at all, run the 30-second local probe — it answers the
+single most important question (one store vs app-wide) without any browser:
+```bash
+cd /home/itadmin/tekion-reports
+/home/itadmin/.hermes/hermes-agent/venv/bin/python3.11 -u _fleet_quota_probe_20260902.py
+```
+Walks all 7 dealers search → jobs → operations, 8s pacing, one line per store.
+**Signature: search 200 + jobs 200 + operations 429 DEALER_QUOTA on exactly one
+store = per-dealer 30-day ceiling.** If every store 429s on *search*, it's
+`OVERALL_QUOTA` — different problem, different fix.
+
+Then quantify WHO spent it from the dealer-detail DB (no portal needed):
+```sql
+SELECT s.abbreviation, SUM(r."apiCallCount"), COUNT(*)
+FROM "SyncRun" r JOIN "Store" s ON s.id = r."storeId"
+WHERE r."startedAt" > now() - interval '30 days'
+GROUP BY s.abbreviation ORDER BY 2 DESC;
+```
+(Column is `abbreviation` not `abbrev`; RO count is `rosFetched`. No `psql` on
+this box — run via `npx tsx` + Prisma `$queryRawUnsafe` from `apps/web`.)
+Measured 2026-09-02: BC 107,602 · BST 88,991 · ARSJ 16,241 · SCVW 13,012 ·
+TOL 8,932 · SCT 6,412 · VWC 2,522. **The blocked store was SCT — the LOWEST
+dealer-detail spender.** So a big sync total does NOT identify the culprit;
+the blocked store's quota was drained by its own many small consumers plus dead
+recovery watchers. Only escalate to the APC Transaction Dashboard once these two
+local checks disagree with each other or you need per-endpoint attribution.
+
+⚠️ **APC session expires and needs a fresh OTP login.** On 2026-09-02 `:9224`
+navigated straight to `/user/login?redirectTo=...` — the "session persists across
+days" note is not reliable. Budget for the OTP flow, which is another reason to
+exhaust the local checks above first. Also: the persistent-browser-apc server has
+**no `/goto` endpoint** — it's `POST /navigate` (plus `/eval /click /type /press
+/mouse /cookies /console` and `GET /health /url /screenshot /snapshot`). Verify
+with `grep -oE "app\.(get|post)\('/[a-z-]+'" server.js`.
+
 ## Prerequisite: persistent APC browser on :9224
 
 Check first: `curl -s -m 5 http://localhost:9224/health`. If not responding, start it:

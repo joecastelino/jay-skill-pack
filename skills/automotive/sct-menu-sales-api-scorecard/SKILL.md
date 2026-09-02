@@ -926,6 +926,50 @@ outage recurs):
   section below were all re-confirmed multiple times during this outage — they
   are evergreen Stacey-pipeline gotchas, not outage-specific.
 
+## 🛑 STOP LAUNCHING RECOVERY WATCHERS FOR DEALER_QUOTA (hard rule, 2026-09-02)
+
+The 09-01 outage produced **three** stacked watchers (v1 12:04, v2 17:02, v3 23:13).
+v3 polled every 15 min for 5 hours → **19 consecutive 429s, then `gave up`, exit 2.**
+Zero clears across all three. Meanwhile the polling itself kept spending the very
+bucket it was waiting on.
+
+**DEALER_QUOTA is a 30-DAY per-dealer budget, not a rolling window.** Polling it is
+structurally hopeless — there is no near-term reset to wait for. The playbook is:
+
+1. Run the fleet probe to confirm scope (one store vs app-wide):
+   `python3 /home/itadmin/tekion-reports/_fleet_quota_probe_20260902.py`
+   Signature `search 200 / jobs 200 / operations 429` on one store = dealer ceiling.
+2. **Watcher census + lock cleanup** — kill every existing poller first:
+   ```bash
+   pgrep -af "wait_ops|_ops_probe|selfheal|recovery|watcher"
+   for f in /tmp/*quota*.lock /tmp/*selfheal*.lock; do fuser "$f" 2>/dev/null || echo "$f no holder"; done
+   ```
+3. Flag the JSONs `complete:false`, do NOT render, do NOT email.
+4. **Reduce SCT's spend** instead of waiting. Audit the consumers, don't guess:
+   ```sql
+   SELECT s.abbreviation, SUM(r."apiCallCount") FROM "SyncRun" r
+   JOIN "Store" s ON s.id=r."storeId"
+   WHERE r."startedAt" > now() - interval '30 days' GROUP BY 1 ORDER BY 2 DESC;
+   ```
+   SCT has the most *scheduled consumers* of any store even though its
+   dealer-detail spend is the fleet's LOWEST (6,412 vs BC's 107,602): Menu Sales
+   12h+17h, Closed MTD 18h, Alignment 19h, Back Counter 20h, fleet advisor 3:30,
+   dealer-detail 23:00, VI pull 02:00.
+5. Report to Joe with last-known-good labeled by date. **No watcher.**
+
+Last known-good Opened before the 09-01 outage: **8/31/26 — 10 menus, $3,451.90
+labor / $1,420.16 parts = $4,872.06 total.**
+
+### The false-zero trap bit a SECOND pipeline — check yours for it
+`advisor_closed_gross.py` had the identical bug class: its `get()` helper swallowed
+every exception to `{}`, so a quota-blocked store produced **$0.00 gross across 47
+ROs, exit code 0, file written** — ready to render and email as real. Any Tekion
+fetch helper that does `except Exception: return {}` will manufacture a plausible
+zero during a quota outage. Fix pattern (now live in `advisor_closed_gross.py`):
+raise a dedicated `QuotaBlocked` on `"DEALER_QUOTA" in body`, re-raise it through
+the `get()` helper, exit non-zero, and write NO file. Full write-up in skill
+`tekion-advisor-closed-gross-api-report`.
+
 ## DEALER_QUOTA RECURRED 2026-09-01 (noon Opened run) — outage is NOT permanently fixed
 
 At 12:02 PDT on 2026-09-01 the Opened scrape wrote a clean-looking
