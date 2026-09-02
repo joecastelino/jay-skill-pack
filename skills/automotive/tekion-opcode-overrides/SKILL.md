@@ -402,6 +402,41 @@ so ~3-5 rows per session is realistic.
 
 ---
 
+## 🔥 UNATTENDED-BATCH GOTCHAS (HVFILTER @ SCT, 2026-09-02 — cost a full failed batch: 7 leaked placeholders + 5 rows never built)
+
+Reference implementation with all fixes baked in: `/home/itadmin/tekion-reports/hvfilter_build.py`
+(+ `lib/jb_override_rows.py`, runner `hvfilter_run_all.py`, cleanup `hvfilter_cleanup.py`).
+
+1. **BELOW-THE-FOLD TEMPLATE ROW = `/type` HTTP 500.** As committed rows accumulate, the blank
+   template (builder) row falls below the viewport. Reading its cell rects without scrolling first
+   returns off-viewport coordinates → the Make cell click misses → no react-select input focuses →
+   the persistent-browser `/type` (Playwright `fill`) times out and the server returns **HTTP 500**.
+   This killed 5 of 12 rows silently, all late in the batch (early rows fit on screen). FIX:
+   `scrollIntoView({block:'center'})` the target row group, `sleep(0.8)`, THEN read rects. Same for
+   any `row_by_text()` lookup.
+2. **HARD-ABORT IF MAKE DIDN'T SET.** If `set_make` fails (tagfocus returns `noinput`) do NOT
+   proceed — a subsequent "find row containing Toyota" lookup will match a COMMITTED row and your
+   model/year/part edits will corrupt it (nearly hijacked the RAV4 row). Guard:
+   `if mk != "ok": raise SystemExit("MAKE NOT SET")`. Also verify the `data-jay` tag landed on a
+   real `INPUT` before typing, and keep a native value-setter fallback for `/type` 500s.
+3. **⋮ (overflow) MENU CLICKS: scrollIntoView + RE-READ rect in the SAME eval** before `/mouse`.
+   Coordinates captured earlier are stale after any scroll — this is why placeholder deletes
+   "succeeded" in the log but the placeholder was still present in the API on 7 rows. Menu items
+   here are **ant-v5** classes: use selector
+   `.ant-dropdown-menu-item,.ant-v5-dropdown-menu-item,li[role="menuitem"],[class*="menuItem"]`.
+4. **EXACT model-line match, not substring.** `innerText.indexOf('Highlander')` also matches
+   "Grand Highlander". Split group `innerText` on `\n` and require an exact line match
+   (`L.indexOf(model) > -1`). For duplicate models on the same opcode (two Prius year-ranges),
+   add a first-year token disambiguator to the group finder.
+5. **Trim input: target OUR MODEL ROW's `trim_N`, never "last trim_N"** — the last one belongs to
+   the blank template row (red/invalid trap). Success state: input value = "All trims selected".
+6. **Post-save API audit is mandatory per row** (`GET .../override/PARTS`): check
+   `parts[].pn is None` → leaked inherited placeholder (double-charge risk); re-open, delete, re-save.
+   A save toast + clean DOM proves nothing.
+7. **Cleanup pass pattern**: for rows that committed WITH the placeholder, a separate
+   fresh_page→expand→delete_placeholder→save→API-verify loop (see `hvfilter_cleanup.py`) fixed
+   6/6 rows in one unattended run once fixes 1-4 were in.
+
 ## ⭐ Unattended Batch (Persistent Browser) — PRODUCTION METHOD (verified 2026-06-10)
 
 Working scripts live in `/home/itadmin/tekion-operator/` (`batch_cabin_bt.py`,

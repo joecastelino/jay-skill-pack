@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-02T10:45:21",
+ "generated": "2026-09-02T11:00:27",
  "skill_count": 210,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 162,
+   "times_used": 163,
    "last_used": "2026-09-02"
   },
   {
@@ -195,6 +195,14 @@
    "last_used": "2026-09-02"
   },
   {
+   "name": "tekion-opcode-overrides",
+   "path": "automotive/tekion-opcode-overrides",
+   "category": "automotive",
+   "description": "Add vehicle/part override rows to a Tekion opcode (Overrides tab) using the verified browser-tool cascading react-select method. This is the batch workflow used for cabin-filter part overrides (RACF etc.) \u2014 Make/Model/Year/ Trim/Part per row, driven by the __buildRow() helper toolkit. Covers the real-click trim rule, the Save Changes confirmation modal, and mandatory reload+API verification. The most complex Tekion workflow we run.",
+   "times_used": 22,
+   "last_used": "2026-09-02"
+  },
+  {
    "name": "tekion-standard-reports-performance",
    "path": "automotive/tekion-standard-reports-performance",
    "category": "automotive",
@@ -217,14 +225,6 @@
    "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
    "times_used": 21,
    "last_used": "2026-09-01"
-  },
-  {
-   "name": "tekion-opcode-overrides",
-   "path": "automotive/tekion-opcode-overrides",
-   "category": "automotive",
-   "description": "Add vehicle/part override rows to a Tekion opcode (Overrides tab) using the verified browser-tool cascading react-select method. This is the batch workflow used for cabin-filter part overrides (RACF etc.) \u2014 Make/Model/Year/ Trim/Part per row, driven by the __buildRow() helper toolkit. Covers the real-click trim rule, the Save Changes confirmation modal, and mandatory reload+API verification. The most complex Tekion workflow we run.",
-   "times_used": 21,
-   "last_used": "2026-09-02"
   },
   {
    "name": "tekion-report-builder-scraper",
