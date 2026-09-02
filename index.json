@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-02T07:45:54",
+ "generated": "2026-09-02T08:00:24",
  "skill_count": 210,
  "skills": [
   {
@@ -275,6 +275,14 @@
    "last_used": "2026-08-07"
   },
   {
+   "name": "tekion-warranty-admin-closings",
+   "path": "automotive/tekion-warranty-admin-closings",
+   "category": "automotive",
+   "description": "Build a \"which warranty admin closed what tickets\" report for any AMG store from the Tekion OpenAPI \u2014 per-clerk RO counts, warranty $ and total RO $, month-to-date or any window. Verified SCT July 2026.",
+   "times_used": 14,
+   "last_used": "2026-09-02"
+  },
+  {
    "name": "tekion-clock-time-by-opcode",
    "path": "automotive/tekion-clock-time-by-opcode",
    "category": "automotive",
@@ -289,14 +297,6 @@
    "description": "Build a vehicle-scoped PARTS override row on a Tekion menu-included opcode via Service Menu Setups \u2192 Included Services \u2192 Edit Service \u2192 Overrides \u2192 Parts, driven by the persistent-browser :9223 HTTP endpoints (/eval, /click, /type, /press). Covers the exact DOM (react-select Make, ant-dropdown checkbox Model/Year multi-selects, Trim Details modal), the verified click-paths, and the costly pitfalls (wrong /eval key, navigate-away row wipe, coordinate drift, disabled trim input). Use when swapping/adding parts on an opcode that lives INSIDE a service menu (e.g. BGCVTF CVT fluid \u2192 E-TAF for Corollas).",
    "times_used": 13,
    "last_used": "2026-08-05"
-  },
-  {
-   "name": "tekion-warranty-admin-closings",
-   "path": "automotive/tekion-warranty-admin-closings",
-   "category": "automotive",
-   "description": "Build a \"which warranty admin closed what tickets\" report for any AMG store from the Tekion OpenAPI \u2014 per-clerk RO counts, warranty $ and total RO $, month-to-date or any window. Verified SCT July 2026.",
-   "times_used": 13,
-   "last_used": "2026-08-31"
   },
   {
    "name": "hermes-agent-provider-switch",
