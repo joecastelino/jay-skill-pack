@@ -50,6 +50,108 @@ Note the field names differ from the emitted RB file (`ro` not `ro_number`,
 `mileage` not `mileage_in`, no `ro_created`) — `render_scorecard.py` will
 KeyError on a master; that's why this report has its own renderer.
 
+## 🛑 MANDATORY GATE: reconcile the master against a tag census BEFORE sending
+
+**Learned the hard way 2026-09-02 — Joe replied "there is something wrong, I
+should have way more than that" to a report I had already emailed and declared
+verified.** Every number in it was internally consistent and matched the JSON.
+The master itself was incomplete, and nothing in the render/verify path can see
+that. **"Matches the JSON" only proves the renderer works, NOT that the data is
+complete.** Run this gate before the email step, every time.
+
+### Gate 1 — prior-month baseline sanity check (one call, do it first)
+
+```python
+import json, glob, collections, os
+for f in sorted(glob.glob("/home/itadmin/tekion-reports/data/sct-menu-closed-mtd-MASTER-*.json")):
+    rows = list(json.load(open(f))["records"].values())
+    suf  = collections.Counter(r["opcode"][-3:] for r in rows)
+    g    = sum(r["labor_gross"] + r["parts_gross"] for r in rows)
+    print(os.path.basename(f), len(rows), dict(suf), f"${g:,.2f}")
+```
+SCT reference band: **June 243 / $99,639 · July 237 / $105,123**. A month landing
+materially below ~230 menus / ~$100K is a **scan-completeness failure until
+proven otherwise** — never a slow month. Aug showed 158 / $71,172 and I shipped
+it anyway. Don't.
+
+### Gate 2 — full-month tag census vs the master (free, works during a quota outage)
+
+The OPCODE tags on `repair-orders:search` results cost zero fan-out, so this runs
+even while `/operations` is 429. Census the WHOLE month, not just the known
+outage window:
+
+```python
+import sys, json, time, collections; sys.path.insert(0, "/home/itadmin/tekion-reports")
+import sct_menu_sales_api as O, sct_menu_sales_closed_mtd as C
+from datetime import date, datetime, timedelta
+frozen = {d["opcode"] for d in json.loads(O.OPCODE_LIST.read_text())}
+cap    = {r["ro"] for r in rows}                       # ROs in the master
+seen, census = set(), collections.Counter()
+for day in range(1, 32):
+    d0  = date(2026, 8, day)
+    ms0 = int(datetime.combine(d0, datetime.min.time()).timestamp()*1000)
+    ms1 = int((datetime.combine(d0, datetime.min.time())+timedelta(days=1)).timestamp()*1000)
+    for r in C.search_closed(ms0, ms1):
+        tags = {t.get("value") for t in (r.get("tags") or []) if t.get("field") == "OPCODE"}
+        for t in tags: census[t] += 1
+        if tags & frozen: seen.add(str(r["documentNumber"]))
+    time.sleep(0.5)
+print("tagged menu ROs:", len(seen), "| in master:", len(cap), "| MISSING:", len(seen - cap))
+```
+Aug 2026 result: **226 tagged vs 158 captured = 68 missing**, not the 52 I had
+attributed to the outage. Bucket the gap by close-day — that's what exposed the
+second bug.
+
+### Bug A — the daily cron silently drops late-closing / reopened ROs
+
+Of the 68, **52 were the Aug 1–10 quota outage** but **16 were on days that
+scanned "successfully"** (8/15, 8/18, 8/19, 8/24, 8/27, 8/31 — note month-end is
+the worst). Cause: the incremental cron scans `closedTime` for TODAY at 6 PM, so
+anything that closes after the run, or gets **reopened and re-closed later**
+(see skill `tekion-reopen-closed-ro` and the BC warranty T+3 restatement
+finding), is never re-swept. This shaves EVERY month, not just outage months.
+Until the cron does a rolling T+3 re-sweep, always run Gate 2 on a historical
+month and disclose or backfill the delta.
+
+### Bug B — `OPCODE_LIST` (the frozen 316) is STALE; ToyotaCare is invisible
+
+The frozen list is **79 intervals × 4 suffixes (BNM/BSM/PSM/VNM) = 316**, all
+`TEK<mileage><TIER>`, and it **predates the June 2026 ToyotaCare migration**
+recorded in memory (SCT mileage codes collapsed; work moved to `TEK09*`).
+August census:
+
+| Family | ROs |
+|---|---|
+| Frozen-list interval menus | 226 |
+| **`TEK09*` ToyotaCare** | **1,037** |
+| Other TEK* | 31 |
+
+**Zero overlap** between the two sets — so the scorecard has never counted any
+ToyotaCare volume. `TEK09*` are typed `INDIVIDUAL_SERVICE` (not `SERVICE_MENU`)
+and have **no Basic/Value/Premium tier** — the trailing digits are oil/vehicle
+variants (`-SYN -CON -EV -MIR -BEV -GRC -86 -YAR -SUP -GRC`), e.g.
+`TEK09040104 = 15K Mile ToyotaCare Service-MIR`. Enumerate them from
+`data/sct-tek-opcodes-all.json` (1,371 opcodes; filter `opcode.startswith("TEK09")
+and status=="ACTIVE"` → 40).
+
+**STOP AND ASK — do not decide this yourself.** Whether prepaid ToyotaCare counts
+as a "menu sale" is Joe's call, and it cuts both ways: they're TEK-prefixed (his
+original criterion) but he previously ruled TXM/TSC/TAC prepaid maintenance OUT
+of the menu definition on fixedopsreports. Per the NEVER-GUESS rule, present both
+options and the tier problem (TEK09 needs its own section, not a B/V/P bucket).
+
+Also verified: **`BSM` has 79 opcodes and ZERO sales** in June/July/Aug. Only 3
+tiers ever sell. A 3-category report is correct — not a missing-tier bug — but
+it's worth telling Joe a quarter of his menu setup is dormant.
+
+### What to do when the gate fails
+
+Disclose with **numbers**, not adjectives; give the corrected estimate
+(68 × ~$450 avg ≈ $30.6K → ~$101.8K true, which lands right in the June/July
+band); tell Joe to disregard any already-sent copy; and state plainly that it's
+a scan bug, not a soft month. He accepts "I don't know yet" but not a confident
+wrong total.
+
 ## Category mapping (opcode suffix — the whole trick)
 
 Every SCT menu opcode is `TEK<mileage><SUFFIX>`. The last 3 chars are the tier:
@@ -77,9 +179,11 @@ collections.Counter(r["opcode"][-3:] for r in rows)   # expect only BNM/VNM/PSM
 ## Steps
 
 1. **Census the master** — row count, suffix split, per-day spread. A day-by-day
-   `Counter(r["date"])` instantly shows whether any days are missing (see the
-   gap-quantification section below).
-2. **Render:**
+   `Counter(r["date"])` instantly shows whether any days are missing.
+2. **RUN THE MANDATORY COMPLETENESS GATE** (Gate 1 + Gate 2 above). Do not skip
+   to rendering because the master "looks fine" — it looked fine in Aug 2026 and
+   was 30% short. Resolve or disclose the delta before step 3.
+3. **Render:**
    ```bash
    cd /home/itadmin/tekion-reports && python3.11 render_menu_by_advisor_category.py \
      data/sct-menu-closed-mtd-MASTER-2026-08.json 2026-08 "<caveat html or ''>"
@@ -87,7 +191,7 @@ collections.Counter(r["opcode"][-3:] for r in rows)   # expect only BNM/VNM/PSM
    → `data/SCT-Menu-Sales-Closed-by-Advisor-Category-<YYYY-MM>.{png,pdf}`
    The 3rd arg is optional inline HTML for the amber caveat box (use `&ndash;`
    for dashes — it's injected raw into the HTML).
-3. **Verify numbers against the JSON, not against vision.** Compute totals,
+4. **Verify numbers against the JSON, not against vision.** Compute totals,
    per-category, and per-advisor in Python and compare to the PNG. Vision is a
    STRUCTURAL check only (branding, title, no cut-off) — its per-row transcription
    drifts between calls on dense tables.
@@ -96,7 +200,8 @@ collections.Counter(r["opcode"][-3:] for r in rows)   # expect only BNM/VNM/PSM
      advisor sold zero in that category. Don't go fix a non-bug.
    - The PNG is ~8,500px tall; crop the top ~1,100px and upscale 2x before
      `vision_analyze` (full-page 400s over the 8,000px limit on larger months).
-4. **Email via Stacey** — body-file + one short send ask (see below).
+5. **Email via Stacey** — body-file + one short send ask (see below). Only after
+   the completeness gate passes or its delta is disclosed in the body.
 
 ## Report layout (what Joe signed off on)
 
@@ -122,11 +227,14 @@ name gets copy-pasted into other stores' renderers and stamps SCT branding on
 them. For a non-SCT port of this report, use a text wordmark via `_brand()` in
 `render_tech_perf.py`.
 
-## Quantifying an outage gap (do this before shipping any historical month)
+## Quantifying an outage gap (superseded — use the MANDATORY GATE above)
 
-If any day in the month is thin or missing from the master, say so with a NUMBER,
-don't hand-wave. The OPCODE-tags prefilter is **free** (no fan-out, no
-`/operations`) so it works even while quota-blocked:
+⚠️ This section originally scanned only the known outage window (Aug 1–11) and
+produced "52 missing", which I put in the caveat and emailed. **That was wrong —
+the real figure was 68.** Scanning only the days you already suspect will always
+under-report, because it structurally cannot find the late-close/reopen drops on
+"healthy" days. Always census the FULL month (Gate 2). Kept here only for the
+mechanics of the free tag prefilter:
 
 ```python
 import sys, json, time; sys.path.insert(0, "/home/itadmin/tekion-reports")
@@ -144,10 +252,10 @@ for day in range(1, 12):
             missing.append((str(d0), str(r["documentNumber"]), sorted(C._tek_opcodes(r, maint))))
     time.sleep(1)
 ```
-This produced the exact figure that went in the caveat: **52 menu ROs lost to the
-Aug 1–10 outage**, identifiable by opcode tag but unpriceable. Ship the report
-with the gap disclosed + a promise to restate, rather than withholding it or
-presenting a silently-low total as fact.
+This produced the figure that went in the caveat: **52 menu ROs** lost to the
+Aug 1–10 outage — but the true total gap was **68** (Gate 2 found 16 more on
+non-outage days). Ship a historical month with the gap disclosed + a promise to
+restate, rather than presenting a silently-low total as fact.
 
 Confirm the quota is genuinely still blocked with ONE deep probe
 (search 200 / jobs 200 / operations 429 = dealer ceiling) before claiming
@@ -211,10 +319,16 @@ it's a Tekion convention, not a Toyota one; see
 in the footer, and replace the SCT logo with a text wordmark in brand colors.
 **Do not reuse `logo_st.png` / `logo_0.png` on a non-SCT report.**
 
-## Reference result — August 2026 (SCT)
+## Reference result — August 2026 (SCT) ⚠️ AS-SENT, KNOWN INCOMPLETE
 
 158 menus · $48,440.04 labor / $22,731.80 parts = **$71,171.84** · 15 advisors.
 Basic 72 / $19,471.27 (27.4%) · Value 63 / $35,987.96 (50.6%) · Premium 23 /
 $15,712.61 (22.1%). Top: Artist Battle 27 / $16,475.58, Angel Gutierrez 17 /
 $10,840.96, Jaime Sanchez 14 / $7,672.28.
-Excludes 52 outage-lost menus (Aug 1–10); true total likely ~$95–100K.
+
+**These figures are UNDERSTATED — do not reuse them as a baseline.** The
+completeness gate (added after the fact) shows 226 tagged menu ROs vs 158
+captured = **68 missing** (52 outage + 16 late-close/reopen), so the true
+old-style total is ~**$101.8K**, in line with June $99.6K / July $105.1K.
+Separately, **1,037 `TEK09*` ToyotaCare ROs** are excluded by the stale frozen
+opcode list pending Joe's ruling. Restate once DEALER_QUOTA clears.
