@@ -939,7 +939,17 @@ did NOT email, launched a flock-guarded 5h watcher
 (`wait_ops_then_scrape_20260901.sh` + `_ops_probe_20260901.py`, polls the DEEP
 `/operations` link every 10 min, log
 `data/sct-opened-quota-recovery-2026-09-01.log`), and reported the outage with
-last-known-good labeled by date. Reusable: `_ops_probe_<date>.py` exits 0 only
+last-known-good labeled by date. **5 PM run same day: STILL 429** — v1 watcher
+logged 29 consecutive 429 polls (12:02→17:00, zero clears); an independent
+re-probe at 17:01 confirmed search 200 / jobs 200 / operations 429 DEALER_QUOTA,
+with the free tags prefilter now showing **4** TEK candidates out of 167 ROs
+(582486 added). So both the noon AND 5 PM Opened crons were lost on 9/1. Files
+re-flagged `complete:false`, no render, no email. Launched a v2 6h watcher
+(`wait_ops_then_scrape_20260901_v2.sh`, own lock `-v2.lock`, 15-min startup
+sleep so it doesn't fight v1's 5h window, log `...-2026-09-01-v2.log`).
+⚠️ LAUNCH PITFALL: `setsid nohup ... &` from execute_code did NOT survive (no
+process, no lockfile) — launch watchers via `terminal(background=true)` and
+verify with `pgrep -af` before trusting them. Reusable: `_ops_probe_<date>.py` exits 0 only
 when `/operations` returns 200 — copy it, don't rewrite. Last known-good Opened
 before this outage: **8/31/26 — 10 menus, $3,451.90 labor / $1,420.16 parts =
 $4,872.06 total.** Lesson reinforced: the 8/12 "outage fully cleared" note does
