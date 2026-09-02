@@ -888,6 +888,42 @@ Recipe (persistent browser :9223, already on Overrides → Parts):
 
 **Session restore into :9223**: if the persistent browser lost the app session, navigate to app origin, inject localStorage items ONE per /eval call from `.tekion-storage-state.json` (bulk injection silently fails on the huge `t_token`/`t_user` values), then re-navigate. Dealer switch: real /click on `[class*='dealerSelect_container']` then JS-click the leaf node with exact text.
 
+## HVFILTER-class custom opcode builds (verified SCT 2026-09-02) — 3 new traps + scripted builder
+
+Reusable scripted builder: `/home/itadmin/tekion-reports/hvfilter_build.py` (build_row(spec) — full
+sequence: fresh_page → Make → Model → Years → Trim modal → expand → delete placeholder → add part(s)
+w/ qty+price → save → API verify) + batch runner `hvfilter_run_all.py`. Uses
+`/home/itadmin/tekion-reports/lib/jb_browser.py` (+ jb_override_rows.py) on :9225. Adapt SPECS +
+OPCODE_ID for any custom-opcode override batch.
+
+1. **TRIM TEMPLATE-ROW TRAP (cost a failed run):** after building a new row, the LAST `trim_N`
+   input on the page belongs to the **blank TEMPLATE row at the bottom**, NOT your new row —
+   clicking it focuses a disabled input and the Trim Details modal never opens (row then saves
+   trim-blank and vanishes). Locate the trim input whose `.rt-tr-group` contains your MODEL name
+   AND has `value===''`, then `/mouse` the center of its `.ant-v5-input-affix-wrapper`. Example:
+   Camry=trim_0, new Avalon row=trim_1, template=trim_2.
+2. **ANT-V5 CLASSES:** the opcode Overrides page now renders **`ant-v5-*`** components — the Trim
+   Details dialog does NOT match `.ant-modal-content`. Use the combined selector
+   `.ant-modal-content,.ant-v5-modal-content,[role="dialog"]`. Same for
+   `.ant-v5-input-affix-wrapper` (fall back to `.ant-input-affix-wrapper`). Trim modal: "All trims
+   (including future trims)" radio preselected; Save at ≈(1006,714); verify input value flips to
+   "All trims selected".
+3. **INHERITED DEFAULT-PART PLACEHOLDER = DOUBLE-BILLING:** every new override row INHERITS the
+   opcode's Default-tab generic part (API shows `partNumber: null`, e.g. "HYBRID BATTERY FILTER"
+   @ $45.95) ALONGSIDE the real part you add → the row would bill BOTH. Fix per row BEFORE save:
+   in the expanded row, each part line has its own `icon-overflow` ⋮ (x≈912); the placeholder
+   line's ⋮ opens a one-item menu (**Delete**, an `.ant-dropdown-menu-item` appended to body at
+   ≈y+24) — `/mouse` the ⋮ then the Delete item. API-verify NO `partNumber:null` remains. (This
+   generalizes the earlier "stray placeholder rows" note: it's not just failed attempts — EVERY
+   row inherits it when the opcode has a generic default part.)
+4. Part-line qty/price after commit: find the row containing the part number inside the group;
+   `partQuantity` input only needs setting when qty≠1; `customerPayUnitPrice_undefined` via
+   `__setVal` + change+blur. Save via `__fire(querySelectorAll('#btnSalesSetupSave')[1])` —
+   toast "Opcode updated successfully"; price-only/part-only edits often produce NO confirm modal.
+5. **Hybrid-model year scoping reminder:** hybrid-named models ("Camry Hybrid") cap at ~2016; post-2017
+   hybrid rows must be built on the BASE model name + years, All trims (see memory/handoff — Joe
+   accepted base-model scoping for HVFILTER since only a deliberate opcode pick triggers it).
+
 ## Pitfalls Quick Reference
 
 - **⚠️ ALWAYS API-AUDIT FIRST**: The skill's own claim of "46 rows at BT" was wrong — only 2 existed.
