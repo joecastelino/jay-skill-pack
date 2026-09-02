@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-02T06:45:32",
+ "generated": "2026-09-02T07:00:46",
  "skill_count": 209,
  "skills": [
   {
@@ -71,7 +71,7 @@
    "path": "automotive/sct-menu-sales-api-scorecard",
    "category": "automotive",
    "description": "Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters to the frozen 316 TEK* maintenance opcodes, resolves advisor names via the persistent browser session on :9223, renders a light-format PNG+PDF scorecard, vision-verifies, and emails. Use for the daily Menu Sales Opened Performance Report cron.",
-   "times_used": 42,
+   "times_used": 44,
    "last_used": "2026-09-02"
   },
   {
@@ -363,6 +363,14 @@
    "last_used": "2026-08-25"
   },
   {
+   "name": "sct-menu-sales-closed-mtd-scorecard",
+   "path": "automotive/sct-menu-sales-closed-mtd-scorecard",
+   "category": "automotive",
+   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales CLOSED Month-To-Date scorecard pipeline from the LIVE Tekion OpenAPI (incremental design) and email the PDF to Joe via Stacey. This is the daily 6 PM companion to the noon/5pm \"Opened\" report (see sct-menu-sales-api-scorecard). Covers the incremental master-file design, the ongoing DEALER_QUOTA outage caveat, and the ask-agent send-confirmation timeout workaround.",
+   "times_used": 9,
+   "last_used": "2026-09-02"
+  },
+  {
    "name": "tekion-parts-sold-by-source-report",
    "path": "automotive/tekion-parts-sold-by-source-report",
    "category": "automotive",
@@ -401,14 +409,6 @@
    "description": "Reference for the AMG project to replace Tekion's native Lyft transportation/ride-fee integration with Uber. Load when asked about Uber API integration, swapping Lyft for Uber in Tekion, or prepping for Uber engineering team talks.",
    "times_used": 8,
    "last_used": "2026-08-18"
-  },
-  {
-   "name": "sct-menu-sales-closed-mtd-scorecard",
-   "path": "automotive/sct-menu-sales-closed-mtd-scorecard",
-   "category": "automotive",
-   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales CLOSED Month-To-Date scorecard pipeline from the LIVE Tekion OpenAPI (incremental design) and email the PDF to Joe via Stacey. This is the daily 6 PM companion to the noon/5pm \"Opened\" report (see sct-menu-sales-api-scorecard). Covers the incremental master-file design, the ongoing DEALER_QUOTA outage caveat, and the ask-agent send-confirmation timeout workaround.",
-   "times_used": 7,
-   "last_used": "2026-09-02"
   },
   {
    "name": "tekion-apc-docs-scraper",
@@ -723,6 +723,14 @@
    "last_used": "2026-08-18"
   },
   {
+   "name": "sct-menu-sales-by-advisor-category-report",
+   "path": "automotive/sct-menu-sales-by-advisor-category-report",
+   "category": "automotive",
+   "description": "Build the SCT (Stevens Creek Toyota) Menu Sales CLOSED report for a FULL CALENDAR MONTH, broken down BY SERVICE ADVISOR and GROUPED BY CATEGORY (Basic / Value / Premium). Renders an Advisor x Category matrix plus per-advisor RO-level detail, and emails it to Joe via Stacey. Runs entirely OFFLINE from the per-month master cache \u2014 zero Tekion API calls \u2014 so it works even during a DEALER_QUOTA outage.",
+   "times_used": 2,
+   "last_used": "2026-09-02"
+  },
+  {
    "name": "tekion-add-job-to-ro-button-disabled",
    "path": "automotive/tekion-add-job-to-ro-button-disabled",
    "category": "automotive",
@@ -873,14 +881,6 @@
    "description": "Maintain the PUBLIC skill-pack repo github.com/joecastelino/jay-skill-pack \u2014 the auto-synced, secret-redacted mirror of Jay's entire skill library, README sorted by usage count. Use when Joe asks about the skill pack repo, when a sync fails, when a new secret needs redaction, or when installing Jay's skills into another agent.",
    "times_used": 1,
    "last_used": "2026-07-23"
-  },
-  {
-   "name": "sct-menu-sales-by-advisor-category-report",
-   "path": "automotive/sct-menu-sales-by-advisor-category-report",
-   "category": "automotive",
-   "description": "Build the SCT (Stevens Creek Toyota) Menu Sales CLOSED report for a FULL CALENDAR MONTH, broken down BY SERVICE ADVISOR and GROUPED BY CATEGORY (Basic / Value / Premium). Renders an Advisor x Category matrix plus per-advisor RO-level detail, and emails it to Joe via Stacey. Runs entirely OFFLINE from the per-month master cache \u2014 zero Tekion API calls \u2014 so it works even during a DEALER_QUOTA outage.",
-   "times_used": 1,
-   "last_used": "2026-09-02"
   },
   {
    "name": "slack-store-thread-cron-retarget",
