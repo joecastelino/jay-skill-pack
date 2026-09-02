@@ -1101,6 +1101,57 @@ BGBFX (84 / $25,680), BGCF (106 / $14,633). Note the alignment total here (448) 
 main nightly's 443 because this scan's candidate set is ALIGN ∪ BG ∪ TEK — it catches
 alignments on ROs the align-only scan never fans out to.
 
+## 2026-09-01 (first September night) — DEALER_QUOTA 429 + THE SYNC HOG RESPAWNS
+September MTD was BLOCKED: pre-flight OPS probe 429 `DEALER_QUOTA` at 19:01 PDT (search 200,
+jobs 200, `/operations` 429 — the classic deep-endpoint signature). Unlike the 8/1-8/10 outage,
+the hog WAS present and was the likely cause: `sync:all` had been running **1d 6h 44m**
+(started Aug 31 12:17 PM, `SYNC_STORES=SCT,SCVW,TOL,VWC`). Killed the tree + removed
+`/tmp/dealerdetail-sct-sync.lock`.
+
+**NEW TRAP — killing the sync hog is NOT durable; it RESPAWNS in minutes:** four minutes after
+the kill, `pgrep` showed `sync:all` alive again with BRAND-NEW PIDs. Walking the parent chain
+(`ps -o pid=,ppid=,lstart=,cmd=` up the tree) showed it was NOT the 23:00 `cron-sct-sync.sh`
+crontab entry — the launcher was **Jay's own gateway process** (`hermes_cli.main --profile jay
+gateway run --replace`), i.e. a CONCURRENT JAY SESSION/cron turn firing
+`bash -lic ... npm run sync:all`. So the 8/2 "kill the hog" playbook only buys minutes here.
+Always walk the PPID chain to the real launcher before assuming crontab; if the parent is a
+hermes gateway, another agent turn is the competitor and re-killing just fights it. Escalate to
+Joe to stagger/disable that sibling job rather than kill-looping. Quota did not recover within
+~25 min of the kill (probes at 19:05 and 19:15 both 429) — an exhausted bucket does not refill
+just because the consumer stopped.
+Armed the standard dated self-heal pair via the sed date-swap from the 8/10 copies
+(`sed -e 's/2026-08-10/2026-09-01/g; s/20260810/20260901/g'`), `bash -n` both, chmod in its own
+foreground call, launched each via terminal(background=true, /usr/bin/bash explicit), confirmed
+alive via the log's "watcher started" line.
+
+**ZERO-QUOTA FALLBACK THAT SAVED THE NIGHT — ship the corrected prior-month final.** Because the
+8/31 nightly emailed the BUGGY 443 (patched at 19:23, after the 19:01 cron fired — see the
+ALIGN00RBA section), the correct August number had never reached Kevin. The alignbg scan from
+8/31 23:19 was already on disk with the CORRECT figure, so re-cut it with **zero API calls**
+using the documented reshape (drop `kind=="bg"`, keep `{advisor,dedicated,bundled,total,ros,
+detail}`), wrote it to a NEW file `sct-mtd-2026-08-31-align-by-advisor-CORRECTED.json` (do NOT
+overwrite the nightly's file), and fed it to `render_sct_align.py`. Verified `chip_total ==
+totals.total == 448`, `failed=[]`, 16 advisors, then vision-checked the PNG. **Lesson: on a
+quota-blocked night, always check whether an unshipped/incorrect prior period can be re-cut and
+delivered from on-disk data — a blocked night does not have to be an empty night.**
+August 2026 figure of record: **448** (404 dedicated + 44 bundled), 448 ROs, 16 advisors,
+two-way tie at #1 Chris Mai and Jason Sulon with 50 each (Jaime Sanchez 45, Artist Battle 43,
+Cristian Gonzalez 42). Subject used: `SCT Alignment Sales by Advisor - August 2026 Final
+CORRECTED (through 8/31)`, with a body paragraph naming the 5 dropped ROs and stating it
+supersedes the 443.
+Stacey's build clean on the FIRST ask (76s) with paths + on-disk sizes baked in: HTML part
+180,781B >= PNG*4/3 (132,715), PDF part 517,323B (+1.3% CRLF variance over PDF*4/3=510,604).
+Verify sequencing per notes 30/31 worked perfectly: (1) date-free SUBJECT+DATE enumeration
+first → 20 matches, exactly ONE "August 2026 Final CORRECTED" dated today, no dedupe needed;
+(2) `PDF_FILENAME | PDF_DECODED_BYTES` → correct one-L spelling + 382,953 exact on-disk match;
+(3) `TO_HEADER | SENT_TODAY` → `kstapp@sctoyota.com | 3`.
+**SENT_TODAY=3 needed a scoped tiebreaker:** per note 8/18 a nonzero Sent count is Joe's own
+morning sends of the backlog, but rather than assume, one ultra-terse SUBJECT-SCOPED ask
+settled it definitively: "In Sent Mail, subject substring 'August 2026 Final CORRECTED' —
+CORRECTED_IN_SENT=<count>" → **0**. Scoping the Sent search to THIS report's unique subject
+substring is stronger than the date-scoped `SENT_TODAY` form; prefer it whenever the subject
+has a distinctive token. Underscore-stripped keys again throughout.
+
 ## BUG FOUND + FIXED 2026-08-31 — ALIGN00**R**BA vs ALIGN00**B**RA
 `ALIGN_OPC` had `ALIGN00BRA`, but the opcode SCT actually uses is **`ALIGN00RBA`** (R and
 B transposed). That code appears 107 times across the July+August indexes and **ZERO**

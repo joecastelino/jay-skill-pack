@@ -683,12 +683,78 @@ settling this; pick a definition, then re-verify against the known baselines
 (TL MTD 3,265 ROs / $654,247.09; BT 2,980 / $686,627.84; BC 1,529 / $602,594.15).
 
 ### Verify which stores the nightly sync actually covers before quoting coverage
-`sync:all` and the 11 PM cron were built on `feature/multi-store-api` (merged
-2026-08-11), but I have separately observed the host cron invoking
-**`cron-sct-sync.sh` (SCT only)**. These two claims conflict — `crontab -l` and
-`ls ~/dealer-detail/logs/` are the ground truth, and per the "recurring finding #0"
-note a missing log dir means the job never ran at all. Check both before telling
-anyone the fleet is synced nightly.
+RESOLVED 2026-09-01: the misleadingly-named **`cron-sct-sync.sh` runs `npm run sync:all`
+(all 7 stores)** — the filename is a leftover from the SCT-pilot era. Only one sync cron
+exists (`0 23 * * *`). `crontab -l` + `ls ~/dealer-detail/logs/` remain ground truth, and
+per "recurring finding #0" a missing log dir means the job never ran at all.
+
+## ⚠️ SILENT STORE STARVATION — the `timeout` cap that was smaller than the work (2026-09-01)
+
+**19 consecutive nights, 4 of 7 stores never synced.** fixedopsreports.com served 3-week-old
+numbers for SCT/SCVW/TOL/VWC while ARSJ/BC looked perfectly current. Nothing alerted.
+
+**Root cause — arithmetic, and the previous fix caused it.** The 45-min (`timeout -k 30 2700`)
+guard was added 2026-08-11 to stop a stuck run holding the flock (see the hard-timeout comment
+block). Stale data begins **the same day**. The cap was smaller than the work it contained:
+
+```
+6 inter-store cooldowns x 240s = 24 min of pure sleep
+45 min cap - 24 min sleep      = 21 min of work for SEVEN stores
+BC alone routinely takes        ~33 min
+```
+Every night, identically: ARSJ ✅ (0.6m) → BC ✅ (32.6m) → **BST killed mid-run at 45m** →
+SCT, SCVW, TOL, VWC **never reached**. Because `sync-all` orders stores `abbreviation: "asc"`,
+the SAME alphabetical tail lost every single time. Log tell: 19x `TIMED OUT after 45m (rc=124)`
+and `=== sync BST ===` as the last store header every night.
+
+**FIXES APPLIED (both needed — the timeout bump alone just hides the next occurrence):**
+1. `cron-sct-sync.sh`: `timeout 2700` → **9000** (2h30m; cron 23:00, VI pull 02:00 shares the
+   app-wide quota, so finish ~01:30 with margin) + `SYNC_COOLDOWN_SECONDS` default 240 → **150**.
+2. `scripts/sync-all.ts`: **day-of-year store rotation** after the findMany, before the loop —
+   `stores.push(...stores.splice(0, dayOfYear % stores.length))`, skippable via `SYNC_NO_ROTATE=1`
+   for tests/backfills. A truncated run now sheds a *different* store nightly, so no store can go
+   more than ~7 days stale from truncation alone.
+
+**GENERAL RULE: any hard `timeout` wrapping a sequential multi-item loop is a starvation bug
+waiting to happen.** Before setting one, compute `(items x per-item-worst-case) + (items-1 x
+cooldown)` and cap ABOVE it — then randomize/rotate order so truncation damage spreads.
+
+### `| tail` (or any pipe) MASKS the real exit code — this is what hid it for 3 weeks
+`npm run sync:all 2>&1 | tail -100` reports **tail's** status, so a completely failed sync
+exits **0**. The notification said "exit code 0" while the log was full of dropped-connection
+errors and the run had been killed. Use `set -o pipefail`, or `${PIPESTATUS[0]}`, or don't pipe
+a job whose success matters. When triaging any "it says it succeeded" pipeline, check for a pipe
+before believing the status.
+
+### Staleness triage query (run this FIRST on any "numbers are wrong / stale" report)
+Per-store last-successful-sync + run outcomes beats reading logs. Throwaway script rules
+(gotcha #7, plus two new ones):
+- Must live **inside `apps/web`** (`/tmp` can't resolve `@prisma/client`).
+- `apps/web/package.json` has `"type": "module"` → name it **`.cjs`** for `require()`, or use
+  `import`. A `.js` file with `require` throws `ReferenceError: require is not defined`.
+- Field names that cost me 3 wasted calls: `Store.abbreviation` (**not** `abbrev`),
+  `RawRepairOrder.fetchedAt` (**no** `updatedAt`). A wrong `select` throws a Prisma validation
+  error that helpfully lists every real field — read it instead of guessing again.
+```js
+const stores = await p.store.findMany({select:{id:true,abbreviation:true,tekionDealerId:true,apiSyncEnabled:true}});
+for (const s of stores){
+  const n = await p.rawRepairOrder.count({where:{storeId:s.id}});
+  const l = await p.rawRepairOrder.findFirst({where:{storeId:s.id},orderBy:{fetchedAt:"desc"},select:{fetchedAt:true}});
+  const r = await p.syncRun.findFirst({where:{storeId:s.id},orderBy:{startedAt:"desc"}});
+  console.log(s.abbreviation, n, l?.fetchedAt, r?.status, r?.startedAt);
+}
+```
+Then `syncRun.findMany({orderBy:{startedAt:"desc"},take:16})` printing
+`status / apiCallCount / rosFetched / finishedAt` — a run with `calls=0 ros=0 FAILED` and errors
+`[{reason:"stale run reaped..."}]` was killed, not rate-limited. **A store with NO recent syncRun
+row at all was never attempted** — that's starvation, a fundamentally different bug than a failed
+sync, and the row-absence is the only evidence.
+
+### BST is too big for a nightly window (open, needs chunking not a longer timer)
+Its one successful run: **55,655 API calls / 4,673 ROs / 9h55m** (~11.9 calls per RO, same ratio
+as every other store — it's volume, not inefficiency). Any single-window nightly sync of BST will
+keep blowing timeouts and eating the app-wide quota. Needs date-chunked incremental runs with a
+persisted cursor; flag to Joe rather than raising the cap again.
 
 ## Verification standard
 Post each ticket: re-run smoke/query live DB yourself; confirm prototype tables untouched (additive);
