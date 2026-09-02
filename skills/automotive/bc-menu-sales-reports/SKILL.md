@@ -88,8 +88,12 @@ cd /home/itadmin/tekion-reports
 ```
 **Month rollover — `--seed` is an MTD-ONLY concern (verified 2026-09-01):** on the 1st,
 `data/bc-menu-closed-mtd-MASTER-<new-YYYY-MM>.json` does not exist yet. That matters ONLY for
-the MTD run (use `--seed`; expect a much slower paced full-month backfill and several
-`process(action="wait")` cycles — don't mistake it for a hang). The **Daily Closed** runs
+the MTD run (use `--seed`). **Seed runtime scales with how far into the month you are, NOT
+with the word "full-month" (corrected 2026-09-01):** seeding ON the 1st scans a 09-01..09-01
+window = one paced batch, done inside a SINGLE 180s wait almost instantly. Only budget several
+`process(action="wait")` cycles if you're seeding MID-month (missed rollover, post-outage
+rebuild) — that's the case where the paced backfill is genuinely long and must not be mistaken
+for a hang. The **Daily Closed** runs
 (`--daily-only`) never touch the master, so they work normally on the 1st with zero special
 handling — do NOT waste time seeding before a Daily. Check with
 `ls data/bc-menu-closed-mtd-MASTER-*` to see whether the current month's master exists.
@@ -1277,3 +1281,40 @@ noon is not a defect).
 **Skill-size housekeeping**: 95,854 pre-prune → condensed the purely-confirmatory 2026-08-30 MTD
 and 2026-08-29 MTD entries (keeping the closed-Sunday-sentence rule and the EMDASH-token tip) →
 92,414 before appending. Used the SAFE-PRUNE index assertions; re-checked size AFTER.
+
+## 2026-09-01 6:16pm Closed MTD run — FIRST SEPTEMBER SEED, textbook one-shot, 42nd consecutive clean "N dollars" build
+4 menus, $702.47 labor / $282.32 parts = $984.79 (Sep 1-1). Advisors: Dimetri Reynoso 2 /
+$319.51, Humberto Dominguez 1 / $491.67, Jacob Debussey 1 / $173.61. **`--seed` run** —
+`data/bc-menu-closed-mtd-MASTER-2026-09.json` did not exist (month rollover), so the run
+sequence's seed branch applied. 37 closed ROs in month -> 5 carried TEK menu opcodes -> 4 menu
+rows; `✓ all candidate ROs scanned`.
+**The month-rollover seed is NOT slow when the month is 1 day old** — the 8/31 MTD entry warned
+to expect a much slower paced full-month backfill and several `process(action="wait")` cycles,
+but on the 1st the "full month" window is 09-01..09-01, so the paced scan is a single batch and
+finished inside ONE 180s wait almost instantly. Only expect the long backfill if you're seeding
+mid-month (e.g. after an outage or a missed rollover). Don't over-budget waits on a 1st-of-month
+seed.
+**MTD == Daily on the 1st**: the seed's numbers are bit-identical to the same day's 5pm Daily
+Closed run ($984.79). That is correct, not a duplicate/stale-data bug — but Ruben sees two
+emails with the same total, so put an explicit sentence in the MTD body ("September 1 is the
+first business day of the month, so the month-to-date figures currently match today's daily
+closed report; they will build through the month"). Included this run. This is the MTD analogue
+of the closed-Sunday "figures unchanged from yesterday" sentence.
+Vision KPI band (crop 460px + 2x LANCZOS on a 1226x900 PNG) read all four tiles exactly
+($702.47 / $282.32 / $984.79 / 4) and matched JSON; master `_gross` sums matched the emitted
+report `totals` exactly.
+**write_file→background-terminal ask pattern, 18th straight run, returned inside ONE 180s wait**
+(`/tmp/bc_ask_0901_mtd.py`, `subprocess.run` argument list, `timeout 560`). Terse DONE line
+correct with `TOTAL=$984.79`, her reported id (43017) MATCHED himalaya's, and her reply
+contained NO self-correction text (5th straight run with zero wrinkle) → no duplicate. She also
+explicitly named the sibling Daily Closed draft (43016) as untouched.
+Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
+auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (106,899 bytes), PDF
+**byte-for-byte identical** (51,924 bytes), all 6 figures present exactly once,
+`<b>$984.79</b>` bold, greeting + footer present, zero
+' dollars'/USD/EMDASH/CORRECTION/Saturday/Sunday/Monday leftovers, all 13 leading-digit-stripped
+and comma-mangled variants = 0. Exactly 1 MTD 9/1 draft (43017), MTD Sent count 0 (the single
+`BC 9/1` Sent hit was Stacey's separate auto-sent Daily Opened report, 14981). Left the sibling
+Daily Closed 9/1 draft (43016) untouched — different report type, not a duplicate.
+**Skill-size housekeeping**: 94,263 pre-append (already under the ≤97,000 target thanks to the
+two prunes earlier today) → no prune needed this run. Re-checked `os.path.getsize()` AFTER.
