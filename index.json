@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-02T11:00:27",
+ "generated": "2026-09-02T11:15:32",
  "skill_count": 210,
  "skills": [
   {
@@ -179,6 +179,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-opcode-overrides",
+   "path": "automotive/tekion-opcode-overrides",
+   "category": "automotive",
+   "description": "Add vehicle/part override rows to a Tekion opcode (Overrides tab) using the verified browser-tool cascading react-select method. This is the batch workflow used for cabin-filter part overrides (RACF etc.) \u2014 Make/Model/Year/ Trim/Part per row, driven by the __buildRow() helper toolkit. Covers the real-click trim rule, the Save Changes confirmation modal, and mandatory reload+API verification. The most complex Tekion workflow we run.",
+   "times_used": 23,
+   "last_used": "2026-09-02"
+  },
+  {
    "name": "tekion-declined-deferred-services-report",
    "path": "automotive/tekion-declined-deferred-services-report",
    "category": "automotive",
@@ -191,14 +199,6 @@
    "path": "automotive/tekion-opcode-create",
    "category": "automotive",
    "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
-   "times_used": 22,
-   "last_used": "2026-09-02"
-  },
-  {
-   "name": "tekion-opcode-overrides",
-   "path": "automotive/tekion-opcode-overrides",
-   "category": "automotive",
-   "description": "Add vehicle/part override rows to a Tekion opcode (Overrides tab) using the verified browser-tool cascading react-select method. This is the batch workflow used for cabin-filter part overrides (RACF etc.) \u2014 Make/Model/Year/ Trim/Part per row, driven by the __buildRow() helper toolkit. Covers the real-click trim rule, the Save Changes confirmation modal, and mandatory reload+API verification. The most complex Tekion workflow we run.",
    "times_used": 22,
    "last_used": "2026-09-02"
   },
