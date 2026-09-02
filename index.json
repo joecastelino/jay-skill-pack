@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-02T08:45:26",
+ "generated": "2026-09-02T09:00:08",
  "skill_count": 210,
  "skills": [
   {
@@ -670,7 +670,7 @@
    "name": "tekion-parts-so-gl-account-routing",
    "path": "automotive/tekion-parts-so-gl-account-routing",
    "category": "automotive",
-   "description": "Diagnose \"this parts Sales Order / counter sale is hitting the WRONG GL account\" (e.g. a Wholesale SO posting to a retail parts sales account). Covers the GLAM Fixed Operations > Part & Accessories > Parts-Counter mapping table, its 6 keying dimensions, the customer.taxable master-flag gotcha, and the internal API endpoints to pull a full SO for evidence. Use for any \"why did SO X go to retail instead of wholesale\" question.",
+   "description": "Diagnose \"this parts Sales Order / counter sale is hitting the WRONG GL account\" (e.g. a Wholesale SO posting to a retail parts sales account). Covers the GLAM Fixed Operations > Part & Accessories > Parts-Counter mapping table, its 6 keying dimensions, the customer.taxable snapshot-vs-master trap, the 2026-08-19 store-wide NO-TAX code rollout that flipped every wholesale order to taxable, date-window bisection (search pagination is silently ignored), and the internal API endpoints to pull a full SO for evidence. Use for any \"why did SO X go to retail instead of wholesale\" or \"where did the taxable status change\" question.",
    "times_used": 3,
    "last_used": "2026-09-02"
   },

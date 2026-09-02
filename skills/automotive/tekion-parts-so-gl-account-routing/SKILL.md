@@ -1,6 +1,6 @@
 ---
 name: tekion-parts-so-gl-account-routing
-description: Diagnose "this parts Sales Order / counter sale is hitting the WRONG GL account" (e.g. a Wholesale SO posting to a retail parts sales account). Covers the GLAM Fixed Operations > Part & Accessories > Parts-Counter mapping table, its 6 keying dimensions, the customer.taxable master-flag gotcha, and the internal API endpoints to pull a full SO for evidence. Use for any "why did SO X go to retail instead of wholesale" question.
+description: Diagnose "this parts Sales Order / counter sale is hitting the WRONG GL account" (e.g. a Wholesale SO posting to a retail parts sales account). Covers the GLAM Fixed Operations > Part & Accessories > Parts-Counter mapping table, its 6 keying dimensions, the customer.taxable snapshot-vs-master trap, the 2026-08-19 store-wide NO-TAX code rollout that flipped every wholesale order to taxable, date-window bisection (search pagination is silently ignored), and the internal API endpoints to pull a full SO for evidence. Use for any "why did SO X go to retail instead of wholesale" or "where did the taxable status change" question.
 triggers:
   - sales order hitting retail sales
   - so going to wrong gl account
@@ -10,6 +10,9 @@ triggers:
   - why did this sales order go to
   - parts-counter mapping
   - compare two sales orders gl
+  - where did the taxable status change
+  - customer taxable flipped
+  - wholesale customers showing taxable
 ---
 
 # Tekion — Which GL Account a Parts Sales Order Posts To
@@ -135,7 +138,62 @@ Wholesale order from a valid resale-cert customer matches
 lines for both SOs and see which account each actually hit (read-only). Say so plainly —
 Joe accepts "I haven't nailed that yet"; he does not accept a confident wrong answer.
 
-#### Dating the change — `modifiedTime` is the only signal you get
+---
+
+## 🚨 ROOT CAUSE FOUND 2026-09-02 — a store-wide tax-code rollout on 08/19, not a customer edit
+
+Joe's follow-up was *"K, so where did the taxable status change?"* **Answer: it changed on
+2026-08-20, store-wide, for every wholesale customer at once — and no customer record was
+touched.** This supersedes the per-customer theorizing above. Check this FIRST.
+
+**The evidence — bisect the SO history by `createdTime` and watch the snapshot flip:**
+
+| Date | Wholesale SOs that day | `customer.taxable` |
+|---|---|---|
+| 08/19 and earlier | 70 | **`false`** (0 of 20 sampled true) |
+| 08/20 onward | 157 | **`true`** (16 of 20 sampled true) |
+
+Sharp to the hour, across **unrelated** customers with different masters and different certs:
+```
+Crash Champions  SO 331342 @ 08/19 16:42 = false  →  SO 331482 @ 08/20 13:35 = TRUE
+De Laveaga       SO 331239 @ 08/19 11:26 = false  →  SO 331531 @ 08/20 15:23 = TRUE
+```
+De Laveaga's master was last modified **2025-10-30** — ten months before. Nobody edited it.
+
+**The trigger — a new tax code went effective the night of 8/19:**
+```
+taxCode "NO TAX"  id 6a867038a5537a692d78fdf0
+effectiveDate = 2026-08-19 20:10   ← ~17h before the first flipped order
+taxRate = 0, taxCategory = SALES_TAX, codeType = SUB
+```
+
+**The structural tell — `taxConfiguration` exists only on post-change orders:**
+
+| | SO 331990 (08/24, post) | SO 323623 (07/06, pre) |
+|---|---|---|
+| `taxConfiguration` | populated, `taxExempt:false`, all 5 components → `NO TAX` | **`null`** |
+| `taxDetails` | `[]` | `[{taxRegimeType:SALES_TAX, taxPercentage:"10", taxable:false}]` |
+| line `taxCodeDetails[0]` | `NO TAX` @ 0% | none resolved |
+
+**Mechanism:** the rollout changed *how exemption is represented*. It stopped stamping the
+header exempt (`taxable=false`) and instead stamps **`taxable=true` then zeroes tax via a
+`NO TAX` code at the line**. Customer impact is nil — **$0 tax either way, exemption still
+honored**. But GLAM keys on Customer Tax Status, so every wholesale order since 08/20 now
+matches `Taxable / Wholesale → 4740 …COUNTER RTL…`. That's **~150+ SOs/day** mis-posting to
+retail, not one order.
+
+**Lesson: when two unrelated customers exhibit the same anomaly, STOP diagnosing the
+customers.** Bisect for a boundary date and look for a settings/tax-code change on that
+date. A per-customer explanation cannot account for a synchronized flip.
+
+⚠️ Still open at hand-off: both SOs report `postedToAccounting=false` and every line
+`transactionPosted=false`, **including the CLOSED July one**. Either SOs post via a path the
+record doesn't reflect, or there's a backlog. I could NOT confirm dollars actually sitting in
+4740 (see the blocked GL paths below). Do not claim the ledger without that.
+
+---
+
+#### Dating the change — SO snapshots beat `modifiedTime`
 
 Build a merged timeline from customer-master `modifiedTime` vs SO `createdTime`/`modifiedTime`:
 
@@ -367,8 +425,47 @@ Minimal search body — **drop the `status` filter to see CLOSED orders**:
                   "saleAmount","customer","status","partCounterPersonName","departmentName"],
  "searchableFields":[],"page":{"from":0,"size":5}}
 ```
-Response: `data.{count,hits[]}`. Note the page key here is **`page:{from,size}`**;
-the app's own payload uses `pageInfo:{start,rows}` — both were accepted, `page` is simpler.
+Response: `data.{count,hits[]}`.
+
+### 🔴 PAGINATION IS SILENTLY IGNORED on `/sale/order/search` — use date-window bisection
+
+**The `from`/`start` offset does nothing.** I looped `from = 0,20,40,60,80,100` and got
+"120 rows" that were **six identical copies of the same 20 records**. `count` reports the
+true total (e.g. 32) but you only ever receive ~20 hits, always the same ones. This will
+manufacture a completely false history if you concatenate the pages.
+
+**Workaround — window on `createdTime` and walk the windows:**
+```python
+def T(s): return int(datetime.datetime.strptime(s,"%Y-%m-%d %H:%M").timestamp()*1000)
+
+body={"sort":[{"field":"createdTime","order":"ASC"}],
+ "filters":[
+   {"field":"siteId","key":"siteId","operator":"IN","values":["-1_876"]},
+   {"field":"customer.id","key":"customer.id","operator":"IN","values":[CUSTOMER_ID]},
+   {"field":"createdTime","key":"createdTime","operator":"BTW","values":[T(a),T(b)]}],
+ "searchText":"","groupBy":[],
+ "includeFields":["orderNo","createdTime","customer"],
+ "searchableFields":[],"page":{"from":0,"size":20}}
+```
+Keep each window under ~20 results (check `count`; if `count > 20` split the window).
+Sort `ASC` so the earliest rows in the window are the ones you actually receive.
+
+**Useful filter fields (all verified working):** `siteId`, `customer.id`, `saleType`
+(`WHOLESALE`/`RETAIL`), `status`, `createdTime` with `BTW` + epoch-ms pair.
+
+### ⭐ Scope test — is it ONE customer or the WHOLE STORE?
+
+Before blaming a customer, re-run the same window **filtered on `saleType` only, no
+customer filter**, on the day before and the day of the suspected change:
+```json
+"filters":[{"field":"siteId",...},
+           {"field":"saleType","key":"saleType","operator":"IN","values":["WHOLESALE"]},
+           {"field":"createdTime","key":"createdTime","operator":"BTW","values":[...]}]
+```
+Then eyeball `customer.taxable` across ~20 different body shops. If the flag is uniform
+across unrelated customers, it's a **store-level settings change**, and every per-customer
+hypothesis is dead. This one query converted a two-order puzzle into a 150-orders/day
+finding.
 
 One-shot tax extractor for a pulled SO (`window.__r` = the SO payload):
 ```js
@@ -398,6 +495,41 @@ made the header-vs-line contradiction obvious at a glance.
     to the wrong customer record first. 331990 = **De Laveaga**, 323623 = **Crash Champions**
     — two different accounts. Pull `customer.id` off each SO payload *before* opening any
     customer page.
+
+14. **Reaching posted JEs / GL detail — all four paths I tried FAILED.** Budget for this or
+    tell Joe up front you may not close the ledger loop:
+    - `/navigate` to `/accounting/journal-entries` **silently redirects** to
+      `/accounting/chartOfAccounts/list`. The URL is wrong or gated; the page you land on
+      is not the one you asked for. Always re-read `location.href` after navigating.
+    - `POST /api/cms/u/accounting/gl-account/search` → `validation.invalid.request`
+    - `POST /api/accounting/u/gl-account/search` → `unexpected.error`
+      (both with valid captured headers — the body shape is wrong and I never recovered it)
+    - Guessed SO-invoice endpoints all returned `PENDING`/nothing:
+      `/sale/order/<id>/invoices`, `/sale/order/invoice/<id>`,
+      `/invoice/salesOrder/<id>`, `/sale/order/<id>/accounting`
+    - Accounting left-nav only exposes two links: `FS::/accounting/financialStatements/list`
+      and `CA::/accounting/chartOfAccounts/list` — there is no journal-entry link to click.
+    **Next time: capture the real endpoint from the app** (arm the XHR hook, then reach
+    Journal Entries by clicking through the App Grid rather than a guessed URL).
+
+15. **`/type` fails on Tekion's Chart-of-Accounts search input — three ways.** Wasted ~5
+    calls here:
+    - `/type` with `{x,y}` → `{"error":"selector or ref, and text are required"}`
+      (the endpoint needs `selector` or `ref`, NOT coordinates)
+    - `/type` with a tagged `[data-jay=...]` selector → `page.fill: Timeout 30000ms exceeded`
+      even though the locator resolved
+    - native-value-setter + `input`/`change`/`Enter` events → input visually accepts the
+      text but **fires zero XHRs** (`__cap` stayed `[]`)
+
+    Getting a React grid to actually re-query is unreliable. **Prefer replaying the search
+    API via `window.__go` over driving the UI search box.**
+
+16. **The XHR hook does not survive `/navigate` — and neither does `window.__go`.** After
+    every navigation: re-arm the hook, trigger one real app action (e.g. the Refresh
+    button) to repopulate `__cap`, then rebuild `__go`. Rebuilding `__go` on a page where
+    `__cap` is empty returns `NOHDR` and every later call fails with
+    `500 "Token doesn't exist or is invalid"`. I hit this once and had to bounce back to
+    `/parts/sales-order` purely to re-harvest headers.
 
 ## ⚠️ TRAPS (both nearly produced a wrong answer)
 
@@ -472,10 +604,20 @@ made the header-vs-line contradiction obvious at a glance.
    (`/api/cms/u/customers/<id>`, `partsTaxInfo[0].taxExempted`) before saying a word about
    customer setup. The order snapshot is not the master. If the masters match, say so and
    name the snapshot mechanism as OPEN rather than inventing one.
+7b. **⭐ IF THE MASTERS MATCH — RUN THE SCOPE TEST BEFORE ANYTHING ELSE.** Query all
+   wholesale SOs store-wide across a date range and check whether `customer.taxable` is
+   uniform across unrelated customers. If it is, this is a **store-level change, not a
+   customer problem** — bisect `createdTime` windows to find the exact flip date, then
+   look for a tax code whose `effectiveDate` sits just before it
+   (`taxConfiguration.taxDetails[].taxRateDetails[].effectiveDate` on a post-change SO).
+   Two unrelated customers with the same anomaly is the signal. Do not spend turns
+   diffing customer records once you see it.
 8. Report the matched row, the mechanism, and any candidate defects that SURVIVED
    verification.
 9. **Change nothing** if he said diagnosis only — he says "I DON'T WANT YOU TO FIX
    ANYTHING" and means it. End with "nothing touched."
+10. **Offer the fleet check.** A store-level tax-code rollout probably hit the other six
+    stores the same night. Joe escalates to the whole fleet anyway — offer it up front.
 
 ## Related skills
 - `tekion-internal-cost-center-gl-routing` — internal REPAIR ORDER cost centers, Services-Internal table, GLAM nav + Chart of Accounts reads
