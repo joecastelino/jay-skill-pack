@@ -438,6 +438,29 @@ OpenAPI `/operations` endpoint (used for the deep RO scan) can 429 with
   report "$0.00, 0 menus" as if it were a genuine slow month. Recommend
   escalating a multi-day DEALER_QUOTA outage to Tekion support / Walter II.
 
+## Historical / by-category variant — render OFFLINE from the master
+
+For a **past month** report (e.g. "closed menus for last month, by advisor,
+grouped by Basic/Value/Premium"), do NOT re-scrape — the month master already
+holds the whole month. Load skill
+**`sct-menu-sales-by-advisor-category-report`**, which renders straight off
+`data/sct-menu-closed-mtd-MASTER-<YYYY-MM>.json` with **zero API calls** (so it
+ships fine mid-outage) via `render_menu_by_advisor_category.py`. Category =
+opcode suffix: `BNM`=Basic, `VNM`=Value, `PSM`=Premium.
+
+Two techniques from that skill worth knowing here:
+- **Quantify an outage gap instead of hand-waving.** Diff the master's RO set
+  against the FREE OPCODE-tags prefilter for the affected days — it needs no
+  `/operations` call, so it works while quota-blocked. On 2026-09-02 this
+  produced an exact "52 menu ROs lost Aug 1–10", which went in the email caveat.
+  Ship the report with the gap disclosed + a restatement promise; do not present
+  a silently-low total as fact.
+- ⚠️ **Never put a bare `&` in an `ask-agent`/terminal command string.** An
+  ampersand inside the quoted subject line (`... by Advisor & Category`) made
+  the terminal tool reject the send outright with *"Foreground command uses '&'
+  backgrounding"*. The guard scans the raw string and ignores quoting. Write
+  `and` instead. Same for `<#part>` — reword to "part-markup".
+
 ## Relationship to the Opened report skill
 
 Share the :9223 browser-auth-check procedure and the Stacey draft→send→verify
