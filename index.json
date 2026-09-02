@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-02T08:30:08",
+ "generated": "2026-09-02T08:45:26",
  "skill_count": 210,
  "skills": [
   {
@@ -667,6 +667,14 @@
    "last_used": "2026-08-24"
   },
   {
+   "name": "tekion-parts-so-gl-account-routing",
+   "path": "automotive/tekion-parts-so-gl-account-routing",
+   "category": "automotive",
+   "description": "Diagnose \"this parts Sales Order / counter sale is hitting the WRONG GL account\" (e.g. a Wholesale SO posting to a retail parts sales account). Covers the GLAM Fixed Operations > Part & Accessories > Parts-Counter mapping table, its 6 keying dimensions, the customer.taxable master-flag gotcha, and the internal API endpoints to pull a full SO for evidence. Use for any \"why did SO X go to retail instead of wholesale\" question.",
+   "times_used": 3,
+   "last_used": "2026-09-02"
+  },
+  {
    "name": "tekion-tech-flag-hours-pay",
    "path": "automotive/tekion-tech-flag-hours-pay",
    "category": "automotive",
@@ -801,14 +809,6 @@
    "description": "Order parts (purchase orders), handle Special Order Requests (SOR/SOP), and receive parts in Tekion's Parts module. Covers the 8 PO types, the SOR\u2192special-order-PO flow, Parts Receiving app (web + mobile scan-gun), Manual Receipts, float/cross-ship/backorder handling, and all statuses. Load for any \"how do I order/receive a part\" or SOR troubleshooting task in Tekion.",
    "times_used": 2,
    "last_used": "2026-07-06"
-  },
-  {
-   "name": "tekion-parts-so-gl-account-routing",
-   "path": "automotive/tekion-parts-so-gl-account-routing",
-   "category": "automotive",
-   "description": "Diagnose \"this parts Sales Order / counter sale is hitting the WRONG GL account\" (e.g. a Wholesale SO posting to a retail parts sales account). Covers the GLAM Fixed Operations > Part & Accessories > Parts-Counter mapping table, its 6 keying dimensions, the customer.taxable master-flag gotcha, and the internal API endpoints to pull a full SO for evidence. Use for any \"why did SO X go to retail instead of wholesale\" question.",
-   "times_used": 2,
-   "last_used": "2026-09-01"
   },
   {
    "name": "tekion-physical-inventory",
