@@ -157,6 +157,16 @@ Louie Vallejo Jr SERVICE_MANAGER, Phillip Stafford SERVICE_MANAGER) — call all
 (3) Top-3 line amounts all carry severity `CAUTION`, not CRITICAL — the Critical count is
 concentrated in Dale Alexander's low-dollar lines, so don't equate Critical with big dollars.
 
+## Reference run (BC / 1251, Tue 9/1/2026)
+32 declined lines · 10 ROs · $21,814.79 · 24 Critical. Dale Alexander #1 $15,354.43 (25 lines / 6 ROs /
+**23 of the 24 Criticals**) — the INVENTORY_MANAGER persona again dominating both lines and Criticals.
+Then Jacob Debussey $2,317.99, Humberto Dominguez $2,317.84, Juan Ramirez $914.21, Erik Mercado $910.32.
+Only 5 advisors, 10 ROs — lowest RO count in the trailing 7 but a normal day (prior day Mon 8/31 was the
+$101,725.62 record). Draft UID **43022**. PDF = 6 pages. HTML 4,361 B after Stacey appends the signature.
+401 again on first pull; **STEP ZERO-0 fixed it in ~30s** — header token had 28.9 days headroom and still
+401'd, session-file token had 29.6 days. Reconfirms: headroom is NOT a validity test, just merge and re-run.
+Stacey's DRAFT_UID=43022 was for once the REAL UID (seq no. was 116) — still resolve it yourself.
+
 ## Reference run (BC / 1251, Fri 8/28/2026)
 31 declined lines · 16 ROs · $36,868.51 · 13 Critical — **trailing-7 peak**, above Mon 8/24's $35,836.63.
 Houa Moua #1 $9,380.40, Juan Ramirez $8,169.24, Michael Reyes $4,829.20, Jeremia Navarro $4,435.72,

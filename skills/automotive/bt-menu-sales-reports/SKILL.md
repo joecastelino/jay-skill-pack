@@ -278,6 +278,21 @@ Jason Davis 84/$15,229.05, Michael Rankin 45/$12,594.65, Gio Elenes 12/$8,206.70
 NOTE: September's first run will auto-create a fresh MASTER-2026-09.json — a tiny master early in
 the month is normal, not the unseeded-master pitfall.
 
+### (9/02 run, for Mon 9/01) TEXTBOOK CLEAN — first September run, new-month master auto-created
+Yesterday = 9/01, so this was the first run against `MASTER-2026-09.json` (auto-created 97 bytes
+on the 1st — normal, NOT the unseeded-master pitfall). 52 closed ROs, 11 prefilter hits, 9 new
+rows, `all candidate ROs scanned`. Master 0 -> **9 rows / $3,384.43** ($2,607.58 labor + $776.85
+parts). ALL 9 rows dated 09/01/26 (zero August backlog carryover) — state that in the body so
+Tony understands the MTD total is one day only.
+.sh-wrapper + quoted-heredoc + DO-NOT-DOUBLE-SEND paragraph (now also carrying the "if 465 drops
+repeatedly, fall back to 587/STARTTLS" hint from the 9/01 run): one-attempt send on port 465
+first try in **74s**, zero SMTP errors (Message-ID <178835425974...>, 06:04:25 PDT, MIME 163,370
+bytes). IMAP Sent-check returned in **87s** first try, 10 hits, exactly one carrying today's
+subject (September 1-1, 2026) — other 9 all prior sends (Jul 1-28, Jul 1-30, Aug 1-8, 1-18,
+1-24, 1-25, 1-26, 1-27, Aug 1-31), usual token-match trap. Note Stacey's himalaya paging (`-p 3`)
+errored on the last page — harmless, she had already collected all hits.
+Advisors: Jon Lo 3/$2,310.28, Jason Davis 4/$950.19, Randy Vung 2/$123.96.
+
 ### Verification ask wording that works first try
 Lead with `IMPORTANT: print the answer as plain text IN THIS REPLY` AND
 `Use himalaya / raw IMAP against "[Gmail]/Sent Mail" (NOT the Gmail API)` — the
