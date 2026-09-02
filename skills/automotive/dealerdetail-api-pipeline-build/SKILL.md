@@ -750,6 +750,21 @@ Then `syncRun.findMany({orderBy:{startedAt:"desc"},take:16})` printing
 row at all was never attempted** — that's starvation, a fundamentally different bug than a failed
 sync, and the row-absence is the only evidence.
 
+### Recovery runner for starved stores
+`scripts/recover-stale-stores.sh` (built 2026-09-01). Backfills named stores with a wide window
+**without racing the nightly** — the critical detail is a *blocking* `flock -w 14400 9` on
+`/tmp/dealerdetail-sct-sync.lock` so it QUEUES BEHIND the cron run. Two concurrent syncs share the
+app-wide Tekion quota and re-drain each other (thundering-herd rule). It then quota-probes before
+spending, and deliberately does **not** pipe npm to `tail` so `rc` is real.
+```bash
+RECOVER_STORES=SCVW,TOL RECOVER_WINDOW=24 /usr/bin/bash scripts/recover-stale-stores.sh \
+  >> logs/recovery-stale-stores.log 2>&1
+```
+Timing note: the nightly fires 23:00 PDT (06:00 UTC). Launching a manual backfill in that window
+gets SIGTERM'd by the cron's own timeout (seen live: SCT run `FAILED` with
+`errors:[{message:"interrupted by SIGTERM"}]` — but its ROs were already committed, since upserts
+are idempotent). Check `pgrep -af sync-all` first, and prefer this runner.
+
 ### BST is too big for a nightly window (open, needs chunking not a longer timer)
 Its one successful run: **55,655 API calls / 4,673 ROs / 9h55m** (~11.9 calls per RO, same ratio
 as every other store — it's volume, not inefficiency). Any single-window nightly sync of BST will
