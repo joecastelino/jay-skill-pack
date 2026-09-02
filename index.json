@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-02T10:30:08",
+ "generated": "2026-09-02T10:45:21",
  "skill_count": 210,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 161,
-   "last_used": "2026-09-01"
+   "times_used": 162,
+   "last_used": "2026-09-02"
   },
   {
    "name": "agent-to-agent-bridge",
@@ -223,7 +223,7 @@
    "path": "automotive/tekion-opcode-overrides",
    "category": "automotive",
    "description": "Add vehicle/part override rows to a Tekion opcode (Overrides tab) using the verified browser-tool cascading react-select method. This is the batch workflow used for cabin-filter part overrides (RACF etc.) \u2014 Make/Model/Year/ Trim/Part per row, driven by the __buildRow() helper toolkit. Covers the real-click trim rule, the Save Changes confirmation modal, and mandatory reload+API verification. The most complex Tekion workflow we run.",
-   "times_used": 20,
+   "times_used": 21,
    "last_used": "2026-09-02"
   },
   {
