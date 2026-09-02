@@ -436,6 +436,30 @@ Reference implementation with all fixes baked in: `/home/itadmin/tekion-reports/
 7. **Cleanup pass pattern**: for rows that committed WITH the placeholder, a separate
    fresh_page→expand→delete_placeholder→save→API-verify loop (see `hvfilter_cleanup.py`) fixed
    6/6 rows in one unattended run once fixes 1-4 were in.
+8. **TRUCK MODEL-NAME YEAR SCOPING (Tacoma/Tundra, same trap as hybrids).** Base model "Tacoma"
+   offers years only up to 2018; "Tundra" similar. Recent years live under drivetrain variants:
+   `Tacoma 2WD`/`Tacoma 4WD` (2019+), `Tundra 2WD`/`Tundra 4WD`/`Tundra Hybrid 2WD`/`Tundra
+   Hybrid 4WD`. Multi-select ALL applicable variants in ONE row, then the year list unions.
+   YEAR PICK 'notfound' on a truck/hybrid = wrong model name, not a UI failure.
+9. **Multi-model rows break exact-line matching** (fix #4): a row like "Tacoma 2WD, Tacoma 4WD"
+   has no single-model line. Fall back to a SUBSTRING group finder keyed on one unique variant
+   name (e.g. "Tundra Hybrid 2WD") for expand/placeholder/part steps on such rows.
+10. **LABOR override section (Overrides→Labor left-panel):** row builder is identical (Make/
+   Model/Year/Trim + expand). BUT the `customerHours_<n>` input REJECTS the native value-setter
+   (`__setVal` + input event) — value visually changes but the SAVE persists the old inherited
+   seconds (saved 1080 not 1800). MUST: real `/mouse` click into the field → `activeElement.select()`
+   → real `/press` keystrokes ("0.50") → Tab to blur → save → verify via
+   `GET .../override/LABOR` → `override.laborHours[0].overriddenCustomerLaborTimeInSeconds`
+   (1800 = 0.5 hr).
+11. **Deleting an override row: the `icon-trash` icon needs `window.__fire(tr)` full pointer
+   dispatch** — a real `/mouse` click at its coords silently no-ops. No confirm dialog appears;
+   the row vanishes from DOM immediately, but you must still SAVE and API-verify. If DOM goes
+   weird after a trash click ("Create Opcode" header), nav away + Discard — unsaved deletes are
+   NOT persisted, API state is safe.
+12. **Duplicate rows for the same model/years: Tekion keeps BOTH and bottom-most wins** — a stray
+   re-run (e.g. importing a batch module without a `__main__` guard re-executed it) created a
+   second Prius Prime labor row at the inherited hours which would have overridden the correct
+   one. Always dedupe via the API list (same MODEL+YEAR params twice = bug) and trash the wrong row.
 
 ## ⭐ Unattended Batch (Persistent Browser) — PRODUCTION METHOD (verified 2026-06-10)
 
