@@ -264,9 +264,29 @@ Columns: Request · RO · Status · Submitted by · Approved by · When · **App
 Resolves every uid to a real name via OpenAPI `GET /users/{id}`. Verified 2026-08-25:
 14 TL records, "SEAN IS RAD!" correctly attributed to APPR0826-000012.
 
+**Upgrades 2026-09-02 (all verified):**
+- **Clickable hyperlinks**: RO number → the payload's `transactionIds.value` deep link
+  (authoritative — do NOT hand-build RO URLs from the RO number); Request ID → the
+  Approval Workspace (`/core/approval-workspace` — there is NO per-request deep link,
+  only a `?r=<ts>` cache-bust param).
+- `--from-json <payload.json>` renders from a cached arcapproval payload
+  (`d['data']['hits']`) — full dev/verification while the browser session is expired.
+- `--no-names` skips OpenAPI uid resolution.
+- Column widths for Request/RO widened so anchors never wrap — a wrapped hyperlink
+  splits into TWO tiny link annotation rects (bad click targets).
+- Approver-note attribution fixed: `notes.note` is the LATEST note; on a DRAFT/never-
+  approved row it's the SUBMITTER's text — only credit an approver when
+  `approvalTaskResponses[0].approvers[]` shows an actual approval; otherwise tag
+  *(submitter note — not yet approved)*.
+
 Prereq: :9223 logged in on the target dealer (the script opens Approval Workspace itself
 and steals the axios headers). Change store by passing `--dealer-key` (key into
 `tekion_client` config `dealers`).
+
+**Verify links structurally, not visually** — `pymupdf` IS installed (pdftoppm/gs/
+convert/mutool are NOT): `d=pymupdf.open(path)`; per page `pg.get_links()` (each has
+`uri` + rect `from`), hit-test text via `pg.get_textbox(l['from'])` to catch wrapped
+anchors; render preview with `pg.get_pixmap(dpi=140).save(...)`.
 
 ### Audit finding this report surfaces: SELF-APPROVAL
 The TL rule **"Warranty Recommendation"** has `submitterApproval: true`, so the submitter
@@ -303,7 +323,9 @@ Do NOT judge by the on-screen preview. Pull the real file:
      | python3 -c "import sys,json;sys.stdout.write(json.load(sys.stdin)['result'])" >> wb.txt; done
    ```
 4. **Tekion PDFs use a subset font with a −27 char offset**, so normal text
-   extraction returns garbage and `pdftotext`/`pymupdf` are unavailable/broken here.
+   extraction returns garbage (`pdftotext` is not installed; `pymupdf` IS installed
+   but text extraction from these subset fonts is still garbled — pymupdf is fine
+   for ReportLab-generated PDFs and link/render introspection).
    Decompress the content streams, pull `(...)` string literals, then **add 27 to
    every char code**. Working extractor: `/tmp/pdftxt2.py` + the +27 shift, or:
    ```python

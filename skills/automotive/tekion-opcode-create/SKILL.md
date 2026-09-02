@@ -639,6 +639,16 @@ Do NOT assume the tire pattern. Read the source record before building:
 **Warranty mapping opcode by work type (confirmed at BC):** brakes `0300` · tires `0400` ·
 belts/maintenance `0900` · battery/electrical `0700`.
 
+## 🟢 BC UCD BUILD STATE (2026-09-02, memory tool was down — state lives here)
+
+**14/26 built+verified at dealer 1251:** UCALIGN, UC4ALIGN (1.0hr/$80int/$99.95CP) · UCFBRAKE/UCRBRAKE (2.0hr Hourly $150) · UCTIRE4/2/1 (Tire, 1.6/0.8/0.4hr Fixed $120/60/30, map 0400) · UCBELT (Maint 0.6 Fixed $137.40 map 0900) · UCBATTERY (Filters 0.3 **LPG $229/hr** map 0700) · UCMISC (Misc 0hr, no rate/no map — matches source) · UCBALANCE (0.8 Fixed $60, no map) · UCLOF (OilChange 0.5 Fixed $114.50 map 0200) · UCAIR (0.3 LPG $229 map 0700) · UCCABIN (0.5 LPG $229 map 0700). **UCCADTIRE1-4 DROPPED per Joe.**
+
+Joe's ruling: **$229/hr Labor Price Guide** over converted fixed price (battery; applied to AIR/CABIN which match their sources). All get Service Type Used Car Department, skill tech/generic, cost center Used Car INV 240 @100% override ON, Warranty CC blank, Category = source's work type.
+
+**OPEN:** (1) UCMISC is missing the source's `Location · Not in · Consumer Scheduling` scope — the scope value field is a server-backed search that ignores synthetic input; 15-second manual fix, flagged to Joe, unanswered. (2) UCBELT's $137.40 came from the build sheet (source had 0hr/no rate) — unconfirmed by Joe.
+
+**REMAINING:** 8 Section C opcodes that replace REC (awaiting Joe's go), then Phase 2: GL mapping row `Internal Pay | Used Car Department | <new acct>` on Service - Internal (read-only until Joe says "do it"). Sheet = `~/tekion-reports/data/BC-UCD-opcode-build-sheet.txt` REV 2. Builder module = `~/tekion-reports/lib/jb2_opcode_builder.py` (~3 calls/opcode). PITFALL: Service Type dropdown silently failed to set once (UCBALANCE) — pick it explicitly and ALWAYS verify in the pre-commit readback before Create.
+
 ## 🔴 THE PREFLIGHT MISSES A SECOND BROWSER CONSUMER — check `cron-tekion.sh` too (2026-08-28)
 
 `opcode_preflight.py` only knows about **`cron-pipeline.sh`** (15-min). There is a SECOND
