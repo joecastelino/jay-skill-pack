@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-02T15:00:38",
+ "generated": "2026-09-02T15:15:45",
  "skill_count": 211,
  "skills": [
   {
@@ -39,7 +39,7 @@
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 81,
+   "times_used": 82,
    "last_used": "2026-09-02"
   },
   {
@@ -79,7 +79,7 @@
    "path": "automotive/tekion-kb-search-scrape",
    "category": "automotive",
    "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 43,
+   "times_used": 44,
    "last_used": "2026-09-02"
   },
   {
@@ -139,6 +139,14 @@
    "last_used": "2026-09-02"
   },
   {
+   "name": "tekion-service-settings",
+   "path": "automotive/tekion-service-settings",
+   "category": "automotive",
+   "description": "Reference map of Tekion's Service Settings application (App Grid > Settings > Service Settings) \u2014 the master config for service/RO workflows: General Setup, Job Sequence, Flag Tech on, Round-Up rules, Default Service Advisor, RO/Job Flags, Holds, Parts Request, pay-type setups (Customer/Warranty/Internal/ Insurance), Reminders, Express Mode, Tags, RO KPI List, Quotes, Role Config, Consumer Portal, Approval Settings, Deferred Recommendation Rules, Job Clock Setup, P&L View Setup. Use when asked where/how a service workflow behavior is configured (e.g. \"why do tech flag hours auto-match bill time\", \"how is the recommendation opcode set\", \"where do return-RO / comeback tags come from\").",
+   "times_used": 29,
+   "last_used": "2026-09-02"
+  },
+  {
    "name": "tekion-ro-close-blocked-triage",
    "path": "automotive/tekion-ro-close-blocked-triage",
    "category": "automotive",
@@ -153,14 +161,6 @@
    "description": "Tekion Service Scheduling Settings \u2014 appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the \"lowest ceiling wins\" capacity model, shop top-down matching, the daily overnight scheduler + \"Run Scheduler\" button, parts-on-appointment notifications, and the concierge mobile write-up flow. Load for any appointment/scheduling/capacity setup or troubleshooting in Tekion.",
    "times_used": 28,
    "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-service-settings",
-   "path": "automotive/tekion-service-settings",
-   "category": "automotive",
-   "description": "Reference map of Tekion's Service Settings application (App Grid > Settings > Service Settings) \u2014 the master config for service/RO workflows: General Setup, Job Sequence, Flag Tech on, Round-Up rules, Default Service Advisor, RO/Job Flags, Holds, Parts Request, pay-type setups (Customer/Warranty/Internal/ Insurance), Reminders, Express Mode, Tags, RO KPI List, Quotes, Role Config, Consumer Portal, Approval Settings, Deferred Recommendation Rules, Job Clock Setup, P&L View Setup. Use when asked where/how a service workflow behavior is configured (e.g. \"why do tech flag hours auto-match bill time\", \"how is the recommendation opcode set\", \"where do return-RO / comeback tags come from\").",
-   "times_used": 28,
-   "last_used": "2026-09-02"
   },
   {
    "name": "tekion-service-menu-setups",
@@ -191,7 +191,7 @@
    "path": "automotive/tekion-standard-reports-performance",
    "category": "automotive",
    "description": "Pull Tekion Standard Reports from the REPORTS module (/core/reports) via the :9223 authenticated browser \u2014 especially the fixed-ops performance suite (Advisor Performance, Tech Performance / proficiency = assigned-billed vs attendance hours). Covers the filter funnel (Flag Date range, Make filter), Group By, and Export. Use when Joe wants advisor/tech performance numbers, or ANY report that is NOT a custom Report Builder report.",
-   "times_used": 23,
+   "times_used": 24,
    "last_used": "2026-09-02"
   },
   {
@@ -247,7 +247,7 @@
    "path": "automotive/tekion-advisor-closed-gross-api-report",
    "category": "automotive",
    "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
-   "times_used": 15,
+   "times_used": 16,
    "last_used": "2026-09-02"
   },
   {
@@ -451,6 +451,14 @@
    "last_used": "2026-08-18"
   },
   {
+   "name": "sct-toyotacare-billed-hours-report",
+   "path": "automotive/sct-toyotacare-billed-hours-report",
+   "category": "automotive",
+   "description": "Pull the ToyotaCare (TAC) billed-hours number from Tekion's Advisor Performance report (Reports module) for SCT or any store, using Joe's saved TAC/ToyotaCare filter \u2014 and roll it out to the other 6 AMG stores. Use when Joe asks for ToyotaCare / TAC billed hours, or is building his monthly SCT fixed-ops sheet (\"first number, Toyota Care\").",
+   "times_used": 6,
+   "last_used": "2026-09-02"
+  },
+  {
    "name": "tekion-api-upgrade-audit",
    "path": "automotive/tekion-api-upgrade-audit",
    "category": "automotive",
@@ -513,14 +521,6 @@
    "description": "Run the Blackstone Toyota (BT, dealer 1249) Menu Sales scorecards \u2014 Daily Opened, Daily Closed, and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI. The 4th sibling of the SCT/Kevin, BC/Ruben, and TOL/Sean pipelines. Use for any \"BT menu report\", \"Blackstone Toyota menu sales\", or Tony Garcia menu-sales report request. (Menu REBUILD work is a different skill \u2014 bt-tony-menu-rebuild.)",
    "times_used": 5,
    "last_used": "2026-08-21"
-  },
-  {
-   "name": "sct-toyotacare-billed-hours-report",
-   "path": "automotive/sct-toyotacare-billed-hours-report",
-   "category": "automotive",
-   "description": "Pull the ToyotaCare (TAC) billed-hours number from Tekion's Advisor Performance report (Reports module) for SCT or any store, using Joe's saved TAC/ToyotaCare filter \u2014 and roll it out to the other 6 AMG stores. Use when Joe asks for ToyotaCare / TAC billed hours, or is building his monthly SCT fixed-ops sheet (\"first number, Toyota Care\").",
-   "times_used": 5,
-   "last_used": "2026-09-01"
   },
   {
    "name": "tekion-alignment-by-advisor-report",
