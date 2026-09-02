@@ -789,39 +789,15 @@ Her post-append self-correction ("missing the `<b>` tag... I'll replace my draft
 genuine delete+re-append, so no duplicate resulted — post-append self-correction risks a
 duplicate but doesn't guarantee one. Always grep; never assume either way.
 
-## 2026-08-23 6:16pm Closed MTD run — zero-activity Sunday, textbook one-shot, 16th consecutive clean "N dollars" build
-160 menus, $24,810.30 labor / $16,591.51 parts = $41,401.81 (Aug 1-23) — **identical to the
-8/22 MTD** because BC service was closed all Sunday: **0 closed ROs today → 0 new rows**, master
-stayed at 160. Advisors unchanged: Juan Ramirez 41 / $11,967.09, Houa Moua 32 / $7,017.61,
-Dimetri Reynoso 23 / $5,429.32, Humberto Dominguez 22 / $7,145.35, Michael Reyes 17 / $3,410.68,
-Jacob Debussey 12 / $2,331.45, Erik Mercado 9 / $3,237.75, Jeremia Navarro 4 / $862.56.
-Master asof was 2026-08-22 → default append (no seed/catch-up); `✓ all candidate ROs scanned`.
-Pull ran via `terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`,
-finished near-instantly (nothing to fan out). Master `_gross` sums matched the emitted report
-`totals` exactly.
-**Zero-day MTD nuance worth stating in the email**: unlike a zero-menu *Daily* report (where the
-whole scorecard renders the empty-table variant), a zero-activity day on the *MTD* report looks
-completely normal — full table, big totals — and is bit-identical in numbers to yesterday's
-draft. Ruben could reasonably read that as a stale/duplicate send. So put an explicit sentence in
-the summary: "the store was closed Sunday August 23, so no repair orders closed today and the
-month-to-date figures are unchanged from yesterday." Included this run.
-**Vision-check reminder confirmed**: full-page `vision_analyze` on the 1226x6083 PNG garbled the
-KPI tiles badly (returned "Menu Count: 624,610.30 / Labor $16,593.51 / Parts $41,401.81 /
-Total 160" — values shifted across labels and a digit invented). The documented crop-top-460px +
-2x-LANCZOS-upscale step then read all four tiles perfectly (OPCODE LABOR GROSS $24,810.30 /
-OPCODE PARTS GROSS $16,591.51 / TOTAL MENU GROSS $41,401.81 / MENUS SOLD 160). Never skip the
-crop step on MTD renders — the taller the page, the worse full-page OCR gets.
-Stacey's build: `execute_code` + `subprocess.run` argument list wrapped in `timeout 600` →
-returned cleanly in **103s**, no exit-124, no recovery probe, no self-correction text → no
-duplicate (pattern holds 8 runs straight). Her reported id (42599) MATCHED himalaya's.
-Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject auto-decoded
-with em-dashes, inline PNG **byte-for-byte identical** (1,292,926 bytes), PDF **byte-for-byte
-identical** (83,525 bytes), all 11 figures present exactly once, `<b>$41,401.81</b>` bold,
-greeting + footer present, zero ' dollars'/USD leftovers (checked after stripping the data URI),
-exactly 1 MTD 8/23 draft, Sent count 0 for `BC 8/23` entirely (Stacey's auto-send Daily Opened
-pipeline correctly produced nothing on a closed Sunday). Left the sibling Daily Closed 8/23
-draft (42597) untouched — different report type, not a duplicate.
-
+## 2026-08-23 6:16pm Closed MTD run — zero-activity Sunday, 16th consecutive clean build
+160 menus / $41,401.81 (Aug 1-23) — identical to 8/22 (0 closed ROs Sunday). All checks passed.
+**Zero-day MTD nuance**: a zero-activity day on the MTD looks completely normal and bit-identical
+to yesterday's draft — put the explicit "store was closed Sunday, figures unchanged from
+yesterday" sentence in the summary so Ruben doesn't read it as a stale re-send.
+**Vision-check reminder confirmed**: full-page `vision_analyze` on the tall MTD PNG garbled the
+KPI tiles (values shifted across labels, invented a digit); the crop-top-460px + 2x-LANCZOS step
+read all four perfectly. Never skip the crop on MTD renders — the taller the page, the worse
+full-page OCR gets.
 ## 2026-08-24 noon Daily Closed run — textbook one-shot, 17th consecutive clean "N dollars" build
 4 menus, $365.72 / $208.14 = $573.86 (Erik Mercado, Dimetri Reynoso, Humberto Dominguez,
 Jacob Debussey — one menu each). All byte-for-byte checks passed, no duplicate. Her reply had
@@ -1318,3 +1294,24 @@ and comma-mangled variants = 0. Exactly 1 MTD 9/1 draft (43017), MTD Sent count 
 Daily Closed 9/1 draft (43016) untouched — different report type, not a duplicate.
 **Skill-size housekeeping**: 94,263 pre-append (already under the ≤97,000 target thanks to the
 two prunes earlier today) → no prune needed this run. Re-checked `os.path.getsize()` AFTER.
+
+## 2026-09-02 noon Daily Closed run — textbook one-shot, 43rd consecutive clean "N dollars" build
+18 menus, $2,602.44 labor / $1,646.16 parts = $4,248.60 (Jacob Debussey 5 / $498.84, Dimetri
+Reynoso 4 / $1,778.21, Houa Moua 4 / $274.52, Humberto Dominguez 3 / $688.86, Michael Reyes 1 /
+$533.42, Erik Mercado 1 / $474.75 — six advisors). 47 closed ROs → 18 carried TEK menu opcodes
+(~38% attach, highest rate logged — Wednesday noon, strong menu day); `✓ all candidate ROs
+scanned`. Pull via `terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
+Vision KPI band (crop 460px + 2x LANCZOS on a 1226x1183 PNG) read all four tiles exactly and
+matched JSON. **write_file→background-terminal ask pattern, 19th straight run, returned inside
+ONE 180s wait** (`/tmp/bc_ask_0902_noon.py`, `subprocess.run` argument list, `timeout 560`).
+Terse DONE line correct with `TOTAL=$4,248.60`, her reported id (43038) MATCHED himalaya's, NO
+self-correction text (6th straight zero-wrinkle run) → no duplicate. Verified via the
+stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject auto-decoded with em-dashes,
+inline PNG **byte-for-byte identical** (236,788 bytes), PDF **byte-for-byte identical** (57,298
+bytes), all 9 figures present exactly once, `<b>$4,248.60</b>` bold, greeting + footer present,
+zero ' dollars'/USD/EMDASH/CORRECTION leftovers, all leading-digit-stripped and comma-mangled
+variants = 0. Exactly 1 draft (43038), Daily-Closed Sent count 0 (the single `BC 9/2` Sent hit
+was Stacey's auto-sent Daily Opened report, 15028, fired 12:05 — earlier than the 9/1 drift).
+**Skill-size housekeeping**: 98,510 pre-prune → condensed the confirmatory 2026-08-23 MTD entry
+(kept the zero-day-MTD-sentence rule and the full-page-OCR-garble/crop lesson) → 96,369 before
+appending. SAFE-PRUNE index assertions used; re-checked size AFTER.

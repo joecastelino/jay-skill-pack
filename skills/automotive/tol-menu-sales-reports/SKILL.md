@@ -800,6 +800,21 @@ SKILL.md under its size limit. Consensus of those runs: the full prevention word
 produces a clean one-shot draft the large majority of the time; verification asks are
 still mandatory; the $0 opened streak ran 8/23–8/25 (6 half-day slots) and broke 8/26.
 
+## (9/02 12:05PM, Opened) CLEAN RUN — genuine $0 day; one part-probe 124
+Both scripts foreground clean (87 ROs scanned, 0 menus — GENUINE zero: `complete: true`,
+`expected_records: 0`, rows+records both empty). NOTE: `tol_menu_sales_api.py.paused` present
+but ACTIVE file identical (same md5, Jul 2 date) = already restored, harmless, per the 7/10-11
+note. Hand-off RC=0 FIRST TRY in 135s; draft correct FIRST TRY at UID 43037, no dedupe needed.
+Subject-list FIRST try (120s, Count: 14 — Opened stack 08/21-09/02 + perennial 08/02 em-dash
+41547 + 08/28 em-dash 42814; no true dupes). The 3-line UID-first part probe hit exit-124 once;
+sleep 45 + the bare parts-only form ("One raw IMAP fetch only... List its MIME parts, one line
+each") returned in 82s: text/plain+text/html + image/png CID=<scorecard> + application/pdf.
+LISTING QUIRK: her flat listing showed multipart/mixed > multipart/alternative with NO
+multipart/related line, though her save confirmation claimed related was present — treated as
+listing flattening, not a defect (png CID + pdf present = pass; don't rebuild over this).
+Sent-check FIRST try (70s, short stem) = 4 hits all old em-dash-era (06/30-07/03), zero today =
+no leak. Flag to Joe: 13 unsent Opened drafts stacked (08/21-09/02).
+
 ## (9/01 8:05PM, Closed MTD) FIRST CLOSED RUN OF SEPTEMBER — new-month auto-seed CONFIRMED clean
 No `--seed` needed and none run: the script auto-created `tol-menu-closed-mtd-MASTER-2026-09.json`
 on the 1st exactly as documented. A tiny new master on day 1 is NORMAL, not the unseeded-master
