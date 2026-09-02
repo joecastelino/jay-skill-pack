@@ -951,6 +951,10 @@ NOT re-ask Stacey (a second handoff would create a duplicate draft for that nigh
 
 ## ⚠️ READ FIRST — WHICH SCRIPT DOES JOE ACTUALLY WANT? (2026-09-01)
 
+> Condensed one-page version of this section + the menu-dollar trap:
+> `references/alacarte-vs-menu-dollars.md` — read that if you only need the
+> "which script / à la carte vs menu / don't sum the dollars" rules.
+
 When Joe asks for "alignments sold, service menus and a la carte", he means the **report that already
 exists**: `sct_align_mtd.py` (scan) + `render_sct_align.py` (render) — *"Alignment Sales by Advisor"*,
 closed **MTD**, Dedicated / Bundled / Total / ROs. Do NOT build a new renderer. He said plainly:

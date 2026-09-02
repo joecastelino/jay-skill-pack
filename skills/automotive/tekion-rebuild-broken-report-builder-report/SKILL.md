@@ -266,6 +266,32 @@ zombie, dead, no output file. `notify_on_complete` never fired. Two hard rules:
   = relaunch it. Don't promise the user a number off a job you haven't proven
   is alive.
 
+⚠️⚠️ **THE FALSE-COMPLETION NOTICE (burned twice, 2026-09-02).** Do **NOT** write
+
+```bash
+cd ~/tekion-reports && nohup python3.11 -u script.py ... > /tmp/x.log 2>&1 &
+echo started
+```
+
+inside a `terminal(background=true)` call. The `&` detaches the python job, so
+the **wrapper shell exits instantly** and the harness posts
+`Background process proc_xxxx completed (exit code 0)` — **for the shell, not
+for your scan.** You will be handed a "completed" notice while the real job is
+either still running or already dead, and `/tmp/x.log` will be empty either way.
+Both TL YTD notices this session were this artifact.
+
+✅ Correct form — let `terminal(background=true)` own the process directly, no
+`nohup`, no trailing `&`, no `echo started`:
+
+```bash
+cd /home/itadmin/tekion-reports && /home/itadmin/.hermes/hermes-agent/venv/bin/python3.11 -u tl_tac_api.py 2026-01-01 2026-09-01 tl > /tmp/tl-tac-ytd.log 2>&1
+```
+
+Then the completion notice actually corresponds to the scan. **Confirm liveness
+by LOG GROWTH between two checks** (`wc -l` twice, ~60s apart) plus
+`pgrep -f tl_tac_api.py` — never by the exit code alone, and never by a single
+`tail` (a crashed runner's last pre-crash lines look perfectly healthy).
+
 ### Advisor names
 `assignee.advisor.id` is free on the search result. Resolve via OpenAPI
 `GET /openapi/v4.0.0/users/{id}` → `userNameDetails.completeNames[DISPLAY_NAME]`.
@@ -305,4 +331,20 @@ Cache to `data/<store>-advisor-cache.json`. 14 TL advisors resolved in ~4s.
 - Match the rebuild's date field to the RB filter (`RO_CREATEDTIME` vs `RO_CLOSEDTIME`).
 - Deepcopy + mutate `filterConfigs` only; hand-built configs 500.
 - Full-month scans must run in the background, with `-u`, and verify not zombie.
+- **Never `nohup ... &` inside `terminal(background=true)`** — the completion
+  notice fires for the wrapper shell, not your job. Run the command bare.
 - Pure counts: use the free `tags` OPCODE prefilter, skip the op fan-out entirely.
+
+---
+
+## Open thread at last reset (2026-09-02)
+
+TL TAC **YTD ELR** (`tl_tac_api.py 2026-01-01 2026-09-01 tl`) was relaunched
+after two zombie/false-completion runs and had not yet reported. If Joe asks
+again: re-run it bare (no `nohup`/`&`) with `-u`, expect ~25–30 min over ~32K
+closed ROs, then `render_tl_tac.py data/tl-tac-2026-08-01_2026-08-31.json
+data/tl-tac-2026-01-01_2026-09-01.json` and email. August baseline for the
+comparison: **116 ops / 54.35 hrs / $7,105.25 labor / $5,866.94 gross /
+ELR $130.73** — flagged to Joe as structurally low (TAC30/35/40 band drags the
+blend; TAC20 billed $60/hr on one op). He also wants the month-by-month ELR
+trend to show whether $130.73 is drift or baseline.

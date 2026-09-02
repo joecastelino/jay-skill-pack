@@ -117,10 +117,10 @@ WIP sheet's basis. The program's own operation lines are much smaller:
    Then verify all 4 in `[Gmail]/All Mail` via `X-GM-RAW rfc822msgid:<bare-id>`:
    labels must include Inbox, `Received` count ≥ 1, an `image/png` part with
    `Content-ID: <scorecard>`, a PDF attachment, and `data:image` absent.
-3. **Gate against the WIP sheet** before sending — the reconciliation table on page 1 must
+4. **Gate against the WIP sheet** before sending — the reconciliation table on page 1 must
    show the sheet value and the diff. A non-zero diff needs an explanation in the report,
    not a silent adjustment.
-4. `vision_analyze` the PNG before delivering (branding + layout check). Vision misreads
+5. `vision_analyze` the PNG before delivering (branding + layout check). Vision misreads
    the word CAREFREE as "CARFINDER" — ignore that, verify the numbers against the JSON.
 
 ## Branding
