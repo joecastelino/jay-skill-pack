@@ -261,6 +261,12 @@ Work dir: `/home/itadmin/tekion-reports`
      PDF attached, body TOTAL figure confirmed). Whole email stage = 3 calls, no draft,
      no rebuild. Note month-end (8/31) invoiced **781 closed ROs** vs the usual ~230 —
      a large RO count is normal on the last day of the month, not a paging bug.
+     ✅ **Re-confirmed 2026-09-01: body-file + one short send ask worked first try again**
+     (`OK BYTES=109810`, byte-exact vs `ls -la`; Sent list showed 18:12, MIME check returned
+     `MIME=REAL-multipart filename=SCT-Menu-Sales-Closed-Scorecard-2026-09-01.pdf`).
+     Three calls for the whole email stage. Putting the DEALER_QUOTA caveat paragraph
+     inside the body FILE (not the ask) keeps the ask short even when the caveat is long —
+     that is the main reason this flow survives outage days.
      ✅ **Re-confirmed 2026-08-27: same body-file + one short send ask worked first try**
      (`OK BYTES=155444`, byte-exact; Sent showed 18:03, `MIME=REAL-multipart`, PDF
      attached). Three calls total for the whole email stage (send, Sent list, MIME check).
@@ -298,6 +304,29 @@ Work dir: `/home/itadmin/tekion-reports`
      scope any draft count to an ASCII subject fragment before acting on it.
    - Leave the broken first copy in Sent — Joe gets two emails, one good; a
      duplicate is far better than a recall attempt. Note it in the summary.
+
+## Pitfall: month rollover day (1st of month) + outage recurrence
+
+**Verified 2026-09-01 (1st of the month):** the master auto-rolled to
+`MASTER-2026-09` and correctly started at 0 rows — August's master
+(`MASTER-2026-08`, 64 KB) was left untouched. A 0/near-0 MTD on the 1st is
+structurally expected; do NOT read it as a pipeline failure. But still run the
+outage probe, because on this date the **DEALER_QUOTA 429 outage recurred**
+(same signature as the 2026-08 window): `/repair-orders:search` and `/jobs`
+returned clean 200s, `/operations` 429'd `"Limit exhausted for type :
+DEALER_QUOTA"` on EVERY job of both TEK-tag candidates (RO 582486/TEK75000BNM,
+RO 582341/TEK60000BNM). The scanner again exited 0 with
+`"✓ all candidate ROs scanned (no truncation)"` and wrote NO `quota_outage_note`
+— confirming that message is unreliable. The 8-minute wait + single retry did
+NOT clear it (identical 429s at 18:10). Patch the note manually and ship.
+
+**Cheapest discriminator, one call:** a nonzero `prefilter: N of M` with
+`0 menu rows` is the tell. If the prefilter finds real TEK candidates but the
+master gains nothing, it is almost always the quota outage — go straight to the
+deep `/operations` probe rather than assuming a genuine zero. (Contrast with the
+2026-08-29 case where `prefilter: 0 of 25` — zero *candidates* — was a genuine
+no-menu day.) Also useful: month-end 8/31 showed **937 closed ROs / 31 TEK
+candidates** vs 47/2 on 9/1, consistent with the known month-end invoicing spike.
 
 ## Pitfall: a genuine 0-closed-RO day (validate, don't assume outage)
 
