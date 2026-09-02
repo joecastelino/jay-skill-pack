@@ -800,6 +800,33 @@ SKILL.md under its size limit. Consensus of those runs: the full prevention word
 produces a clean one-shot draft the large majority of the time; verification asks are
 still mandatory; the $0 opened streak ran 8/23–8/25 (6 half-day slots) and broke 8/26.
 
+## (9/01 8:05PM, Closed MTD) FIRST CLOSED RUN OF SEPTEMBER — new-month auto-seed CONFIRMED clean
+No `--seed` needed and none run: the script auto-created `tol-menu-closed-mtd-MASTER-2026-09.json`
+on the 1st exactly as documented. A tiny new master on day 1 is NORMAL, not the unseeded-master
+pitfall. Closed append ran FOREGROUND clean in seconds (no scraper contention,
+`ps aux | grep -c "[t]ekion-scraper"` = 0).
+Hand-off RC=0 FIRST TRY in 159s; draft correct FIRST TRY at IMAP UID 115 (himalaya id 43021),
+no dedupe needed (no prior draft with today's exact subject). All 3 verification asks returned
+FIRST try with "use raw IMAP, NOT the Gmail API" leading: subject-list 34s, part-probe 105s,
+Sent-check 84s. Zero exit-124s across all 4 calls.
+PART-PROBE: used the Closed-MTD-specific form from the 8/31 pitfall — NO UID, lead with the
+exact subject + explicit "SEPTEMBER 1-1, the newest one - NOT any of the August 1-28/1-29/1-30/
+1-31 drafts" disambiguation, and ask her to echo back "(1) the UID you fetched" as line 1.
+Returned correct first try (UID 115). The wrong-draft trap did NOT recur — this wording works;
+keep leading with it for Closed MTD. Cross-check passed: reported PNG 58,499 / PDF 49,111 =
+EXACT on-disk bytes (decoded form), bolded total $163.74 = JSON total.
+BOGUS-UID trap did NOT recur (reported 115 == subject-list 115 == part-probe 115).
+Sent-check = 6 hits, all old em-dash-era sends (06/29-07/03), zero today = no leak.
+DATA: 76 closed ROs scanned, prefilter 2 of 76 carried a TEK menu opcode, 2 rows,
+`✓ all candidate ROs scanned (no truncation)`, `complete: true`, `expected_records: 2`.
+**2 menus / $163.74** ($110.75 labor + $52.99 parts). Michael Hachey 1/$108.64 (66.4%) —
+RO 399480 TEK10000BNM 2024 RAV4, 94,572 mi, opened 08/31, closed today; Gustavo Alatorre
+1/$55.10 (33.6%) — RO 399532 TEK35000BNM 2025 RAV4, 31,635 mi (same-day open+close, the same
+RO the Opened runs caught). Closed JSON has NO `records` key — read `rows`.
+`totals.parts_price` ($100.36) != `parts_gross` ($52.99) — scorecard/email use GROSS.
+Closed-MTD drafts stack = 5 (Aug 1-28, 1-29 em-dash; Aug 1-30, 1-31 hyphen; Sept 1-1). No true
+dupes — each a unique date range. Flag to Joe: 4 unsent August Closed-MTD drafts still stacked.
+
 ## (9/01 8:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, TRUE dedupe, all 4 asks first try
 Both scripts ran FOREGROUND clean in seconds (no scraper contention, `ps aux | grep -c
 "[t]ekion-scraper"` = 0). Hand-off RC=0 FIRST TRY in 209s (just inside the 230s timeout);
