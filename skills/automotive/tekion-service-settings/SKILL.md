@@ -351,6 +351,28 @@ ss=json.load(open('/home/itadmin/caliber-ops/scripts/.tekion-storage-state.json'
 ```
 Lands on BC 1251 by default — switch dealers through the UI pill afterward.
 
+⚠ **`.tekion-storage-state.json` goes STALE** (verified 2026-09-03: injecting it left :9225 on
+/login). When :9225 is logged out, **clone the LIVE session from :9223 instead** (read-only on
+:9223, doesn't disturb the cron):
+
+```python
+# 1. Dump :9223 localStorage EXCLUDING amplitude keys (one is 1.3MB of analytics junk that
+#    blows every payload limit): build the dict in-page, btoa() it onto window.__jayls,
+#    read it back in 15,000-char substr slices, then delete window.__jayls.
+#    (Raw JSON slices break json.loads — always base64 the whole blob first.)
+# 2. On :9225: navigate /login, then stream the base64 blob INTO the page via
+#    window.__acc += "<15KB slice>" per /eval call, finally one /eval that
+#    JSON.parse(decodeURIComponent(escape(atob(window.__acc)))) and localStorage.setItem loop.
+# 3. Navigate /home, sleep 12, assert currentActiveDealerId (lands on BC 1251).
+```
+Working script pattern: /tmp/clone_session.py from 2026-09-03 session. Traps hit:
+- :9225 server has **no GET /cookies endpoint** (404) — cookies aren't needed anyway;
+  the Tekion session is localStorage-based and login survived on LS alone.
+- POST bodies >~300KB → `PayloadTooLargeError`/HTTP 413; even 60KB chunks of the amplitude
+  key failed. Filtering `amplitude*` keys shrinks the whole dump to ~1.3KB (14 keys).
+- Run this as a **standalone python script via terminal()**, not execute_code — the slice
+  loop needs >50 tool calls and hits the execute_code cap.
+
 ## "The RO Estimate Amount does not match the Actual Amount" popup (FIXED SCT 876, 2026-08-26)
 
 That modal is titled **Pre-Job Completion Information → Warnings in RO** and is produced by
@@ -477,6 +499,46 @@ that one pill + save; applies to everyone on the role. **Role changes fall under
 employee/role hard rule — get explicit go before toggling.** When a user says a settings
 tile "isn't there", check the role permission for that tile BEFORE assuming a version/
 support gate.
+
+## Approval Settings — what it CAN and CANNOT gate (verified live BC 1251, 2026-09-03)
+
+Joe asked "what else can I set up in approver workflow? declined work? certain opcodes?"
+Answer, from KB + live read (BC's `Enable RO Approval flow` toggle was OFF at read time):
+
+**CAN configure (everything keys on PAY TYPE):**
+1. `Enable RO Approval flow` — master toggle in General Setup (NOT a separate left-nav
+   section on the live page; the KB's "Approval Settings" section renders as this toggle).
+2. **Additional Jobs can be added for the following Paytypes** — pay types addable
+   post-check-in WITHOUT an approver (e.g. CP+I only → warranty adds need approval).
+3. **Additional Jobs can be changed only to the following Paytypes** — pay-type change
+   matrix (CP→I only, etc. — blocks silent flips to Warranty).
+4. **Recommendations require Approval before sending to the Customer** — per-pay-type
+   toggle; if off, approval happens via RO Bulk Action in the RO kebab.
+5. Additional **warranty hours** approval (the RO Bulk Action → Approval → Additional
+   Hours flow tested on TL 398624).
+- **Approvers are NOT set in the UI** — users are designated approvers by emailing
+  support@tekion.com.
+
+**CANNOT:**
+- **Declined work — NO approval gate.** The only hook is upstream (approve before SENDING
+  the rec). Once sent, customer approves/declines freely. Declined/deferred work is
+  governed only by Deferred Recommendation Rules (red/amber retention periods) — no approver.
+- **Opcode-scoped approval — does NOT exist.** Verified the adjacent surfaces too:
+  Pre-Invoice/Pre-Job Completion validation rules scope by Job Type + Pay Type only;
+  **Hold automation filter fields = Department, Job Type/Pay Type, Job Status, Status,
+  RO Flag, Job Parts Status, RO Type, Sublet Job, Job Tags — no opcode** (read live off
+  the funnel popover's React fiber `filterTypes`).
+
+**Nearest workarounds for opcode-ish control:** Internal Pay $ limit (over-limit close
+needs `Internal Repair Order Review Close` permission); turn OFF `Allow Creation of
+Custom Concern Opcode`; Hold automation keyed on Job Type/Pay Type + Job Tag with
+role-restricted "Remove When" = a manual release step. True opcode-level approval =
+Tekion feature request.
+
+**Fiber trick for filter popovers:** the funnel popover's field list isn't in options on
+the `-control` elements — walk the popover element's own `__reactFiber$` down child/sibling
+until `memoizedProps.filterTypes` (or `.additional.filterTypes`) appears; each entry has
+`{label, type}`. Works anywhere the ant-v5 filter dialog is used.
 
 ## Pitfalls
 - Several behaviors are gated by **"when enabled by support"** (e.g. Select Default Service
