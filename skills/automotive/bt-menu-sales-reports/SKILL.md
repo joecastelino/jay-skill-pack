@@ -278,6 +278,23 @@ Jason Davis 84/$15,229.05, Michael Rankin 45/$12,594.65, Gio Elenes 12/$8,206.70
 NOTE: September's first run will auto-create a fresh MASTER-2026-09.json — a tiny master early in
 the month is normal, not the unseeded-master pitfall.
 
+### (9/03 run, for Tue 9/02) CLEAN SEND on a CLOSE-LAG day (closedTime=13) — MTD unchanged
+Log showed `closed/invoiced ROs today: 13`, 0 prefilter hits, 0 new rows — suspicious for a
+Wednesday-run/Tuesday-data day. The 3-field probe (`_bt_probe_0903.py`) with a 9/01 control
+settled it as genuine close lag: 9/02 closedTime=13 / invoicedTime=167 / creationTime=173
+(all 200); control 9/01 closedTime=52 / invoiced=115 / created=147. Per DECISION RULE: MTD
+valid, render + send normally, state the lag in the body (did so: 167 invoiced vs 13 closed,
+all 9 MTD rows still dated 9/01, 9/02 contributed nothing yet). MTD flat at **9 rows /
+$3,384.43** ($2,607.58 labor + $776.85 parts) — same as 9/02's run; the zero-delta was stated
+explicitly so Tony isn't confused.
+.sh-wrapper + quoted-heredoc + DO-NOT-DOUBLE-SEND paragraph (with 587/STARTTLS hint): clean
+one-attempt send on port 465 in **97s** (Message-ID <178844073558...>, 06:04 PDT). IMAP
+Sent-check returned in **163s** first try, 11 hits, exactly one carrying today's subject
+(September 1-2) — other 10 all prior sends (Jul 1-28, Jul 1-30, Aug 1-8, 1-18, 1-24, 1-25,
+1-26, 1-27, 1-31, Sept 1-1), usual token-match trap. Ran with 4 concurrent tekion-scraper
+processes live; backgrounded the append defensively, finished fast with no backoff.
+Advisors: Jon Lo 3/$2,310.28, Jason Davis 4/$950.19, Randy Vung 2/$123.96.
+
 ### (9/02 run, for Mon 9/01) TEXTBOOK CLEAN — first September run, new-month master auto-created
 Yesterday = 9/01, so this was the first run against `MASTER-2026-09.json` (auto-created 97 bytes
 on the 1st — normal, NOT the unseeded-master pitfall). 52 closed ROs, 11 prefilter hits, 9 new
