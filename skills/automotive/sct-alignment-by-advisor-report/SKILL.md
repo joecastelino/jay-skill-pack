@@ -1128,6 +1128,25 @@ Armed the standard dated self-heal pair via the sed date-swap from the 8/10 copi
 foreground call, launched each via terminal(background=true, /usr/bin/bash explicit), confirmed
 alive via the log's "watcher started" line.
 
+**Confirmed continuing 2026-09-02 (day 2 of the September DEALER_QUOTA outage, still 429):**
+same deep-endpoint signature at 19:01 PDT (search 200, `/operations` 429 DEALER_QUOTA on the
+validated probe pair, unchanged since 8/3). The 9/1 self-heal watcher probed 429 every ~10 min
+19:05→23:04 with zero recovery (log simply ends at 23:04 — its Hermes background session
+likely died with the parent; the 21h DEADLINE was NOT reached, so a truncated selfheal log
+ending mid-evening means the watcher itself died, check `pgrep` not just the log). No sync:all
+hog this time (the stale `/tmp/dealerdetail-sct-sync.lock` from 9/1 23:14 remains with NO
+process behind it — left in place since it usefully blocks the 23:00 nightly sync from piling
+on). A caliber-ops `run-scraper.ts` started 19:00 today — left alone per the 8/31 lesson
+(probe-first; it isn't the cause since quota was already dead all of 9/1 before it started).
+Re-armed the standard dated pair via sed date-swap from the 9/1 copies, bash -n + chmod
+foreground + two terminal(background=true) launches, both confirmed alive via log line +
+pgrep count=2 each. Stacey read-only Gmail check (SUBJECT+DATE enumeration form, Drafts+Sent,
+7 days): August 2026 Final CORRECTED (448) was SENT to Kevin 9/1; the CORRECTED draft plus 6
+August nightly drafts still sit in Drafts; **zero September reports exist (9/1 and 9/2 both
+blocked)**. Unlike 9/1 there is no unshipped prior-period fallback left to re-cut — the
+corrected August final already went out, so tonight is a pure blocked-night report. If still
+429 on 9/3, that matches the 8/1-8/11 pattern (10-day non-refill) — recommend Joe open the
+Tekion support ticket early rather than waiting out another 10-day arc.
 **ZERO-QUOTA FALLBACK THAT SAVED THE NIGHT — ship the corrected prior-month final.** Because the
 8/31 nightly emailed the BUGGY 443 (patched at 19:23, after the 19:01 cron fired — see the
 ALIGN00RBA section), the correct August number had never reached Kevin. The alignbg scan from
