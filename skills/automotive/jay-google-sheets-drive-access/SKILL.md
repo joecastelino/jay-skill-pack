@@ -66,6 +66,7 @@ open("/home/itadmin/amg-wip/out.xlsx","wb").write(urllib.request.urlopen(req).re
 | Advisor Performance Report 2026 | `1GkmvTdpJ2KwVe1dQi0CDuyHutUHp2_YHb7kW3nPy4Ak` | native Sheet |
 | TECH EFF REPORT 2026 | `1pGZikiOeQXg1qXBdegde2gMimWlULznZWVxJSKS60KI` | native Sheet |
 | EOM WIP | `1yKUxOLIQwMV-o8HVEA1KNCyez4BMtkft2xati0HbaM4` | native Sheet |
+| Copy of GM_SASAR_Action_Tracker RUBENS (BC warranty corrective-action tracker: 20-col Action Tracker tab, 500 ACT-ID rows, dropdowns Severity=Critical/High/Medium/Low + Status=Open/Containment Complete/PAC In Progress/Awaiting Verification/Closed/Overdue; needs GM SASAR findings as input) | `1Lm_r3lLVKdPmBiQ5pyfGhj1-6gof9WpL` | xlsx-style (rtpof link); local snapshot /home/itadmin/bc-sasar/tracker.xlsx |
 
 ## AMG WIP.xlsx structure (verified live 2026-08-02)
 - 8 tabs: Stevens Creek Toyota, Stevens Creek Volkswagen, Toyota of Fresno (=BT service), Blackstone Body Shop (=BT body), Volkswagen of Clovis, Fresno GM (=BC), Toyota of Lancaster, Alfa Romeo of San Jose. (Fresno-name trap: see AMG WIP memory entry.)
@@ -73,6 +74,19 @@ open("/home/itadmin/amg-wip/out.xlsx","wb").write(urllib.request.urlopen(req).re
 - Col A row labels: Hours Sold (CUSTOMER/TXM/TOYOTA CARE/PREPAID/WARRANTY/PDI/INTERNAL), VEHICLE ATTENDANCE (TOYOTA/OTHERS), WORKSHOP ANALYSIS (TOTAL AVAIL/PROD HOURS/UNAPPLIED), LABOR RATES, WIP ($), ELR by pay type.
 - Load with `openpyxl.load_workbook(path, data_only=True)`; read_only=True reports dims as None — use the normal loader.
 - Local snapshots: /home/itadmin/amg-wip/ (AMG-WIP.xlsx older copy, AMG-WIP-live.xlsx fresh pull).
+
+## Token death: invalid_grant on refresh (hit 2026-09-03)
+If `google_api.py` (or any Credentials.refresh) raises `RefreshError: invalid_grant: Bad Request`, the refresh token was REVOKED by Google (typically after Joe changes his password / a security event). On 2026-09-03 BOTH the shared token AND Stacey's separate token died simultaneously — check both before concluding, but expect fleet-wide death. Autumn's `google_forms_token.json` (forms-only scopes) may survive but is useless for Sheets/Drive. Fix = a fresh OAuth re-auth flow (Joe clicks Approve); no local repair exists. Tell Joe it affects ALL Sheets pipelines, not just the current task.
+
+## NO-AUTH fallback: link-shared sheets (verified 2026-09-03)
+When tokens are dead or file access is blocked, ask Joe to flip the sheet to "Anyone with the link → Viewer", then pull directly with NO auth:
+```bash
+curl -sL "https://docs.google.com/spreadsheets/d/<FILE_ID>/export?format=xlsx" -o out.xlsx
+file out.xlsx   # MUST say "Microsoft Excel 2007+"
+```
+- ALWAYS verify with `file` — a restricted sheet still returns HTTP 200 but the body is an HTML sign-in page (`grep -o 'Sign in' out.xlsx` confirms). `drive.google.com/uc?export=download&id=` behaves the same.
+- Works for native Sheets (server converts to xlsx) and for Drive-hosted xlsx (the `rtpof=true` links Joe pastes). Also `export?format=csv&gid=<gid>` for a single tab.
+- Joe may re-paste the SAME link after changing sharing with no comment — just retry the curl on a re-pasted link before asking questions.
 
 ## Pitfalls
 - Jay's `~` is wiped daily — save downloads under /home/itadmin/, never ~.
