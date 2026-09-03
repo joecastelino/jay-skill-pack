@@ -89,7 +89,26 @@ POST https://app.tekioncloud.com/api/lookup/search
 Response: `data.CUSTOMER.{count, entities[]}` (NOT hits[]). Each entity's `data` node has:
 - `customerRewardsInfos`: `[{"oem":"gm","redeemMyRewards":true,"rewardIds":[{"rewardId":"<email>","primary":true}]}]` — populated = ENROLLED member. rewardId is usually the member's email.
 - Also present (usually null at BC): `oemRewardInfos`, `oemLoyaltyInfo` {loyaltyNumber, fordCompCode, chryslerCompCode, volvoCompCode}, `loyaltyInfoByOEMs`.
-- ENROLLMENT only — NO point balance anywhere in the record; balance needs GM Global Connect or the 2.0 integration.
+- The stored record is ENROLLMENT only — but see the LIVE BALANCE endpoint below (Joe corrected me on this 2026-09-03: the Customer Management → OEM Rewards tab DOES show $ even without the 2.0 cashiering integration).
+
+## LIVE GM Rewards BALANCE lookup (cracked 2026-09-03 — Customer Mgmt OEM Rewards tab)
+The OEM Rewards tab fires a real-time call to GM (takes ~2-4s — it's GM's loyalty system, not Tekion storage):
+```
+POST https://app.tekioncloud.com/api/service-module/u/gm-rewards/account-details
+{"transactionDate":"MM/DD/YYYY","emailAddress":"<rewardId email>","memberNumber":""}
+```
+Same captured-header auth set (any /api/ headers w/ tekion-api-token etc.; dealerId/tek-siteId swap per store).
+Response `data`:
+- `redemptionInformation."LOY Member"`: `"Total Dollars"`, `"Total Points"` (comma-formatted strings), Tier, `"Dealer Eligible For Redeem"`.
+- `accountInformation.loyMember`: `totalDollars`, `totalPoints`, `status` ("Active"), `canRedeem`, `memberNumber`, `memberNumberMasked`, currentTier, spendTrackers.
+- `memberInformation`: name/address, full member number.
+Pace ~0.6s/call; 44 lookups ≈ 2.5 min. Keyed by the rewardId EMAIL from customerRewardsInfos.
+DISCOVERY PITFALLS: customer detail page is NOT directly routable (`/core/customer/detail/<id>` renders empty)
+— must go list (`/core/customer`) → in-page search input (placeholder "Search...", y>100, NOT the global
+"Search here..." top bar) → type + ENTER (no Enter = no filter) → click result row (y>300) → click "OEM Rewards"
+left-rail tab. Probe script: `~/tekion-reports/bc_oemrewards_via_list.py` (XHR+fetch hook via add_init_script).
+BC combo result 2026-09-03: 44 members / $3,335.54 live rewards $ vs $61.7K deferred.
+Output: `~/tekion-reports/data/BC-GMRewards-members-declined-30d-with-balances.csv`.
 - Batch fetch by id: `POST /api/lookup/ids` `{"CUSTOMER":{"ids":[...]}}` same shape.
 - Pace ~0.25s; 360 lookups ≈ 2.5 min. Search by email first, fall back to name.
 
