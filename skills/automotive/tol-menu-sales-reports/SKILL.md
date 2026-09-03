@@ -800,6 +800,20 @@ SKILL.md under its size limit. Consensus of those runs: the full prevention word
 produces a clean one-shot draft the large majority of the time; verification asks are
 still mandatory; the $0 opened streak ran 8/23–8/25 (6 half-day slots) and broke 8/26.
 
+## (9/02 8:05PM, Closed MTD) TEXTBOOK CLEAN RUN — zero exit-124s, all 4 asks first try
+Closed append foreground clean in seconds (0 scrapers): 132 closed ROs, prefilter 0 of 132
+carried a TEK menu opcode, master unchanged at **2 MTD rows / $163.74** ($110.75 labor +
+$52.99 parts), `✓ all candidate ROs scanned (no truncation)` — a 0-new-rows day with 132 ROs
+scanned is healthy, not starvation. Hand-off RC=0 FIRST TRY (86s); draft correct FIRST TRY at
+IMAP UID 120, no dedupe needed. All 3 verification asks FIRST try, IMAP-first: subject-list
+77s (Count: 6 — Aug 1-28/1-29 em-dash, Aug 1-30/1-31, Sept 1-1, Sept 1-2; no true dupes),
+part-probe 63s using the Closed-MTD exact-subject disambiguation form (UID 120 echoed; PNG
+58,433 / PDF 49,115 = EXACT on-disk decoded bytes; bolded total $163.74 = JSON), Sent-check
+34s (Sent: 2, both old June 1-29 emails = token trap 5b, no leak). BOGUS-UID note: her save
+confirmation said UID 43065 (himalaya numbering) vs real IMAP UID 120 — subject-list settled
+it, standard quirk. MTD leaders: Hachey 1/$108.64 (66.4%), Alatorre 1/$55.10 (33.6%).
+Flag to Joe: 5 prior unsent Closed-MTD drafts still stacked (Aug 1-28 through Sept 1-1).
+
 ## (9/02 8:05PM, Opened) TEXTBOOK CLEAN RUN — genuine $0 day, zero exit-124s, all 4 asks first try
 Both scripts foreground clean in seconds (0 scrapers). 160 opened ROs scanned, **0 menus /
 $0.00** — GENUINE zero (`complete: true`, `expected_records: 0`, rows empty, `records` key
