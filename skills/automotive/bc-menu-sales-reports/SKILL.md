@@ -635,35 +635,13 @@ I will clean it up myself, just create ONE new draft" produced zero duplicate ch
 it in every 5pm ask.
 
 ## 2026-08-19 6:16pm Closed MTD run — clean data, but Stacey self-corrected mid-build and left a DUPLICATE
-120 menus, $20,068.52 labor / $13,699.76 parts = $33,768.28 (Aug 1-19). Advisors:
-Juan Ramirez 30 / $9,742.00, Houa Moua 28 / $6,240.06, Dimetri Reynoso 16 /
-$4,036.78, Humberto Dominguez 15 / $5,395.54, Michael Reyes 13 / $3,046.26, Erik
-Mercado 9 / $3,237.75, Jacob Debussey 6 / $1,293.79, Jeremia Navarro 3 / $776.10.
-Master asof was 2026-08-18 → default append (no seed/catch-up); 69 closed ROs → 9
-carried TEK menu opcodes; `✓ all candidate ROs scanned`. Pull ran via
-`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
-Vision KPI band matched JSON exactly; master `_gross` sums matched the emitted
-report `totals` exactly.
-**Deviation — duplicate from Stacey's own mid-build self-corrections**: her
-ask-agent stdout showed two self-caught mistakes ("Typo in the display name —
-RubEn should be Ruben. Let me fix and re-create" and "Syntax error in the
-f-string. Let me fix and re-run properly") before the terse DONE line. Each
-"re-create" APPENDED a new draft rather than replacing, leaving 42522 + 42523 one
-minute apart. Her DONE line named only 42523. Lesson: **when Stacey's reply text
-contains any "let me fix and re-create/re-run" self-correction, treat a duplicate
-as near-certain and run the dedupe grep immediately** — the explicit "create ONE
-draft, don't touch existing ones" instruction in the ask does NOT prevent her own
-retry loop from appending extras. Kept 42523 (byte-verified), expunged 42522.
-Otherwise textbook: the "N dollars" + Python-replace prevention rule worked a 4th
-consecutive time (zero `$digit` corruption, all 11 figures present exactly once,
-no ' dollars'/'USD' leftovers, `<b>$33,768.28</b>` bold), `timeout 600` on the
-subprocess argument-list ask returned cleanly in 164s with no exit-124.
-Verified via stdlib-`email` parser: To=Restrada, Cc real None, From=Joe,
-Subject auto-decoded with em-dashes, inline PNG **byte-for-byte identical**
-(1,010,311 bytes), PDF **byte-for-byte identical** (77,419 bytes), exactly 1 MTD
-8/19 draft, Sent MTD count 0 (the sibling 8/19 Daily Closed draft 42520 is not a
-duplicate — filter on "Month-To-Date" per the dedup rule).
-
+120 menus / $33,768.28 (Aug 1-19). All checks passed.
+**Lesson (load-bearing): when Stacey's reply text contains any "let me fix and re-create/re-run"
+self-correction, treat a duplicate as near-certain and run the dedupe grep immediately** — each
+"re-create" can APPEND a new draft rather than replace, and her DONE line names only the last one.
+The explicit "create ONE draft" instruction does NOT prevent her own retry loop from appending extras.
+(Kept 42523, expunged 42522.) See the 8/21 refinement: read WHERE in her pipeline the failure occurred
+— pre-append crash leaves nothing, post-append retry leaves an extra.
 ## 2026-08-20 noon Daily Closed run — textbook one-shot, 5th consecutive clean "N dollars" build
 7 menus, $923.31 labor / $658.94 parts = $1,582.25 (Dimetri Reynoso 2, Humberto Dominguez 2,
 Houa Moua 1, Michael Reyes 1, Jeremia Navarro 1). 37 closed ROs → 7 menu opcodes;
@@ -754,28 +732,12 @@ duplicate; her reported id matched himalaya's. Pre-telling Stacey "there is an e
 draft at a DIFFERENT subject, leave it alone, create ONE new draft" again produced zero
 duplicate churn — keep that line on MTD asks, not just 5pm Daily asks.
 
-## 2026-08-23 noon Daily Closed run — zero-menu SUNDAY, textbook one-shot, 14th consecutive clean "N dollars" build
-0 menus, $0.00 labor / $0.00 parts = $0.00. **0 closed ROs at the store today** (Sunday
-— BC service is closed; contrast the 2026-08-16 zero-menu Saturday which had closed ROs
-but none carrying TEK menu opcodes). Pull printed `✓ all candidate ROs scanned`;
-renderer produced the "No menu sales recorded yet for this period." empty-table variant
-and vision-verified all four KPI tiles at $0.00 / 0. Pull ran via
-`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)` and
-finished almost instantly (nothing to fan out). Stacey's build: `execute_code` +
-`subprocess.run` argument list wrapped in `timeout 600` → returned cleanly in **77s**,
-no exit-124, no recovery probe, no self-correction text → no duplicate (pattern holds 8
-runs straight). Her reported id (42594) MATCHED himalaya's. Verified via the
-stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject auto-decoded with
-em-dashes, inline PNG **byte-for-byte identical** (52,393 bytes), PDF **byte-for-byte
-identical** (39,406 bytes), `<b>$0.00</b>` bold, greeting + footer present, zero
-' dollars'/USD leftovers (checked after stripping the data URI), exactly 1 draft,
-Daily-Closed Sent count 0, no stale prior 8/23 draft to clean up.
-**Note on zero days**: the "N dollars" prevention rule still applies to `0.00 dollars` —
-`$0` is just as much a `$digit` sequence as `$9`, so don't skip the word-form trick just
-because the figures are zero. Also worth writing an explicit sentence like "No repair
-orders were closed at the store today" into the summary so Ruben reads it as a genuine
-closed-store Sunday rather than a broken feed.
-
+## 2026-08-23 noon Daily Closed run — zero-menu SUNDAY, 14th consecutive clean build
+0 menus / $0.00; 0 closed ROs (Sunday — BC service closed; contrast 8/16, a Saturday with closed
+ROs but no menu opcodes). Renderer produced the "No menu sales recorded yet" empty-table variant.
+**Zero-day rules (load-bearing)**: the "N dollars" prevention still applies to `0.00 dollars`
+($0 is a $digit sequence too), and write an explicit "No repair orders were closed at the store
+today" sentence so Ruben reads it as a genuine closed-store day, not a broken feed.
 ## 2026-08-23 5pm Daily Closed run — second zero-menu Sunday, 15th consecutive clean build
 0 menus / $0.00; 0 closed ROs (both runs that Sunday legitimately zero). All byte-for-byte
 checks passed; deleted the stale noon draft. Sent count 0 for `BC 8/23` entirely — Stacey's
@@ -1315,3 +1277,27 @@ was Stacey's auto-sent Daily Opened report, 15028, fired 12:05 — earlier than 
 **Skill-size housekeeping**: 98,510 pre-prune → condensed the confirmatory 2026-08-23 MTD entry
 (kept the zero-day-MTD-sentence rule and the full-page-OCR-garble/crop lesson) → 96,369 before
 appending. SAFE-PRUNE index assertions used; re-checked size AFTER.
+## 2026-09-02 5pm Daily Closed run — textbook one-shot, 44th consecutive clean "N dollars" build
+24 menus, $3,344.94 labor / $2,016.38 parts = $5,361.32 (Jacob Debussey 8 / $1,121.46, Dimetri
+Reynoso 5 / $1,984.53, Houa Moua 4 / $274.52, Humberto Dominguez 4 / $713.71, Michael Reyes 1 /
+$533.42, Erik Mercado 1 / $474.75, Juan Ramirez 1 / $258.93 — seven advisors). 69 closed ROs →
+24 carried TEK menu opcodes (~35% attach — second straight high-attach Wednesday cut, after the
+noon run's record 38%); `✓ all candidate ROs scanned`. Pull via `terminal(background=true)` + a
+SINGLE `process(action="wait", timeout=180)`. Vision KPI band (crop 460px + 2x LANCZOS on a
+1226x1423 PNG) matched JSON exactly.
+**write_file→background-terminal ask pattern, 20th straight run, returned inside ONE 180s wait**
+(`/tmp/bc_ask_0902_5pm.py`, `subprocess.run` argument list, `timeout 560`). Terse DONE line
+correct with `TOTAL=$5,361.32`, her reported id (43048) MATCHED himalaya's, NO self-correction
+text (7th straight zero-wrinkle run) → no duplicate; she explicitly named the noon draft (43038)
+as untouched. Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe,
+Subject auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (290,741 bytes), PDF
+**byte-for-byte identical** (59,519 bytes), all 10 figures present exactly once,
+`<b>$5,361.32</b>` bold, greeting + footer present, zero ' dollars'/USD/EMDASH/CORRECTION
+leftovers, all leading-digit-stripped and comma-mangled variants = 0. Deleted the stale noon
+draft (43038) per the twice-daily cadence rule → exactly 1 draft (43048). Daily-Closed Sent
+count 0.
+**Noon→5pm delta**: noon 18 menus / $4,248.60 → 5pm 24 menus / $5,361.32 — strongest single
+Daily Closed day logged (beats 8/27's $4,301.42).
+**Skill-size housekeeping**: 98,253 pre-prune → condensed the confirmatory 2026-08-19 MTD and
+2026-08-23 noon entries (kept the self-correction-duplicate and zero-day rules) before appending.
+SAFE-PRUNE index assertions used; re-checked size AFTER.

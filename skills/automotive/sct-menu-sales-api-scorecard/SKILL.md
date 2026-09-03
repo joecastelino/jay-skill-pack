@@ -960,6 +960,13 @@ structurally hopeless — there is no near-term reset to wait for. The playbook 
 Last known-good Opened before the 09-01 outage: **8/31/26 — 10 menus, $3,451.90
 labor / $1,420.16 parts = $4,872.06 total.**
 
+**Outage status log:** 9/1 noon+5PM lost (3→4 candidates). 9/2 noon lost (9
+candidates, fleet probe: SCT only store blocked). 9/2 5PM: re-probe at 17:02 —
+still 429 DEALER_QUOTA on /operations (search/jobs 200), 12 TEK candidates out
+of 175 ROs unscannable. No watcher launched (per hard rule). JSONs flagged
+complete:false. Day 2 → per playbook, escalation to Joe for a Tekion
+quota-review/support ticket is now warranted.
+
 ### The false-zero trap bit a SECOND pipeline — check yours for it
 `advisor_closed_gross.py` had the identical bug class: its `get()` helper swallowed
 every exception to `{}`, so a quota-blocked store produced **$0.00 gross across 47
