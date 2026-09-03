@@ -965,7 +965,10 @@ candidates, fleet probe: SCT only store blocked). 9/2 5PM: re-probe at 17:02 —
 still 429 DEALER_QUOTA on /operations (search/jobs 200), 12 TEK candidates out
 of 175 ROs unscannable. No watcher launched (per hard rule). JSONs flagged
 complete:false. Day 2 → per playbook, escalation to Joe for a Tekion
-quota-review/support ticket is now warranted.
+quota-review/support ticket is now warranted. 9/3 noon lost too (day 3):
+search/jobs 200, /operations 429 DEALER_QUOTA, 7 TEK candidates out of 112 ROs
+unscannable (582736/582735/582729/582724/582713/582712/582707). JSONs flagged
+complete:false, no render/email/watcher. Escalation to Joe re-flagged.
 
 ### The false-zero trap bit a SECOND pipeline — check yours for it
 `advisor_closed_gross.py` had the identical bug class: its `get()` helper swallowed
