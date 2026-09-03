@@ -800,6 +800,22 @@ SKILL.md under its size limit. Consensus of those runs: the full prevention word
 produces a clean one-shot draft the large majority of the time; verification asks are
 still mandatory; the $0 opened streak ran 8/23–8/25 (6 half-day slots) and broke 8/26.
 
+## (9/02 8:05PM, Opened) TEXTBOOK CLEAN RUN — genuine $0 day, zero exit-124s, all 4 asks first try
+Both scripts foreground clean in seconds (0 scrapers). 160 opened ROs scanned, **0 menus /
+$0.00** — GENUINE zero (`complete: true`, `expected_records: 0`, rows empty, `records` key
+ABSENT). Second consecutive $0 slot today (noon was 87 ROs / 0). Hand-off RC=0 FIRST TRY in
+95s; draft correct FIRST TRY at IMAP UID 119 with TRUE dedupe (noon draft UID 117 deleted;
+subject-list confirmed exactly one 09/02 hit). All 3 verification asks FIRST try with
+"use raw IMAP, NOT the Gmail API" leading: subject-list 31s (Count: 14, stack 08/21-09/02 +
+em-dash 08/02 UID 19 + 08/28 UID 91, no true dupes), part-probe 94s (png yes 43,487 / pdf yes
+28,990 = EXACT decoded on-disk bytes; her "UID fetched: 43064" is the himalaya-numbering
+quirk — byte-size cross-check settles it), Sent-check 33s (4 hits, all old em-dash-era
+06/30-07/03, zero today = no leak).
+PATH NOTE: `~/bin/ask-agent` only resolves under Jay's profile HOME
+(/home/itadmin/.hermes/profiles/jay/home/bin/ask-agent) — /home/itadmin/bin/ask-agent does
+NOT exist. In execute_code/subprocess use the absolute profile path.
+Flag to Joe: 13 unsent Opened drafts still stacked (08/21-09/02).
+
 ## (9/02 12:05PM, Opened) CLEAN RUN — genuine $0 day; one part-probe 124
 Both scripts foreground clean (87 ROs scanned, 0 menus — GENUINE zero: `complete: true`,
 `expected_records: 0`, rows+records both empty). NOTE: `tol_menu_sales_api.py.paused` present
