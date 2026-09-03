@@ -191,6 +191,52 @@ date. A per-customer explanation cannot account for a synchronized flip.
 record doesn't reflect, or there's a backlog. I could NOT confirm dollars actually sitting in
 4740 (see the blocked GL paths below). Do not claim the ledger without that.
 
+## 🚨 JOE'S CORRECTION 2026-09-03 — "we have wholesale customers that are taxable"
+
+**This kills any GLAM edit as the fix.** The `Taxable/Wholesale → 4740` row is DELIBERATE
+design: genuinely taxable wholesale customers (no resale cert) → 4740, exempt wholesale
+→ 4750. Pre-8/19 the header flag genuinely distinguished the two populations. The 8/19
+rollout destroyed that signal — since 8/20 EVERY wholesale order stamps `taxable=true`
+(exemption lives only in line-level NO TAX codes), so GLAM can no longer tell a real
+taxable wholesale customer from an exempt one.
+
+**Consequences:**
+- Do NOT propose collapsing to `All → 4750` or repointing the Taxable/Wholesale row —
+  either direction misposts one of the two populations. There is NO GLAM change that
+  fixes this if GLAM reads the header flag.
+- The fix is a **Tekion defect ticket**: "8/19 tax-code release changed header taxable
+  derivation for exempt customers; GL routing by Customer Tax Status broken since 8/20."
+- The header flag is COMPUTED by Tekion's tax engine at SO creation from the customer
+  master — it is an output, not a stored setting. There is nothing dealer-side to flip
+  (Joe asked "can I just flip it myself?" — no; the inputs are all correct already).
+
+**Ticket evidence pair (same customer, master untouched since 2025-10-30):**
+- De Laveaga Service (cust 1243835): SO **331239** @ 08/19 11:26 AM `taxable=false` vs
+  SO **331531** @ 08/20 3:23 PM `taxable=true`. Both Wholesale, both $0 tax.
+- Backup, second customer: Crash Champions n555 (116053): SO **331342** (08/19 4:42 PM,
+  false) vs SO **331482** (08/20 1:35 PM, true).
+- Cite tax code "NO TAX" id `6a867038a5537a692d78fdf0`, effectiveDate 2026-08-19 8:10 PM —
+  it's Tekion's own release artifact; hardest detail for support to deflect.
+
+**JE reading (for Joe's "where do I see tax in journal entries"):** collected tax NEVER
+touches 4xxx sales accounts — it credits a sales-tax-payable LIABILITY line. Exempt
+wholesale orders have NO tax line at all, pre- or post-8/20; the only JE difference is
+which sales account gets the credit (4750 vs 4740). You cannot find this defect by
+looking for tax — look at the sales-credit account number.
+
+**Note (unverified claim I made to Joe):** GLAM evaluates at POSTING time, not
+order-creation — so a routing fix would also catch the unposted backlog. Verify before
+repeating.
+
+**Open follow-ups Joe may return to:**
+1. Confirm dollars actually in 4740 (pull 4740/4750 transaction detail 8/20→now, look for
+   known-exempt wholesale SO numbers). If exempt SOs sit in 4750 anyway → GLAM reads the
+   customer MASTER, not the header → no defect, stand down.
+2. Verify genuinely-taxable customers STILL get charged tax post-8/20 (a second bug here
+   would be a real tax-collection failure — the expensive kind).
+3. Fleet check: same 8/19 tax-code rollout likely hit the other 6 stores.
+4. `postedToAccounting=false` on a CLOSED July SO — ask Tekion whether cosmetic or real.
+
 ---
 
 #### Dating the change — SO snapshots beat `modifiedTime`
@@ -258,9 +304,10 @@ evidence than "these look the same."**
 1. **Customer master record** — check `partsTaxInfo[0].taxExempted` on both customers
    before claiming inconsistent setup. In the 331990/323623 case this candidate DIED:
    both were Parts-exempt. Only raise it if the masters actually differ.
-2. **The mapping row itself** — `Taxable / Wholesale → 4740 …COUNTER RTL…` sends taxable
-   wholesale revenue into the retail counter account. Arguably wrong by design.
-   **This one survives regardless of the snapshot question** — it's a standalone finding.
+2. **The mapping row itself** — `Taxable / Wholesale → 4740 …COUNTER RTL…`.
+   ⚠️ SUPERSEDED 2026-09-03: Joe confirmed this row is DELIBERATE — SCT has genuinely
+   taxable wholesale customers (no resale cert) that belong in 4740. Do NOT call the row
+   a defect or propose editing it. See "JOE'S CORRECTION" section above.
 
 Don't pick for him. He may want the customer fixed (one account) or the row fixed
 (all taxable wholesale customers).

@@ -458,6 +458,26 @@ older copy, unpause by hand: `crontab -l` → strip the marker → write with a 
 newline** (crontab refuses `"new crontab file is missing newline before EOF"`) →
 `crontab <file>`. Never `crontab -l | sed | crontab -`.
 
+## Pay Types Setup — "it's not there" = a PERMISSION, not a missing feature (VC 1891, 2026-09-03)
+
+Pay Types Setup (payer types / Service 3.0 split-payer config) = **Settings → Service
+Settings → Pay Types Setup**, direct URL **`/ro/paytypes`**. Add New → Base Pay Type
+(Customer/Internal/Warranty) + 3-letter Notation + Name + **Default Payer** +
+**Associated Payers** (multi-select). Base C/I/W pay types can't be deactivated, only
+custom ones. Store-scoped. It's step 1 of the Service 3.0 chain (Pay Types → Tax Codes →
+Vehicle Groups → Labor Pricing → opcode pay-type config → Fees → GLAM cash holding acct).
+
+**BOTH the settings tile AND the `/ro/paytypes` route are gated by the single permission
+`View Pay Types Setup`** (Roles → \<role\> → **Service → Repair Order**). If it's OFF the
+tile silently vanishes and the direct URL renders *"You do not have the permissions to
+access the content."* — Joe reported "its not there" and this was the cause. Verified on
+VC 1891: the **System Administrator** role had `View Pay Types Setup` = OFF (unselected
+pill) while neighbors (Job PayType Edit, Internal PayType Change) were ON. Fix = flip
+that one pill + save; applies to everyone on the role. **Role changes fall under Joe's
+employee/role hard rule — get explicit go before toggling.** When a user says a settings
+tile "isn't there", check the role permission for that tile BEFORE assuming a version/
+support gate.
+
 ## Pitfalls
 - Several behaviors are gated by **"when enabled by support"** (e.g. Select Default Service
   Advisor for jobs) — if a toggle is missing, it may need Tekion support to enable.

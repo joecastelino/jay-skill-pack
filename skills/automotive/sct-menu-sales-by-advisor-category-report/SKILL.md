@@ -134,11 +134,12 @@ variants (`-SYN -CON -EV -MIR -BEV -GRC -86 -YAR -SUP -GRC`), e.g.
 `data/sct-tek-opcodes-all.json` (1,371 opcodes; filter `opcode.startswith("TEK09")
 and status=="ACTIVE"` → 40).
 
-**STOP AND ASK — do not decide this yourself.** Whether prepaid ToyotaCare counts
-as a "menu sale" is Joe's call, and it cuts both ways: they're TEK-prefixed (his
-original criterion) but he previously ruled TXM/TSC/TAC prepaid maintenance OUT
-of the menu definition on fixedopsreports. Per the NEVER-GUESS rule, present both
-options and the tier problem (TEK09 needs its own section, not a B/V/P bucket).
+**RESOLVED — Joe ruled 2026-09-03: "No, I don't want toyota care menus."**
+TEK09\* ToyotaCare is permanently EXCLUDED from SCT menu-sales reports. The
+frozen 316-opcode interval list is the ONLY menu filter. Never widen it to
+TEK09 to "explain" a low count — a low count means the master under-captured
+(Bug A), not a definition problem. This matches his TXM/TSC/TAC prepaid
+exclusion on fixedopsreports.
 
 Also verified: **`BSM` has 79 opcodes and ZERO sales** in June/July/Aug. Only 3
 tiers ever sell. A 3-category report is correct — not a missing-tier bug — but
@@ -152,8 +153,51 @@ band); tell Joe to disregard any already-sent copy; and state plainly that it's
 a scan bug, not a soft month. He accepts "I don't know yet" but not a confident
 wrong total.
 
+## Full-month REBUILD when the master is incomplete (zero OpenAPI quota — proven 2026-09-03)
+
+When Gate 2 shows the master is short and DEALER_QUOTA blocks `/operations`,
+rebuild the whole month from the INTERNAL browser-session APIs instead (they
+cost zero OpenAPI quota). This is how the corrected Aug 2026 report shipped.
+
+1. **Pin the dealer FIRST.** The :9223 session drifts (it sat on BC/1251
+   mid-scan and every call silently 500'd/failed). Verify
+   `currentActiveDealerId == 876` and re-switch via the UI pill before and
+   during long scans.
+2. **Census** all closed ROs day-by-day via `C.search_closed` (free), keep the
+   ROs whose OPCODE tags intersect the frozen list, cache the RO-number→objectId
+   map.
+3. **Fan out ONLY the menu ROs** via internal `GET /api/service-module/u/ro/<objectId>`
+   and read per-operation `laborDetails`/`partsDetails` sale amounts for the
+   menu opcodes. **Pace the calls** (sleep in-loop) — rapid fire → 500s; add a
+   final retry sweep so nothing is silently dropped. 226 ROs = a few minutes.
+4. **Advisor:** the RO payload's advisor lives in `allAdvisorIds` (RO number is
+   `roNo`). Resolve via `sct-advisor-cache.json` + OpenAPI `/users/{id}`
+   fallback. 2026-09-03: cached UUID labeled "Any Service Advisor" was actually
+   **Jose Barragan** (25 Aug ROs) — cache corrected; SCT has NO genuine
+   unassigned bucket.
+
+### ⚠️ TRAP 1 — advisor-performance API returns WHOLE-RO dollars
+The tempting shortcut (advisor-perf `summary()` with an `opcodes` filter —
+note the field is `opcodes` plural) filters ROs *by* opcode but returns
+**whole-ticket** `totalLaborSaleAmount`/`totalPartsSaleAmount` — ~2x inflation
+(RO 578802: $401.76 reported vs $274.26 true menu line). Counts from it are
+fine; dollars are NOT. Always pull operation-level detail for dollars.
+
+### ⚠️ TRAP 2 — operation `totalSaleAmount` includes tax
+Per-operation residual `totalSaleAmount − (laborSale + partsSale)` = **sales
+tax minus coupons/discounts** (can be negative on discounted ROs). Report
+**pre-tax sales = laborSale + partsSale**. (Aug: $150,000.83 raw vs
+$145,522.03 pre-tax — the $4,479 delta is tax net of coupons, NOT shop
+supplies.)
+
+### ⚠️ TRAP 3 — no cost at operation level
+The internal RO endpoint exposes sale amounts only. This path yields **SALES,
+not gross** — label the report "Sales" and say so; the old $71K report was
+gross mislabeled against sales expectations.
+
 ## Category mapping (opcode suffix — the whole trick)
 
+Every SCT menu opcode is `TEK<mileage><SUFFIX>`.
 Every SCT menu opcode is `TEK<mileage><SUFFIX>`. The last 3 chars are the tier:
 
 | Suffix | Joe's label here | Also called |
@@ -319,16 +363,19 @@ it's a Tekion convention, not a Toyota one; see
 in the footer, and replace the SCT logo with a text wordmark in brand colors.
 **Do not reuse `logo_st.png` / `logo_0.png` on a non-SCT report.**
 
-## Reference result — August 2026 (SCT) ⚠️ AS-SENT, KNOWN INCOMPLETE
+## Reference result — August 2026 (SCT) — FINAL, rebuilt 2026-09-03, sent + verified
 
-158 menus · $48,440.04 labor / $22,731.80 parts = **$71,171.84** · 15 advisors.
-Basic 72 / $19,471.27 (27.4%) · Value 63 / $35,987.96 (50.6%) · Premium 23 /
-$15,712.61 (22.1%). Top: Artist Battle 27 / $16,475.58, Angel Gutierrez 17 /
-$10,840.96, Jaime Sanchez 14 / $7,672.28.
+**226 menus · $145,522.03 pre-tax SALES · 16 advisors · 395.1 billed hrs.**
+Basic (BNM) 108 / $44,014.10 · Value (VNM) 87 / $71,671.07 · Premium (PSM)
+31 / $29,836.86. Top: Artist Battle 33/$27,468 · Angel Gutierrez 28/$25,529 ·
+Michael Robert Costa 29/$17,857 · Cristian Gonzalez 24/$13,444 · Jose Barragan
+25/$11,179. Built via the full-month zero-quota rebuild above. Baselines (frozen
+list, gross-basis from masters): June 243/$99.6K · July 237/$105.1K.
 
-**These figures are UNDERSTATED — do not reuse them as a baseline.** The
-completeness gate (added after the fact) shows 226 tagged menu ROs vs 158
-captured = **68 missing** (52 outage + 16 late-close/reopen), so the true
-old-style total is ~**$101.8K**, in line with June $99.6K / July $105.1K.
-Separately, **1,037 `TEK09*` ToyotaCare ROs** are excluded by the stale frozen
-opcode list pending Joe's ruling. Restate once DEALER_QUOTA clears.
+The originally-sent Aug figures (158 / $71,171.84) were understated (68 missing
+ROs) AND gross-vs-sales mislabeled — Joe was told to disregard. ToyotaCare
+TEK09\* (1,037 Aug ROs) permanently excluded per Joe's 2026-09-03 ruling.
+
+**STILL TODO:** the daily 6 PM cron needs a rolling **T+3 re-sweep** so
+late-closing/reopened ROs stop dropping out of the master (16/month even in
+healthy months — same fix pattern as BC warranty).

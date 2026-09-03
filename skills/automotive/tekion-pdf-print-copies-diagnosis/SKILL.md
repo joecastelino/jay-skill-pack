@@ -88,6 +88,20 @@ case-insensitive substring. Result 2026-09-02: Joe Mendoza = VC 1891.
   Invoice - CVSC = **2**, Closed RO Invoice = **2** (manual), Invoice - Service
   Advisor = **2** (manual); Warranty/Internal = 1. "Print on invoice" = ON.
 
+## Step 3b — "But only ONE person has the problem"
+Store-level Quantity=2 still fits a single complainer: the Payer-Invoice auto-print
+fires on the workstation of whoever **triggers** the event (closes/cashiers the CP
+invoice). If one advisor does most CP invoicing, only they see doubles; manual
+reprints by others default to 1 copy in the dialog. Competing per-user causes:
+1. **Windows printer driver/preferences** on their PC set to copies=2.
+2. **Double-print behavior**: invoice auto-prints at cashiering AND they hit Print
+   again manually (very common).
+Discriminating question for the user: does it double when it **auto-prints at
+invoicing** (→ Tekion Quantity) or when they **manually hit Print** (→ their
+dialog/driver/habit)?
+Discriminating test: flip `Invoice - Customer Pay` Qty 2→1, have them invoice one CP
+RO. Still doubles → workstation-side. (Restore the setting after if store wanted 2.)
+
 ## Step 4 — Before fixing, ASK JOE
 This is often a **deliberate config** (customer copy + file copy — the VC row was
 last edited on purpose in 2024). Present the table and offer: fix CP row only, fix
