@@ -119,6 +119,17 @@ reportNames return the same shape. For opcode-grain clock time use skill
 `tekion-tech-clock-time-by-opcode` (TECH_CLOCK visibility-dashboard datasource).
 GOTCHA: replaying this API needs fresh headers captured by CLICKING through
 /core/reports → the report row; a direct page.goto of the report URL doesn't fire the query.
+**Expired-token shortcut (verified 2026-09-03):** when a saved header file
+(`/tmp/tekion_tech_headers_<dealer>.json`) 401s "Login user session is expired",
+you do NOT need to re-capture — splice fresh localStorage values from an
+authenticated browser (:9223 or :9225; eval param is `js` not `expression`):
+`t_token` → `tekion-api-token`, `__user_id` → `userid`+`original-userid`,
+`currentActiveRoleId` → `roleid`, `currentActiveSiteId` → `tek-siteid`.
+Verify `currentActiveDealerId` matches the header's `dealerid`. Replay via
+urllib — in-page `fetch()` of this endpoint 500s (axios interceptor auth).
+Also: `TECH_PERFORMANCE_REPORT`/`TECH_PERFORMANCE` reportName on the same
+endpoint returns the FULL per-tech summary grid (attendance/assigned/flag/clock
+seconds, $ in cents) for ALL techs in one call — no techId filter needed.
 Columns in order:
 `Technician Name · Attendance Hours · Actual Hours · Flagged Hours ·
 Assigned Billed Hours · Proficiency % · Efficiency % · Unapplied Hours ·

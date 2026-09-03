@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-03T09:45:05",
- "skill_count": 212,
+ "generated": "2026-09-03T10:00:20",
+ "skill_count": 213,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -127,7 +127,7 @@
    "path": "automotive/tekion-service-settings",
    "category": "automotive",
    "description": "Reference map of Tekion's Service Settings application (App Grid > Settings > Service Settings) \u2014 the master config for service/RO workflows: General Setup, Job Sequence, Flag Tech on, Round-Up rules, Default Service Advisor, RO/Job Flags, Holds, Parts Request, pay-type setups (Customer/Warranty/Internal/ Insurance), Reminders, Express Mode, Tags, RO KPI List, Quotes, Role Config, Consumer Portal, Approval Settings, Deferred Recommendation Rules, Job Clock Setup, P&L View Setup. Use when asked where/how a service workflow behavior is configured (e.g. \"why do tech flag hours auto-match bill time\", \"how is the recommendation opcode set\", \"where do return-RO / comeback tags come from\").",
-   "times_used": 33,
+   "times_used": 34,
    "last_used": "2026-09-03"
   },
   {
@@ -199,8 +199,8 @@
    "path": "automotive/tekion-declined-deferred-services-report",
    "category": "automotive",
    "description": "Pull declined/deferred services (recommendations customers said no to) for any/all AMG Tekion stores via the internal recommendation/search reporting API. Powers \"most declined service\", declined-services marketing lists (with customer phone/email), and deferred-dollars opportunity reports. Zero OpenAPI quota.",
-   "times_used": 22,
-   "last_used": "2026-08-26"
+   "times_used": 23,
+   "last_used": "2026-09-03"
   },
   {
    "name": "tekion-opcode-create",
@@ -1167,6 +1167,14 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-tech-payroll-reconciliation",
+   "path": "automotive/tekion-tech-payroll-reconciliation",
+   "category": "automotive",
+   "description": "Reconcile a store manager's semi-monthly tech payroll sheet (attendance + assigned/flagged billed hours per tech) against Tekion's Tech Performance data via API. Use when Joe says \"the tech performance report doesn't match what <manager> turned in on payroll\" or sends a payroll PDF/spreadsheet to audit. Verified BC (1251) Aug 16-31 2026 \u2014 caught a $1,700 payroll error.",
    "times_used": 0,
    "last_used": null
   },

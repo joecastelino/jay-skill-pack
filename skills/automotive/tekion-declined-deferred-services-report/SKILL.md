@@ -128,6 +128,26 @@ When Joe asks for a single-store cut ("just Blackstone GM"):
 - Severity is worth surfacing: `severity == "CRITICAL"` count per category (BC: 808 of 2,903).
 - Email via Stacey: helper lives at `/home/itadmin/.hermes/profiles/jay/home/bin/ask-agent` (the `/home/itadmin/bin/ask-agent` path does NOT exist — exit 127). Pass the instruction via a temp file (`"$(cat /tmp/msg.txt)"`) to avoid quoting hell. For "email ME" = From==To==Joe: demand base64 data-URI inline PNG (not CID), PDF+CSV attachments, and the imaplib INBOX append — then verify in INBOX with himalaya. Expect TWO inbox copies (SMTP delivery + append) — tell Joe it's the self-send quirk, both identical.
 
+## Customer-level marketing lists — FILTER INTERNAL/WHOLESALE (learned 2026-09-03, BC)
+When Joe asks for a CUSTOMER list (marketing/BDC follow-up) rather than a service ranking,
+raw hits are contaminated by house/wholesale accounts — at BC the internal account
+`americanmotorscorporation - 1251` was the #1 "customer" (204 lines / $81K), plus LITHIA
+HYUNDAI wholesale rows. Filter with:
+`re.compile(r"americanmotors|lithia|hyundai of fresno|wholesale|\(L0\d+\)|body shop|auto sales|motors? inc|dealer", re.I)`
+against `customer.name` (BC 30d: 833 raw lines → 622 retail, $661K → $557K). Then roll up
+per customer: (name,email,phone) key → lines, deferred $, vehicles set, last RO date,
+sample services; rank by $. ~96% of retail customers have email, ~100% phone — good list.
+
+## "Rewards members who declined service" (GM Rewards cross-ref, asked 2026-09-03)
+Rewards ENROLLMENT is NOT queryable anywhere in Tekion data (API or internal) when the
+My GM Rewards 2.0 integration is NOT enabled at the store (BC verified not enabled —
+see tekion-oem-rewards-integration). Don't burn time hunting an endpoint. Answer with
+the 3 options: (1) request integration enablement from support@tekion.com/PSM (durable
+fix — then enrolled members surface in Tekion and the combined report is automatable),
+(2) get a rewards member export from GM Global Connect and match on name/email/phone
+against this report, (3) deliver the full declined list and let BDC check rewards at
+contact time. Joe accepted this framing.
+
 ## Pitfalls
 - Don't `curl` `document.body.innerText` through the terminal tool and pipe to python — big result hangs; use execute_code with urllib against :9223.
 - The report UI itself shows Labor/Parts split; the API's `jobAmounts.totalAmount` is the combined deferred amount. `cpInvoice.laborAmount` etc. exist per-paytype if a split is needed.

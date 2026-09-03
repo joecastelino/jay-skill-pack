@@ -77,5 +77,12 @@ Playwright + storage_state; adapt dealer check for other stores).
   (that's how `/ro/invoices` was found; C = Cashiering).
 
 ## Cross-references
-- `tekion-sitemap` (Cashiering row), `tekion-autonomous-login`, `persistent-browser-server`,
+- **"Pull rewards members who did X" reports are IMPOSSIBLE pre-enablement** (confirmed
+  2026-09-03, Joe's "GM Rewards customers who declined service" ask): enrollment/points
+  data exists NOWHERE in Tekion (no API, no internal endpoint, no customer field) until
+  the integration is on. Workarounds: GM Global Connect member export matched by
+  name/email/phone, or deliver the unfiltered customer list for BDC to check at contact
+  time. Requesting enablement is the durable fix — pitch it.
+- `tekion-declined-deferred-services-report` (the declined-customer list half of that ask),
+  `tekion-sitemap` (Cashiering row), `tekion-autonomous-login`, `persistent-browser-server`,
   `tekion-kb-search-scrape` (KB SSO bootstrap: navigate `app.tekioncloud.com/core/knowledge-base/search`).
