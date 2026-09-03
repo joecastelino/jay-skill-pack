@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-03T11:30:05",
- "skill_count": 213,
+ "generated": "2026-09-03T11:45:05",
+ "skill_count": 214,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -1087,6 +1087,14 @@
    "path": "automotive/dealerdetail-persona-and-dedup",
    "category": "automotive",
    "description": "Split the DealerDetail advisor dashboard by Tekion persona (SERVICE_ADVISOR vs an \"Others\" bucket for cashiers/warranty clerks/service managers/techs), backfill the persona column from the Tekion users API, and fix duplicate-advisor rows caused by null-name pre-scope-upgrade pulls. Use when advisor numbers look polluted by non-advisors, when you see an \"Unassigned\"/null advisor, when personas are 0/N populated, or when the same Tekion userId appears under two Advisor rows.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "gm-sasar-action-tracker",
+   "path": "automotive/gm-sasar-action-tracker",
+   "category": "automotive",
+   "description": "Fill out a GM SASAR (warranty self-audit) corrective-action tracker + BAC Action Plan doc for a GM store (built for Blackstone Chevy BC/1251, Ruben Estrada). Joe supplies RO# + GM citation shorthand; Jay pulls each RO from Tekion, verifies the deficiency, writes a full 20-column corrective-action row, and emails the xlsx + paste-ready action-plan rows. Use when Joe mentions SASAR, GM warranty audit/review, \"Action Tracker\", or gives lists of ROs with GM citations.",
    "times_used": 0,
    "last_used": null
   },

@@ -42,6 +42,17 @@ Not a dealer-flippable setting. Email **support@tekion.com** or the PSM requesti
 "My GM Rewards 2.0 integration" for the store (give the full dealer string, e.g.
 americanmotorscorporation_1251).
 
+## ⚠️ BC ENABLEMENT STATUS — CORRECTED (Joe, 2026-09-03)
+My GM Rewards 2.0 IS ENABLED at BC (1251). My earlier "not enabled" verdict was WRONG — two bad tests:
+(1) checked the OEM Reward tender on a FLEET invoice (EXECUTIVE AUTO); (2) re-checked on RO 102371
+(enrolled member Sylvester Smith) but BOTH payers were third-party (PORTFOLIO + External Service
+Customer) — the rewards card only renders on the CUSTOMER's own pay section w/ verified email, so
+neither test could show it. PROOF the integration is live = the Customer Management → OEM Rewards
+tab fires the real-time gm-rewards/account-details call to GM and renders balances (verified).
+LESSON: the manual "OEM Reward Details" tender form co-exists with 2.0 — its presence proves NOTHING
+about enablement. To verify cashiering display, you need a pending CP invoice where the payer IS an
+enrolled, email-verified member. Don't call "not enabled" off fleet/third-party-payer invoices.
+
 ## How to CHECK if it's enabled (verified live, BC 2026-09-03)
 Ground truth = a live cashiering invoice. Read-only, safe on production.
 
