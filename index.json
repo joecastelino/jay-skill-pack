@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-03T13:00:12",
+ "generated": "2026-09-03T13:15:15",
  "skill_count": 214,
  "skills": [
   {
@@ -31,7 +31,7 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 92,
+   "times_used": 93,
    "last_used": "2026-09-03"
   },
   {
@@ -151,7 +151,7 @@
    "path": "automotive/tekion-declined-deferred-services-report",
    "category": "automotive",
    "description": "Pull declined/deferred services (recommendations customers said no to) for any/all AMG Tekion stores via the internal recommendation/search reporting API. Powers \"most declined service\", declined-services marketing lists (with customer phone/email), and deferred-dollars opportunity reports. Zero OpenAPI quota.",
-   "times_used": 28,
+   "times_used": 29,
    "last_used": "2026-09-03"
   },
   {
@@ -499,6 +499,14 @@
    "last_used": "2026-08-31"
   },
   {
+   "name": "tekion-oem-rewards-integration",
+   "path": "automotive/tekion-oem-rewards-integration",
+   "category": "automotive",
+   "description": "Answer \"can GM Rewards / OEM rewards show on the customer screen or cashiering?\" and CHECK whether the My GM Rewards 2.0 integration is enabled at a store by inspecting a live cashiering invoice. Covers the KB article set, where rewards display in the workflow, the manual-tender-vs-integrated-card tell, and how to request enablement. Verified at BC (1251) 2026-09-03.",
+   "times_used": 6,
+   "last_used": "2026-09-03"
+  },
+  {
    "name": "tekion-parts-sales-by-advisor-report",
    "path": "automotive/tekion-parts-sales-by-advisor-report",
    "category": "automotive",
@@ -553,14 +561,6 @@
    "description": "Diagnose Tekion Accounting Journal Entries stuck in ERROR status (auto-posting JEs that failed to post). Covers the JE list/detail URLs, reading GL posting lines out of the DOM, finding the blank/unmapped GL account, and tracing the root cause back to a missing row in GL Account Transaction Mapping. Use for \"look at journal entries\", \"JEs in error\", \"auto posting failed\", \"GL account blank on journal entry\".",
    "times_used": 5,
    "last_used": "2026-08-28"
-  },
-  {
-   "name": "tekion-oem-rewards-integration",
-   "path": "automotive/tekion-oem-rewards-integration",
-   "category": "automotive",
-   "description": "Answer \"can GM Rewards / OEM rewards show on the customer screen or cashiering?\" and CHECK whether the My GM Rewards 2.0 integration is enabled at a store by inspecting a live cashiering invoice. Covers the KB article set, where rewards display in the workflow, the manual-tender-vs-integrated-card tell, and how to request enablement. Verified at BC (1251) 2026-09-03.",
-   "times_used": 5,
-   "last_used": "2026-09-03"
   },
   {
    "name": "tekion-ro-job-paytype-triage",
@@ -625,6 +625,14 @@
    "description": "Run the Toyota of Lancaster (TL/TOL, Tekion dealer 1092) ALIGNMENT count report, month-to-date, broken down by service advisor (dedicated + bundled + unique ROs, ranked). Produces a 2-page Toyota-red scorecard (page-1 PNG + full PDF) and is drafted to Sean Preston by Stacey. Use when Joe asks for \"the Lancaster/TOL alignment report\" or to schedule it.",
    "times_used": 4,
    "last_used": "2026-07-07"
+  },
+  {
+   "name": "gm-sasar-action-tracker",
+   "path": "automotive/gm-sasar-action-tracker",
+   "category": "automotive",
+   "description": "Fill out a GM SASAR (warranty self-audit) corrective-action tracker + BAC Action Plan doc for a GM store (built for Blackstone Chevy BC/1251, Ruben Estrada). Joe supplies RO# + GM citation shorthand; Jay pulls each RO from Tekion, verifies the deficiency, writes a full 20-column corrective-action row, and emails the xlsx + paste-ready action-plan rows. Use when Joe mentions SASAR, GM warranty audit/review, \"Action Tracker\", or gives lists of ROs with GM citations.",
+   "times_used": 3,
+   "last_used": "2026-09-03"
   },
   {
    "name": "tekion-apc-quota-usage-investigation",
@@ -729,14 +737,6 @@
    "description": "Analyze an AMG per-store semi-monthly WIP workbook (tech payroll vs RTH / labor relieved to WIP) and produce Joe's service-manager meeting prep \u2014 trend table, per-tech gap ranking, talking points, recoverable-$ target. First run 2026-07-08 on \"2026- SCWV Wip.xlsx\" (Stevens Creek VW); Joe approved the format verbatim.",
    "times_used": 2,
    "last_used": "2026-08-03"
-  },
-  {
-   "name": "gm-sasar-action-tracker",
-   "path": "automotive/gm-sasar-action-tracker",
-   "category": "automotive",
-   "description": "Fill out a GM SASAR (warranty self-audit) corrective-action tracker + BAC Action Plan doc for a GM store (built for Blackstone Chevy BC/1251, Ruben Estrada). Joe supplies RO# + GM citation shorthand; Jay pulls each RO from Tekion, verifies the deficiency, writes a full 20-column corrective-action row, and emails the xlsx + paste-ready action-plan rows. Use when Joe mentions SASAR, GM warranty audit/review, \"Action Tracker\", or gives lists of ROs with GM citations.",
-   "times_used": 2,
-   "last_used": "2026-09-03"
   },
   {
    "name": "hermes-slack-slash-commands",
