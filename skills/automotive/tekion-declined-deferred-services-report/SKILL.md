@@ -170,6 +170,28 @@ fix — then enrolled members surface in Tekion and the combined report is autom
 against this report, (3) deliver the full declined list and let BDC check rewards at
 contact time. Joe accepted this framing.
 
+## WEEKLY BC "Trade-In Acquisition Targets" report (Joe, 2026-09-03)
+Joe's use case: buy customers' cars on trade when they decline big repair bills.
+Report = per-VEHICLE rollup of DEFERRED lines, keep total >= $1,000, retail only,
+NO GM Rewards involvement. Script (self-contained pull->render->email):
+`/home/itadmin/tekion-reports/bc_declined_trade_weekly.py` — window = previous
+Friday 00:00 PT -> Thursday 23:59:59 PT; cron `72085b2d49e1` Fridays 6 AM.
+Emails via jay_mail SMTP: **To Art Markarian <amarkarian@blackstonegm.com>,
+CC Ruben Estrada <Restrada@blackstonegm.com> + Joe**. Exit 2 = stale
+/tmp/tekion_rec_headers.json (re-capture passively, re-run).
+Key mechanics beyond the standard pull:
+- Rollup key = VIN (fallback customer name); rank by total declined $.
+- TWO filters: INTERNAL regex (house/wholesale) on every line + COMM regex
+  (collision|autoplex|rental|leasing|LLC|Inc|towing|insurance|copart|manheim...)
+  on the rolled-up name — commercial accounts are not trade targets.
+- Each row: contact, VIN, mileage, RO#s + close date, top declined services w/ $,
+  critical-line count. PDF (landscape letter, BC black/gold wordmark, weasyprint)
+  + CSV. One-off 30d version: render_bc_trade_targets.py + data files
+  BC-Declined-Over1K-TradeTargets-30d.* (30d ref: 123 targets / $421K).
+- jay_mail multi-CC fix (2026-09-03): send_report now splits comma-separated cc
+  strings into individual SMTP envelope rcpts — older copies passed the whole
+  string as one rcpt and Gmail would reject multi-address CCs.
+
 ## Pitfalls
 - Don't `curl` `document.body.innerText` through the terminal tool and pipe to python — big result hangs; use execute_code with urllib against :9223.
 - The report UI itself shows Labor/Parts split; the API's `jobAmounts.totalAmount` is the combined deferred amount. `cpInvoice.laborAmount` etc. exist per-paytype if a split is needed.

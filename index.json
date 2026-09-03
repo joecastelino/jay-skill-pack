@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-03T12:45:03",
+ "generated": "2026-09-03T13:00:12",
  "skill_count": 214,
  "skills": [
   {
@@ -23,8 +23,8 @@
    "path": "automotive/agent-to-agent-bridge",
    "category": "automotive",
    "description": "Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine.",
-   "times_used": 105,
-   "last_used": "2026-09-02"
+   "times_used": 106,
+   "last_used": "2026-09-03"
   },
   {
    "name": "tekion-openapi-repair-orders",
@@ -147,6 +147,14 @@
    "last_used": "2026-09-02"
   },
   {
+   "name": "tekion-declined-deferred-services-report",
+   "path": "automotive/tekion-declined-deferred-services-report",
+   "category": "automotive",
+   "description": "Pull declined/deferred services (recommendations customers said no to) for any/all AMG Tekion stores via the internal recommendation/search reporting API. Powers \"most declined service\", declined-services marketing lists (with customer phone/email), and deferred-dollars opportunity reports. Zero OpenAPI quota.",
+   "times_used": 28,
+   "last_used": "2026-09-03"
+  },
+  {
    "name": "tekion-ro-close-blocked-triage",
    "path": "automotive/tekion-ro-close-blocked-triage",
    "category": "automotive",
@@ -161,14 +169,6 @@
    "description": "Tekion Service Scheduling Settings \u2014 appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the \"lowest ceiling wins\" capacity model, shop top-down matching, the daily overnight scheduler + \"Run Scheduler\" button, parts-on-appointment notifications, and the concierge mobile write-up flow. Load for any appointment/scheduling/capacity setup or troubleshooting in Tekion.",
    "times_used": 28,
    "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-declined-deferred-services-report",
-   "path": "automotive/tekion-declined-deferred-services-report",
-   "category": "automotive",
-   "description": "Pull declined/deferred services (recommendations customers said no to) for any/all AMG Tekion stores via the internal recommendation/search reporting API. Powers \"most declined service\", declined-services marketing lists (with customer phone/email), and deferred-dollars opportunity reports. Zero OpenAPI quota.",
-   "times_used": 27,
-   "last_used": "2026-09-03"
   },
   {
    "name": "tekion-service-menu-setups",
@@ -579,6 +579,14 @@
    "last_used": "2026-07-14"
   },
   {
+   "name": "tekion-deferred-services-report",
+   "path": "automotive/tekion-deferred-services-report",
+   "category": "automotive",
+   "description": "Pull declined/deferred service data (recommendations customers didn't buy) for any Tekion store via the internal Deferred Services report API \u2014 service name, counts, dollar estimates, customer/vehicle/advisor detail. Zero OpenAPI quota; works when OVERALL_QUOTA is exhausted. Use for marketing campaign lists (Autumn) or lost-sales analysis.",
+   "times_used": 4,
+   "last_used": "2026-09-03"
+  },
+  {
    "name": "tekion-notification-settings-audit",
    "path": "automotive/tekion-notification-settings-audit",
    "category": "automotive",
@@ -657,14 +665,6 @@
    "description": "Detect CSI/survey-manipulation fraud by scanning Tekion customer records for redirect emails via the OpenAPI customer-search endpoint (GET /customers?email=). Two modes \u2014 KNOWN-EMAIL mode scans all 7 AMG stores for a suspect email Joe names (returns every record currently pointing at it + lastUpdateTime timeline); DISCOVERY mode pages a store's whole customer base to find ALL emails shared across 3+ unrelated customers, then attributes each to the RO-creating advisor (single-advisor-lock = bad actor) to surface ADDITIONAL bad actors beyond the first. Use when Joe says an advisor swapped customer emails to redirect surveys/CSI, asks \"how many customers have email X\" / \"when was this changed\", or \"find anything else / who else is doing this.\" Covers the count-param 400 trap, the floor-not-total caveat, the no-modifiedBy / no-change-history API limits, the exclude-staff-domain+dummy-placeholder rules, and the >=85% single-advisor-lock classification threshold.",
    "times_used": 3,
    "last_used": "2026-06-29"
-  },
-  {
-   "name": "tekion-deferred-services-report",
-   "path": "automotive/tekion-deferred-services-report",
-   "category": "automotive",
-   "description": "Pull declined/deferred service data (recommendations customers didn't buy) for any Tekion store via the internal Deferred Services report API \u2014 service name, counts, dollar estimates, customer/vehicle/advisor detail. Zero OpenAPI quota; works when OVERALL_QUOTA is exhausted. Use for marketing campaign lists (Autumn) or lost-sales analysis.",
-   "times_used": 3,
-   "last_used": "2026-08-18"
   },
   {
    "name": "tekion-generic-placeholder-part-swap",

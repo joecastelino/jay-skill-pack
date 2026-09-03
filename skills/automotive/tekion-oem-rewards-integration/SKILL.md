@@ -98,7 +98,18 @@ POST https://app.tekioncloud.com/api/lookup/search
  "searchText":"<name or email>","pageInfo":{"start":0,"rows":3},"sort":[]}}
 ```
 Response: `data.CUSTOMER.{count, entities[]}` (NOT hits[]). Each entity's `data` node has:
-- `customerRewardsInfos`: `[{"oem":"gm","redeemMyRewards":true,"rewardIds":[{"rewardId":"<email>","primary":true}]}]` — populated = ENROLLED member. rewardId is usually the member's email.
+- `customerRewardsInfos`: `[{"oem":"gm","redeemMyRewards":true,"rewardIds":[{"rewardId":"<email>","primary":true}]}]` — WHEN populated = ENROLLED member. rewardId is usually the member's email.
+- ⚠️ **NULL-FOR-MEMBERS TRAP (hit 2026-09-03 lapsed-customer scan)**: `customerRewardsInfos` is
+  routinely **null at BC even for CONFIRMED members** (Aaron Pizarro = null stored, yet live GM
+  returns $425.90 Active). A 4,369-customer scan filtered on this field found **ZERO** members —
+  totally wrong. **Membership ground truth = the live `gm-rewards/account-details` call keyed by
+  the customer's EMAIL** (from lookup `email` field): 200 w/ `loyMember.memberNumber` = member;
+  **400 w/ errorCode `GM0007`** ("member not found") = clean NOT-a-member signal. Treat GM0007 as
+  definitive no; only other HTTP errors are retryable. Also: `POST /api/lookup/ids` returns
+  `data.CUSTOMER` as a **bare LIST** of `{id,displayValue,data}` (NOT `{entities:[]}` like
+  lookup/search) — handle both shapes. Scan impl: `~/tekion-reports/bc_gmrewards_lapsed_v2.py`
+  (12mo RO index → last-visit map → lapsed filter → contacts via lookup/ids → per-email GM check,
+  all checkpointed).
 - Also present (usually null at BC): `oemRewardInfos`, `oemLoyaltyInfo` {loyaltyNumber, fordCompCode, chryslerCompCode, volvoCompCode}, `loyaltyInfoByOEMs`.
 - The stored record is ENROLLMENT only — but see the LIVE BALANCE endpoint below (Joe corrected me on this 2026-09-03: the Customer Management → OEM Rewards tab DOES show $ even without the 2.0 cashiering integration).
 
