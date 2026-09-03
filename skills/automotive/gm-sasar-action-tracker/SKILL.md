@@ -11,11 +11,11 @@ Joe: "GM warranty report / SASAR / Action Tracker" for a GM store, then sends li
 
 ## Working assets (BC case, Aug 2026)
 - Dir: `/home/itadmin/bc-sasar/` (persistent — NEVER Jay's ephemeral ~)
-- Deliverable: `GM_SASAR_Action_Tracker_RUBENS_filled.xlsx` (append ACT-nnn rows here)
+- Deliverable: `GM_SASAR_Action_Tracker_RUBENS_filled_v2.xlsx` (current — personnel-corrected 2026-09-03; v1 has stale Larae/Craig names, don't append to it)
 - Blank template: `tracker.xlsx`; Action Plan doc export: `gmdoc.txt`; plan rows: `BAC319544_action_plan_rows.txt`
 - Google Sheet id `1Lm_r3lLVKdPmBiQ5pyfGhj1-6gof9WpL` (Action Tracker gid=718385741), Doc id `1pKnpjpE6hLwPeCEUgcP29cXuScKuPDiE2oE05RFwFHI` — anonymous `export?format=xlsx` / `format=txt` works (Joe link-shared them)
 - BC constants: Review Date **08/11/2026**, Containment Due **09/01/2026**, PAC due 10/03/2026, verification 10/17/2026, Status "PAC In Progress". BAC# **319544**.
-- Personnel: **Ruben Estrada — Service Director** (NOT Manager, Joe corrected), Larae Parereti — Warranty Administrator, Craig Holman — Shop Foreman, Arthur Markarian — GM.
+- Personnel (Joe corrected 2026-09-03): **Ruben Estrada — Service Director** (NOT Manager), **Amber and Yer — Warranty Administrators** (NOT Larae Parereti), **Phil — Shop Foreman** (NOT Craig Holman), Arthur Markarian — GM. Ask Joe for last names if GM requires full names.
 
 ## Hard constraints / pitfalls
 1. **Do NOT try to edit the live Google Sheet in the browser** — Sheets canvas grid rejects all synthetic input (browser_type, execCommand insertText). Verified failure. Joe approved EMAIL delivery of the filled xlsx instead (`jay_mail.send_report`).
@@ -25,6 +25,8 @@ Joe: "GM warranty report / SASAR / Action Tracker" for a GM store, then sends li
 5. Batch pulls: `POST /repair-orders:search` with `documentNumber IN [...]`, then per-RO `/ro-vehicle`, `/jobs`, `/jobs/{id}/operations` (filter payType==WARRANTY; billDuration is SECONDS). Client: `/home/itadmin/tekion-api/tekion_client.py` (load_config, get_token; dealer bc=1251). Cache to `batch_ros.json`.
 6. openpyxl string gotcha in execute_code: apostrophes inside quoted GM citations break f-string escaping — use `chr(8217)` or string concat, avoid `\\'` in single-quoted literals.
 7. Row heights: `ws.row_dimensions[n].height = 190` for readability.
+8. **Bulk text fix in an ALREADY-FILLED xlsx (e.g. personnel rename after a correction)**: don't rebuild via openpyxl (loses formatting/dropdowns) — do zip-level XML surgery: read each member of the xlsx with `zipfile`, string-replace inside `.xml` members, write a v2 zip. GOTCHA: em-dashes (and other non-ASCII) are stored as XML entities — search for `Larae Parereti &#8212; Warranty Administrator`, NOT the literal `—` (a literal-dash search finds 0 and silently no-ops; verify replacement counts > 0). After writing: re-scan all XML for old-name tokens AND open with openpyxl as a validity check. Then re-email v2 noting it supersedes the prior copy.
+9. **Update MEMORY personnel entry + this skill in the same turn as any Joe personnel correction** — the 11:29 email went out with stale names because the correction hadn't been swept into already-built artifacts. After any correction, grep `/home/itadmin/bc-sasar/` (and xlsx XML — search_files can't see inside zips, use python) for the old names before considering it done.
 
 ## Tracker row structure (cols A–T, one row per ACT-nnn, start row 2)
 A ActionID | B Review Date | C Area/Process | D Finding (RO#, vehicle+VIN, hrs, GM citation restated + specific deficiency) | E Severity dropdown | F Immediate Containment | G Containment owner | H Containment due | I 5-Why (numbered 1–5, land on SYSTEMIC cause) | J Root Cause | K Permanent Corrective Action | L PAC owners | M PAC due | N Evidence | O Verification method ("Layered audit — ... 90 days") | P Verify date | Q Status | R,S blank | T GM citation verbatim in quotes
@@ -50,7 +52,7 @@ A ActionID | B Review Date | C Area/Process | D Finding (RO#, vehicle+VIN, hrs, 
 ## Deliverable per batch (email via jay_mail.send_report to Joe)
 1. Updated xlsx attached
 2. Per-RO summary bullets (ACT#, RO#, vehicle, hrs, fix one-liner; bold High severities; flag any RO disambiguation)
-3. Paste-ready **BAC 319544 Action Plan** rows (HTML table in body + .txt attachment): Observation/Deviation | Job Card # | Correction/Action | Individual Responsible ("Ruben Estrada Service Director / Larae Parereti Warranty Administrator / Craig Holman Shop Foreman") | Implementation Date. Combine same-citation ROs (e.g. both SBD ROs) into one plan row.
+3. Paste-ready **BAC 319544 Action Plan** rows (HTML table in body + .txt attachment): Observation/Deviation | Job Card # | Correction/Action | Individual Responsible ("Ruben Estrada Service Director / Amber and Yer Warranty Administrators / Phil Shop Foreman") | Implementation Date. Combine same-citation ROs (e.g. both SBD ROs) into one plan row.
 
 ## Reuse at other GM stores
 Same structure works fleet-wide; swap dealer id, personnel, BAC#, review/containment dates (ALWAYS confirm dates + titles with Joe — he corrected both once). GM citation vocabulary (OLH, SOR, TAC, SBD, Global Connect) is GM-universal.
