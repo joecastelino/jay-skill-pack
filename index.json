@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-03T10:15:35",
+ "generated": "2026-09-03T10:30:15",
  "skill_count": 213,
  "skills": [
   {
@@ -603,6 +603,14 @@
    "last_used": "2026-07-07"
   },
   {
+   "name": "jay-google-sheets-drive-access",
+   "path": "automotive/jay-google-sheets-drive-access",
+   "category": "automotive",
+   "description": "Access Joe's Google Sheets and Drive files from Jay's profile \u2014 token symlink bootstrap, reading/writing native Sheets, downloading Drive-hosted .xlsx files (like AMG WIP.xlsx) via alt=media, and the xlsx-vs-native-Sheet write limitation. Established 2026-08-02.",
+   "times_used": 3,
+   "last_used": "2026-09-03"
+  },
+  {
    "name": "tekion-apc-quota-usage-investigation",
    "path": "automotive/tekion-apc-quota-usage-investigation",
    "category": "automotive",
@@ -721,14 +729,6 @@
    "description": "Diagnose and fix Hermes slash commands on Slack \u2014 especially the \"/sethome failed because the app did not respond\" error. The Hermes gateway registers exactly ONE Slack slash command (/hermes); every other command (sethome, reset, model, new, status, \u2026) must be invoked as a SUBCOMMAND: `/hermes <sub>`. A bare `/sethome` is not registered with Slack, so Slack times out. Use when a Slack user reports a slash command \"doesn't respond\", goes to the wrong thread, or asks to set the Slack home channel. Also covers the \"Sending messages to this app has been turned off\" DM lockout (App Home Messages Tab disabled) and diagnosing any \"can't talk to <agent> on Slack\" report across fleet profiles.",
    "times_used": 2,
    "last_used": "2026-07-14"
-  },
-  {
-   "name": "jay-google-sheets-drive-access",
-   "path": "automotive/jay-google-sheets-drive-access",
-   "category": "automotive",
-   "description": "Access Joe's Google Sheets and Drive files from Jay's profile \u2014 token symlink bootstrap, reading/writing native Sheets, downloading Drive-hosted .xlsx files (like AMG WIP.xlsx) via alt=media, and the xlsx-vs-native-Sheet write limitation. Established 2026-08-02.",
-   "times_used": 2,
-   "last_used": "2026-08-18"
   },
   {
    "name": "sct-menu-sales-by-advisor-category-report",

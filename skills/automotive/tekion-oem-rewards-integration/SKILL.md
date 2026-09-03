@@ -76,6 +76,29 @@ Playwright + storage_state; adapt dealer check for other stores).
 - Discover left-rail app URLs generically: `[...document.querySelectorAll('a')]` → href map
   (that's how `/ro/invoices` was found; C = Cashiering).
 
+## GM Rewards ENROLLMENT lookup per customer (cracked 2026-09-03 — works WITHOUT the 2.0 integration)
+Customer Management stores rewards enrollment on the customer record even when the
+cashiering integration is NOT enabled. Backing API (internal, replayable with captured
+headers from /tmp/tekion_rec_headers.json + dealerId/tek-siteId swap — same auth set as
+recommendation/search):
+```
+POST https://app.tekioncloud.com/api/lookup/search
+{"CUSTOMER":{"filters":[{"field":"status","operator":"IN","values":["ACTIVE"]}],
+ "searchText":"<name or email>","pageInfo":{"start":0,"rows":3},"sort":[]}}
+```
+Response: `data.CUSTOMER.{count, entities[]}` (NOT hits[]). Each entity's `data` node has:
+- `customerRewardsInfos`: `[{"oem":"gm","redeemMyRewards":true,"rewardIds":[{"rewardId":"<email>","primary":true}]}]` — populated = ENROLLED member. rewardId is usually the member's email.
+- Also present (usually null at BC): `oemRewardInfos`, `oemLoyaltyInfo` {loyaltyNumber, fordCompCode, chryslerCompCode, volvoCompCode}, `loyaltyInfoByOEMs`.
+- ENROLLMENT only — NO point balance anywhere in the record; balance needs GM Global Connect or the 2.0 integration.
+- Batch fetch by id: `POST /api/lookup/ids` `{"CUSTOMER":{"ids":[...]}}` same shape.
+- Pace ~0.25s; 360 lookups ≈ 2.5 min. Search by email first, fall back to name.
+
+Proven combo report (2026-09-03): declined services 30d (tekion-declined-deferred-services-report)
+→ dedupe to customers → lookup/search each → filter customerRewardsInfos populated.
+BC result: 360 declined-svc customers → 44 GM Rewards members / 79 lines / $61.7K deferred.
+Output: `~/tekion-reports/data/BC-GMRewards-members-declined-30d.csv`. Probe script (browser
+XHR-hook discovery path): `~/tekion-reports/bc_custmgmt_rewards_probe.py`.
+
 ## Cross-references
 - **"Pull rewards members who did X" reports are IMPOSSIBLE pre-enablement** (confirmed
   2026-09-03, Joe's "GM Rewards customers who declined service" ask): enrollment/points
