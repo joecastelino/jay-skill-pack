@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-03T13:30:03",
+ "generated": "2026-09-03T13:49:36",
  "skill_count": 214,
  "skills": [
   {
@@ -23,7 +23,7 @@
    "path": "automotive/agent-to-agent-bridge",
    "category": "automotive",
    "description": "Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine.",
-   "times_used": 106,
+   "times_used": 107,
    "last_used": "2026-09-03"
   },
   {
@@ -83,6 +83,14 @@
    "last_used": "2026-09-03"
   },
   {
+   "name": "bc-menu-sales-reports",
+   "path": "automotive/bc-menu-sales-reports",
+   "category": "automotive",
+   "description": "Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards \u2014 Daily Closed (2x/day) and Closed Month-To-Date (1x/day) \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben Estrada (Restrada@blackstonegm.com). This is the GM-store sibling of the SCT/Kevin pipeline (sct-menu-sales-api-scorecard). Use for any \"BC menu report\", \"Blackstone Chevy/Cadillac menu sales\", or Ruben report request.",
+   "times_used": 40,
+   "last_used": "2026-09-03"
+  },
+  {
    "name": "sct-alignment-by-advisor-report",
    "path": "automotive/sct-alignment-by-advisor-report",
    "category": "automotive",
@@ -105,14 +113,6 @@
    "description": "Diagnose a Tekion Service Menu pricing problem (e.g. \"a rotation is charging $449.45\") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLODE the menu into individual opcodes using the \"Add Menu Services as separate operations\" setting to find which opcode carries the bad price and its labor-rate method (Fixed vs Service Catalog Pro Dynamic Pricing). Use when Joe flags a wrong/inflated price on a maintenance menu line for a specific RO/vehicle.",
    "times_used": 40,
    "last_used": "2026-08-21"
-  },
-  {
-   "name": "bc-menu-sales-reports",
-   "path": "automotive/bc-menu-sales-reports",
-   "category": "automotive",
-   "description": "Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards \u2014 Daily Closed (2x/day) and Closed Month-To-Date (1x/day) \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben Estrada (Restrada@blackstonegm.com). This is the GM-store sibling of the SCT/Kevin pipeline (sct-menu-sales-api-scorecard). Use for any \"BC menu report\", \"Blackstone Chevy/Cadillac menu sales\", or Ruben report request.",
-   "times_used": 39,
-   "last_used": "2026-09-01"
   },
   {
    "name": "bc-gm-menu-build",
@@ -139,20 +139,20 @@
    "last_used": "2026-09-01"
   },
   {
+   "name": "tekion-declined-deferred-services-report",
+   "path": "automotive/tekion-declined-deferred-services-report",
+   "category": "automotive",
+   "description": "Pull declined/deferred services (recommendations customers said no to) for any/all AMG Tekion stores via the internal recommendation/search reporting API. Powers \"most declined service\", declined-services marketing lists (with customer phone/email), and deferred-dollars opportunity reports. Zero OpenAPI quota.",
+   "times_used": 30,
+   "last_used": "2026-09-03"
+  },
+  {
    "name": "tekion-opcode-api",
    "path": "automotive/tekion-opcode-api",
    "category": "automotive",
    "description": "Read, audit, and VERIFY Tekion opcode override rows directly from the backend REST API using the session's own auth token. This is the AUTHORITATIVE source of truth \u2014 the override UI grid frequently renders wrong/empty even when rows exist in the backend. Use to get the true committed row count before a batch, detect incomplete (part-less) rows, and confirm persistence after saving.",
    "times_used": 30,
    "last_used": "2026-09-02"
-  },
-  {
-   "name": "tekion-declined-deferred-services-report",
-   "path": "automotive/tekion-declined-deferred-services-report",
-   "category": "automotive",
-   "description": "Pull declined/deferred services (recommendations customers said no to) for any/all AMG Tekion stores via the internal recommendation/search reporting API. Powers \"most declined service\", declined-services marketing lists (with customer phone/email), and deferred-dollars opportunity reports. Zero OpenAPI quota.",
-   "times_used": 29,
-   "last_used": "2026-09-03"
   },
   {
    "name": "tekion-ro-close-blocked-triage",
@@ -555,6 +555,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-deferred-services-report",
+   "path": "automotive/tekion-deferred-services-report",
+   "category": "automotive",
+   "description": "Pull declined/deferred service data (recommendations customers didn't buy) for any Tekion store via the internal Deferred Services report API \u2014 service name, counts, dollar estimates, customer/vehicle/advisor detail. Zero OpenAPI quota; works when OVERALL_QUOTA is exhausted. Use for marketing campaign lists (Autumn) or lost-sales analysis.",
+   "times_used": 5,
+   "last_used": "2026-09-03"
+  },
+  {
    "name": "tekion-journal-entry-error-diagnosis",
    "path": "automotive/tekion-journal-entry-error-diagnosis",
    "category": "automotive",
@@ -577,14 +585,6 @@
    "description": "Fix an AMG Hermes agent that is silent on Slack because its SLACK_BOT_TOKEN/SLACK_APP_TOKEN are missing or wrong in the profile .env \u2014 including recovering LOST tokens from old session transcripts without asking Joe to regenerate them at api.slack.com. Use when an agent's service is running but it never answers Slack messages (Autumn case, 2026-07-14).",
    "times_used": 4,
    "last_used": "2026-07-14"
-  },
-  {
-   "name": "tekion-deferred-services-report",
-   "path": "automotive/tekion-deferred-services-report",
-   "category": "automotive",
-   "description": "Pull declined/deferred service data (recommendations customers didn't buy) for any Tekion store via the internal Deferred Services report API \u2014 service name, counts, dollar estimates, customer/vehicle/advisor detail. Zero OpenAPI quota; works when OVERALL_QUOTA is exhausted. Use for marketing campaign lists (Autumn) or lost-sales analysis.",
-   "times_used": 4,
-   "last_used": "2026-09-03"
   },
   {
    "name": "tekion-notification-settings-audit",
@@ -851,6 +851,14 @@
    "last_used": "2026-09-01"
   },
   {
+   "name": "tekion-report-cron-self-contained-runner",
+   "path": "automotive/tekion-report-cron-self-contained-runner",
+   "category": "automotive",
+   "description": "Build any long-running (>20 min) Tekion report cron as a self-contained shell runner (scan -> render -> email in ONE flock'd process) instead of an agent-babysat background job. Use when creating a new report cron, when a report \"ran but Joe got no email\", or when a cron's data landed on disk but the render/email tail never executed. Includes the recovery drill for orphaned scan JSON.",
+   "times_used": 2,
+   "last_used": "2026-09-03"
+  },
+  {
    "name": "tekion-vehicle-override-row-builder",
    "path": "automotive/tekion-vehicle-override-row-builder",
    "category": "automotive",
@@ -977,14 +985,6 @@
    "description": "Reopen a CLOSED Tekion repair order (RO) when the UI shows no \"Reopen\" option. Verified live at VW of Clovis (dealer 1891) on RO 141673, 2026-08-27 \u2014 flipped CLOSED \u2192 READY_FOR_INVOICE via the internal reopen endpoint.",
    "times_used": 1,
    "last_used": "2026-08-27"
-  },
-  {
-   "name": "tekion-report-cron-self-contained-runner",
-   "path": "automotive/tekion-report-cron-self-contained-runner",
-   "category": "automotive",
-   "description": "Build any long-running (>20 min) Tekion report cron as a self-contained shell runner (scan -> render -> email in ONE flock'd process) instead of an agent-babysat background job. Use when creating a new report cron, when a report \"ran but Joe got no email\", or when a cron's data landed on disk but the render/email tail never executed. Includes the recovery drill for orphaned scan JSON.",
-   "times_used": 1,
-   "last_used": "2026-09-01"
   },
   {
    "name": "tekion-tech-clock-time-by-opcode",
