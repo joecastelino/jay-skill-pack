@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-03T12:15:03",
+ "generated": "2026-09-03T12:30:20",
  "skill_count": 214,
  "skills": [
   {
@@ -163,6 +163,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-declined-deferred-services-report",
+   "path": "automotive/tekion-declined-deferred-services-report",
+   "category": "automotive",
+   "description": "Pull declined/deferred services (recommendations customers said no to) for any/all AMG Tekion stores via the internal recommendation/search reporting API. Powers \"most declined service\", declined-services marketing lists (with customer phone/email), and deferred-dollars opportunity reports. Zero OpenAPI quota.",
+   "times_used": 27,
+   "last_used": "2026-09-03"
+  },
+  {
    "name": "tekion-service-menu-setups",
    "path": "automotive/tekion-service-menu-setups",
    "category": "automotive",
@@ -176,14 +184,6 @@
    "category": "automotive",
    "description": "Pull Tekion Standard Reports from the REPORTS module (/core/reports) via the :9223 authenticated browser \u2014 especially the fixed-ops performance suite (Advisor Performance, Tech Performance / proficiency = assigned-billed vs attendance hours). Covers the filter funnel (Flag Date range, Make filter), Group By, and Export. Use when Joe wants advisor/tech performance numbers, or ANY report that is NOT a custom Report Builder report.",
    "times_used": 26,
-   "last_used": "2026-09-03"
-  },
-  {
-   "name": "tekion-declined-deferred-services-report",
-   "path": "automotive/tekion-declined-deferred-services-report",
-   "category": "automotive",
-   "description": "Pull declined/deferred services (recommendations customers said no to) for any/all AMG Tekion stores via the internal recommendation/search reporting API. Powers \"most declined service\", declined-services marketing lists (with customer phone/email), and deferred-dollars opportunity reports. Zero OpenAPI quota.",
-   "times_used": 25,
    "last_used": "2026-09-03"
   },
   {
@@ -555,6 +555,14 @@
    "last_used": "2026-08-28"
   },
   {
+   "name": "tekion-oem-rewards-integration",
+   "path": "automotive/tekion-oem-rewards-integration",
+   "category": "automotive",
+   "description": "Answer \"can GM Rewards / OEM rewards show on the customer screen or cashiering?\" and CHECK whether the My GM Rewards 2.0 integration is enabled at a store by inspecting a live cashiering invoice. Covers the KB article set, where rewards display in the workflow, the manual-tender-vs-integrated-card tell, and how to request enablement. Verified at BC (1251) 2026-09-03.",
+   "times_used": 5,
+   "last_used": "2026-09-03"
+  },
+  {
    "name": "tekion-ro-job-paytype-triage",
    "path": "automotive/tekion-ro-job-paytype-triage",
    "category": "automotive",
@@ -675,14 +683,6 @@
    "last_used": "2026-07-12"
   },
   {
-   "name": "tekion-oem-rewards-integration",
-   "path": "automotive/tekion-oem-rewards-integration",
-   "category": "automotive",
-   "description": "Answer \"can GM Rewards / OEM rewards show on the customer screen or cashiering?\" and CHECK whether the My GM Rewards 2.0 integration is enabled at a store by inspecting a live cashiering invoice. Covers the KB article set, where rewards display in the workflow, the manual-tender-vs-integrated-card tell, and how to request enablement. Verified at BC (1251) 2026-09-03.",
-   "times_used": 3,
-   "last_used": "2026-09-03"
-  },
-  {
    "name": "tekion-parts-appointments-opcode-scoping",
    "path": "automotive/tekion-parts-appointments-opcode-scoping",
    "category": "automotive",
@@ -729,6 +729,14 @@
    "description": "Analyze an AMG per-store semi-monthly WIP workbook (tech payroll vs RTH / labor relieved to WIP) and produce Joe's service-manager meeting prep \u2014 trend table, per-tech gap ranking, talking points, recoverable-$ target. First run 2026-07-08 on \"2026- SCWV Wip.xlsx\" (Stevens Creek VW); Joe approved the format verbatim.",
    "times_used": 2,
    "last_used": "2026-08-03"
+  },
+  {
+   "name": "gm-sasar-action-tracker",
+   "path": "automotive/gm-sasar-action-tracker",
+   "category": "automotive",
+   "description": "Fill out a GM SASAR (warranty self-audit) corrective-action tracker + BAC Action Plan doc for a GM store (built for Blackstone Chevy BC/1251, Ruben Estrada). Joe supplies RO# + GM citation shorthand; Jay pulls each RO from Tekion, verifies the deficiency, writes a full 20-column corrective-action row, and emails the xlsx + paste-ready action-plan rows. Use when Joe mentions SASAR, GM warranty audit/review, \"Action Tracker\", or gives lists of ROs with GM citations.",
+   "times_used": 2,
+   "last_used": "2026-09-03"
   },
   {
    "name": "hermes-slack-slash-commands",
@@ -873,14 +881,6 @@
    "description": "Prep Joe for a working meeting with a store service manager (e.g. Ruben at BC, Kevin at SCT, Sean at TOL) \u2014 actionable items backed by LIVE store baselines computed from Jay's cached Tekion pipeline data, framed as what JOE (VP Fixed Ops) can do to help, drafted to Joe's own inbox. Use for any \"prep a meeting with <manager>\", \"action items for <store>\", \"what can I do to help him\" ask.",
    "times_used": 1,
    "last_used": "2026-07-07"
-  },
-  {
-   "name": "gm-sasar-action-tracker",
-   "path": "automotive/gm-sasar-action-tracker",
-   "category": "automotive",
-   "description": "Fill out a GM SASAR (warranty self-audit) corrective-action tracker + BAC Action Plan doc for a GM store (built for Blackstone Chevy BC/1251, Ruben Estrada). Joe supplies RO# + GM citation shorthand; Jay pulls each RO from Tekion, verifies the deficiency, writes a full 20-column corrective-action row, and emails the xlsx + paste-ready action-plan rows. Use when Joe mentions SASAR, GM warranty audit/review, \"Action Tracker\", or gives lists of ROs with GM citations.",
-   "times_used": 1,
-   "last_used": "2026-09-03"
   },
   {
    "name": "hermes-gateway-timeout-restart-loop",
