@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-03T11:00:17",
+ "generated": "2026-09-03T11:15:17",
  "skill_count": 213,
  "skills": [
   {
@@ -179,20 +179,20 @@
    "last_used": "2026-09-03"
   },
   {
+   "name": "tekion-declined-deferred-services-report",
+   "path": "automotive/tekion-declined-deferred-services-report",
+   "category": "automotive",
+   "description": "Pull declined/deferred services (recommendations customers said no to) for any/all AMG Tekion stores via the internal recommendation/search reporting API. Powers \"most declined service\", declined-services marketing lists (with customer phone/email), and deferred-dollars opportunity reports. Zero OpenAPI quota.",
+   "times_used": 25,
+   "last_used": "2026-09-03"
+  },
+  {
    "name": "sct-backcounter-ro-sales-countsheet",
    "path": "automotive/sct-backcounter-ro-sales-countsheet",
    "category": "automotive",
    "description": "Build Joe's daily SCT Back Counter Bin Check count sheet \u2014 cross-reference a day's RO part sales (Tekion OpenAPI) against parts that stock in a back-counter bin (5000 section) and render a Tekion-bin-check-style sheet with Primary Bin and Back Counter Bin write-in Count boxes, emailed via Stacey. Use when Joe asks to \"verify counts daily\", \"which back counter parts sold today\", or re-run the back-counter check for a date. KEY DESIGN INSIGHT (Joe corrected me 2026-07-04): a bin-snapshot DIFF can NEVER catch a back-counter pull \u2014 Tekion only relieves the PRIMARY bin (2420), so the 5000s bin doesn't move when the sale posts. Detection must be sales-driven: today's RO parts INTERSECT back-counter roster.",
    "times_used": 24,
    "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-declined-deferred-services-report",
-   "path": "automotive/tekion-declined-deferred-services-report",
-   "category": "automotive",
-   "description": "Pull declined/deferred services (recommendations customers said no to) for any/all AMG Tekion stores via the internal recommendation/search reporting API. Powers \"most declined service\", declined-services marketing lists (with customer phone/email), and deferred-dollars opportunity reports. Zero OpenAPI quota.",
-   "times_used": 24,
-   "last_used": "2026-09-03"
   },
   {
    "name": "tekion-opcode-overrides",
@@ -675,6 +675,14 @@
    "last_used": "2026-07-12"
   },
   {
+   "name": "tekion-oem-rewards-integration",
+   "path": "automotive/tekion-oem-rewards-integration",
+   "category": "automotive",
+   "description": "Answer \"can GM Rewards / OEM rewards show on the customer screen or cashiering?\" and CHECK whether the My GM Rewards 2.0 integration is enabled at a store by inspecting a live cashiering invoice. Covers the KB article set, where rewards display in the workflow, the manual-tender-vs-integrated-card tell, and how to request enablement. Verified at BC (1251) 2026-09-03.",
+   "times_used": 3,
+   "last_used": "2026-09-03"
+  },
+  {
    "name": "tekion-parts-appointments-opcode-scoping",
    "path": "automotive/tekion-parts-appointments-opcode-scoping",
    "category": "automotive",
@@ -785,14 +793,6 @@
    "description": "Produce a month-over-month (or any period-vs-period) SERVICE GROSS read across all 7 AMG stores from the live Tekion OpenAPI \u2014 who's winning, who's slipping, and whether it's a VOLUME story or a MARGIN story. Uses a throttle-safe sequential RO sample (labor GP + parts GP per RO) scaled by exact closed-RO counts, because the GL department-gross endpoint is still locked and a full penny-accurate fan-out trips the rate limit for hours. Use when Joe asks \"service gross month over month\", \"who's doing well / breaking numbers across the stores\", \"fleet service gross May vs June\", or any cross-store gross trend.",
    "times_used": 2,
    "last_used": "2026-08-13"
-  },
-  {
-   "name": "tekion-oem-rewards-integration",
-   "path": "automotive/tekion-oem-rewards-integration",
-   "category": "automotive",
-   "description": "Answer \"can GM Rewards / OEM rewards show on the customer screen or cashiering?\" and CHECK whether the My GM Rewards 2.0 integration is enabled at a store by inspecting a live cashiering invoice. Covers the KB article set, where rewards display in the workflow, the manual-tender-vs-integrated-card tell, and how to request enablement. Verified at BC (1251) 2026-09-03.",
-   "times_used": 2,
-   "last_used": "2026-09-03"
   },
   {
    "name": "tekion-opcode-labor-billing-audit",
