@@ -138,6 +138,28 @@ against `customer.name` (BC 30d: 833 raw lines → 622 retail, $661K → $557K).
 per customer: (name,email,phone) key → lines, deferred $, vehicles set, last RO date,
 sample services; rank by $. ~96% of retail customers have email, ~100% phone — good list.
 
+## Trade-in ACQUISITION target list ("declined worth over $X" → buy the customer's car, built 2026-09-03 BC)
+Joe's use case: customers who declined big repair bills are prime trade-in targets ("instead of the
+$14K transmission, sell us the car"). Recipe on top of the standard pull:
+1. Pull 30d DEFERRED hits (headers in /tmp/tekion_rec_headers.json often still live — test with a
+   rows:5 probe before re-capturing).
+2. Apply the INTERNAL/wholesale filter (regex above), then a SECOND commercial-account filter the
+   internal regex MISSES — body shops / rental / dealers that are retail-named:
+   `re.compile(r"collision|autoplex|auto\s*(center|centre|sales|body|group|plex)|sierra auto|towing|fleet|rental|leasing|\bllc\b|\binc\b|\bcorp\b|insurance|adjuster|copart|manheim|enterprise|u-?haul|city of|county of", re.I)`
+   (BC caught: SIERRA AUTO, FRESNO AUTOPLEX, CALIBER COLLISION, Enterprise, A&E Industrial INC).
+3. Roll up per VEHICLE: key = VIN (fallback "NAME:"+name); sum jobAmounts.totalAmount/100;
+   threshold >= $1,000 (or Joe's figure). Keep: name/phone/email, year/make/model/VIN/mileageIn,
+   total $, line count, CRITICAL count, RO#s + last roClosedTime, top 3-4 concerns with $ each.
+4. Rank by total declined $. High-mileage blown transmission/engine rows top the list = the pitch.
+5. Deliverables: landscape-letter PDF (weasyprint, /home/itadmin/tekion-reports/render_bc_trade_targets.py —
+   BC black/gold wordmark, KPI cards: #vehicles / combined $ / critical lines / phone coverage;
+   one row per vehicle with contact + top services) + working CSV with full contact columns.
+   pdf2image/pdftoppm/pymupdf NOT installed — QA the layout by browser_navigate to the file:// HTML instead.
+6. BC 30d reference: 821 raw hits → 622 retail lines ($556K) → 128 vehicles ≥$1K → 123 after
+   commercial filter, $421K combined, 123/123 phones. Data saved
+   data/bc-declined-1k-trade-30d{,-retail}.json + BC-Declined-Over1K-TradeTargets-30d.{pdf,csv}.
+No GM Rewards filter needed for this cut ("regardless if they had GM rewards or not").
+
 ## "Rewards members who declined service" (GM Rewards cross-ref, asked 2026-09-03)
 Rewards ENROLLMENT is NOT queryable anywhere in Tekion data (API or internal) when the
 My GM Rewards 2.0 integration is NOT enabled at the store (BC verified not enabled —

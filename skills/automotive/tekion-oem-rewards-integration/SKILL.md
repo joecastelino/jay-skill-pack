@@ -129,6 +129,24 @@ BC result: 360 declined-svc customers → 44 GM Rewards members / 79 lines / $61
 Output: `~/tekion-reports/data/BC-GMRewards-members-declined-30d.csv`. Probe script (browser
 XHR-hook discovery path): `~/tekion-reports/bc_custmgmt_rewards_probe.py`.
 
+## LAPSED-MEMBERS report ("Rewards members not in for 6-12 months") — 2026-09-03
+Script: `~/tekion-reports/bc_gmrewards_lapsed_6to12.py` (adapt window/store). 3 phases:
+1. **Last-visit map**: enumerate 12 months of CLOSED/INVOICED ROs via OpenAPI
+   `repair-orders:search` in 30-day `creationTime BTW` windows (paginationToken chaining is
+   SAFE for creationTime — the bisection bug is closedTime-only). The customer id is FREE on
+   each result: `primaryCustomer.id` (a `{link,id}` stub — no fan-out needed). Reduce to
+   {customerId: (max creationTime, RO#)}; checkpoint the RO index per window
+   (`data/bc-lapsed-ro-index.json`) so 429s resume.
+2. **Enrollment check IN BATCH**: `POST /api/lookup/ids` `{"CUSTOMER":{"ids":[<=50 ids]}}`
+   (captured-header auth, dealerid/tek-siteid swap) — 50 customers per call vs 1-per-call
+   lookup/search; filter `customerRewardsInfos` populated w/ oem=="gm", take the primary
+   rewardId (email).
+3. **Live balances**: gm-rewards/account-details per member (pace 0.6s), same as the
+   declined-services combo.
+Lapsed filter = `t12 <= lastVisit < t6`. Sort output by live Rewards $ (the callback
+priority). Phase 1 dominates runtime (~25K ROs ≈ 500 search pages ≈ 15-25 min) — run
+background w/ notify_on_complete, never execute_code.
+
 ## Cross-references
 - **"Pull rewards members who did X" reports are IMPOSSIBLE pre-enablement** (confirmed
   2026-09-03, Joe's "GM Rewards customers who declined service" ask): enrollment/points
