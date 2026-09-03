@@ -760,37 +760,17 @@ yesterday" sentence in the summary so Ruben doesn't read it as a stale re-send.
 KPI tiles (values shifted across labels, invented a digit); the crop-top-460px + 2x-LANCZOS step
 read all four perfectly. Never skip the crop on MTD renders — the taller the page, the worse
 full-page OCR gets.
-## 2026-08-24 noon Daily Closed run — textbook one-shot, 17th consecutive clean "N dollars" build
-4 menus, $365.72 / $208.14 = $573.86 (Erik Mercado, Dimetri Reynoso, Humberto Dominguez,
-Jacob Debussey — one menu each). All byte-for-byte checks passed, no duplicate. Her reply had
-the recurring em-dash IMAP-search wrinkle — a POST-append verification step, not a rebuild, so
-no duplicate. **Renderer output path reminder held**: `render_scorecard_bc.py` prints both
-absolute output paths (in `data/`, not `out/`) on stdout — read those.
+## 2026-08-24 noon Daily Closed run — textbook one-shot, 17th consecutive clean build
+4 menus / $573.86. Clean; her em-dash IMAP-search wrinkle was POST-append verification → no duplicate. Renderer prints absolute output paths (data/, not out/).
 
 ## 2026-08-24 5pm Daily Closed run — textbook one-shot, 18th consecutive clean build
-8 menus, $1,217.85 / $641.99 = $1,859.84 (Humberto Dominguez 3, Jacob Debussey 2, Houa Moua 1,
-Erik Mercado 1, Dimetri Reynoso 1). All byte-for-byte checks passed, no duplicate; deleted the
-stale noon draft per the twice-daily cadence rule.
-**Volume note**: 111 closed ROs — highest single-day closed-RO count logged — yet only 8 carried
-menu opcodes. High closed-RO volume does NOT slow the pull (the prefilter keeps fan-out tiny);
-a single 180s `process wait` still sufficed.
+8 menus / $1,859.84. Clean; deleted stale noon draft. **Volume note**: 111 closed ROs (highest logged) did NOT slow the pull — prefilter keeps fan-out tiny, one 180s wait sufficed.
 
-## 2026-08-24 6:15pm Closed MTD run — textbook one-shot, 19th consecutive clean "N dollars" build
-169 menus, $26,066.55 / $17,286.14 = $43,352.69 (Aug 1-24), top Juan Ramirez 41. Master
-asof 8/23 → default append; 114 closed ROs → 9 menu opcodes; `✓ all candidate ROs scanned`.
-All byte-for-byte checks passed, no duplicate.
-**Authoring self-correction is survivable but avoidable**: my ask contained a mid-message
-"CORRECTION - use these exact figures" line after mistyping one labor figure. Stacey handled
-it (wrong figure appeared 0 times, "CORRECTION" never leaked), but ALWAYS add both to the
-post-build greps (`clean.count("<wrong figure>")`, `"CORRECTION" in clean`) when the ask
-contained a correction — better yet, compose the figure list once, cleanly, before sending.
+## 2026-08-24 6:15pm Closed MTD run — textbook one-shot, 19th consecutive clean build
+169 menus / $43,352.69 (Aug 1-24). Clean. **Lesson**: if the ask contained a mid-message CORRECTION line, add the wrong figure + "CORRECTION" to post-build greps — better, compose the figure list once, cleanly, before sending.
 
 ## 2026-08-25 noon Daily Closed run — textbook one-shot, 20th consecutive clean build
-2 menus, $452.68 / $178.74 = $631.42 (Houa Moua 1, Jeremia Navarro 1). All byte-for-byte
-checks passed, no duplicate. **Low-volume note**: only 2 of 35 closed ROs carried menu
-opcodes (~6% attach vs the typical 10-20%) — normal noon-cutoff behavior, the 5pm run picks
-up the rest of the day. At 12:26 PT there was no `BC 8/25` Sent hit at all; Stacey's
-auto-sent Daily Opened report hadn't fired yet.
+2 menus / $631.42. Clean. ~6% attach is normal noon-cutoff behavior; missing Opened Sent hit at noon = Stacey's pipeline timing drift, not a defect.
 
 ## 2026-08-25 5pm Daily Closed run — 21st consecutive clean "N dollars" build; Stacey self-caught her OWN regex bug mid-build
 5 menus, $691.19 labor / $346.53 parts = $1,037.72 (Houa Moua 2 / $650.52, Humberto
@@ -825,13 +805,7 @@ the twice-daily cadence rule, kept 42669 → exactly 1 draft. Daily-Closed Sent 
 single `BC 8/25` Sent hit was Stacey's separate auto-sent Daily Opened report, 14517).
 
 ## 2026-08-25 6:21pm Closed MTD run — textbook one-shot, 22nd consecutive clean build
-174 menus, $26,757.74 / $17,632.67 = $44,390.41 (Aug 1-25), top Juan Ramirez 41. Master asof
-8/24 → default append; `✓ all candidate ROs scanned`. All byte-for-byte checks passed, no
-duplicate. Per the 8/25 5pm `$037.72` lesson, explicitly checked all 10 thousands-comma figures
-for the leading-digit-stripped variant: all zero. Adding the "dollar sign goes before the FIRST
-digit including the thousands comma" line to the ask appears to prevent the regex bug entirely —
-keep it in every ask where the total exceeds 1,000. Her reply had the recurring em-dash
-IMAP-search wrinkle (POST-append verification, not a rebuild) → no duplicate.
+174 menus / $44,390.41 (Aug 1-25). Clean. Confirmed the "dollar sign before the FIRST digit including the thousands comma" ask line prevents the $037.72-style regex bug — keep it whenever total > 1,000.
 
 ## 2026-08-26 noon Daily Closed run — textbook one-shot, 23rd consecutive clean build
 7 menus, $640.84 / $490.65 = $1,131.49 (Jacob Debussey 4, Humberto Dominguez 3). All
@@ -1301,3 +1275,30 @@ Daily Closed day logged (beats 8/27's $4,301.42).
 **Skill-size housekeeping**: 98,253 pre-prune → condensed the confirmatory 2026-08-19 MTD and
 2026-08-23 noon entries (kept the self-correction-duplicate and zero-day rules) before appending.
 SAFE-PRUNE index assertions used; re-checked size AFTER.
+
+## 2026-09-02 6:16pm Closed MTD run — textbook one-shot, 45th consecutive clean "N dollars" build
+28 menus, $4,047.41 labor / $2,298.70 parts = $6,346.11 (Sep 1-2). Advisors: Jacob Debussey 9 /
+$1,295.07, Dimetri Reynoso 7 / $2,304.04, Humberto Dominguez 5 / $1,205.38, Houa Moua 4 /
+$274.52, Michael Reyes 1 / $533.42, Erik Mercado 1 / $474.75, Juan Ramirez 1 / $258.93. Master
+existed (seeded 9/1) → default append; 70 closed ROs today → 24 carried TEK menu opcodes (~34%
+attach — third straight high-attach Wednesday cut) → master 28 rows; `✓ all candidate ROs
+scanned`. Pull via `terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`,
+finished near-instantly. Vision KPI band (crop 460px + 2x LANCZOS on a 1226x1559 PNG) read all
+four tiles exactly and matched JSON.
+**write_file→background-terminal ask pattern, 21st straight run, returned inside ONE 180s wait**
+(`/tmp/bc_ask_0902_mtd.py`, `subprocess.run` argument list, `timeout 560`). Terse DONE line
+correct with `TOTAL=$6,346.11`, her reported id (43063) MATCHED himalaya's, NO self-correction
+text (8th straight zero-wrinkle run) → no duplicate. Verified via the stdlib-`email` parser:
+To=Restrada, Cc real None, From=Joe, Subject auto-decoded with em-dashes, inline PNG
+**byte-for-byte identical** (323,197 bytes), PDF **byte-for-byte identical** (60,119 bytes), all
+10 figures present exactly once, `<b>$6,346.11</b>` bold, greeting + footer present, zero
+' dollars'/USD/EMDASH/CORRECTION leftovers, all 15 leading-digit-stripped and comma-mangled
+variants = 0. Exactly 1 MTD 9/2 draft (43063), MTD Sent count 0 (the single `BC 9/2` Sent hit
+was Stacey's separate auto-sent Daily Opened report, 15041). Left the sibling Daily Closed 9/2
+draft (43048) untouched — different report type.
+**Day-2 MTD note**: MTD (28/$6,346.11) = 9/1 seed (4/$984.79) + today's strong Wednesday (24
+menus) — the MTD≈Daily convergence sentence from 9/1 is no longer needed once the month has 2+
+days of data.
+**Skill-size housekeeping**: 97,593 pre-prune → condensed five confirmatory 8/22-8/25 entries
+(kept the CORRECTION-grep, thousands-comma-prevention, and volume/prefilter lessons) → 95,831
+before appending. SAFE-PRUNE index assertions used; re-checked size AFTER.

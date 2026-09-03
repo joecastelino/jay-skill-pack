@@ -307,6 +307,20 @@ Work dir: `/home/itadmin/tekion-reports`
 
 ## Pitfall: month rollover day (1st of month) + outage recurrence
 
+**Verified 2026-09-02 (outage day 2):** the September DEALER_QUOTA outage did
+NOT clear overnight — same signature (`/jobs` 200, `/operations` 429 on every
+probed candidate), and the loss is growing: `prefilter: 8 of 148` TEK
+candidates (ROs 582624/582621/582620/582607/582527/582351/582157/580776) all
+unpriceable, on both the 6 PM run and the 8-min-wait retry. Cumulative Sept
+loss after day 2: ~10 menu ROs. Track the affected RO numbers in the
+`quota_outage_note` each day so the eventual backfill can be validated against
+them. Also re-confirmed: body-file + one short send ask worked first try
+(`OK BYTES=109675`, byte-exact), and a ~2-line MIME verify ask returned exit
+124/empty while a strictly ONE-line version (`"READ-ONLY. Sent msg 18:12
+today: real attachment? Reply: MIME=REAL filename=<name> or
+MIME=MARKUP-ONLY"`) worked first try — the terseness threshold for her is
+lower than it looks; keep verify asks to a single line.
+
 **Verified 2026-09-01 (1st of the month):** the master auto-rolled to
 `MASTER-2026-09` and correctly started at 0 rows — August's master
 (`MASTER-2026-08`, 64 KB) was left untouched. A 0/near-0 MTD on the 1st is
