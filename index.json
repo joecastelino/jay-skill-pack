@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-03T10:45:05",
+ "generated": "2026-09-03T11:00:17",
  "skill_count": 213,
  "skills": [
   {
@@ -31,8 +31,8 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 90,
-   "last_used": "2026-09-01"
+   "times_used": 91,
+   "last_used": "2026-09-03"
   },
   {
    "name": "tekion-sitemap",
@@ -563,6 +563,14 @@
    "last_used": "2026-07-14"
   },
   {
+   "name": "jay-google-sheets-drive-access",
+   "path": "automotive/jay-google-sheets-drive-access",
+   "category": "automotive",
+   "description": "Access Joe's Google Sheets and Drive files from Jay's profile \u2014 token symlink bootstrap, reading/writing native Sheets, downloading Drive-hosted .xlsx files (like AMG WIP.xlsx) via alt=media, and the xlsx-vs-native-Sheet write limitation. Established 2026-08-02.",
+   "times_used": 4,
+   "last_used": "2026-09-03"
+  },
+  {
    "name": "tekion-notification-settings-audit",
    "path": "automotive/tekion-notification-settings-audit",
    "category": "automotive",
@@ -601,14 +609,6 @@
    "description": "Run the Toyota of Lancaster (TL/TOL, Tekion dealer 1092) ALIGNMENT count report, month-to-date, broken down by service advisor (dedicated + bundled + unique ROs, ranked). Produces a 2-page Toyota-red scorecard (page-1 PNG + full PDF) and is drafted to Sean Preston by Stacey. Use when Joe asks for \"the Lancaster/TOL alignment report\" or to schedule it.",
    "times_used": 4,
    "last_used": "2026-07-07"
-  },
-  {
-   "name": "jay-google-sheets-drive-access",
-   "path": "automotive/jay-google-sheets-drive-access",
-   "category": "automotive",
-   "description": "Access Joe's Google Sheets and Drive files from Jay's profile \u2014 token symlink bootstrap, reading/writing native Sheets, downloading Drive-hosted .xlsx files (like AMG WIP.xlsx) via alt=media, and the xlsx-vs-native-Sheet write limitation. Established 2026-08-02.",
-   "times_used": 3,
-   "last_used": "2026-09-03"
   },
   {
    "name": "tekion-apc-quota-usage-investigation",
