@@ -969,6 +969,10 @@ quota-review/support ticket is now warranted. 9/3 noon lost too (day 3):
 search/jobs 200, /operations 429 DEALER_QUOTA, 7 TEK candidates out of 112 ROs
 unscannable (582736/582735/582729/582724/582713/582712/582707). JSONs flagged
 complete:false, no render/email/watcher. Escalation to Joe re-flagged.
+9/3 5PM lost too: search/jobs 200, /operations 429 DEALER_QUOTA, 8 TEK
+candidates out of 187 ROs unscannable (582822 new + the 7 from noon). JSONs
+flagged complete:false, no render/email/watcher. Day 3 continuous — Tekion
+support ticket / quota review escalation to Joe stands.
 
 ### The false-zero trap bit a SECOND pipeline — check yours for it
 `advisor_closed_gross.py` had the identical bug class: its `get()` helper swallowed

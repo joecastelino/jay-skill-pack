@@ -752,38 +752,14 @@ full-page OCR gets.
 ## 2026-08-25 noon Daily Closed run — textbook one-shot, 20th consecutive clean build
 2 menus / $631.42. Clean. ~6% attach is normal noon-cutoff behavior; missing Opened Sent hit at noon = Stacey's pipeline timing drift, not a defect.
 
-## 2026-08-25 5pm Daily Closed run — 21st consecutive clean "N dollars" build; Stacey self-caught her OWN regex bug mid-build
-5 menus, $691.19 labor / $346.53 parts = $1,037.72 (Houa Moua 2 / $650.52, Humberto
-Dominguez 1 / $214.11, Jacob Debussey 1 / $86.63, Jeremia Navarro 1 / $86.46). 61 closed
-ROs → 5 carried TEK menu opcodes; `✓ all candidate ROs scanned`; vision-verified KPI band
-(crop 460px + 2x LANCZOS) matched JSON exactly. Pull ran via `terminal(background=true)` +
-a SINGLE `process(action="wait", timeout=180)`. Stacey's build: `execute_code` +
-`subprocess.run` argument list wrapped in `timeout 600` → returned cleanly in **211s**, no
-exit-124, terse DONE line correct with `TOTAL=$1,037.72`, reported id (42669) MATCHED
-himalaya's.
-**NEW variant of the `$digit` hazard — her dollar-sign RE-INSERTION regex mishandles the
-thousands comma**: implementing the "N dollars" → `$` Python-replace step, she used a regex
-that matched only the post-comma segment, producing **`$037.72`** instead of `$1,037.72`
-(dollar sign inserted in the middle of the number rather than before the leading digit).
-She caught it herself post-append ("the dollar-sign regex missed the comma in 1,037.72 —
-matched only 037.72"), deleted the broken draft 42668, and re-appended 42669 correctly.
-Net: 3 drafts existed momentarily, her cleanup was GENUINE this time (dedupe grep confirmed
-only 42669 + the expected stale noon draft). Mitigation going forward: **add
-`clean.count("$037.72")`-style checks for the total-with-leading-digit-stripped variant**
-to post-build verification whenever the total has a thousands comma — a naive
-`count("$1,037.72")==1` check alone would pass on a body that ALSO contained a mangled
-sibling. Better: when the total crosses 1,000, tell Stacey explicitly in the ask that the
-dollar sign goes before the FIRST digit of the whole number including the thousands comma.
-Confirms the 8/23 refinement: post-append self-correction risks a duplicate but she
-sometimes cleans up properly — always grep, never assume either way.
-Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
-auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (119,582 bytes), PDF
-**byte-for-byte identical** (53,519 bytes), all 7 figures present exactly once,
-`<b>$1,037.72</b>` bold, greeting + footer present, zero ' dollars'/USD leftovers and zero
-`$037.72` (checked after stripping the data URI). Deleted the stale noon draft (42662) per
-the twice-daily cadence rule, kept 42669 → exactly 1 draft. Daily-Closed Sent count 0 (the
-single `BC 8/25` Sent hit was Stacey's separate auto-sent Daily Opened report, 14517).
-
+## 2026-08-25 5pm Daily Closed run — 21st consecutive clean build; Stacey's $-reinsertion regex mishandled the thousands comma
+5 menus / $1,037.72. **Load-bearing lesson**: her "N dollars"→`$` Python-replace regex matched only
+the post-comma segment, producing **`$037.72`** mid-number. She self-caught and re-appended cleanly.
+Mitigations (now standard): add `count("$037.72")`-style leading-digit-stripped variant checks to
+post-build verification whenever a figure has a thousands comma, and put the explicit "dollar sign
+goes before the FIRST digit of the whole number including the thousands comma" line in every ask
+where a total exceeds 1,000. Post-append self-correction risks a duplicate but she sometimes cleans
+up properly — always grep, never assume either way.
 ## 2026-08-25 6:21pm Closed MTD run — textbook one-shot, 22nd consecutive clean build
 174 menus / $44,390.41 (Aug 1-25). Clean. Confirmed the "dollar sign before the FIRST digit including the thousands comma" ask line prevents the $037.72-style regex bug — keep it whenever total > 1,000.
 
@@ -1116,38 +1092,10 @@ seeding on a Daily. Zero `BC 9/1` Sent hits at noon = Stacey's Opened pipeline t
 not a defect.
 
 ## 2026-09-01 5pm Daily Closed run — textbook one-shot, 41st consecutive clean "N dollars" build
-4 menus, $702.47 labor / $282.32 parts = $984.79 (Dimetri Reynoso 2 / $319.51, Humberto
-Dominguez 1 / $491.67, Jacob Debussey 1 / $173.61). 36 closed ROs → 5 carried TEK menu opcodes
-→ 4 menu rows (~11% attach, Tuesday); `✓ all candidate ROs scanned`. Pull via
-`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`, finished
-near-instantly. Vision KPI band (crop 460px + 2x LANCZOS on a 1226x900 PNG) read all four tiles
-exactly ($702.47 / $282.32 / $984.79 / 4) and matched JSON.
-**Noon→5pm delta**: noon 1 menu / $288.26 → 5pm 4 menus / $984.79. September's first business
-day was genuinely light at both cuts; low noon numbers remain a partial-day artifact, never a
-feed problem.
-**Month-rollover confirmation (2nd data point)**: `--daily-only` again worked with zero special
-handling despite `bc-menu-closed-mtd-MASTER-2026-09.json` still not existing at 17:02 PT — the
-`--seed` requirement is MTD-only. Do not seed before a Daily.
-**write_file→background-terminal ask pattern, 17th straight run, returned inside ONE 180s wait**
-(`/tmp/bc_ask_0901_5pm.py`, `subprocess.run` argument list, `timeout 560`). Terse DONE line
-correct with `TOTAL=$984.79`, her reported id (43016) MATCHED himalaya's, and her reply
-contained NO self-correction text (4th straight run with zero wrinkle) → no duplicate. She also
-explicitly named the noon draft (42944) as untouched, confirming the "leave the older noon draft
-alone, I will clean it up myself" line keeps working.
-Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
-auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (103,841 bytes), PDF
-**byte-for-byte identical** (51,986 bytes), all 6 figures present exactly once,
-`<b>$984.79</b>` bold, greeting + footer present, zero
-' dollars'/USD/EMDASH/CORRECTION/Saturday/Sunday/Monday leftovers, all 13 leading-digit-stripped
-and comma-mangled variants = 0. Deleted the stale noon draft (42944) per the twice-daily cadence
-rule → exactly 1 draft (43016). Daily-Closed Sent count 0 (the single `BC 9/1` Sent hit was
-Stacey's separate auto-sent Daily Opened report, 14981 — note it fired at 17:07, i.e. AFTER the
-noon run saw zero Sent hits; her Opened pipeline timing drifts late, so a missing Opened send at
-noon is not a defect).
-**Skill-size housekeeping**: 95,854 pre-prune → condensed the purely-confirmatory 2026-08-30 MTD
-and 2026-08-29 MTD entries (keeping the closed-Sunday-sentence rule and the EMDASH-token tip) →
-92,414 before appending. Used the SAFE-PRUNE index assertions; re-checked size AFTER.
-
+4 menus / $984.79. Clean; all byte-for-byte checks passed. **Month-rollover confirmation (2nd data
+point)**: `--daily-only` works with zero special handling when the new month's MTD master doesn't
+exist yet — the `--seed` requirement is MTD-only; do not seed before a Daily. Stacey's Opened
+pipeline timing drifts late (fired 17:07), so a missing Opened Sent hit at noon is not a defect.
 ## 2026-09-01 6:16pm Closed MTD run — FIRST SEPTEMBER SEED, textbook one-shot, 42nd consecutive clean "N dollars" build
 4 menus, $702.47 labor / $282.32 parts = $984.79 (Sep 1-1). Advisors: Dimetri Reynoso 2 /
 $319.51, Humberto Dominguez 1 / $491.67, Jacob Debussey 1 / $173.61. **`--seed` run** —
@@ -1285,3 +1233,25 @@ fired 12:04). No stale prior draft (noon = first run of the day).
 **Skill-size housekeeping**: 98,095 pre-prune -> condensed the confirmatory 8/28 MTD and 9/1
 noon entries (kept the month-rollover-Daily note and Opened-timing-drift note) -> 94,044
 before appending. Re-checked size AFTER.
+
+## 2026-09-03 5pm Daily Closed run — textbook one-shot, 46th consecutive clean "N dollars" build
+18 menus, $2,294.25 labor / $2,204.60 parts = $4,498.85 (Jacob Debussey 6 / $985.89, Juan
+Ramirez 4 / $1,678.81, Houa Moua 3 / $143.52, Erik Mercado 2 / $665.13, Humberto Dominguez 2 /
+$515.94, Valentine Nolasco 1 / $509.56 — six advisors). 63 closed ROs → 19 carried TEK menu
+opcodes → 18 menu rows (~30% attach); `✓ all candidate ROs scanned`. Pull via
+`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`. Vision KPI band
+(crop 460px + 2x LANCZOS on a 1226x1183 PNG) matched JSON exactly.
+**write_file→background-terminal ask pattern, 23rd straight run, returned inside ONE 180s wait**
+(`/tmp/bc_ask_0903_5pm.py`, `subprocess.run` argument list, `timeout 560`). Terse DONE line
+correct with `TOTAL=$4,498.85`; her reported id was **124** vs himalaya's **43085** — the
+documented APPENDUID mismatch (intermittent; always grep). NO self-correction text → no
+duplicate. Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
+auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (235,967 bytes), PDF
+**byte-for-byte identical** (57,105 bytes), all 9 figures present exactly once,
+`<b>$4,498.85</b>` bold, greeting + footer present, zero ' dollars'/USD/EMDASH/CORRECTION
+leftovers, all leading-digit-stripped and comma-mangled variants = 0, no Kevin/dfowlkes leak.
+Deleted the stale noon draft (43076) per the twice-daily cadence rule → exactly 1 draft (43085).
+Daily-Closed Sent count 0 (the two `BC 9/3` Sent hits were Stacey's auto-sent Daily Opened
+reports, 15096 noon + 15116 5pm).
+**Noon→5pm delta**: noon 9 menus / $1,772.22 → 5pm 18 menus / $4,498.85 — doubled; the
+morning's stream-stall retry had no downstream effect on the 5pm run.
