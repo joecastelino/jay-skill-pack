@@ -800,6 +800,20 @@ SKILL.md under its size limit. Consensus of those runs: the full prevention word
 produces a clean one-shot draft the large majority of the time; verification asks are
 still mandatory; the $0 opened streak ran 8/23–8/25 (6 half-day slots) and broke 8/26.
 
+## (9/03 8:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, TRUE dedupe, all 4 asks first try
+Both scripts foreground clean in seconds (0 scrapers). 174 opened ROs scanned, **4 menus /
+$587.25** ($401.65 labor + $185.60 parts) — first multi-menu day after the 9/02 $0 pair.
+Brenda Hernandez Alvarenga 1/$213.97 (36.4%, RO 399901 TEK50000VNM 2015 Sienna 150,291 mi);
+Michael Hachey 2/$211.48 (ROs 399939 Highlander, 399972 Camry, both TEK10000BNM); Gustavo
+Alatorre 1/$161.80 (RO 399982 TEK10000BNM 2022 Tundra). Hand-off RC=0 FIRST TRY (167s); draft
+correct FIRST TRY at IMAP UID 124 with TRUE dedupe (noon draft UID 122 deleted in the same
+ask; subject-list confirmed exactly one 09/03 hit). All 3 verification asks FIRST try,
+IMAP-first: subject-list 56s (Count: 15, stack 08/21-09/03 + em-dash 08/02 41547 + 08/28
+42814, no true dupes), part-probe 30s (UID 124 correct — no bogus-UID this run; PNG 64,039 /
+PDF 52,823 = EXACT on-disk bytes; text/plain+html + png CID=scorecard + amglogos jpeg + pdf),
+Sent-check 32s (Sent: 4, all old em-dash-era 06/30-07/03, zero today = no leak).
+Flag to Joe: 15 unsent Opened drafts stacked (08/02, 08/21-09/03).
+
 ## (9/02 8:05PM, Closed MTD) TEXTBOOK CLEAN RUN — zero exit-124s, all 4 asks first try
 Closed append foreground clean in seconds (0 scrapers): 132 closed ROs, prefilter 0 of 132
 carried a TEK menu opcode, master unchanged at **2 MTD rows / $163.74** ($110.75 labor +
