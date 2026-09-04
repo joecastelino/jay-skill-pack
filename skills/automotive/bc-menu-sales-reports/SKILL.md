@@ -1256,6 +1256,21 @@ reports, 15096 noon + 15116 5pm).
 **Noon→5pm delta**: noon 9 menus / $1,772.22 → 5pm 18 menus / $4,498.85 — doubled; the
 morning's stream-stall retry had no downstream effect on the 5pm run.
 
+## 2026-09-04 noon Daily Closed run — textbook one-shot, 47th consecutive clean "N dollars" build
+11 menus, $1,064.28 labor / $523.31 parts = $1,587.59 (Michael Reyes 3 / $590.87, Jacob
+Debussey 4 / $315.22, Dimetri Reynoso 2 / $371.30, Humberto Dominguez 1 / $218.84, Houa Moua
+1 / $91.36 — five advisors). 50 closed ROs → 11 carried TEK menu opcodes (~22% attach, Friday
+noon); `✓ all candidate ROs scanned`. Pull + ask each inside ONE 180s wait
+(write_file→background-terminal, 25th straight use, `/tmp/bc_ask_0904_noon.py`). Vision KPI
+band (crop 460px + 2x LANCZOS on a 1226x909 PNG) matched JSON exactly. Terse DONE line correct
+(43129, TOTAL=$1,587.59), id MATCHED himalaya's — her reply showed she self-caught the
+stale-search-UID-vs-APPENDUID wrinkle mid-build ("UID 128 is stale from search. Real UID is
+from APPENDUID") with no re-append → no duplicate. Greeting check (added after the 9/3 MTD
+greeting-drop) passed: `Ruben,` count 1. All byte-for-byte checks passed (PNG 173,578 / PDF
+56,950 exact), all 8 figures exactly once, bold total, zero leftovers/variants, no
+Kevin/dfowlkes leak. Daily-Closed Sent count 0 (single `BC 9/4` Sent hit = Stacey's auto-sent
+Daily Opened, 15161, fired 12:05). No stale prior draft (noon = first run of the day).
+
 ## 2026-09-03 6:17pm Closed MTD run — NEW Stacey miss: she DROPPED the "Ruben," greeting; fixed via self-edit + Message-ID-regenerated re-APPEND
 46 menus, $6,341.66 labor / $4,503.30 parts = $10,844.96 (Sep 1-3). Advisors: Jacob Debussey
 15 / $2,280.96, Dimetri Reynoso 7 / $2,304.04, Humberto Dominguez 7 / $1,721.32, Houa Moua 7 /
