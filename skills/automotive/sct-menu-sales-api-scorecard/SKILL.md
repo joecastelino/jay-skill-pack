@@ -973,6 +973,12 @@ complete:false, no render/email/watcher. Escalation to Joe re-flagged.
 candidates out of 187 ROs unscannable (582822 new + the 7 from noon). JSONs
 flagged complete:false, no render/email/watcher. Day 3 continuous — Tekion
 support ticket / quota review escalation to Joe stands.
+9/4 noon lost too (DAY 4): search/jobs 200, /operations 429 DEALER_QUOTA,
+7 TEK candidates out of 104 ROs unscannable (582961/582925/582918/582908/
+582902/582891/582875). JSONs flagged complete:false, no render/email/watcher.
+Also killed two leftover sct-align selfheal watchers (PIDs from 9/3) that were
+still polling and burning the shared dealer quota; cleared their /tmp locks.
+Day 4 continuous — Tekion support ticket escalation to Joe re-flagged.
 
 ### The false-zero trap bit a SECOND pipeline — check yours for it
 `advisor_closed_gross.py` had the identical bug class: its `get()` helper swallowed

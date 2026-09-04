@@ -141,30 +141,34 @@ Output: `~/tekion-reports/data/BC-GMRewards-members-declined-30d.csv`. Probe scr
 XHR-hook discovery path): `~/tekion-reports/bc_custmgmt_rewards_probe.py`.
 
 ## LAPSED-MEMBERS report ("Rewards members not in for 6-12 months") — 2026-09-03
-Script: `~/tekion-reports/bc_gmrewards_lapsed_6to12.py` (adapt window/store). 3 phases:
+Script: `~/tekion-reports/bc_gmrewards_lapsed_v2.py` (adapt window/store; supersedes
+bc_gmrewards_lapsed_6to12.py whose phase-2 enrollment filter was WRONG — see trap above). 3 phases:
 1. **Last-visit map**: enumerate 12 months of CLOSED/INVOICED ROs via OpenAPI
    `repair-orders:search` in 30-day `creationTime BTW` windows (paginationToken chaining is
    SAFE for creationTime — the bisection bug is closedTime-only). The customer id is FREE on
    each result: `primaryCustomer.id` (a `{link,id}` stub — no fan-out needed). Reduce to
    {customerId: (max creationTime, RO#)}; checkpoint the RO index per window
    (`data/bc-lapsed-ro-index.json`) so 429s resume.
-2. **Enrollment check IN BATCH**: `POST /api/lookup/ids` `{"CUSTOMER":{"ids":[<=50 ids]}}`
-   (captured-header auth, dealerid/tek-siteid swap) — 50 customers per call vs 1-per-call
-   lookup/search; filter `customerRewardsInfos` populated w/ oem=="gm", take the primary
-   rewardId (email).
-3. **Live balances**: gm-rewards/account-details per member (pace 0.6s), same as the
-   declined-services combo.
+2. **Contacts IN BATCH**: `POST /api/lookup/ids` `{"CUSTOMER":{"ids":[<=50 ids]}}`
+   (captured-header auth, dealerid/tek-siteid swap) — 50 customers per call; pull name,
+   phone, EMAIL. ⚠️ Do NOT filter on `customerRewardsInfos` here (null-for-members trap
+   above → zero hits). Response `data.CUSTOMER` is a bare LIST here.
+3. **Membership + live balance in ONE call**: gm-rewards/account-details per UNIQUE email
+   (pace 0.6s; dedupe emails first — 4,368 contacts → 2,805 unique). 200 = member w/
+   $/points/tier; 400 GM0007 = definitively not a member.
 Lapsed filter = `t12 <= lastVisit < t6`. Sort output by live Rewards $ (the callback
-priority). Phase 1 dominates runtime (~25K ROs ≈ 500 search pages ≈ 15-25 min) — run
-background w/ notify_on_complete, never execute_code.
+priority). Phase 1 dominates alongside phase 3 (~25K ROs ≈ 500 search pages; 2,805 GM
+checks ≈ 30 min) — run background w/ notify_on_complete, never execute_code.
+BC result 2026-09-04: 11,834 customers/12mo → 4,368 lapsed → **1,456 GM members (52% of
+checked emails!) / $138,807.68 unredeemed / 643 holding $50+**. Membership is common —
+never assume it's rare. Output `data/BC-GMRewards-lapsed-6to12mo.csv`; emailed via
+jay_mail.py send_report (top-50 table in body + full CSV attached).
 
 ## Cross-references
-- **"Pull rewards members who did X" reports are IMPOSSIBLE pre-enablement** (confirmed
-  2026-09-03, Joe's "GM Rewards customers who declined service" ask): enrollment/points
-  data exists NOWHERE in Tekion (no API, no internal endpoint, no customer field) until
-  the integration is on. Workarounds: GM Global Connect member export matched by
-  name/email/phone, or deliver the unfiltered customer list for BDC to check at contact
-  time. Requesting enablement is the durable fix — pitch it.
+- OBSOLETE claim (pre-2026-09-03): "rewards-members-who-did-X reports are impossible
+  pre-enablement" — WRONG. The live account-details endpoint answers membership + balance
+  for ANY email regardless of cashiering-integration status. Both combo reports (declined-30d,
+  lapsed-6-12mo) shipped to Joe.
 - `tekion-declined-deferred-services-report` (the declined-customer list half of that ask),
   `tekion-sitemap` (Cashiering row), `tekion-autonomous-login`, `persistent-browser-server`,
   `tekion-kb-search-scrape` (KB SSO bootstrap: navigate `app.tekioncloud.com/core/knowledge-base/search`).
