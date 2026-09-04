@@ -1147,6 +1147,21 @@ blocked)**. Unlike 9/1 there is no unshipped prior-period fallback left to re-cu
 corrected August final already went out, so tonight is a pure blocked-night report. If still
 429 on 9/3, that matches the 8/1-8/11 pattern (10-day non-refill) — recommend Joe open the
 Tekion support ticket early rather than waiting out another 10-day arc.
+**Confirmed continuing 2026-09-03 (day 3 of the September DEALER_QUOTA outage, still 429):**
+same deep-endpoint signature at 19:01 PDT (search 200, jobs 200, `/operations` 429
+DEALER_QUOTA on the validated probe pair, unchanged since 8/3). No competing consumers (both
+standard pgrep sweeps empty — the 9/1 sync-hog respawn did NOT recur). The 9/2 self-heal
+watcher ran its FULL 21h deadline (unlike the 9/1 one that died mid-evening) probing every
+~10 min through 16:10 PDT today — all 429, "TIMEOUT — quota never restored". So quota has
+been continuously dead 9/1 19:01 → 9/3 19:03+ with not one clean probe. Re-armed the dated
+pair via the standard sed date-swap from the 9/2 copies (bash -n, chmod foreground,
+terminal(background=true) x2, both confirmed alive via "watcher started" + pgrep=2). Stacey
+read-only enumeration (Drafts+Sent, 'SCT Alignment' substring, 7 days): August CORRECTED
+(448) draft still in Drafts + 5 August nightly drafts; Sent = the two 9/1 morning sends
+(alignbg final + corrected-448 note). **Zero September reports exist — 9/1, 9/2, 9/3 all
+blocked.** No zero-quota fallback left (August final already shipped). This now matches the
+August 10-day non-refill arc — the report to Joe recommends opening the Tekion support
+ticket NOW rather than waiting out the arc again.
 **ZERO-QUOTA FALLBACK THAT SAVED THE NIGHT — ship the corrected prior-month final.** Because the
 8/31 nightly emailed the BUGGY 443 (patched at 19:23, after the 19:01 cron fired — see the
 ALIGN00RBA section), the correct August number had never reached Kevin. The alignbg scan from
