@@ -15,7 +15,7 @@ Joe: "GM warranty report / SASAR / Action Tracker" for a GM store, then sends li
 - Blank template: `tracker.xlsx`; Action Plan doc export: `gmdoc.txt`; plan rows: `BAC319544_action_plan_rows.txt`
 - Google Sheet id `1Lm_r3lLVKdPmBiQ5pyfGhj1-6gof9WpL` (Action Tracker gid=718385741), Doc id `1pKnpjpE6hLwPeCEUgcP29cXuScKuPDiE2oE05RFwFHI` — anonymous `export?format=xlsx` / `format=txt` works (Joe link-shared them)
 - BC constants: Review Date **08/11/2026**, Containment Due **09/01/2026**, PAC due 10/03/2026, verification 10/17/2026, Status "PAC In Progress". BAC# **319544**.
-- Personnel (Joe corrected 2026-09-03): **Ruben Estrada — Service Director** (NOT Manager), **Amber and Yer — Warranty Administrators** (NOT Larae Parereti), **Phil — Shop Foreman** (NOT Craig Holman), Arthur Markarian — GM. Ask Joe for last names if GM requires full names.
+- Personnel (Joe corrected 2026-09-03): **Ruben Estrada — Service Director** (NOT Manager), **Amber Green & Yer Vang — Warranty Administrators** (NOT Larae Parereti), **Phil Stafford — Shop Foreman** (NOT Craig Holman), Arthur Markarian — GM. (Full names confirmed by Joe 2026-09-04.)
 
 ## Hard constraints / pitfalls
 1. **Do NOT try to edit the live Google Sheet in the browser** — Sheets canvas grid rejects all synthetic input (browser_type, execCommand insertText). Verified failure. Joe approved EMAIL delivery of the filled xlsx instead (`jay_mail.send_report`).
@@ -52,7 +52,7 @@ A ActionID | B Review Date | C Area/Process | D Finding (RO#, vehicle+VIN, hrs, 
 ## Deliverable per batch (email via jay_mail.send_report to Joe)
 1. Updated xlsx attached
 2. Per-RO summary bullets (ACT#, RO#, vehicle, hrs, fix one-liner; bold High severities; flag any RO disambiguation)
-3. Paste-ready **BAC 319544 Action Plan** rows (HTML table in body + .txt attachment): Observation/Deviation | Job Card # | Correction/Action | Individual Responsible ("Ruben Estrada Service Director / Amber and Yer Warranty Administrators / Phil Shop Foreman") | Implementation Date. Combine same-citation ROs (e.g. both SBD ROs) into one plan row.
+3. Paste-ready **BAC 319544 Action Plan** rows (HTML table in body + .txt attachment): Observation/Deviation | Job Card # | Correction/Action | Individual Responsible ("Ruben Estrada Service Director / Amber Green & Yer Vang Warranty Administrators / Phil Stafford Shop Foreman") | Implementation Date. Combine same-citation ROs (e.g. both SBD ROs) into one plan row.
 
 ## Reuse at other GM stores
 Same structure works fleet-wide; swap dealer id, personnel, BAC#, review/containment dates (ALWAYS confirm dates + titles with Joe — he corrected both once). GM citation vocabulary (OLH, SOR, TAC, SBD, Global Connect) is GM-universal.

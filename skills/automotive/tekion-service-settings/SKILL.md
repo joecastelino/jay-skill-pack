@@ -535,6 +535,33 @@ Custom Concern Opcode`; Hold automation keyed on Job Type/Pay Type + Job Tag wit
 role-restricted "Remove When" = a manual release step. True opcode-level approval =
 Tekion feature request.
 
+## "What happens when a rec is DECLINED" — Follow up Recommendation Rules (verified live BC 1251, 2026-09-04)
+
+Follow-up question from Joe: "what if I want to set it up so that if an advisor
+recommendation is declined?" There is **no native alert/approval trigger on decline** —
+the decline-time levers live in the **Follow up Recommendation Rules** section of
+`/service/settings/ro-settings` (sits right below Deferred Recommendation Rules):
+
+1. **Follow up date is mandatory** — advisor can't defer a rec without scheduling a follow-up.
+2. **Reason for Follow-up Deferral is mandatory** — must pick a defer reason.
+3. **Reason for No Follow-up Deferral is mandatory** — declining WITHOUT a follow-up also
+   requires a reason.
+4. **Defer Reason** — the configurable reason list they pick from.
+
+All three toggles were **OFF at BC 1251** at read time (declines capture nothing). Rules
+can be **overridden per Inspection Form Category or measurement level** (stricter on
+brakes/tires than wiper blades). Deferred Recommendation Rules handles resurfacing only
+(red/amber declines re-appear on next RO/check-in/consumer portal for N days).
+
+For manager *visibility* on declines: no setting exists — build it from the declined-recs
+API pipeline (skill `tekion-declined-deferred-services-report`), e.g. daily per-store
+"declined yesterday by advisor w/ customer contact + $ + severity" report.
+
+⚠ Nav trap when reading these sections: grepping innerText for the section names can hit
+the LEFT-NAV labels, not the section bodies — anchor on body-only strings (e.g.
+"mandatory") or click the left-nav entry first. Also this URL's routing flake
+(redirect to /parts/tax-code-setup) recurred; bounce through /home or switch to :9225.
+
 **Fiber trick for filter popovers:** the funnel popover's field list isn't in options on
 the `-control` elements — walk the popover element's own `__reactFiber$` down child/sibling
 until `memoizedProps.filterTypes` (or `.additional.filterTypes`) appears; each entry has
