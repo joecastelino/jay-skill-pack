@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-04T10:15:06",
+ "generated": "2026-09-04T10:30:19",
  "skill_count": 214,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 164,
-   "last_used": "2026-09-03"
+   "times_used": 165,
+   "last_used": "2026-09-04"
   },
   {
    "name": "agent-to-agent-bridge",
@@ -827,6 +827,14 @@
    "last_used": "2026-07-06"
   },
   {
+   "name": "tekion-pdf-print-copies-diagnosis",
+   "path": "automotive/tekion-pdf-print-copies-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose \"the customer invoice prints 2 times\" / duplicate document printing at any AMG Tekion store. Root cause lives in PDF Settings \u2192 Print tab \u2192 AutoPrint Settings: the Quantity column = copies per print event. Also covers: finding which store an employee works at via the OpenAPI users endpoint, and the /ro/pdf-settings nav traps. Verified live at VW Clovis (1891) 2026-09-02 (Joe Mendoza ticket).",
+   "times_used": 2,
+   "last_used": "2026-09-04"
+  },
+  {
    "name": "tekion-physical-inventory",
    "path": "automotive/tekion-physical-inventory",
    "category": "automotive",
@@ -961,14 +969,6 @@
    "description": "Build the \"parts ordered/shipped and NOT received\" report for a Tekion store (outstanding part lines on open POs, with aging + $ value). Uses the Parts Receiving \"Orders Not Received\" queue and an XHR hook on partTrade/u/purchase/search to harvest full per-part JSON (ordered/received/backorder/cancelled qty, unit cost, ref RO/SO, customer). Verified SCT 2026-07-06 (400 POs, 1127 lines, $180K). Load when Joe asks for shipped-not-received, unreceived parts, open PO parts, or PO aging reports.",
    "times_used": 1,
    "last_used": "2026-07-06"
-  },
-  {
-   "name": "tekion-pdf-print-copies-diagnosis",
-   "path": "automotive/tekion-pdf-print-copies-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose \"the customer invoice prints 2 times\" / duplicate document printing at any AMG Tekion store. Root cause lives in PDF Settings \u2192 Print tab \u2192 AutoPrint Settings: the Quantity column = copies per print event. Also covers: finding which store an employee works at via the OpenAPI users endpoint, and the /ro/pdf-settings nav traps. Verified live at VW Clovis (1891) 2026-09-02 (Joe Mendoza ticket).",
-   "times_used": 1,
-   "last_used": "2026-09-02"
   },
   {
    "name": "tekion-recommendation-part-not-found-diagnosis",
