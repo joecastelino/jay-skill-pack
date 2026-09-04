@@ -1255,3 +1255,29 @@ Daily-Closed Sent count 0 (the two `BC 9/3` Sent hits were Stacey's auto-sent Da
 reports, 15096 noon + 15116 5pm).
 **Noon→5pm delta**: noon 9 menus / $1,772.22 → 5pm 18 menus / $4,498.85 — doubled; the
 morning's stream-stall retry had no downstream effect on the 5pm run.
+
+## 2026-09-03 6:17pm Closed MTD run — NEW Stacey miss: she DROPPED the "Ruben," greeting; fixed via self-edit + Message-ID-regenerated re-APPEND
+46 menus, $6,341.66 labor / $4,503.30 parts = $10,844.96 (Sep 1-3). Advisors: Jacob Debussey
+15 / $2,280.96, Dimetri Reynoso 7 / $2,304.04, Humberto Dominguez 7 / $1,721.32, Houa Moua 7 /
+$418.04, Juan Ramirez 5 / $1,937.74, Erik Mercado 3 / $1,139.88, Michael Reyes 1 / $533.42,
+Valentine Nolasco 1 / $509.56. Master existed (seeded 9/1) → default append; 63 closed ROs →
+19 carried TEK menu opcodes → 18 rows appended → master 46 rows; `✓ all candidate ROs scanned`.
+Pull + ask each inside ONE 180s wait (write_file→background-terminal, 24th straight use,
+`/tmp/bc_ask_0903_mtd.py`). Vision KPI band (crop 460px + 2x LANCZOS on a 1226x2207 PNG)
+matched JSON; master `_gross` sums matched `totals` exactly.
+**NEW FAILURE MODE — Stacey's build was numerically perfect but OMITTED the "Ruben," greeting
+entirely** (both text/plain and text/html started straight at the summary sentence). Her DONE
+line (43086, TOTAL=$10,844.96) has no greeting signal, and all the figure/leftover greps pass —
+only the explicit `clean.count("Ruben,")` check caught it. **Add greeting + footer presence to
+the standard verification greps every run** (greeting==1, footer substring present).
+**Fix that worked — self-edit + re-APPEND, faster than a rebuild ask**: stdlib `email` parse of
+the exported .eml → `set_content()` prepending "Ruben,\n\n" (plain) and `<p>Ruben,</p>` (html)
+→ **regenerate Message-ID** (del + `email.utils.make_msgid(domain='americanmotorscorp.com')`,
+per the 8/30 Gmail-dedupe trap — without this the re-append silently no-ops) → imaplib APPEND
+(landed as 43087) → expunge 43086 → re-export 43087 and re-run the FULL verification suite on
+the new bytes. Note `set_content()` re-encodes the whole part, so the re-export is smaller than
+the original (727KB vs 930KB) — that's harmless (quoted-printable vs base64 CTE), but it means
+you MUST re-verify the inline PNG byte-for-byte on the new export, which passed (460,000 bytes
+exact; PDF 63,699 exact). Final: exactly 1 MTD 9/3 draft (43087), To=Restrada, Cc None,
+all 11 figures exactly once, `<b>$10,844.96</b>` bold, greeting present, zero leftovers/variants,
+MTD Sent count 0. Sibling Daily Closed draft (43085) untouched.
