@@ -108,6 +108,24 @@ last edited on purpose in 2024). Present the table and offer: fix CP row only, f
 all 2's, or leave as designed. Fix = change Quantity dropdown → 1 → page **Save**
 (bottom-right) → true-remount verify (nav /home → back → re-read).
 
+## Step 5 — EDITING the Quantity (verified live VC 2026-09-04, restore 1→2)
+- The Quantity cell is a react-select (`#quantity_N`, class `tuc-react-select-*`).
+- **FIXED-LEFT COLUMN TRAP:** at default horizontal scroll the Quantity cell sits
+  UNDER the frozen left columns (`.rthfc-td-fixed-left`) — `/mouse` at its center
+  hits the overlay, dropdown never opens (elementFromPoint shows `rthfc-td-fixed-left`
+  in the chain). Fix: compute `maxRight` of all `.rthfc-td-fixed-left` rects, scroll
+  the table's horizontal scroller so the cell lands right of it
+  (`sc.scrollLeft += (cellX - (maxRight+250))`), re-read rect, hit-test with
+  elementFromPoint (walk parents to confirm it resolves INSIDE the control), THEN /mouse.
+- Options render in a portal: `[class*="-menu"] [class*="-option"]` → /mouse the "2".
+- **SAVE CAN SILENTLY FAIL** (SAVE-VERIFY trap): first attempt clicked Save (1211,689),
+  no success toast appeared, and remount showed the value REVERTED. Poll leaf elements
+  matching /success|saved|updated/i for ≤8s after Save — a generic
+  `[class*="toast"]` query only picks up notification-bell noise (RO recommendation
+  alerts), not the save toast. No "Success" = save FAILED → redo flip + Save.
+- Always verify by TRUE remount (nav /home → back → Print tab → re-read row).
+- Also remove pendo overlays before clicking.
+
 ## Related
 - `tekion-sitemap` (nav), `tekion-service-settings` (Service Settings ≠ PDF Settings;
   they STACK — "Notify customer on invoice" lives in Service Settings),
