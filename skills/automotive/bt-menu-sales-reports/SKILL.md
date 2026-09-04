@@ -278,6 +278,19 @@ Jason Davis 84/$15,229.05, Michael Rankin 45/$12,594.65, Gio Elenes 12/$8,206.70
 NOTE: September's first run will auto-create a fresh MASTER-2026-09.json — a tiny master early in
 the month is normal, not the unseeded-master pitfall.
 
+### (9/04 run, for Wed 9/03) TEXTBOOK CLEAN — close lag from 9/02 fully recovered
+173 closed ROs, 25 prefilter hits, 24 new rows, `all candidate ROs scanned`. MTD moved
+9 rows/$3,384.43 -> **33 rows / $7,200.64** ($5,512.44 labor + $1,688.20 parts). 9/03-dated
+rows alone = 15 menus / $2,639.33 (rest of the +$3,816.21 delta = store closing the 9/02
+backlog from the previous day's close lag) — stated both numbers in the body per standing
+practice. .sh-wrapper + quoted-heredoc + DO-NOT-DOUBLE-SEND paragraph (with 587 hint):
+one-attempt send on 465 in **42s** (fastest on record; Message-ID <178852701555...>,
+06:03 PDT), zero SMTP errors. IMAP Sent-check returned in **33s** first try, 12 hits,
+exactly one carrying today's subject (September 1-3) — other 11 all prior sends, usual
+token-match trap. Stacey's first himalaya invocation errored on syntax and self-corrected
+to `envelope list` — normal. MTD advisor leaders: Jon Lo 8/$3,246.39, Jason Davis
+10/$2,097.83, Somnang Ros 1/$775.88, Randy Vung 7/$593.47 (7 advisors on the board).
+
 ### (9/03 run, for Tue 9/02) CLEAN SEND on a CLOSE-LAG day (closedTime=13) — MTD unchanged
 Log showed `closed/invoiced ROs today: 13`, 0 prefilter hits, 0 new rows — suspicious for a
 Wednesday-run/Tuesday-data day. The 3-field probe (`_bt_probe_0903.py`) with a 9/01 control
