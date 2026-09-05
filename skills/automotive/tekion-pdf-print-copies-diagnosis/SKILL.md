@@ -84,7 +84,9 @@ case-insensitive substring. Result 2026-09-02: Joe Mendoza = VC 1891.
 - Any invoice row with **Quantity ≥ 2** and an auto-print trigger = the duplicate.
 - Rows with trigger "Select..." only print manually — Quantity 2 there means manual
   prints also come out doubled.
-- VC 1891 baseline (read 2026-09-02): Invoice - Customer Pay = **2** (Payer Invoice),
+- **VC 1891: Quantity=2 on `Invoice - Customer Pay` is the INTENDED setting.** Joe
+  explicitly asked to restore it to 2 on 2026-09-05 after I flipped it to 1 during the
+  9/2 diagnosis. Two copies at Clovis is by design — do NOT \"fix\" it to 1 again.\n- VC 1891 baseline (read 2026-09-02): Invoice - Customer Pay = **2** (Payer Invoice),
   Invoice - CVSC = **2**, Closed RO Invoice = **2** (manual), Invoice - Service
   Advisor = **2** (manual); Warranty/Internal = 1. "Print on invoice" = ON.
 

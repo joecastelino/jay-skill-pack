@@ -800,6 +800,19 @@ SKILL.md under its size limit. Consensus of those runs: the full prevention word
 produces a clean one-shot draft the large majority of the time; verification asks are
 still mandatory; the $0 opened streak ran 8/23–8/25 (6 half-day slots) and broke 8/26.
 
+## (9/05 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, all 4 asks first try
+Both scripts foreground clean (0 scrapers; `.py.paused` twin still present + identical = harmless).
+80 opened ROs scanned, **6 menus / $1,052.24** ($793.41 labor + $258.83 parts). Grimes 2/$431.35,
+Camacho 3/$357.65, Brenda Hernandez Alvarenga 1/$263.24. Hand-off RC=0 FIRST TRY (121s); draft
+correct FIRST TRY at IMAP UID 132 (himalaya 43138), no dedupe needed. Her em-dash search broke
+once mid-build (known self-healing hiccup). All 3 verification asks FIRST try, IMAP-first:
+subject-list 69s (Count: 17, stack 08/02+08/21-09/05, exactly one 09/05 hit, UID 132 matched her
+report), part-probe 37s (she echoed "UID 132 wasn't right — draft lives at UID 43138" = the
+himalaya-numbering quirk inverted; byte sizes settled it: PNG 67,529 / PDF 54,179 = EXACT on-disk;
+related > alternative(plain+html) + png CID=scorecard + application/pdf), Sent-check 36s (Sent: 4,
+all old em-dash-era 06/30-07/03, zero today = no leak).
+Flag to Joe: 17 unsent Opened drafts stacked (08/02, 08/21-09/05).
+
 ## (9/04 8:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, TRUE dedupe, all 4 asks first try
 Both scripts foreground clean (0 scrapers). 154 opened ROs scanned, **10 menus / $1,525.62**
 ($1,120.18 labor + $405.44 parts) — best opened day in weeks. Alatorre 5/$668.25 (43.8%),
