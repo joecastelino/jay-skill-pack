@@ -278,6 +278,19 @@ Jason Davis 84/$15,229.05, Michael Rankin 45/$12,594.65, Gio Elenes 12/$8,206.70
 NOTE: September's first run will auto-create a fresh MASTER-2026-09.json — a tiny master early in
 the month is normal, not the unseeded-master pitfall.
 
+### (9/05 run, for Thu 9/04) TEXTBOOK CLEAN — zero errors end to end
+181 closed ROs, 9 prefilter hits, 9 new rows, `all candidate ROs scanned`. MTD moved
+33 rows/$7,200.64 -> **42 rows / $7,874.29** ($5,998.37 labor + $1,875.92 parts). 9/04-dated
+rows alone = 8 menus / $552.80 (rest of the +$673.65 delta = older invoiced ROs closed) —
+stated both numbers in the body per standing practice. .sh-wrapper + quoted-heredoc +
+DO-NOT-DOUBLE-SEND paragraph (with 587 hint): one-attempt send on 465 in **87s** (Message-ID
+<178861345561...>, 06:04:15 PDT, MIME 233,231 bytes); Stacey did a proactive pre-send Sent-Mail
+dup check on her own again. IMAP Sent-check returned in **95s** first try (her himalaya JSON
+parse + first two imaplib attempts errored, self-corrected — normal), 13 hits, exactly one
+carrying today's subject (September 1-4) — other 12 all prior sends, usual token-match trap.
+MTD advisor leaders: Jon Lo 8/$3,246.39, Jason Davis 10/$2,097.83, Somnang Ros 3/$897.03,
+Randy Vung 7/$593.47, Juan Carlos Urena 5/$517.25.
+
 ### (9/04 run, for Wed 9/03) TEXTBOOK CLEAN — close lag from 9/02 fully recovered
 173 closed ROs, 25 prefilter hits, 24 new rows, `all candidate ROs scanned`. MTD moved
 9 rows/$3,384.43 -> **33 rows / $7,200.64** ($5,512.44 labor + $1,688.20 parts). 9/03-dated
