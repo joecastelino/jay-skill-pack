@@ -1134,50 +1134,11 @@ Daily Closed 9/1 draft (43016) untouched — different report type, not a duplic
 two prunes earlier today) → no prune needed this run. Re-checked `os.path.getsize()` AFTER.
 
 ## 2026-09-02 noon Daily Closed run — textbook one-shot, 43rd consecutive clean "N dollars" build
-18 menus, $2,602.44 labor / $1,646.16 parts = $4,248.60 (Jacob Debussey 5 / $498.84, Dimetri
-Reynoso 4 / $1,778.21, Houa Moua 4 / $274.52, Humberto Dominguez 3 / $688.86, Michael Reyes 1 /
-$533.42, Erik Mercado 1 / $474.75 — six advisors). 47 closed ROs → 18 carried TEK menu opcodes
-(~38% attach, highest rate logged — Wednesday noon, strong menu day); `✓ all candidate ROs
-scanned`. Pull via `terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
-Vision KPI band (crop 460px + 2x LANCZOS on a 1226x1183 PNG) read all four tiles exactly and
-matched JSON. **write_file→background-terminal ask pattern, 19th straight run, returned inside
-ONE 180s wait** (`/tmp/bc_ask_0902_noon.py`, `subprocess.run` argument list, `timeout 560`).
-Terse DONE line correct with `TOTAL=$4,248.60`, her reported id (43038) MATCHED himalaya's, NO
-self-correction text (6th straight zero-wrinkle run) → no duplicate. Verified via the
-stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject auto-decoded with em-dashes,
-inline PNG **byte-for-byte identical** (236,788 bytes), PDF **byte-for-byte identical** (57,298
-bytes), all 9 figures present exactly once, `<b>$4,248.60</b>` bold, greeting + footer present,
-zero ' dollars'/USD/EMDASH/CORRECTION leftovers, all leading-digit-stripped and comma-mangled
-variants = 0. Exactly 1 draft (43038), Daily-Closed Sent count 0 (the single `BC 9/2` Sent hit
-was Stacey's auto-sent Daily Opened report, 15028, fired 12:05 — earlier than the 9/1 drift).
-**Skill-size housekeeping**: 98,510 pre-prune → condensed the confirmatory 2026-08-23 MTD entry
-(kept the zero-day-MTD-sentence rule and the full-page-OCR-garble/crop lesson) → 96,369 before
-appending. SAFE-PRUNE index assertions used; re-checked size AFTER.
+18 menus, $2,602.44 / $1,646.16 = $4,248.60 (~38% attach, highest rate logged — strong Wednesday).
+Clean one-shot; all byte-for-byte checks passed, no duplicate.
 ## 2026-09-02 5pm Daily Closed run — textbook one-shot, 44th consecutive clean "N dollars" build
-24 menus, $3,344.94 labor / $2,016.38 parts = $5,361.32 (Jacob Debussey 8 / $1,121.46, Dimetri
-Reynoso 5 / $1,984.53, Houa Moua 4 / $274.52, Humberto Dominguez 4 / $713.71, Michael Reyes 1 /
-$533.42, Erik Mercado 1 / $474.75, Juan Ramirez 1 / $258.93 — seven advisors). 69 closed ROs →
-24 carried TEK menu opcodes (~35% attach — second straight high-attach Wednesday cut, after the
-noon run's record 38%); `✓ all candidate ROs scanned`. Pull via `terminal(background=true)` + a
-SINGLE `process(action="wait", timeout=180)`. Vision KPI band (crop 460px + 2x LANCZOS on a
-1226x1423 PNG) matched JSON exactly.
-**write_file→background-terminal ask pattern, 20th straight run, returned inside ONE 180s wait**
-(`/tmp/bc_ask_0902_5pm.py`, `subprocess.run` argument list, `timeout 560`). Terse DONE line
-correct with `TOTAL=$5,361.32`, her reported id (43048) MATCHED himalaya's, NO self-correction
-text (7th straight zero-wrinkle run) → no duplicate; she explicitly named the noon draft (43038)
-as untouched. Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe,
-Subject auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (290,741 bytes), PDF
-**byte-for-byte identical** (59,519 bytes), all 10 figures present exactly once,
-`<b>$5,361.32</b>` bold, greeting + footer present, zero ' dollars'/USD/EMDASH/CORRECTION
-leftovers, all leading-digit-stripped and comma-mangled variants = 0. Deleted the stale noon
-draft (43038) per the twice-daily cadence rule → exactly 1 draft (43048). Daily-Closed Sent
-count 0.
-**Noon→5pm delta**: noon 18 menus / $4,248.60 → 5pm 24 menus / $5,361.32 — strongest single
-Daily Closed day logged (beats 8/27's $4,301.42).
-**Skill-size housekeeping**: 98,253 pre-prune → condensed the confirmatory 2026-08-19 MTD and
-2026-08-23 noon entries (kept the self-correction-duplicate and zero-day rules) before appending.
-SAFE-PRUNE index assertions used; re-checked size AFTER.
-
+24 menus, $3,344.94 / $2,016.38 = $5,361.32 (~35% attach). Clean; all byte-for-byte checks passed,
+deleted stale noon draft. Noon 18/$4,248.60 → 5pm 24/$5,361.32 — strong Daily Closed day.
 ## 2026-09-02 6:16pm Closed MTD run — textbook one-shot, 45th consecutive clean "N dollars" build
 28 menus, $4,047.41 labor / $2,298.70 parts = $6,346.11 (Sep 1-2). Advisors: Jacob Debussey 9 /
 $1,295.07, Dimetri Reynoso 7 / $2,304.04, Humberto Dominguez 5 / $1,205.38, Houa Moua 4 /
@@ -1270,6 +1231,25 @@ greeting-drop) passed: `Ruben,` count 1. All byte-for-byte checks passed (PNG 17
 56,950 exact), all 8 figures exactly once, bold total, zero leftovers/variants, no
 Kevin/dfowlkes leak. Daily-Closed Sent count 0 (single `BC 9/4` Sent hit = Stacey's auto-sent
 Daily Opened, 15161, fired 12:05). No stale prior draft (noon = first run of the day).
+
+## 2026-09-04 5pm Daily Closed run — textbook one-shot, 48th consecutive clean "N dollars" build
+19 menus, $2,076.13 labor / $1,125.05 parts = $3,201.18 (Jacob Debussey 8 / $685.78, Dimetri
+Reynoso 4 / $1,061.84, Michael Reyes 4 / $934.56, Humberto Dominguez 1 / $218.84, Erik Mercado
+1 / $208.80, Houa Moua 1 / $91.36 — six advisors). 90 closed ROs → 19 carried TEK menu opcodes
+(~21% attach, Friday); `✓ all candidate ROs scanned`. Pull + ask each inside ONE 180s wait
+(write_file→background-terminal, 26th straight use, `/tmp/bc_ask_0904_5pm.py`). Vision KPI band
+(crop 460px + 2x LANCZOS on a 1226x1217 PNG) matched JSON exactly. Terse DONE line correct
+(43133, TOTAL=$3,201.18), id MATCHED himalaya's — her reply self-caught the APPENDUID-regex
+wrinkle mid-build ("my regex grabbed the UIDVALIDITY 6 by mistake") with no re-append; dedupe
+grep run immediately per the self-correction rule → no duplicate. All byte-for-byte checks
+passed (PNG 244,190 / PDF 58,928 exact), all 10 figures exactly once, `<b>$3,201.18</b>` bold,
+greeting `Ruben,` count 1, footer present, zero ' dollars'/USD/EMDASH/CORRECTION leftovers, all
+leading-digit-stripped and comma-mangled variants = 0, no Kevin/dfowlkes leak. Deleted the stale
+noon draft (43129) per the twice-daily cadence rule → exactly 1 draft (43133). Daily-Closed Sent
+count 0.
+**Noon→5pm delta**: noon 11 menus / $1,587.59 → 5pm 19 menus / $3,201.18 — normal Friday build.
+**Skill-size housekeeping**: 97,807 pre-prune → condensed the confirmatory 9/2 noon + 9/2 5pm
+entries → 94,426 before appending. SAFE-PRUNE index assertions used; re-checked size AFTER.
 
 ## 2026-09-03 6:17pm Closed MTD run — NEW Stacey miss: she DROPPED the "Ruben," greeting; fixed via self-edit + Message-ID-regenerated re-APPEND
 46 menus, $6,341.66 labor / $4,503.30 parts = $10,844.96 (Sep 1-3). Advisors: Jacob Debussey

@@ -979,6 +979,11 @@ support ticket / quota review escalation to Joe stands.
 Also killed two leftover sct-align selfheal watchers (PIDs from 9/3) that were
 still polling and burning the shared dealer quota; cleared their /tmp locks.
 Day 4 continuous — Tekion support ticket escalation to Joe re-flagged.
+9/4 5PM lost too (DAY 4 continues): search/jobs 200, /operations 429
+DEALER_QUOTA, 9 TEK candidates out of 162 ROs unscannable (583016/582970 new +
+the 7 from noon). JSONs flagged complete:false, no render/email/watcher. No
+live watchers found; stale selfheal locks (9/2, 9/3) have no holders. Tekion
+support ticket escalation to Joe stands — 4 straight days, 8 cron runs lost.
 
 ### The false-zero trap bit a SECOND pipeline — check yours for it
 `advisor_closed_gross.py` had the identical bug class: its `get()` helper swallowed
