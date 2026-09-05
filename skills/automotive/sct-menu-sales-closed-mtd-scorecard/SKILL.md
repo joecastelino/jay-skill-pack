@@ -307,6 +307,21 @@ Work dir: `/home/itadmin/tekion-reports`
 
 ## Pitfall: month rollover day (1st of month) + outage recurrence
 
+**Verified 2026-09-04 (outage day 4):** still active, same signature (`/jobs`
+200, `/operations` 429 DEALER_QUOTA on every candidate, unchanged after the
+8-min retry). Day-4 unpriceable candidates: 582961, 582902, 582875, 582570 (4
+of 97/98 closed ROs). Cumulative Sept loss: ~22 menu ROs (9/1: 2, 9/2: 8,
+9/3: 8, 9/4: 4). Body-file + one short send ask again worked first try
+(`OK BYTES=109744`, byte-exact). ⚠️ **New MIME-verify pitfall:** the terse
+one-liner `"Sent msg 18:11 today: real attachment?"` returned a FALSE
+`MIME=MARKUP-ONLY` — Stacey inspected her own *session history* instead of the
+mailbox and concluded "no sent mail from today" a minute after she had listed
+the message in Sent. Fix that worked first try: say explicitly **"Check the
+ACTUAL Gmail Sent mailbox (IMAP/himalaya, not session history)"** in the MIME
+verify ask. Also note the attachment may show `Content-Type:
+application/octet-stream` with the .pdf filename and `%PDF` base64 payload —
+that is a REAL attachment, not markup-only.
+
 **Verified 2026-09-02 (outage day 2):** the September DEALER_QUOTA outage did
 NOT clear overnight — same signature (`/jobs` 200, `/operations` 429 on every
 probed candidate), and the loss is growing: `prefilter: 8 of 148` TEK

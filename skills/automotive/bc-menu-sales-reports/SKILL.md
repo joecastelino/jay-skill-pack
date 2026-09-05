@@ -770,12 +770,8 @@ the FIRST digit including the thousands comma" ask instruction is now standard o
 where the total exceeds 1,000.
 
 ## 2026-08-26 5pm Daily Closed run — textbook one-shot, 24th consecutive clean build
-14 menus, $1,963.54 / $1,107.98 = $3,071.52 (Humberto Dominguez 5, Jacob Debussey 4, Juan
-Ramirez 2, Jeremia Navarro 1, Erik Mercado 1, Houa Moua 1 — six advisors). All byte-for-byte
-checks passed, no duplicate; all five thousands-comma leading-digit-stripped variants = 0.
-Deleted the stale noon draft per the twice-daily cadence rule.
-**Noon→5pm delta**: noon showed 7 menus / $1,131.49 with two advisors; the 5pm run picked up
-7 more menus and four more advisors — normal intraday behavior, noon is a partial-day cut.
+14 menus / $3,071.52. Clean; deleted stale noon draft. Noon 7/$1,131.49 → 5pm 14 with four
+more advisors — normal intraday behavior, noon is a partial-day cut.
 
 ## 2026-08-26 6:17pm Closed MTD run — clean data + perfect draft, but NEW harness trap: `execute_code` has its OWN 300s cap
 188 menus, $28,721.28 labor / $18,740.65 parts = $47,461.93 (Aug 1-26). Advisors:
@@ -1250,6 +1246,24 @@ count 0.
 **Noon→5pm delta**: noon 11 menus / $1,587.59 → 5pm 19 menus / $3,201.18 — normal Friday build.
 **Skill-size housekeeping**: 97,807 pre-prune → condensed the confirmatory 9/2 noon + 9/2 5pm
 entries → 94,426 before appending. SAFE-PRUNE index assertions used; re-checked size AFTER.
+
+## 2026-09-04 6:18pm Closed MTD run — textbook one-shot, 49th consecutive clean "N dollars" build
+67 menus, $8,742.82 labor / $5,832.40 parts = $14,575.22 (Sep 1-4). Advisors: Jacob Debussey
+23 / $2,966.74, Dimetri Reynoso 11 / $3,365.88, Houa Moua 8 / $509.40, Humberto Dominguez 8 /
+$1,940.16, Juan Ramirez 6 / $2,345.38, Michael Reyes 6 / $1,589.42, Erik Mercado 4 / $1,348.68,
+Valentine Nolasco 1 / $509.56. Master existed → default append; 94 closed ROs → 21 carried TEK
+menu opcodes (~22% attach) → master 67 rows; `✓ all candidate ROs scanned`. Pull + ask each
+inside ONE 180s wait (write_file→background-terminal, 27th straight use,
+`/tmp/bc_ask_0904_mtd.py`). Vision KPI band (crop 460px + 2x LANCZOS on a 1226x2921 PNG)
+matched JSON exactly. Terse DONE line correct (43134, TOTAL=$14,575.22), id MATCHED himalaya's,
+NO self-correction text → no duplicate. Verified via the stdlib-`email` parser: To=Restrada,
+Cc real None, From=Joe, Subject auto-decoded with em-dashes, inline PNG **byte-for-byte
+identical** (616,977 bytes), PDF **byte-for-byte identical** (67,822 bytes), all 11 figures
+exactly once, `<b>$14,575.22</b>` bold, greeting `Ruben,` count 1, footer present, zero
+' dollars'/USD/EMDASH/CORRECTION leftovers, all leading-digit-stripped and comma-mangled
+variants = 0, no Kevin/dfowlkes leak. Exactly 1 MTD 9/4 draft (43134), MTD Sent count 0 (single
+`BC 9/4` Sent hit = Stacey's auto-sent Daily Opened, 15161). Sibling Daily Closed draft (43133)
+untouched — different report type.
 
 ## 2026-09-03 6:17pm Closed MTD run — NEW Stacey miss: she DROPPED the "Ruben," greeting; fixed via self-edit + Message-ID-regenerated re-APPEND
 46 menus, $6,341.66 labor / $4,503.30 parts = $10,844.96 (Sep 1-3). Advisors: Jacob Debussey
