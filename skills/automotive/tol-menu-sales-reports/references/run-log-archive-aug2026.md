@@ -278,3 +278,82 @@ don't read a small count as "Joe cleared the backlog"; search the short stem "TO
 Closed" for the true stack size. Bogus-UID variant recurred and self-healed via the
 `UID N (subject "<exact>") ... if that UID is wrong, find it by that exact subject` wording.
 
+
+
+## (8/29 8:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, TRUE dedupe, all 4 asks first try
+Both scripts ran FOREGROUND clean (opened pull ~seconds, render ~seconds) — no backoff, no
+scraper contention on a Saturday evening. Hand-off returned RC=0 in 117s; draft correct FIRST
+TRY at himalaya ID 42826 / IMAP UID 98, and TRUE dedupe happened (noon draft IMAP UID 95 with
+the identical subject actually deleted; subject-list showed Count: 1). All 3 verification asks
+returned FIRST try with "use raw IMAP, NOT the Gmail API" leading + the 3-line numbered part
+probe: subject-list 104s, part-probe 51s, Sent-check 42s.
+MIME clean: image/png CID scorecard 88,580B + .pdf 69,758B (base64-inflated from on-disk
+64,730 / 50,975 — expected, don't flag). Bolded total $789.02 confirmed in body.
+BOGUS-UID variant recurred (mild): Stacey's save summary said "himalaya ID 42826, IMAP UID 98"
+but the subject-list returned 42826 as the UID. Cosmetic — verify by SUBJECT, always.
+SENT-CHECK NOTE: broad `subject contains "TOL Menu Sales"` now returns 6 hits (not the 4 seen
+in prior runs) — the extra 2 are the same old June/July em-dash-era sends surfaced by the
+broader search string. ALL 6 are 06/29-07/03; zero today = no leak. A rising hit count on the
+BROAD query is not a regression, just a looser match term.
+DATA: 115 opened ROs scanned, **3 menus / $789.02** ($507.76 labor + $281.26 parts).
+Mauricio Orellana 1/$413.73 (RO 399209 TEK30000BNM 2020 GR Supra); Gustavo Alatorre 1/$247.40
+(RO 399208 TEK30000BNM 2023 Highlander); Michael Hachey 1/$127.89 (RO 399281 TEK10000BNM 2021
+Corolla). The first two are the same ROs the noon run caught ($774.85) — Hachey's 399281 is the
+afternoon add. `records` empty (0) while `rows` had all 3 — the 8/26 quirk STILL RECURS every
+run; ALWAYS read `rows`, never `records`.
+`totals.parts_price` ($621.55) != `parts_gross` ($281.26) — scorecard/email use GROSS.
+
+## (8/29 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, all 4 asks first try
+Hand-off returned in 69s, draft correct FIRST TRY, no dedupe needed (0 prior drafts with
+today's exact subject). All 3 verification asks returned FIRST try with "use raw IMAP, NOT
+the Gmail API" leading + the 3-line numbered part probe (per the 8/28 truncation lesson):
+subject-list 40s, part-probe 39s, Sent-check 21s. MIME clean: image/png Content-ID
+scorecard 57,098B + .pdf 47,766B; bolded total $774.85 confirmed in body.
+BOGUS-UID variant recurred (mild): save confirmation said "Draft UID 42819", subject-list
+said UID 95 — the standing `UID N (subject "<exact>") ... if that UID is wrong, find it by
+that exact subject instead` wording self-healed it. Verify by SUBJECT, always.
+Sent-check = 4 hits, all old em-dash-era sends (06/30-07/03), zero today = no leak.
+CONFIRMED: the 3-line numbered probe ("(1) png+CID yes/no+size (2) any .pdf filename
+yes/no+size (3) bolded total") is now the PREFERRED part-verification form — second
+consecutive run where it returned fast with no truncation and no retry.
+DATA: 100 opened ROs scanned, **2 menus / $774.85** ($520.80 labor + $254.05 parts).
+Mauricio Orellana 1/$527.45 (RO 399209 TEK30000BNM 2020 GR Supra); Gustavo Alatorre
+1/$247.40 (RO 399208 TEK30000BNM 2023 Highlander). Fourth consecutive non-zero opened
+day after the 8/23-8/25 $0 streak. `records` empty (0) while `rows` had both entries —
+the 8/26 quirk now RECURS every run; ALWAYS read `rows`, never `records`.
+`totals.parts_price` ($570.87) != `parts_gross` ($254.05) — scorecard/email use GROSS.
+Opened drafts stack = 10 (08/21-08/29 + perennial 08/02 em-dash UID 19), no true dupes.
+
+## (8/28 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, CORRECT UID reported
+Draft correct FIRST TRY at UID 95; reported UID was CORRECT (bogus-UID trap did NOT recur).
+No dedupe needed. Subject-list first try (17 stacked TOL drafts, 08/21-08/28 pairs + the
+perennial 08/02 em-dash pair UIDs 19/20).
+NEW MINOR TRAP: the full "list EVERY MIME part, one line each: mimeType | Content-ID |
+filename | size" wording TRUNCATED mid-reply ("Part 1: multipart/mixed | CID=" then stopped,
+RC=0 — a cut-off stream, NOT a timeout). Fix in ONE shot after `sleep 20`: collapse to a
+3-line numbered probe — "(1) image/png part w/ Content-ID scorecard? yes/no + byte size
+(2) any part w/ filename ending .pdf? yes/no + byte size (3) the bolded total". Returned
+"(1) yes, 78748 (2) yes, 66838 (3) $309.54" instantly. PREFER this 3-line form. Sizes are
+BASE64-encoded (57,544B PNG -> 78,748; 48,843B PDF -> 66,838) — don't flag vs on-disk sizes.
+Sent-check = 4 hits, all old em-dash-era sends (06/30-07/03), zero today = no leak.
+DATA: 99 opened ROs, **2 menus / $309.54** ($194.49 labor + $115.05 parts). Gustavo Alatorre
+1/$157.68 (RO 399030 TEK10000BNM 2023 Tundra 4WD); Michael Hachey 1/$151.86 (RO 399026
+TEK40000BNM 2024 GR Corolla). Third consecutive non-zero opened day after the 8/23-8/25 $0
+streak. `records` empty (0) while `rows` had both entries — the 8/26 quirk RECURS; read `rows`.
+
+## (8/27 8:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, TRUE dedupe first try
+Hand-off returned in 220s (no timeout), draft correct FIRST TRY, dedupe TRUE (noon draft
+UID 88 actually deleted; subject-list showed exactly one 08/27 hit at UID 42748). All 3
+verification asks returned FIRST try and FAST with "use raw IMAP, NOT the Gmail API"
+leading + parts-only part-listing wording: subject-list 32s, part-listing 50s, Sent-check
+30s. MIME clean: multipart/mixed > related > alternative(text/plain 502B + text/html 812B)
++ image/png Content-ID=<scorecard> 63,910B inline + application/pdf 53,197B; bolded total
+$1,159.78 confirmed in body.
+BOGUS-UID recurred in MILD form: save confirmation said "UID 91" (she self-explained it as
+post-expunge Gmail renumbering) but the real IMAP UID was 42748 — the standing "if that UID
+is wrong, find it by that exact subject" wording resolved it silently. Verify by SUBJECT.
+Sent-check = 4 hits, all old em-dash-era sends (06/30-07/03), zero today = no leak.
+DATA: 171 opened ROs, 6 menus / $1,159.78 ($732.78 labor + $427.00 parts) — best opened day
+in weeks. Gustavo Alatorre 4/$515.20, Unassigned 1/$328.88, Mauricio Orellana 1/$315.70.
+The 8/26 empty-`records` JSON quirk did NOT recur — `rows` was fully populated (6 rows).
+Opened drafts stack = 8 (08/21-08/27 hyphen + perennial 08/02 em-dash UID 41547), no dupes.
