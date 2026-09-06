@@ -1249,6 +1249,20 @@ byte-for-byte checks passed (PNG 73,840 / PDF 49,477 exact), all figures exactly
 Exactly 1 draft, Daily-Closed Sent count 0 (single `BC 9/5` Sent hit = Stacey's auto-sent Daily
 Opened, 15246, fired 12:02). No stale prior draft (noon = first run of the day).
 
+## 2026-09-05 5pm Daily Closed run — clean after Stacey's own delete+recreate loop, 51st consecutive clean "N dollars" build
+4 menus, $313.74 labor / $179.34 parts = $493.08 (Juan Ramirez 3 / $329.24, Dimetri Reynoso 1 /
+$163.84). 30 closed ROs → 4 carried TEK menu opcodes (~13% attach, light Saturday). `✓ all
+candidate ROs scanned`. Pull + ask each inside ONE 180s wait (write_file→background-terminal,
+29th straight use, `/tmp/bc_ask_0905_5pm.py`). Vision KPI band matched JSON exactly. Her reply
+showed THREE self-correction passes (em-dash spacing, f-string/base64, "delete that draft and
+create a clean one") before the terse DONE line (43142, TOTAL=$493.08, id MATCHED himalaya's) —
+her genuine delete+re-append left NO duplicate (dedupe grep confirmed only 43142 + the expected
+stale noon 43139). All byte-for-byte checks passed (PNG 96,887 / PDF 51,486 exact), all 5
+figures exactly once, `<b>$493.08</b>` bold, greeting `Ruben,` count 1, footer present, zero
+leftovers/variants, no Kevin/dfowlkes leak. Deleted the stale noon draft (43139) → exactly 1
+draft. Daily-Closed Sent count 0 (single `BC 9/5` Sent hit = Stacey's auto-sent Daily Opened,
+15246). Noon→5pm delta: noon 2/$219.62 → 5pm 4/$493.08 — light Saturday, consistent with 8/29.
+
 ## 2026-09-03 6:17pm Closed MTD run — NEW Stacey miss: she DROPPED the "Ruben," greeting; fixed via self-edit + Message-ID-regenerated re-APPEND
 46 menus, $6,341.66 labor / $4,503.30 parts = $10,844.96 (Sep 1-3). Advisors: Jacob Debussey
 15 / $2,280.96, Dimetri Reynoso 7 / $2,304.04, Humberto Dominguez 7 / $1,721.32, Houa Moua 7 /
