@@ -278,6 +278,18 @@ Jason Davis 84/$15,229.05, Michael Rankin 45/$12,594.65, Gio Elenes 12/$8,206.70
 NOTE: September's first run will auto-create a fresh MASTER-2026-09.json — a tiny master early in
 the month is normal, not the unseeded-master pitfall.
 
+### (9/06 run, for Fri 9/05) CLEAN — 465 dropped once, 587/STARTTLS fallback + dup-check worked as designed
+74 closed ROs, 15 prefilter hits, 15 new rows, `all candidate ROs scanned`. MTD moved
+42 rows/$7,874.29 -> **57 rows / $10,270.98** ($7,449.54 labor + $2,821.44 parts). 9/05-dated
+rows alone = 11 menus / $1,951.50 (rest of the +$2,396.69 delta = older invoiced ROs closed) —
+stated both numbers in the body per standing practice. Stacey's first SMTP attempt on 465
+dropped; per the CRITICAL paragraph she checked Sent Mail (no duplicate), then fell back to
+587/STARTTLS and sent ONCE (Message-ID <178869986648...>, 06:04:26 PDT). Hand-off ~96s,
+verification 58s first try (her first two attempts errored/self-corrected — normal), 14 hits,
+exactly one carrying today's subject (September 1-5) — other 13 all prior sends, usual
+token-match trap. MTD advisor leaders: Jon Lo 8/$3,246.39, Jason Davis 10/$2,097.83,
+Michael Rankin 12/$1,891.60, Somnang Ros 5/$1,103.82, Juan Carlos Urena 8/$912.76.
+
 ### (9/05 run, for Thu 9/04) TEXTBOOK CLEAN — zero errors end to end
 181 closed ROs, 9 prefilter hits, 9 new rows, `all candidate ROs scanned`. MTD moved
 33 rows/$7,200.64 -> **42 rows / $7,874.29** ($5,998.37 labor + $1,875.92 parts). 9/04-dated
