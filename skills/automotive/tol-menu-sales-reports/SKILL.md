@@ -800,6 +800,21 @@ SKILL.md under its size limit. Consensus of those runs: the full prevention word
 produces a clean one-shot draft the large majority of the time; verification asks are
 still mandatory; the $0 opened streak ran 8/23–8/25 (6 half-day slots) and broke 8/26.
 
+## (9/05 8:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, TRUE dedupe, all 4 asks first try
+Both scripts foreground clean (0 scrapers; `.py.paused` twin still identical = harmless).
+100 opened ROs scanned, **6 menus / $1,011.20** ($752.37 labor + $258.83 parts). Grimes
+2/$415.65 (41.1%), Camacho 3/$357.65, Brenda Hernandez Alvarenga 1/$237.90. Note vs noon:
+same 6-menu count but numbers shifted slightly (noon: $1,052.24 / labor $793.41) — one row's
+labor gross was revised intra-day ($1,052.24→$1,011.20); normal, report EOD values. Hand-off
+RC=0 FIRST TRY (162s); draft correct FIRST TRY, TRUE dedupe (noon draft UID 132 found+deleted
+in the same ask). All 3 verification asks FIRST try, IMAP-first: subject-list 35s (Count: 17,
+stack 08/02+08/21-09/05, exactly one 09/05 hit = UID 134), part-probe 39s (UID 134 correct —
+no bogus-UID; mixed > related > alternative(plain+html) + png CID=scorecard + pdf; sizes
+90,234/74,224 = base64-inflated form, verified = exact 4/3+CRLF encoding of on-disk
+65,940/54,240 — do the encoded-size math rather than flagging a mismatch), Sent-check 39s
+(Sent: 4, all old em-dash-era 06/30-07/03, zero today = no leak).
+Flag to Joe: 16 unsent Opened drafts stacked (08/02, 08/21-09/05, after noon dedupe).
+
 ## (9/05 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, all 4 asks first try
 Both scripts foreground clean (0 scrapers; `.py.paused` twin still present + identical = harmless).
 80 opened ROs scanned, **6 menus / $1,052.24** ($793.41 labor + $258.83 parts). Grimes 2/$431.35,
