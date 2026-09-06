@@ -643,19 +643,11 @@ The explicit "create ONE draft" instruction does NOT prevent her own retry loop 
 (Kept 42523, expunged 42522.) See the 8/21 refinement: read WHERE in her pipeline the failure occurred
 — pre-append crash leaves nothing, post-append retry leaves an extra.
 ## 2026-08-20 noon Daily Closed run — textbook one-shot, 5th consecutive clean "N dollars" build
-7 menus, $923.31 labor / $658.94 parts = $1,582.25 (Dimetri Reynoso 2, Humberto Dominguez 2,
-Houa Moua 1, Michael Reyes 1, Jeremia Navarro 1). 37 closed ROs → 7 menu opcodes;
-`✓ all candidate ROs scanned`. Stacey build clean in 67s, no self-correction text → no
-duplicate (consistent with the 8/19 MTD lesson: duplicates track her "let me fix and
-re-create" retry loop, not the ask itself). All byte-for-byte checks passed.
-
+7 menus / $1,582.25. Clean; no self-correction text → no duplicate (duplicates track her "let me
+fix and re-create" retry loop, not the ask itself).
 ## 2026-08-20 5pm Daily Closed run — textbook one-shot, 6th consecutive clean "N dollars" build
-13 menus, $1,383.58 / $1,070.35 = $2,453.93 (Juan Ramirez 3, Houa Moua 2, Dimetri
-Reynoso 2, Jacob Debussey 2, Humberto Dominguez 2, Michael Reyes 1, Jeremia Navarro 1).
-All byte-for-byte checks passed, no duplicate. Deleted the stale noon draft per the
-twice-daily cadence rule. Sent folder's two `BC 8/20` hits were Stacey's separate
-auto-sent Daily Opened reports; `grep -i "Daily Closed"` = 0.
-
+13 menus / $2,453.93. Clean; deleted stale noon draft. Sent `BC 8/20` hits were Stacey's auto-sent
+Daily Opened reports; `grep -i "Daily Closed"` = 0 before declaring a sent-leak.
 ## 2026-08-20 6:16pm Closed MTD run — textbook one-shot, 7th consecutive clean "N dollars" build
 134 menus, $21,559.91 / $14,824.10 = $36,384.01 (Aug 1-20), top Juan Ramirez 33. Default append;
 `✓ all candidate ROs scanned`; vision + master `_gross` sums matched the emitted `totals` exactly.
@@ -693,13 +685,8 @@ no duplicate. Her DONE line reported id **55** vs himalaya's **42578** — the d
 Gmail APPENDUID vs Drafts-local UID mismatch; always grep for the real id.
 
 ## 2026-08-22 noon Daily Closed run — textbook one-shot, 11th consecutive clean "N dollars" build
-5 menus, $788.66 labor / $546.26 parts = $1,334.92 (Juan Ramirez 3, Dimetri Reynoso 2).
-13 closed ROs → 5 menu opcodes; `✓ all candidate ROs scanned`. Stacey build clean in 163s;
-her reported id (42584) MATCHED himalaya's — **the APPENDUID mismatch is intermittent, don't
-assume either way, always grep**. All byte-for-byte checks passed, no duplicate.
-**Authoring note**: my ask contained a self-correction typo mid-sentence while listing figures.
-Stacey handled it, but don't rely on that — compose the figure list once, cleanly, before sending.
-
+5 menus / $1,334.92. Her reported id MATCHED himalaya's — **the APPENDUID mismatch is intermittent,
+don't assume either way, always grep**. Compose the figure list once, cleanly, before sending.
 ## 2026-08-22 5pm Daily Closed run — textbook one-shot, 12th consecutive clean build
 9 menus, $1,081.79 / $753.20 = $1,834.99 (Juan Ramirez 5, Dimetri Reynoso 4). All
 byte-for-byte checks passed, no duplicate; deleted the stale noon draft. Her reply had the
@@ -719,27 +706,15 @@ ROs but no menu opcodes). Renderer produced the "No menu sales recorded yet" emp
 ($0 is a $digit sequence too), and write an explicit "No repair orders were closed at the store
 today" sentence so Ruben reads it as a genuine closed-store day, not a broken feed.
 ## 2026-08-23 5pm Daily Closed run — second zero-menu Sunday, 15th consecutive clean build
-0 menus / $0.00; 0 closed ROs (both runs that Sunday legitimately zero). All byte-for-byte
-checks passed; deleted the stale noon draft. Sent count 0 for `BC 8/23` entirely — Stacey's
-auto-send Opened pipeline correctly produced nothing on a closed Sunday.
-**Renderer output path gotcha**: `render_scorecard_bc.py` writes PNG/PDF into `data/`, NOT
-an `out/` dir — a chained `ls out/BC-...` returns exit 2. It prints both absolute output
-paths on stdout; read those instead of guessing a directory.
-**Timeout ceiling confirmed**: her build took 240s — clean, but 170/180 would have
-manufactured a needless exit-124. Use `timeout 600`/`560`.
-Her post-append self-correction ("missing the `<b>` tag... I'll replace my draft") used a
-genuine delete+re-append, so no duplicate resulted — post-append self-correction risks a
-duplicate but doesn't guarantee one. Always grep; never assume either way.
-
+0 menus / $0.00 (both runs legitimately zero). **Renderer output path gotcha**:
+`render_scorecard_bc.py` writes PNG/PDF into `data/`, NOT `out/` — it prints both absolute output
+paths on stdout; read those. **Timeout ceiling**: her build took 240s — use `timeout 600`/`560`,
+not 170/180. Post-append self-correction risks a duplicate but doesn't guarantee one — always grep.
 ## 2026-08-23 6:16pm Closed MTD run — zero-activity Sunday, 16th consecutive clean build
-160 menus / $41,401.81 (Aug 1-23) — identical to 8/22 (0 closed ROs Sunday). All checks passed.
-**Zero-day MTD nuance**: a zero-activity day on the MTD looks completely normal and bit-identical
-to yesterday's draft — put the explicit "store was closed Sunday, figures unchanged from
-yesterday" sentence in the summary so Ruben doesn't read it as a stale re-send.
-**Vision-check reminder confirmed**: full-page `vision_analyze` on the tall MTD PNG garbled the
-KPI tiles (values shifted across labels, invented a digit); the crop-top-460px + 2x-LANCZOS step
-read all four perfectly. Never skip the crop on MTD renders — the taller the page, the worse
-full-page OCR gets.
+160 menus / $41,401.81, identical to 8/22 (0 closed ROs Sunday) — put the explicit "store was
+closed Sunday, figures unchanged from yesterday" sentence in the summary. **Vision reminder**:
+full-page vision on tall MTD PNGs garbles KPI tiles; the crop-top-460px + 2x-LANCZOS step is
+mandatory — the taller the page, the worse full-page OCR gets.
 ## 2026-08-24 noon Daily Closed run — textbook one-shot, 17th consecutive clean build
 4 menus / $573.86. Clean; her em-dash IMAP-search wrinkle was POST-append verification → no duplicate. Renderer prints absolute output paths (data/, not out/).
 
@@ -753,13 +728,11 @@ full-page OCR gets.
 2 menus / $631.42. Clean. ~6% attach is normal noon-cutoff behavior; missing Opened Sent hit at noon = Stacey's pipeline timing drift, not a defect.
 
 ## 2026-08-25 5pm Daily Closed run — 21st consecutive clean build; Stacey's $-reinsertion regex mishandled the thousands comma
-5 menus / $1,037.72. **Load-bearing lesson**: her "N dollars"→`$` Python-replace regex matched only
-the post-comma segment, producing **`$037.72`** mid-number. She self-caught and re-appended cleanly.
-Mitigations (now standard): add `count("$037.72")`-style leading-digit-stripped variant checks to
-post-build verification whenever a figure has a thousands comma, and put the explicit "dollar sign
-goes before the FIRST digit of the whole number including the thousands comma" line in every ask
-where a total exceeds 1,000. Post-append self-correction risks a duplicate but she sometimes cleans
-up properly — always grep, never assume either way.
+5 menus / $1,037.72. **Load-bearing**: her "N dollars"→`$` replace regex matched only the
+post-comma segment, producing **`$037.72`** mid-number. Mitigations (now standard): add
+leading-digit-stripped variant checks whenever a figure has a thousands comma, and put the
+"dollar sign goes before the FIRST digit of the whole number including the thousands comma"
+line in every ask where a total exceeds 1,000. Always grep after self-correction.
 ## 2026-08-25 6:21pm Closed MTD run — textbook one-shot, 22nd consecutive clean build
 174 menus / $44,390.41 (Aug 1-25). Clean. Confirmed the "dollar sign before the FIRST digit including the thousands comma" ask line prevents the $037.72-style regex bug — keep it whenever total > 1,000.
 
@@ -1288,3 +1261,28 @@ you MUST re-verify the inline PNG byte-for-byte on the new export, which passed 
 exact; PDF 63,699 exact). Final: exactly 1 MTD 9/3 draft (43087), To=Restrada, Cc None,
 all 11 figures exactly once, `<b>$10,844.96</b>` bold, greeting present, zero leftovers/variants,
 MTD Sent count 0. Sibling Daily Closed draft (43085) untouched.
+
+## 2026-09-05 6:16pm Closed MTD run — textbook one-shot, 52nd consecutive clean "N dollars" build
+71 menus, $9,056.56 labor / $6,011.74 parts = $15,068.30 (Sep 1-5). Advisors: Jacob Debussey
+23 / $2,966.74, Dimetri Reynoso 12 / $3,529.72, Juan Ramirez 9 / $2,674.62, Humberto Dominguez
+8 / $1,940.16, Houa Moua 8 / $509.40, Michael Reyes 6 / $1,589.42, Erik Mercado 4 / $1,348.68,
+Valentine Nolasco 1 / $509.56. Master existed → default append; 30 closed ROs → 4 carried TEK
+menu opcodes (~13% attach, light Saturday) → master 71 rows; `✓ all candidate ROs scanned`.
+Pull + ask each inside ONE 180s wait (write_file→background-terminal, 30th straight use,
+`/tmp/bc_ask_0905_mtd.py`). Vision KPI band (crop 460px + 2x LANCZOS on a 1226x3057 PNG)
+matched JSON exactly; master `_gross` sums matched `totals` exactly. Terse DONE line correct
+(43143, TOTAL=$15,068.30), id MATCHED himalaya's, NO self-correction text → no duplicate.
+Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
+auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (645,736 bytes), PDF
+**byte-for-byte identical** (68,502 bytes), all 11 figures exactly once, `<b>$15,068.30</b>`
+bold, greeting `Ruben,` count 1 (both parts), footer present, zero
+' dollars'/USD/EMDASH/CORRECTION/Saturday leftovers, stripped/comma-mangled variants = 0, no
+Kevin/dfowlkes leak. Exactly 1 MTD 9/5 draft (43143), MTD Sent count 0 (single `BC 9/5` Sent
+hit = Stacey's auto-sent Daily Opened, 15246). Sibling Daily Closed draft (43142) untouched.
+**Transient-IMAP note**: the combined Drafts+Sent grep command hit the 90s timeout mid-Sent-list;
+per the transient-IMAP rule, split the calls and retried once — Sent check then passed with
+`grep -c "Month-To-Date"` = 0. Write the Sent list to a file and grep it rather than chaining
+two himalaya calls in one command.
+**Skill-size housekeeping**: 96,961 pre-prune → condensed five confirmatory 8/20-8/23 entries
+(kept the retry-loop, Daily-Closed-Sent-filter, APPENDUID-intermittent, renderer-path/timeout,
+and vision-crop lessons) → 95,255 before appending. Re-checked size AFTER.
