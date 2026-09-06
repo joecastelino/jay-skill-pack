@@ -1190,6 +1190,30 @@ CORRECTED_IN_SENT=<count>" → **0**. Scoping the Sent search to THIS report's u
 substring is stronger than the date-scoped `SENT_TODAY` form; prefer it whenever the subject
 has a distinctive token. Underscore-stripped keys again throughout.
 
+**Confirmed continuing 2026-09-04 and 2026-09-05 (days 4 and 5 of the September
+DEALER_QUOTA outage, still 429 both nights):** same deep-endpoint signature at 19:01 PDT
+each night (search 200, jobs 200, `/operations` 429 DEALER_QUOTA on the validated probe
+pair, unchanged since 8/3). No local competing consumer either night (standard pgrep
+sweeps empty; the stale 9/1 `/tmp/dealerdetail-sct-sync.lock` remains with no process —
+left in place, it usefully blocks the 23:00 nightly sync). **NEW OBSERVATION — self-heal
+watchers launched via terminal(background=true) often DIE MID-RUN when their parent
+Hermes session/gateway resets:** the 9/3 watcher's log ends 9/4 12:02 and the 9/4
+watcher's ends 9/5 11:52, both WITHOUT a TIMEOUT line and well before their 21h
+deadlines (only the 9/2 watcher ever reached its full deadline). A selfheal log ending
+mid-morning with no TIMEOUT line = the watcher died with its parent, not a deadline
+expiry. The nightly re-arm covers this, but don't read a truncated log as "quota might
+have recovered" — probe live. Re-armed the standard dated pair each night via the sed
+date-swap, bash -n + chmod foreground + terminal(background=true) x2, confirmed alive
+via "watcher started" log line + pgrep. Stacey read-only enumeration (Drafts+Sent,
+'SCT Alignment' substring, 8 days) on 9/5: 5 August drafts still in Drafts (8/28-8/31
+nightlies + Final CORRECTED), 3 Sent = the 9/1 morning sends of the August finals —
+**zero September reports exist; 9/1-9/5 all blocked.** This is now a 5-consecutive-day
+outage tracking the August 10-day arc — every blocked-night report should prominently
+recommend Joe open the formal Tekion support ticket for the SCT DEALER_QUOTA bucket.
+Also note: a `sleep` inside execute_code before a pgrep can hang the whole script to
+its 300s timeout — do the post-launch liveness check as a plain foreground terminal
+call a few seconds after launch instead.
+
 ## BUG FOUND + FIXED 2026-08-31 — ALIGN00**R**BA vs ALIGN00**B**RA
 `ALIGN_OPC` had `ALIGN00BRA`, but the opcode SCT actually uses is **`ALIGN00RBA`** (R and
 B transposed). That code appears 107 times across the July+August indexes and **ZERO**
