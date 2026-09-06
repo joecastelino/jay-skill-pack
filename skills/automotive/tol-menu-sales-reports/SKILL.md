@@ -800,6 +800,18 @@ SKILL.md under its size limit. Consensus of those runs: the full prevention word
 produces a clean one-shot draft the large majority of the time; verification asks are
 still mandatory; the $0 opened streak ran 8/23–8/25 (6 half-day slots) and broke 8/26.
 
+## (9/05 8:05PM, Closed MTD) TEXTBOOK CLEAN RUN — zero exit-124s, all 4 asks first try
+Closed append foreground clean in ~10s (5 scrapers live but no contention): 55 closed ROs,
+prefilter 4 of 55, master 16 -> **20 MTD rows / $2,818.67** ($2,010.88 labor + $807.79 parts),
+`✓ all candidate ROs scanned (no truncation)`, complete: true. Hand-off RC=0 FIRST TRY (132s);
+draft correct FIRST TRY (himalaya 43145 / IMAP UID 135), no dedupe needed. All 3 verification
+asks FIRST try, IMAP-first: subject-list 61s (Count: 9, Sept 1-1..1-5 + 4 August, exactly one
+9/05 hit; note 9/03 draft has an em-dash subject — keep checking both variants), part-probe 32s
+(UID 135; PNG 84,140 / PDF 69,538 = EXACT on-disk decoded bytes; html + png CID=scorecard +
+pdf), Sent-check 75s (Sent: 2, both old June 1-29 = token trap 5b, no leak). MTD leaders:
+Brenda Hernandez Alvarenga 3/$904.29 (32.1%), Alatorre 7/$876.58, Hachey 6/$645.16.
+Flag to Joe: 8 prior unsent Closed-MTD drafts stacked (Sept 1-1..1-4 + Aug 1-28..1-31).
+
 ## (9/05 8:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, TRUE dedupe, all 4 asks first try
 Both scripts foreground clean (0 scrapers; `.py.paused` twin still identical = harmless).
 100 opened ROs scanned, **6 menus / $1,011.20** ($752.37 labor + $258.83 parts). Grimes
