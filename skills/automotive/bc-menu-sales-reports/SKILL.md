@@ -736,15 +736,9 @@ line in every ask where a total exceeds 1,000. Always grep after self-correction
 ## 2026-08-25 6:21pm Closed MTD run — textbook one-shot, 22nd consecutive clean build
 174 menus / $44,390.41 (Aug 1-25). Clean. Confirmed the "dollar sign before the FIRST digit including the thousands comma" ask line prevents the $037.72-style regex bug — keep it whenever total > 1,000.
 
-## 2026-08-26 noon Daily Closed run — textbook one-shot, 23rd consecutive clean build
-7 menus, $640.84 / $490.65 = $1,131.49 (Jacob Debussey 4, Humberto Dominguez 3). All
-byte-for-byte checks passed, no duplicate. Confirms the explicit "dollar sign goes before
-the FIRST digit including the thousands comma" ask instruction is now standard on every ask
-where the total exceeds 1,000.
-
-## 2026-08-26 5pm Daily Closed run — textbook one-shot, 24th consecutive clean build
-14 menus / $3,071.52. Clean; deleted stale noon draft. Noon 7/$1,131.49 → 5pm 14 with four
-more advisors — normal intraday behavior, noon is a partial-day cut.
+## 2026-08-26 noon + 5pm Daily Closed runs — textbook one-shots (23rd/24th consecutive clean builds)
+Noon 7 menus / $1,131.49 → 5pm 14 / $3,071.52 (normal intraday build). Confirms the "dollar
+sign before the FIRST digit including the thousands comma" line is standard when total > 1,000.
 
 ## 2026-08-26 6:17pm Closed MTD run — clean data + perfect draft, but NEW harness trap: `execute_code` has its OWN 300s cap
 188 menus, $28,721.28 labor / $18,740.65 parts = $47,461.93 (Aug 1-26). Advisors:
@@ -925,6 +919,20 @@ failure from turning into a rebuild/duplicate. Keep it in every ask.
 **Day-of-week note**: a non-zero Daily Closed body doesn't need to name the weekday (only
 zero-day reports do, to explain the $0), so `count("Monday")==0` is expected, NOT a defect.
 Still run step 0 (`TZ=America/Los_Angeles date +"%Y-%m-%d %A %H:%M"`) every run for the subject date.
+
+## 2026-09-06 noon Daily Closed run — fourth zero-menu Sunday, textbook one-shot, 53rd consecutive clean "N dollars" build
+0 menus, $0.00 / $0.00 = $0.00; **0 closed ROs** (Sunday, BC service closed — same as 8/23,
+8/30). `✓ all candidate ROs scanned`; empty-table variant; vision KPI band (crop 460px + 2x
+LANCZOS, 1226x900 PNG) read all four tiles $0.00 / 0. Pull + ask each inside ONE 180s wait
+(write_file→background-terminal, 31st straight use, `/tmp/bc_ask_0906_noon.py`). Weekday step-0
+run first (Sunday confirmed) → zero-day sentence correct. Terse DONE line correct
+(TOTAL=$0.00); her reported id **138** vs himalaya's **43148** — APPENDUID mismatch, grepped
+the real id. All byte-for-byte checks passed (PNG 52,578 / PDF 39,018 exact), `<b>$0.00</b>`
+bold exactly once, greeting `Ruben,` count 1, "Sunday, September 6" + closed-store sentence
+present, footer present, zero ' dollars'/USD/EMDASH/CORRECTION/Saturday leftovers, no
+Kevin/dfowlkes leak. Exactly 1 draft (43148), Daily-Closed Sent count 0 (single `BC 9/6` Sent
+hit = Stacey's auto-sent Daily Opened, 15324, fired 12:01 — her Opened pipeline fires on closed
+Sundays, consistent with 8/30). No stale prior draft (noon = first run of the day).
 
 ## First run (2026-06-26, verified)
 Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
