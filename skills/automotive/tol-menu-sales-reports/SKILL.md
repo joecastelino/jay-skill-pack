@@ -963,6 +963,15 @@ RO the noon run caught, i.e. zero additional menus written all afternoon/evening
 Opened drafts stack = 13 (08/21-09/01 + perennial 08/02 em-dash UID 19; 08/28 UID 91 also
 em-dash). No true dupes. Flag to Joe: 12 unsent August Opened drafts still accumulating.
 
+## (9/06 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, all 4 asks first try
+Genuine $0 Sunday: 59 opened ROs scanned, 0 menus (`complete: true`, `expected_records: 0`,
+rows+records both empty). Hand-off RC=0 first try (90s); draft correct FIRST TRY at IMAP UID 137
+(her reported "43147" was a himalaya id — known mismatch, verify by subject as always). No dedupe
+needed (count=1). Part-probe first try: html + image/png cid=scorecard 43,739 + application/pdf
+28,818 — DECODED, exact on-disk bytes; bolded $0.00, greeting "Sean,". Sent-check = 4 hits, all
+old em-dash-era (06/30-07/03), zero today = no leak. Em-dash IMAP search hiccup self-healed
+during her dedupe pre-check (normal).
+
 ## (9/01 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, all 4 asks first try
 First run of September. Hand-off RC=0 FIRST TRY in 122s; draft correct FIRST TRY at IMAP UID 111,
 no dedupe needed (0 prior drafts with today's exact subject). All 3 verification asks returned

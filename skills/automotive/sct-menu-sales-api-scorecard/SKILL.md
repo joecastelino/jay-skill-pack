@@ -995,6 +995,13 @@ DEALER_QUOTA, 7 TEK candidates out of 146 ROs unscannable (583169/583141 new +
 583068/583061/583048/583043/583037 from noon). JSONs flagged complete:false,
 no render/email/watcher. Watcher census clean (no live pollers, no locks).
 Day 5, 10 cron runs lost — Tekion support ticket escalation to Joe is URGENT.
+9/6 noon lost too (DAY 6): search/jobs 200, /operations 429 DEALER_QUOTA,
+4 TEK candidates out of 74 ROs unscannable (583236/583224/583203/583196).
+JSONs flagged complete:false, no render/email/watcher. Killed two leftover 9/5
+selfheal watchers (PIDs 1525120/1525148 + sleep child) still burning the shared
+dealer quota; cleared /tmp/sct-align-selfheal-20260905.lock. Day 6 continuous,
+11 cron runs lost — Tekion support ticket / dealer quota review is CRITICAL;
+quota shows no sign of self-resetting within the 30-day budget window.
 
 ### The false-zero trap bit a SECOND pipeline — check yours for it
 `advisor_closed_gross.py` had the identical bug class: its `get()` helper swallowed
