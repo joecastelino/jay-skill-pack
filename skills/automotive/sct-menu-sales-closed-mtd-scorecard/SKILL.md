@@ -307,6 +307,13 @@ Work dir: `/home/itadmin/tekion-reports`
 
 ## Pitfall: month rollover day (1st of month) + outage recurrence
 
+**Verified 2026-09-05 (outage day 5):** still active, same signature (`/jobs`
+200, `/operations` 429 DEALER_QUOTA on all candidates, unchanged after the
+8-min retry). Day-5 unpriceable candidates: 583061, 583048, 583016 (3 of 31
+closed ROs). Cumulative Sept loss: ~25 menu ROs. Body-file + one short send
+ask again worked first try (`OK BYTES=109676`, byte-exact); MIME verify with
+the "ACTUAL Gmail Sent mailbox" phrasing returned `MIME=REAL` first try.
+
 **Verified 2026-09-04 (outage day 4):** still active, same signature (`/jobs`
 200, `/operations` 429 DEALER_QUOTA on every candidate, unchanged after the
 8-min retry). Day-4 unpriceable candidates: 582961, 582902, 582875, 582570 (4
