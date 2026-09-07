@@ -57,6 +57,14 @@ $PY tol_menu_sales_api.py
 $PY render_menu_sales_paged_tol.py $(date +%F)
 ```
 
+**First-run / missing dependency:** `render_menu_sales_paged_tol.py` uses Playwright for headless
+rendering. If it fails with `ModuleNotFoundError: No module named 'playwright'`:
+```sh
+python3.11 -m ensurepip                          # if pip not available for python3.11
+python3.11 -m pip install playwright
+python3.11 -m playwright install chromium
+```
+
 ### Closed MTD (daily, after seeding the month once)
 ```sh
 $PY tol_menu_sales_closed_mtd.py            # default = daily append + re-emit MTD
