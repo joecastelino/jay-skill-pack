@@ -59,7 +59,7 @@ BC = `cfg["dealers"]["bc"]` = `americanmotorscorporation_1251_0` (dealerId 1251,
 siteId `-1_1251`).
 
 ## Scripts (in /home/itadmin/tekion-reports/)
-Interpreter: `/home/itadmin/.hermes/hermes-agent/venv/bin/python3.11`
+Interpreter: `/home/itadmin/.hermes/hermes-agent/venv/bin/python3` — NOT python3.11 (not present in the venv as of 2026-09-08; only python3/python3.12 exist). Always verify with `ls venv/bin/python*` before running.
 - `bc_menu_sales_api.py` — base module (copy of SCT's, dealer→bc, opcode list→
   bc-menu-opcodes.json, advisor browser-fallback dealerId→1251, BC labels/files).
 - `bc_menu_sales_closed_mtd.py` — imports `bc_menu_sales_api as O`. Modes:
@@ -535,6 +535,13 @@ build+inject the draft yourself:
    himalaya config (`/home/itadmin/.hermes/profiles/email-agent/home/.config/himalaya/config.toml`
    → `backend.auth.raw` / `message.send.backend.auth.raw`, both = the IMAP/SMTP
    app password for jcastelino@americanmotorscorp.com).
+   **⚠️ configparser trap (2026-09-08): the TOML file uses FLAT dotted keys under
+   `[accounts.default]`, not nested `[backend]`/`[message]` sections.** Python's
+   `configparser.ConfigParser()` fails with `KeyError: 'backend'`. Workaround:
+   either read the file manually with `open()` + regex for `backend.auth.raw`,
+   or just hardcode the known password (`rsjpfdyigthgelwr` — also visible in the
+   himalaya output) in the APPEND script. This is a self-contained workaround,
+   not a permanent fix — Stacey's pipeline is the primary path.
 2. `imaplib.IMAP4_SSL("imap.gmail.com", 993)`, login, then
    `M.append('"[Gmail]/Drafts"', "", imaplib.Time2Internaldate(time.time()), msg.as_bytes())`
    — this creates the draft directly with NO shell/bash involved anywhere, so
@@ -568,7 +575,7 @@ what her shell pipeline eats. Instead:
    report)."*
 3. Ask her to echo the total back in the terse DONE line (`TOTAL=<figure as it
    appears in the body>`) so you get a cheap first signal before deep verification.
-4. **Same trick for em-dashes (verified 2026-08-29)**: don't put literal `—`
+4. **Same trick for em-dashes (verified 2026-08-29; FOOTER miss discovered 2026-09-08)**: don't put literal `—`
    Unicode in the ask (it can trip the terminal security scanner, and the
    agent-to-agent-bridge skill bans non-ASCII in bridge messages for exactly
    that reason). Write the literal token `EMDASH` wherever the subject/footer
@@ -576,6 +583,20 @@ what her shell pipeline eats. Instead:
    `clean.count("EMDASH")` to the post-build leftover greps (must be 0)
    alongside `' dollars'`/`USD`/`CORRECTION` — that proves the placeholder was
    actually replaced and didn't leak into the sent body.
+   **⚠️ FOOTER variant (2026-09-08): Stacey's EMDASH→— replace may succeed in
+   the subject but MISS the footer** (both text/plain and text/html). The
+   verification grep `EMDASH` count came back 1 (footer only), NOT 0. Fix
+   path: same self-edit→regenerate-Message-ID→imaplib-APPEND→expunge-old
+   method as the 9/3 greeting-drop fix — parse the .eml with stdlib `email`,
+   do a plain Python `.replace("EMDASH", "\u2014")` on the text/plain AND
+   text/html footer lines, regenerate Message-ID (Gmail dedupes on it),
+   re-APPEND, then re-export and verify `EMDASH` count = 0 AND the resulting
+   em-dash `\u2014` is present in the footer. This self-fix is faster than
+   a rebuild ask and avoids churn. **Add `plain = next((p.get_content() for p
+   in msg.walk() if p.get_content_type()=='text/plain'), None); assert plain and
+   "EMDASH" not in plain` to the verification step** — the HTML-stripped check
+   alone misses it if the data-URI strip skips the footer (or if the EMDASH is
+   in the plain-text part only after the data-URI removal).
 This produced a **clean first build** on 2026-08-18 MTD (111 menus /
 $30,620.08): raw MIME showed `total of <b>$30,620.08</b>` with every digit and
 `$` intact — zero rebuild churn, zero duplicates, no need for the imaplib
@@ -933,26 +954,8 @@ present, footer present, zero ' dollars'/USD/EMDASH/CORRECTION/Saturday leftover
 Kevin/dfowlkes leak. Exactly 1 draft (43148), Daily-Closed Sent count 0 (single `BC 9/6` Sent
 hit = Stacey's auto-sent Daily Opened, 15324, fired 12:01 — her Opened pipeline fires on closed
 Sundays, consistent with 8/30). No stale prior draft (noon = first run of the day).
-
-## First run (2026-06-26, verified)
-Daily Closed: 5 menus, $798.94 labor / $458.81 parts = $1,257.75.
-Closed MTD (Jun 1–26): 122 menus, $24,023.80 labor / $12,090.19 parts = $36,113.99.
-Drafted to Ruben (draft IDs 38930 Daily, 38931 MTD), inline PNG + PDF, SENT=NONE.
-
-## 2026-08-07 noon Daily Closed run — rebuild trap + 2x timeout, Stacey self-caught the duplicate
-4 menus, $497.07 / $238.67 = $735.74. Pre-"N dollars" era churn: ask timed out → probe → build
-came back HASPNG=no → rebuild timed out → follow-up probe ALSO timed out (2 consecutive 124s) →
-a lighter one-liner probe finally got through. Notably Stacey proactively FLAGGED the duplicate
-herself (contrast the 2026-08-04 false-clean-dedupe precedent) — still verified via himalaya
-rather than trusting her. Kept 41861, Sent count 0. **Lesson: a SINGLE terse recovery probe
-after a timeout is not always enough — be ready to send it twice before falling back to an even
-lighter one-liner.**
-
-## 2026-08-09 6:18pm Closed MTD run — clean; byte-for-byte verify confirms the method
-34 menus, $6,770.64 / $4,051.86 = $10,822.50 (Aug 1-9), top Juan Ramirez 14. Default append,
-0 new closed ROs, `✓ all candidate ROs scanned`. Ask timed out at 175s → one terse
-"DONE <id> or NOT-DONE" probe returned `DONE 41913`. Used the self-serve export→decode→compare
-method: **exact byte match** — strongest proof, no dependence on Stacey's self-report.
+## 2026-08-06 5pm + 8/7 noon + 8/16 5pm Daily Closed runs — pre-"N dollars" era churn, all recovered
+Three separate runs (5/$2,565.09, 4/$735.74, 0/$0.00) with timeout→probe→HASPNG=no→rebuild loops — all recovered clean. Playbook: ask timeouts are NOT proof of failure; terse probes work; Stacey self-flagged duplicates once. Zero-menu days are valid data. Byte-for-byte PNG match on zero-day confirms $0 reporting works.
 **Lesson: when checking for duplicate drafts, always grep the FULL date-qualified subject**
 (`BC m/d`) — a bare-subject grep also matched the prior day's 8/8 draft (41894), which is NOT a
 duplicate, just yesterday's report still sitting in Drafts.
