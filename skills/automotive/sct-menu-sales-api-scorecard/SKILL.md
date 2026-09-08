@@ -30,7 +30,7 @@ Proven 2026-06-15 (8 menus, labor $1,725.50 / parts $801.86 / total $2,527.36).
 
 ## Pipeline (4 steps + 2 verifications)
 
-All scripts use this interpreter: `/home/itadmin/.hermes/hermes-agent/venv/bin/python3.11`
+All scripts use this interpreter: `/home/itadmin/.hermes/hermes-agent/.venv/bin/python3.11` (note the `.venv` dot-prefix, NOT `venv`)
 Data dir (REAL path): `/home/itadmin/tekion-reports/data/`
 `<today>` = today's ISO date, e.g. `2026-06-15`.
 
