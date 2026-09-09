@@ -79,10 +79,14 @@ trigger a live scrape-and-wait — instead drop the data to a shared file on a
 schedule (e.g. ~/the-goods/data/*.json) and have the agent read the file.
 
 ## Pitfalls
-- **NO EMOJI in the message** (2026-07-04): emoji like ⚠️ carry Unicode variation selectors
+- **No emoji** (2026-07-04): emoji like ⚠️ carry Unicode variation selectors
   that trip the terminal security scanner (`tirith:variation_selector`) and block the command
   pending approval — fatal in headless cron runs. Use plain ASCII ("HARD STOP:", "WARNING:").
-- **NO EM DASHES or Unicode in email subjects** (2026-09-08): when handing a draft-email
+- **Stacey can drop leading digits from dollar amounts** (2026-09-09): when bridging
+  menu-sales numbers in natural-language prose, she silently drops leading digits
+  ($130.04→$30.04, $296.79→$96.79). List numbers in a structured block with "COPY-PASTE
+  these exact numbers — do not retype." See `tol-menu-sales-reports` skill trap #9.
+- **No em dashes or Unicode in email subjects** (2026-09-08): when handing a draft-email
   request to Stacey, em dashes (`—`, `\u2014`) and other non-ASCII characters in the subject
   line will NOT fail the bridge itself, but will crash Stacey's `imaplib` IMAP duplicate-draft
   search (`BAD Could not parse command`) because Python's imaplib uses 7-bit literals

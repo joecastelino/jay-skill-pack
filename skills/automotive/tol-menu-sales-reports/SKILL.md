@@ -291,6 +291,19 @@ told about the duplication (Jay drafts + Stacey auto-sends = Sean can get two ve
    Python's email.mime builders" — rebuilt clean in one shot (1 draft, png part
    yes, pdf yes, Sent 0).
 
+9. (9/09 noon) DOLLAR-CORRUPTION TRAP: when bridging menu-sales numbers to Stacey
+   in natural-language prose, she can silently DROP leading digits from every dollar
+   amount — $130.04 becomes $30.04, $296.79 becomes $96.79, $81.66 becomes $1.66,
+   $211.70 becomes $11.70, etc. The corruption is consistent (every number loses
+   its first digit or two), not random. The total becomes utterly wrong ($96.79
+   instead of $296.79). PREVENTION: in the initial hand-off message, list ALL
+   dollar amounts in a structured block (not prose) and add "COPY-PASTE these
+   exact numbers — do not retype them." A single bad draft with this corruption
+   requires: (1) trash the corrupted draft, (2) re-ask Stacey with the structured
+   number list + copy-paste instruction. Always include at least the total gross and
+   each RO's labor+parts in the "did these numbers make it?" verification check
+   right after the hand-off — never trust her self-reported totals.
+
 ## Pitfalls (hard-won 2026-06-29)
 1. **OPCODE_LIST trap.** The old `tol_menu_sales_api.py` shipped pointing at SCT's 316-list.
    All 212 TL menus ARE a subset of SCT's 316 (so it never MISSED a menu) but the looser
