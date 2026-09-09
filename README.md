@@ -2,7 +2,7 @@
 
 Skill library for **Jay**, the Tekion DMS specialist agent at American Motors Group — plus general-purpose agent skills. Built for the [Hermes Agent](https://github.com/NousResearch) skill system (`SKILL.md` + YAML frontmatter, with optional `references/`, `scripts/`, `templates/`).
 
-**214 skills** · auto-synced from the live agent · last sync: 2026-09-08 20:15
+**214 skills** · auto-synced from the live agent · last sync: 2026-09-08 20:30
 
 ## Install into another agent
 
@@ -19,7 +19,7 @@ Secrets (passwords, app passwords, tokens) are redacted with `<PLACEHOLDER>` mar
 |---|-------|----------|-----:|-----------|-------------|
 | 1 | [`jay-brain-and-skill-index`](skills/automotive/jay-brain-and-skill-index/SKILL.md) | automotive | 268 | 2026-09-08 | Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is "command not found", w... |
 | 2 | [`persistent-browser-server`](skills/automotive/persistent-browser-server/SKILL.md) | automotive | 166 | 2026-09-08 | Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the "browser blanks to about... |
-| 3 | [`agent-to-agent-bridge`](skills/automotive/agent-to-agent-bridge/SKILL.md) | automotive | 110 | 2026-09-08 | Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine. |
+| 3 | [`agent-to-agent-bridge`](skills/automotive/agent-to-agent-bridge/SKILL.md) | automotive | 111 | 2026-09-08 | Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine. |
 | 4 | [`tekion-openapi-repair-orders`](skills/automotive/tekion-openapi-repair-orders/SKILL.md) | automotive | 93 | 2026-09-03 | Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI — no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape A... |
 | 5 | [`tekion-sitemap`](skills/automotive/tekion-sitemap/SKILL.md) | automotive | 85 | 2026-09-03 | Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straig... |
 | 6 | [`tol-menu-sales-reports`](skills/automotive/tol-menu-sales-reports/SKILL.md) | automotive | 59 | 2026-09-08 | Run the Toyota of Lancaster (TOL/TL, dealer 1092) Menu Sales scorecards — Daily Opened and Closed Month-To-Date — from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Sean Preston (spreston@tol-av.com). The Toy... |

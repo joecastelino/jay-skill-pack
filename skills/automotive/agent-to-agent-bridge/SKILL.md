@@ -82,6 +82,15 @@ schedule (e.g. ~/the-goods/data/*.json) and have the agent read the file.
 - **NO EMOJI in the message** (2026-07-04): emoji like ⚠️ carry Unicode variation selectors
   that trip the terminal security scanner (`tirith:variation_selector`) and block the command
   pending approval — fatal in headless cron runs. Use plain ASCII ("HARD STOP:", "WARNING:").
+- **NO EM DASHES or Unicode in email subjects** (2026-09-08): when handing a draft-email
+  request to Stacey, em dashes (`—`, `\u2014`) and other non-ASCII characters in the subject
+  line will NOT fail the bridge itself, but will crash Stacey's `imaplib` IMAP duplicate-draft
+  search (`BAD Could not parse command`) because Python's imaplib uses 7-bit literals
+  internally and Unicode in search criteria breaks it. The entire draft operation dies before
+  the message is appended to Drafts. Fix: use ONLY plain ASCII hyphens (`-`, U+002D) in
+  subjects — no em dashes, en dashes, curly quotes, or any Unicode. Verify with `grep
+  -Pn '[^\x00-\x7F]' <<< "$SUBJECT"` before handing off. Stacey's source scripts may also
+  need patching (she hardcodes subject lines with em dashes in her own Python files).
 - **False-positive "'&' backgrounding" block on long multi-line messages** (2026-08-09): calling
   the top-level `terminal()` tool with `~/bin/ask-agent stacey "<long multi-line quoted message>"`
   can get rejected with `Foreground command uses '&' backgrounding. Use terminal(background=true)`
