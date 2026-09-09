@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-08T20:30:24",
+ "generated": "2026-09-08T20:45:26",
  "skill_count": 214,
  "skills": [
   {
@@ -23,7 +23,7 @@
    "path": "automotive/agent-to-agent-bridge",
    "category": "automotive",
    "description": "Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine.",
-   "times_used": 111,
+   "times_used": 112,
    "last_used": "2026-09-08"
   },
   {
@@ -47,7 +47,7 @@
    "path": "automotive/tol-menu-sales-reports",
    "category": "automotive",
    "description": "Run the Toyota of Lancaster (TOL/TL, dealer 1092) Menu Sales scorecards \u2014 Daily Opened and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Sean Preston (spreston@tol-av.com). The Toyota-store sibling of the SCT/Kevin (sct-menu-sales-api-scorecard) and BC/Ruben (bc-menu-sales-reports) pipelines. Use for any \"TOL/TL/Toyota of Lancaster menu report\" or \"Sean Preston report\" request.",
-   "times_used": 59,
+   "times_used": 60,
    "last_used": "2026-09-08"
   },
   {
@@ -267,6 +267,14 @@
    "last_used": "2026-08-31"
   },
   {
+   "name": "jay-gmail-draft-verification",
+   "path": "automotive/jay-gmail-draft-verification",
+   "category": "automotive",
+   "description": "Independently verify a Gmail draft/send that Stacey (email-agent) reports she created \u2014 confirm it's actually in Drafts/Sent with correct recipients, body, and attachments, without trusting her self-report alone. Use whenever Joe asks to \"chase\" or double-check an email Jay routed through Stacey, or when Jay's own Gmail-dependent flow (himalaya/Google API) throws auth errors.",
+   "times_used": 14,
+   "last_used": "2026-09-08"
+  },
+  {
    "name": "sct-menu-sales-closed-mtd-scorecard",
    "path": "automotive/sct-menu-sales-closed-mtd-scorecard",
    "category": "automotive",
@@ -297,14 +305,6 @@
    "description": "Diagnose why an AMG agent (Walter II, Don, Ralph, Stacey, etc.) is dead/unresponsive on an LLM-billing error, and switch it from OpenRouter to the ChatGPT-Team Codex OAuth provider. Use when an agent boots but can't reply, an ask-agent ping returns an HTTP 402 (out of credits) or 400 (unsupported model), or OpenRouter credits are exhausted. Covers the read_file API-key-masking landmine and how to discover the account's valid Codex model names.",
    "times_used": 13,
    "last_used": "2026-09-02"
-  },
-  {
-   "name": "jay-gmail-draft-verification",
-   "path": "automotive/jay-gmail-draft-verification",
-   "category": "automotive",
-   "description": "Independently verify a Gmail draft/send that Stacey (email-agent) reports she created \u2014 confirm it's actually in Drafts/Sent with correct recipients, body, and attachments, without trusting her self-report alone. Use whenever Joe asks to \"chase\" or double-check an email Jay routed through Stacey, or when Jay's own Gmail-dependent flow (himalaya/Google API) throws auth errors.",
-   "times_used": 13,
-   "last_used": "2026-09-08"
   },
   {
    "name": "tekion-clock-time-by-opcode",
