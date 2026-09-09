@@ -1049,6 +1049,24 @@ episode. Full daily blow-by-blow entries removed from this file for size;
 recoverable via session_search if a similar outage recurs and step-by-step
 detail is needed.]
 
+## Environment prerequisites (one-time — must exist before first run)
+
+The renderer (`render_scorecard.py`) imports `playwright.sync_api` and launches a
+headless Chromium to render the scorecard HTML → PNG/PDF. Both the Python package
+AND the browser binary must be present:
+
+```bash
+<py> -m pip install playwright
+<py> -m playwright install chromium
+```
+
+where `<py>` = `/home/itadmin/.hermes/hermes-agent/.venv/bin/python3.11`.
+
+If `playwright` is missing, the scraper succeeds but the render step fails with
+`ModuleNotFoundError: No module named 'playwright'`. If only the Python package
+is installed but `chromium` isn't, the render fails at `playwright.sync_api`
+launch. Both commands are idempotent — safe to re-run.
+
 ## Path / interpreter notes
 - `~` in terminal resolves to `/home/itadmin/.hermes/profiles/jay/home/`;
   the scripts live at REAL `/home/itadmin/tekion-reports/`.
