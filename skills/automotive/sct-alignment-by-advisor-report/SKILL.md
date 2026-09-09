@@ -1208,11 +1208,10 @@ via "watcher started" log line + pgrep. Stacey read-only enumeration (Drafts+Sen
 'SCT Alignment' substring, 8 days) on 9/5: 5 August drafts still in Drafts (8/28-8/31
 nightlies + Final CORRECTED), 3 Sent = the 9/1 morning sends of the August finals —
 **zero September reports exist; 9/1-9/5 all blocked.** This is now a 5-consecutive-day
-outage tracking the August 10-day arc — every blocked-night report should prominently
-recommend Joe open the formal Tekion support ticket for the SCT DEALER_QUOTA bucket.
-Also note: a `sleep` inside execute_code before a pgrep can hang the whole script to
-its 300s timeout — do the post-launch liveness check as a plain foreground terminal
-call a few seconds after launch instead.
+outage tracking the August 10-day arc. **Confirmed continuing 9/6-9/8 (days 6-8, 429).**
+Venv upgrade 9/6 (3.11→3.12) silently killed 9/6+9/7 self-heal watchers (PY path dead).
+Fixed: use `python3` not `python3.11`. See "SELF-HEAL PY PATH TRAP" in Pitfalls.
+8 consecutive days blocked — recommend Tekion support ticket.
 
 ## BUG FOUND + FIXED 2026-08-31 — ALIGN00**R**BA vs ALIGN00**B**RA
 `ALIGN_OPC` had `ALIGN00BRA`, but the opcode SCT actually uses is **`ALIGN00RBA`** (R and
@@ -1233,3 +1232,19 @@ hardcoded literal — a transposed character produces a silent zero, not an erro
   scan dies on a string error body.
 - chip_total must equal totals.total. failed[] must be empty (or re-run — it resumes).
 - DRAFT-ONLY means DRAFT-ONLY: lock Stacey's send path per the trap above.
+- **SELF-HEAL PY PATH TRAP (hit 2026-09-08, killed 9/6 and 9/7 watchers silently):** all dated
+  self-heal `.sh` scripts hardcode `PY=/home/itadmin/.hermes/hermes-agent/venv/bin/python3.11`,
+  which breaks when the venv is upgraded to a different Python minor version (3.11→3.12 on
+  2026-09-06). The watchers' ops-probe line produces NO output (just an empty log line after the
+  timestamp), and the scan never runs even when quota recovers — you get complete silence, not
+  an error. **Fix:** always use `PY=/home/itadmin/.hermes/hermes-agent/venv/bin/python3` (the
+  `python3` symlink is version-stable) when creating new dated self-heal scripts. When inheriting
+  from a prior night's copy via `sed` date-swap, also patch the PY line. Check: `ls
+  /home/itadmin/.hermes/hermes-agent/venv/bin/python3*` — if the hardcoded minor version doesn't
+  exist, every dated self-heal from every prior night is silently dead. Affected all copies
+  back to 7/07 since they were all spawned from the same template with `python3.11`.
+- **DETECTING A DEAD SELF-HEAL (2026-09-08):** a healthy watcher logs `ops-probe: 429` (or
+  200) on the same line as the timestamp. A dead one logs just the timestamp with an empty
+  probe value — e.g. `2026-09-08 19:08:03 ops-probe: ` with nothing after the colon. That
+  means the Python one-liner failed silently (PY path broken, or the module/syntax errored).
+  If you see empty ops-probe values, kill the watcher, fix the PY path, and re-arm.
