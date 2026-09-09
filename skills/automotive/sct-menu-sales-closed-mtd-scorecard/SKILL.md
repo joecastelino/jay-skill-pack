@@ -24,7 +24,7 @@ shared). This one totals CLOSED/INVOICED ROs for the current month
 month-to-date, using an incremental per-month master cache so the whole month
 is never re-scanned in one run (that exhausts the OpenAPI rate limit).
 
-Interpreter: `/home/itadmin/.hermes/hermes-agent/venv/bin/python3.11`
+Interpreter: `/home/itadmin/.hermes/hermes-agent/venv/bin/python3`
 Work dir: `/home/itadmin/tekion-reports`
 
 ## Files
@@ -70,7 +70,7 @@ Work dir: `/home/itadmin/tekion-reports`
    bad = [a for a in adv if str(a).isdigit() or re.fullmatch(r'[0-9a-fA-F\-]{6,}', str(a))]
    print(bad, adv.most_common())
    ```
-2. `cd /home/itadmin/tekion-reports && python3.11 sct_menu_sales_closed_mtd.py`
+2. `cd /home/itadmin/tekion-reports && python3 sct_menu_sales_closed_mtd.py`
    — scans **today only** (~100-150 closed ROs), prefilters to ROs carrying a
    TEK menu opcode tag (free on the search response, no fan-out needed), then
    fans out jobs/operations calls only for those candidates, merges into the
@@ -79,7 +79,7 @@ Work dir: `/home/itadmin/tekion-reports`
      backfill and will burn the rate limit.
    - Watch stderr `[sct-api]` lines for `429` / `Limit exhausted`. If hit, STOP,
      wait 8 min, retry ONCE.
-3. Render: `python3.11 render_scorecard.py data/sct-menu-sales-closed-<today>.json`
+3. Render: `python3 render_scorecard.py data/sct-menu-sales-closed-<today>.json`
    → PNG + PDF.
    ⚠️ **Output lands in `data/`, NOT the work-dir root.** The task spec implies
    `/home/itadmin/tekion-reports/SCT-Menu-Sales-Closed-Scorecard-<today>.pdf`,
@@ -306,6 +306,16 @@ Work dir: `/home/itadmin/tekion-reports`
      duplicate is far better than a recall attempt. Note it in the summary.
 
 ## Pitfall: month rollover day (1st of month) + outage recurrence
+
+**Verified 2026-09-08 (outage day 8):** still active — same signature (`/jobs`
+200, `/operations` 429 DEALER_QUOTA on every candidate, unchanged after the
+8-min retry). Day-8 unpriceable candidates: 583381, 583251, 583141, 583043,
+583037, 582970, 582918, 582822, 582735, 582569 (10 of 257 closed ROs).
+Cumulative Sept loss: **41 menu-candidate ROs** (Sep 1=2, 2=8, 3=10, 4=4,
+5=3, 6=4, 7=0, 8=10). Body-file + one short send ask again worked first
+try (`OK BYTES=109676`, byte-exact vs `ls -la`; Sent 18:17; MIME=REAL
+filename=SCT-Menu-Sales-Closed-Scorecard-2026-09-08.pdf). Two Sent copies
+(scan + retry both sent). August comparator: 158 menus / $71,171.84.
 
 **Verified 2026-09-05 (outage day 5):** still active, same signature (`/jobs`
 200, `/operations` 429 DEALER_QUOTA on all candidates, unchanged after the
