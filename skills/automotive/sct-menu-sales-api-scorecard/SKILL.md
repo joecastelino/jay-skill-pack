@@ -1081,12 +1081,14 @@ detail is needed.]
 
 ## Environment prerequisites (one-time — must exist before first run)
 
-The renderer (`render_scorecard.py`) imports `playwright.sync_api` and launches a
-headless Chromium to render the scorecard HTML → PNG/PDF. Both the Python package
-AND the browser binary must be present:
+The scraper (`sct_menu_sales_api.py`) imports `requests`, `pandas` (for JSON→CSV
+conversions and data manipulation), and stdlib modules. The renderer
+(`render_scorecard.py`) imports `playwright.sync_api` and launches a headless
+Chromium to render the scorecard HTML → PNG/PDF. All three packages AND the
+browser binary must be present:
 
 ```bash
-<py> -m pip install playwright
+<py> -m pip install requests pandas playwright
 <py> -m playwright install chromium
 ```
 
