@@ -39,7 +39,7 @@ BT-specific.
   Don't confuse with `bc-…` (Blackstone Chevy, dealer 1251).
 
 ## Files (in /home/itadmin/tekion-reports/, prefix `bt_`)
-Interpreter: `/home/itadmin/.hermes/hermes-agent/venv/bin/python3.11`
+Interpreter: `/home/itadmin/.hermes/hermes-agent/venv/bin/python3.12`
 - `bt_menu_sales_api.py` — OPENED (default run = today by creationTime) →
   `data/bt-menu-sales-opened-<date>.json` (+ `-api-` companion with
   `ro_count_scanned`).
