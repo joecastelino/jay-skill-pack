@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-09T17:45:04",
+ "generated": "2026-09-09T18:00:36",
  "skill_count": 214,
  "skills": [
   {
@@ -51,20 +51,20 @@
    "last_used": "2026-09-09"
   },
   {
+   "name": "sct-menu-sales-api-scorecard",
+   "path": "automotive/sct-menu-sales-api-scorecard",
+   "category": "automotive",
+   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters to the frozen 316 TEK* maintenance opcodes, resolves advisor names via the persistent browser session on :9223, renders a light-format PNG+PDF scorecard, vision-verifies, and emails. Use for the daily Menu Sales Opened Performance Report cron.",
+   "times_used": 50,
+   "last_used": "2026-09-09"
+  },
+  {
    "name": "bt-tony-menu-rebuild",
    "path": "automotive/bt-tony-menu-rebuild",
    "category": "automotive",
    "description": "The Blackstone Toyota (BT, dealer 1249) service-menu rebuild project for Tony Garcia (Service Manager). Tony wants menus restructured into Factory Recs / Factory Recs Plus with 25 ordered add-on services. Contains the FULL locked spec, Joe's approved decisions, the opcode audit results, and the build plan. Load for ANY \"BT menu\", \"Tony menu\", \"Factory Recs\", or Blackstone Toyota service menu work. STATUS 2026-07-21: full 5K\u2013200K range (5K-step) built, PUBLISHED, Tony-validated; Phase 7 generic Transmission Fluid placeholders DONE; Phase 8 Tony's BG MENU REVAMP 2026 part-match batch DONE + quote-verified (baseline tony-partmatch-baseline-20260721.json). Remaining: x2.5K half-step menus + EV rows only.",
    "times_used": 49,
    "last_used": "2026-08-18"
-  },
-  {
-   "name": "sct-menu-sales-api-scorecard",
-   "path": "automotive/sct-menu-sales-api-scorecard",
-   "category": "automotive",
-   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters to the frozen 316 TEK* maintenance opcodes, resolves advisor names via the persistent browser session on :9223, renders a light-format PNG+PDF scorecard, vision-verifies, and emails. Use for the daily Menu Sales Opened Performance Report cron.",
-   "times_used": 49,
-   "last_used": "2026-09-08"
   },
   {
    "name": "tekion-autonomous-login",
@@ -747,6 +747,14 @@
    "last_used": "2026-07-14"
   },
   {
+   "name": "jay-skill-pack-sync",
+   "path": "automotive/jay-skill-pack-sync",
+   "category": "automotive",
+   "description": "Maintain the PUBLIC skill-pack repo github.com/joecastelino/jay-skill-pack \u2014 the auto-synced, secret-redacted mirror of Jay's entire skill library, README sorted by usage count. Use when Joe asks about the skill pack repo, when a sync fails, when a new secret needs redaction, or when installing Jay's skills into another agent.",
+   "times_used": 2,
+   "last_used": "2026-09-09"
+  },
+  {
    "name": "sct-menu-sales-by-advisor-category-report",
    "path": "automotive/sct-menu-sales-by-advisor-category-report",
    "category": "automotive",
@@ -905,14 +913,6 @@
    "description": "Diagnose and fix an AMG agent (Walter II/base or any profile) that is restarting/flaky with systemd \"Failed with result 'timeout'\" + status=9/KILL in the journal. Root cause is a hung LLM turn (e.g. gpt-5.5/Codex stall) holding an in-flight 300s API call that blocks clean shutdown past the 60s TimeoutStopSec, so systemd SIGKILLs the gateway and loops. This is NOT a crash, NOT out-of-credits, and the OpenRouter fallback can't save it. Covers how to tell this apart from a billing failure, the exact systemd-log signature, and the per-agent (and fleet-wide) drop-in fix.",
    "times_used": 1,
    "last_used": "2026-06-29"
-  },
-  {
-   "name": "jay-skill-pack-sync",
-   "path": "automotive/jay-skill-pack-sync",
-   "category": "automotive",
-   "description": "Maintain the PUBLIC skill-pack repo github.com/joecastelino/jay-skill-pack \u2014 the auto-synced, secret-redacted mirror of Jay's entire skill library, README sorted by usage count. Use when Joe asks about the skill pack repo, when a sync fails, when a new secret needs redaction, or when installing Jay's skills into another agent.",
-   "times_used": 1,
-   "last_used": "2026-07-23"
   },
   {
    "name": "slack-store-thread-cron-retarget",
