@@ -111,6 +111,16 @@ timeout 150 ~/bin/ask-agent walter "post-fix check — reply one line + which mo
 Clean one-line reply = done.
 
 ## Pitfalls / lessons (learned the hard way)
+
+### WSL SESSION RESTART RACE CONDITION — distinct root cause (2026-09-10)
+If the journal shows **all 11 gateways stopped at the SAME timestamp** (e.g. 07:16:48) followed
+by a WSL session boot (`Queued start job for default target default.target`), this is NOT the
+hung-LLM SIGKILL loop — it's a **WSL restart race**. All gateways restart simultaneously with
+`--replace` and kill each other's stale PIDs in a cascade. Tell: processes show `code=killed,
+status=15/TERM` (external SIGTERM), NOT `status=1/SUCCESS` (self-exit), and there's no ~60s
+gap between Stopping and the kill. Self-heals after 6-8min when one gateway gets stable ownership.
+Potential fix: stagger startups with random sleep or an ordered launch script.
+§
 - **Don't jump to "billing/dead agent."** A short ping succeeding while long tasks die is the
   classic tell of a *timeout* problem, not credits. The provider-switch skill's "usually
   billing" rule is wrong for this failure mode.
