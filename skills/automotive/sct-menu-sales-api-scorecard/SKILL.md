@@ -632,6 +632,23 @@ PITFALLS (all hit on 2026-06-15):
   message ID. Telling her "send draft <ID>" can make her grab the wrong item.
   → ALWAYS disambiguate by SUBJECT, e.g. "send the 'Menu Sales … SCT 6/15/26'
     draft (the 6/15 one, NOT 6/14)", not just the bare ID.
+- **DRAFT-ID READ FROM INBOX NOT DRAFTS (hit 2026-09-09).** When you ask "send
+  draft <ID>", Stacey may FIRST read the ID against INBOX (returning an
+  unrelated message, e.g. a Chris Wiese email) before correcting herself and
+  finding the right item in Drafts. This is just a slow self-correction, not a
+  wrong-send — but it adds a round-trip and can make you think the draft is
+  gone/corrupt. Trust the eventual "found the correct draft" message; don't
+  panic-rebuild on the first confusing reply. Same root as the bare-ID trap:
+  give her the SUBJECT alongside the ID every time.
+- **"NODRAFT" after a timeout = draft was GENUINELY NOT saved (hit 2026-09-09).**
+  A `save as draft` ask can time out (exit 124) AND leave NO draft — the
+  follow-up terse verify returns `NODRAFT`. Unlike the send-timeout case (where
+  work often DID proceed), a DRAFT-creation timeout on this run was a true
+  non-completion. Recovery: re-issue the FULL build spec in one clean ask and
+  confirm she replies with a bare draft ID. Do NOT assume a timed-out draft-save
+  produced anything. (Contrast with the SEND-timeout case below, where the send
+  often DID land — the two timeouts have OPPOSITE default assumptions: send →
+  assume it may have gone; draft-save → assume it didn't.)
 - Her raw himalaya draft-send is unreliable; she falls back to "template send".
 - Don't accept a Sent confirmation whose date/subject is YESTERDAY's report —
   verify the timestamp/subject matches TODAY before declaring success.
@@ -1002,6 +1019,19 @@ selfheal watchers (PIDs 1525120/1525148 + sleep child) still burning the shared
 dealer quota; cleared /tmp/sct-align-selfheal-20260905.lock. Day 6 continuous,
 11 cron runs lost — Tekion support ticket / dealer quota review is CRITICAL;
 quota shows no sign of self-resetting within the 30-day budget window.
+9/7: no cron file exists (likely no run on Sunday). 9/8 noon lost (DAY 8):
+search/jobs 200, /operations 429, 0 flagged files. 9/9 noon+5PM lost (DAY 9):
+7 TEK candidates across both runs (583587/583559/583548/583541/583527/583519/
+583498 from the 5 PM probe, same set as noon), 168 ROs in window. Substitute
+outage-notification email sent to Joe at 5:18 PM PDT — verified TO correct,
+correct LKG figures (8/31: 10 menus, $4,872.06 total), 0 leftover drafts.
+Poignant: 9/7 file genuinely missing (likely Sunday, no cron) vs 9/1-9/6 +
+9/8-9/9 flagged false-zero files — both types count as missed days in the
+closed-MTD positional-append recovery backlog, but only the false-zero files
+exist on disk and would be appendable as zeros if not recognized. When
+counting the post-outage backlog: check `ls data/sct-menu-sales-api-2026-09-*.json`
+— any calendar-day gap since 9/1 needs a positional closed-append. Genuinely
+missing files (no cron ran) should produce clean 0-menu appends for those dates.
 
 ### The false-zero trap bit a SECOND pipeline — check yours for it
 `advisor_closed_gross.py` had the identical bug class: its `get()` helper swallowed
