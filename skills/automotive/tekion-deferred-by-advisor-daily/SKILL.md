@@ -22,6 +22,67 @@ Headers from `/tmp/tekion_rec_headers.json` (see `tekion-declined-deferred-servi
 passive XHR-hook re-capture). Store switch = swap `dealerId` + `tek-siteId: -1_<id>` only.
 $ are **CENTS** → /100. Offset pagination is fine at day granularity (<10K rows).
 
+### STEP ZERO-M1 (NEW 2026-09-10): HEADER FILE COMPLETELY MISSING — build from scratch
+`deferred_by_advisor_daily.py` hardcodes `H = json.load(open("/tmp/tekion_rec_headers.json"))`
+at module level (line 16) — if the file doesn't exist, the script fails instantly with
+`FileNotFoundError` before any API call. The file can disappear across reboots/cleanups; build
+it from the canonical session file + known static values. **CRITICAL: the minimal header set
+(STEP ZERO-0's 5 keys) causes HTTP 500 from the recommendation API, not 401.** The API silently
+500s when `applicationId`/`clientId`/`original-tenantid`/`productIds`/`program`/`subApplicationId`
+are missing — these are NOT optional. Full working 16-key template:
+
+```python
+import json, os
+sess = json.load(open("/home/itadmin/caliber-ops/scripts/.tekion-session.json"))
+tok = sess["t_token"]       # 536 chars, unexpired for ~29 days — never share truncated
+
+headers = {
+    "Accept": "application/json, text/plain, */*",
+    "Content-Type": "application/json",
+    "applicationId": "ARC_NA",
+    "clientId": "web",
+    "dealerId": "1251",                              # script overwrites per store anyway
+    "locale": "en_US",
+    "original-tenantid": "americanmotorscorporation",
+    "original-userid": "8cc203af-a87e-4fd7-8090-745a0ffa2339",
+    "productIds": "ARC",
+    "program": "DEFAULT",
+    "roleId": "656e21e547e83861236c5e0c",
+    "subApplicationId": "US",
+    "tek-siteId": "-1_1251",                         # script overwrites per store anyway
+    "tekion-api-token": tok,
+    "tenantname": "americanmotorscorporation",
+    "userId": "8cc203af-a87e-4fd7-8090-745a0ffa2339",
+}
+json.dump(headers, open("/tmp/tekion_rec_headers.json", "w"), indent=1)
+
+# Quick probe to confirm headers work BEFORE the full pull (rows:5, count=0 on a new
+# day is normal — the index lags; a non-error response means headers are valid):
+import urllib.request
+hh = dict(headers)
+URL = "https://app.tekioncloud.com/api/service-module/u/reporting/recommendation/search"
+body = {"reportName":"RO_RECOMMENDATIONS","reportGroup":"RECOMMENDATION",
+        "sort":[{"field":"roClosedTime","order":"DESC"}],
+        "filters":[
+            {"operator":"BTW","values":[<lo_ms>,<hi_ms>],"type":"roClosedTime",
+             "key":"roClosedTime","field":"roClosedTime"},
+            {"field":"status","values":["DEFERRED"],"operator":"IN"}],
+        "pageInfo":{"start":0,"rows":5},"nextPageToken":None}
+req = urllib.request.Request(URL, data=json.dumps(body).encode(), headers=hh, method="POST")
+out = json.loads(urllib.request.urlopen(req, timeout=30).read())
+print("PROBE OK — count:", (out.get("data") or {}).get("reportData", {}).get("count"))
+```
+Probe returning count (even 0) = headers are valid. 500/401 = headers are wrong.
+Then re-run the pull normally. Total recovery from missing file: ~30s, no browser needed.
+
+**Reference sources for the header keys** (all verified alive on disk):
+`/home/itadmin/tekion-reports/opcode_pull.py` lines 60-71 (JS template used in scrape_js),
+`/home/itadmin/tekion-reports/lib/jb_browser.py` lines 213-216 (Python dict form),
+`/home/itadmin/tekion-reports/bc_menu_sales_api.py` lines 126-130 (hardcoded dict form).
+RoleId `656e21e547e83861236c5e0c` is the System Administrator role (NOT `656e1fb247e83861236c5dfa`
+which is the BC-specific SysAdmin and also works but is scoped narrower). The user-facing
+role `656e21e547e83861236c5e0c` is what the browser sends in practice.
+
 ### STEP ZERO-0: TRY THIS FIRST — token from the canonical session file (verified 2026-08-26)
 **Cheapest and most reliable 401 fix. Beats STEP ZERO-A because it does not require `:9223` to be
 logged in at all.** `login.py` maintains the canonical session file, and its `t_token` is a full
@@ -58,7 +119,7 @@ and `localStorage.t_token.length` returned **0**, with `t_apmAutnToken` also emp
 `persist:primary` (71 B, `LoginReducer:{}`) left. There is no token to read, so ZERO-A and the
 ZERO-B hook are both dead ends. Do NOT start an OTP re-login for this report — the session file
 was valid the whole time (token exp ~29 days out). Total recovery via ZERO-0: ~30s, zero OTP.
-Order of attack: **ZERO-0 → ZERO-A → ZERO-B (hook)**.
+Order of attack: **ZERO-M1 (file missing?) → ZERO-0 (stale token) → ZERO-A (live localStorage) → ZERO-B (XHR hook)**.
 
 ### STEP ZERO-A: FASTEST 401 fix — read the token straight out of localStorage (verified 2026-08-25)
 **Skip the XHR hook entirely.** The only header that actually expires is `tekion-api-token`;
@@ -113,7 +174,7 @@ it is NOT a broken script. Re-capture headers BEFORE debugging anything else:
 ## CRITICAL: the index lags ~1 day
 The deferred-services index rebuilds nightly (~11:45 PM). **Today always returns 0 at all 7 stores**
 (verified 2026-08-18: today=0 everywhere, yesterday=SCT 97 / BC 46 / BT 289 / SV 19 / TL 125 / AR 4 / VC 28).
-Also **Sundays are legitimately 0** (stores closed) — a 0 day is not a bug.
+Also **Sundays (and holidays like Labor Day) are legitimately 0** (stores closed) — a 0 day is not a bug.
 So "today's" report = run for **yesterday**; any daily cron must be scheduled for the morning AFTER.
 Filtering on `createdTime`/`modifiedTime`/`lastDeferredTime` does NOT dodge the lag — same 0.
 
@@ -139,6 +200,26 @@ there is no top-level `personas`/`roles` key. After writing the cache, **re-run 
 the renderer) — the name is baked in at pull time.
 Note some ids resolve to non-advisor personas (e.g. BC `8c0d2da8…` = Dale Alexander, INVENTORY_MANAGER)
 — they still carry deferred lines as RO primary advisor; keep them but don't assume they're writers.
+
+## Reference run (BC / 1251, Wed 9/9/2026)
+21 declined lines · 11 ROs · $11,884.44 · 3 Critical. Houa Moua #1 $5,361.07 (5 lines / 3 ROs —
+driven by RO 102517 SIERRA AUTO SALES "tear down" $4,980.31, a wholesale account per the
+INTERNAL/COMM regex — worth noting the top line is not retail), Erik Mercado $3,740.24 (6 lines /
+2 ROs), **Valentine Nolasco $1,445.55 (NEW advisor id `0f1fc7fa-1f7f-469f-9434-6bdd10c05791`,
+already in bc-advisor-name-cache.json)**, Dimetri Reynoso $745.55, Michael Reyes $437.67,
+Humberto Dominguez $154.36, Juan Ramirez $0.00 (tpms, unpriced). No non-writer personas today
+(Dale Alexander absent). Draft UID **43177**. HTML 1,660 B. PDF 8 pages.
+Trailing-7: Thu 9/3 $15,636.09 → Fri 9/4 **$33,260.73 peak (51 lines)** → Sat 9/5 $9,746.03 →
+Sun 9/6 $0 → **Mon 9/7 $0 (Labor Day, store closed — a 0 weekday is legitimate on a holiday,
+same as Sunday)** → Tue 9/8 $12,804.38 → Wed 9/9 $11,884.44.
+**Recovery path this run: `/tmp/tekion_rec_headers.json` was entirely MISSING** (not stale) —
+script died with `FileNotFoundError` at import. Rebuilt from scratch per STEP ZERO-M1. Note the
+first rebuild attempt used only the 5 keys from STEP ZERO-0 and got `HTTP Error 500` x5 (NOT 401)
+— the tell that mandatory headers are absent. The 16-key template fixed it on the first try.
+**`:9223` was DOWN entirely** (`Connection refused`) — irrelevant to this report, the session
+file is sufficient; don't waste time trying to start the browser server.
+Holiday 0-days: Mon 9/7/Labor Day joined Sun 9/6 as a legitimate 0 — extend the "Sunday = 0,
+not a bug" rule to any store-closed holiday.
 
 ## Reference run (BC / 1251, Mon 8/31/2026) — RECORD DAY
 **90 declined lines · 45 ROs · $101,725.62 · 27 Critical** — ~2.8x the prior trailing-7 peak
