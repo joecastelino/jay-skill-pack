@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-10T10:15:07",
+ "generated": "2026-09-10T10:30:45",
  "skill_count": 214,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 167,
-   "last_used": "2026-09-09"
+   "times_used": 168,
+   "last_used": "2026-09-10"
   },
   {
    "name": "agent-to-agent-bridge",
@@ -31,16 +31,16 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 93,
-   "last_used": "2026-09-03"
+   "times_used": 94,
+   "last_used": "2026-09-10"
   },
   {
    "name": "tekion-sitemap",
    "path": "automotive/tekion-sitemap",
    "category": "automotive",
    "description": "Master navigation site map for the Tekion DMS. Direct URL/nav reference for every workflow (Service/RO, Parts & Inventory, Source Code, Purchase Order, Vehicle Inventory, Reports, Accounting, Admin) so you jump straight to a screen via the persistent browser (:9223) instead of hunting menus. Load this FIRST for any browser-based Tekion task.",
-   "times_used": 85,
-   "last_used": "2026-09-03"
+   "times_used": 86,
+   "last_used": "2026-09-10"
   },
   {
    "name": "tol-menu-sales-reports",
@@ -151,8 +151,8 @@
    "path": "automotive/tekion-opcode-api",
    "category": "automotive",
    "description": "Read, audit, and VERIFY Tekion opcode override rows directly from the backend REST API using the session's own auth token. This is the AUTHORITATIVE source of truth \u2014 the override UI grid frequently renders wrong/empty even when rows exist in the backend. Use to get the true committed row count before a batch, detect incomplete (part-less) rows, and confirm persistence after saving.",
-   "times_used": 30,
-   "last_used": "2026-09-02"
+   "times_used": 31,
+   "last_used": "2026-09-10"
   },
   {
    "name": "tekion-ro-close-blocked-triage",
@@ -187,20 +187,20 @@
    "last_used": "2026-09-03"
   },
   {
+   "name": "tekion-opcode-overrides",
+   "path": "automotive/tekion-opcode-overrides",
+   "category": "automotive",
+   "description": "Add vehicle/part override rows to a Tekion opcode (Overrides tab) using the verified browser-tool cascading react-select method. This is the batch workflow used for cabin-filter part overrides (RACF etc.) \u2014 Make/Model/Year/ Trim/Part per row, driven by the __buildRow() helper toolkit. Covers the real-click trim rule, the Save Changes confirmation modal, and mandatory reload+API verification. The most complex Tekion workflow we run.",
+   "times_used": 25,
+   "last_used": "2026-09-10"
+  },
+  {
    "name": "sct-backcounter-ro-sales-countsheet",
    "path": "automotive/sct-backcounter-ro-sales-countsheet",
    "category": "automotive",
    "description": "Build Joe's daily SCT Back Counter Bin Check count sheet \u2014 cross-reference a day's RO part sales (Tekion OpenAPI) against parts that stock in a back-counter bin (5000 section) and render a Tekion-bin-check-style sheet with Primary Bin and Back Counter Bin write-in Count boxes, emailed via Stacey. Use when Joe asks to \"verify counts daily\", \"which back counter parts sold today\", or re-run the back-counter check for a date. KEY DESIGN INSIGHT (Joe corrected me 2026-07-04): a bin-snapshot DIFF can NEVER catch a back-counter pull \u2014 Tekion only relieves the PRIMARY bin (2420), so the 5000s bin doesn't move when the sale posts. Detection must be sales-driven: today's RO parts INTERSECT back-counter roster.",
    "times_used": 24,
    "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-opcode-overrides",
-   "path": "automotive/tekion-opcode-overrides",
-   "category": "automotive",
-   "description": "Add vehicle/part override rows to a Tekion opcode (Overrides tab) using the verified browser-tool cascading react-select method. This is the batch workflow used for cabin-filter part overrides (RACF etc.) \u2014 Make/Model/Year/ Trim/Part per row, driven by the __buildRow() helper toolkit. Covers the real-click trim rule, the Save Changes confirmation modal, and mandatory reload+API verification. The most complex Tekion workflow we run.",
-   "times_used": 24,
-   "last_used": "2026-09-02"
   },
   {
    "name": "tekion-opcode-create",
@@ -323,6 +323,14 @@
    "last_used": "2026-08-05"
   },
   {
+   "name": "tekion-roles-permissions",
+   "path": "automotive/tekion-roles-permissions",
+   "category": "automotive",
+   "description": "Create/duplicate a Tekion custom ROLE and toggle its PERMISSIONS via the Roles admin page (/core/roles). Verified live at Blackstone Chevrolet 2026-07-10 (created \"Concierge\" cloned from ServiceAdvisor + enabled deal viewing). Covers the no-duplicate-button trap, permission pill mechanics, and save/verify flow.",
+   "times_used": 12,
+   "last_used": "2026-09-10"
+  },
+  {
    "name": "tekion-flag-vs-actual-hours-report",
    "path": "automotive/tekion-flag-vs-actual-hours-report",
    "category": "automotive",
@@ -337,14 +345,6 @@
    "description": "Restrict Tekion Parts RO Sales appointment notifications to recall opcodes only (or any opcode subset) by mass-toggling the per-opcode \"Consider for Parts preparation on Appointment\" flag. Covers the Bulk Update UI, the underlying bulk-update API for scale, and full verification. Built for Glade at SCT 2026-07-20; applies to any store.",
    "times_used": 11,
    "last_used": "2026-07-30"
-  },
-  {
-   "name": "tekion-roles-permissions",
-   "path": "automotive/tekion-roles-permissions",
-   "category": "automotive",
-   "description": "Create/duplicate a Tekion custom ROLE and toggle its PERMISSIONS via the Roles admin page (/core/roles). Verified live at Blackstone Chevrolet 2026-07-10 (created \"Concierge\" cloned from ServiceAdvisor + enabled deal viewing). Covers the no-duplicate-button trap, permission pill mechanics, and save/verify flow.",
-   "times_used": 11,
-   "last_used": "2026-09-02"
   },
   {
    "name": "dealerdetail-api-pipeline-build",
@@ -923,6 +923,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-browser-automation",
+   "path": "automotive/tekion-browser-automation",
+   "category": "automotive",
+   "description": "Log into Tekion DMS via browser automation or Puppeteer, retrieve OTP from Gmail IMAP, navigate to modules, switch dealerships, and update opcode pricing (Fixed Price labor rates, add parts, save). Covers Ant Design dropdown patterns, scrollable containers, and the complete opcode edit workflow.",
+   "times_used": 1,
+   "last_used": "2026-09-10"
+  },
+  {
    "name": "tekion-department-opcode-census",
    "path": "automotive/tekion-department-opcode-census",
    "category": "automotive",
@@ -963,6 +971,14 @@
    "last_used": "2026-09-02"
   },
   {
+   "name": "tekion-opcode-pricing-v2",
+   "path": "automotive/tekion-opcode-pricing-v2",
+   "category": "automotive",
+   "description": "DEEP REFERENCE / ARCHIVE for Tekion opcodeManagementV2. The day-to-day work is now split into three clean skills \u2014 use those FIRST: tekion-opcode-default-pricing (labor + parts), tekion-opcode-overrides (vehicle/part override batch rows), and tekion-opcode-api (read/audit/verify committed rows). Load THIS skill only when you need the full historical detail: complete dealer-switch code, Puppeteer scripts, every selector quirk, and the session-by-session debugging archaeology behind the verified recipes.",
+   "times_used": 1,
+   "last_used": "2026-09-10"
+  },
+  {
    "name": "tekion-parts-shipped-not-received-report",
    "path": "automotive/tekion-parts-shipped-not-received-report",
    "category": "automotive",
@@ -1001,6 +1017,14 @@
    "description": "Reconcile a store manager's semi-monthly tech payroll sheet (attendance + assigned/flagged billed hours per tech) against Tekion's Tech Performance data via API. Use when Joe says \"the tech performance report doesn't match what <manager> turned in on payroll\" or sends a payroll PDF/spreadsheet to audit. Verified BC (1251) Aug 16-31 2026 \u2014 caught a $1,700 payroll error.",
    "times_used": 1,
    "last_used": "2026-09-03"
+  },
+  {
+   "name": "tekion-technician-queue-dispatch",
+   "path": "automotive/tekion-technician-queue-dispatch",
+   "category": "automotive",
+   "description": "Explains Tekion's Technician Queue / Claim Work auto-dispatch behavior \u2014 why a tech gets pulled out of the queue when an advisor opens/reopens an RO, and what settings can change that behavior. Use when diagnosing \"why did my tech get grabbed out of queue\" or \"can we stop a tech from being pulled on RO reopen\" questions.",
+   "times_used": 1,
+   "last_used": "2026-09-10"
   },
   {
    "name": "tekion-vsc-deductible-vs-fee-code",
@@ -1123,14 +1147,6 @@
    "last_used": null
   },
   {
-   "name": "tekion-browser-automation",
-   "path": "automotive/tekion-browser-automation",
-   "category": "automotive",
-   "description": "Log into Tekion DMS via browser automation or Puppeteer, retrieve OTP from Gmail IMAP, navigate to modules, switch dealerships, and update opcode pricing (Fixed Price labor rates, add parts, save). Covers Ant Design dropdown patterns, scrollable containers, and the complete opcode edit workflow.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
    "name": "tekion-cashier-other-payment-error",
    "path": "automotive/tekion-cashier-other-payment-error",
    "category": "automotive",
@@ -1143,14 +1159,6 @@
    "path": "automotive/tekion-computer-use",
    "category": "automotive",
    "description": "Autonomous vision-guided browser automation for Tekion DMS. Uses the persistent Playwright browser server (port 9223) as the interaction layer and Claude Sonnet 4 (via OpenRouter) as the vision/decision-making brain. Claude sees page snapshots, decides what to click/type, and the agent executes via HTTP API calls.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tekion-opcode-pricing-v2",
-   "path": "automotive/tekion-opcode-pricing-v2",
-   "category": "automotive",
-   "description": "DEEP REFERENCE / ARCHIVE for Tekion opcodeManagementV2. The day-to-day work is now split into three clean skills \u2014 use those FIRST: tekion-opcode-default-pricing (labor + parts), tekion-opcode-overrides (vehicle/part override batch rows), and tekion-opcode-api (read/audit/verify committed rows). Load THIS skill only when you need the full historical detail: complete dealer-switch code, Puppeteer scripts, every selector quirk, and the session-by-session debugging archaeology behind the verified recipes.",
    "times_used": 0,
    "last_used": null
   },
@@ -1183,14 +1191,6 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tekion-technician-queue-dispatch",
-   "path": "automotive/tekion-technician-queue-dispatch",
-   "category": "automotive",
-   "description": "Explains Tekion's Technician Queue / Claim Work auto-dispatch behavior \u2014 why a tech gets pulled out of the queue when an advisor opens/reopens an RO, and what settings can change that behavior. Use when diagnosing \"why did my tech get grabbed out of queue\" or \"can we stop a tech from being pulled on RO reopen\" questions.",
    "times_used": 0,
    "last_used": null
   },
