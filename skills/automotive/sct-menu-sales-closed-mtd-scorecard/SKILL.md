@@ -24,8 +24,14 @@ shared). This one totals CLOSED/INVOICED ROs for the current month
 month-to-date, using an incremental per-month master cache so the whole month
 is never re-scanned in one run (that exhausts the OpenAPI rate limit).
 
-Interpreter: `/home/itadmin/.hermes/hermes-agent/venv/bin/python3`
+Interpreter: `/home/itadmin/.hermes/hermes-agent/.venv/bin/python3.11`
 Work dir: `/home/itadmin/tekion-reports`
+
+⚠️ **Python path trap:** The cron task spec hardcodes `venv/bin/python3.11`
+(no dot-prefix on `.venv`). That path does NOT exist — `venv/bin/python3`
+exists (symlink → /usr/bin/python3) but `venv/bin/python3.11` does not. The
+real interpreter is `.venv/bin/python3.11`. Every run hits this; just use
+the correct path on the first attempt.
 
 ## Files
 
@@ -306,6 +312,19 @@ Work dir: `/home/itadmin/tekion-reports`
      duplicate is far better than a recall attempt. Note it in the summary.
 
 ## Pitfall: month rollover day (1st of month) + outage recurrence
+
+**Verified 2026-09-09 (outage day 9):** still active — same signature (`/jobs`
+200, `/operations` 429 DEALER_QUOTA on every candidate, unchanged after the
+8-min retry). Day-9 unpriceable candidates: 583559, 583548, 583498, 583396,
+583224, 582713, 582208 (7 of 189 closed ROs). Cumulative Sept loss: **~48
+menu-candidate ROs** (Sep 1=2, 2=8, 3=10, 4=4, 5=3, 6=4, 7=0, 8=10, 9=7).
+Body-file + one short send ask again worked first try (`OK BYTES=109677`,
+byte-exact vs `ls -la`; Sent 18:08; MIME=REAL filename=...). ⚠️
+**Stacey's own IMAP search also breaks on the em-dash** — she reported
+"Em dash in the subject broke IMAP" when trying to locate the Sent copy by
+exact subject match during the MIME verify. She had to fall back to a
+timestamp-based search. The em-dash pitfall is not just a Jay→Stacey query
+problem; it's a Stacey→IMAP problem too.
 
 **Verified 2026-09-08 (outage day 8):** still active — same signature (`/jobs`
 200, `/operations` 429 DEALER_QUOTA on every candidate, unchanged after the
