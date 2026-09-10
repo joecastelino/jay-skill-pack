@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-10T06:45:19",
+ "generated": "2026-09-10T07:00:28",
  "skill_count": 214,
  "skills": [
   {
@@ -143,8 +143,8 @@
    "path": "automotive/tekion-declined-deferred-services-report",
    "category": "automotive",
    "description": "Pull declined/deferred services (recommendations customers said no to) for any/all AMG Tekion stores via the internal recommendation/search reporting API. Powers \"most declined service\", declined-services marketing lists (with customer phone/email), and deferred-dollars opportunity reports. Zero OpenAPI quota.",
-   "times_used": 30,
-   "last_used": "2026-09-03"
+   "times_used": 31,
+   "last_used": "2026-09-10"
   },
   {
    "name": "tekion-opcode-api",
@@ -435,6 +435,14 @@
    "last_used": "2026-08-28"
   },
   {
+   "name": "tekion-deferred-by-advisor-daily",
+   "path": "automotive/tekion-deferred-by-advisor-daily",
+   "category": "automotive",
+   "description": "Build the \"work deferred/declined per DAY, broken down by service advisor\" report for any AMG Tekion store \u2014 advisor ranking + trailing-day trend + per-advisor RO-level detail pages (PNG/PDF/CSV). Zero OpenAPI quota.",
+   "times_used": 7,
+   "last_used": "2026-09-10"
+  },
+  {
    "name": "tekion-department-opcode-buildout",
    "path": "automotive/tekion-department-opcode-buildout",
    "category": "automotive",
@@ -479,14 +487,6 @@
    "path": "automotive/tekion-approval-notes-on-ro-pdf",
    "category": "automotive",
    "description": "How to get RO approval information / approval notes (additional warranty hours approvals, warranty job approvals, recommendation approvals) to print on a Tekion RO / invoice PDF. Covers the prerequisite Service Settings + support ticket, the PDF Configurator toggle, and where the live UI differs from the KB article. Use when Joe or a store asks \"how do I get the approval notes on the RO PDF\" or \"approvals aren't printing on the warranty invoice\".",
-   "times_used": 6,
-   "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-deferred-by-advisor-daily",
-   "path": "automotive/tekion-deferred-by-advisor-daily",
-   "category": "automotive",
-   "description": "Build the \"work deferred/declined per DAY, broken down by service advisor\" report for any AMG Tekion store \u2014 advisor ranking + trailing-day trend + per-advisor RO-level detail pages (PNG/PDF/CSV). Zero OpenAPI quota.",
    "times_used": 6,
    "last_used": "2026-08-26"
   },
