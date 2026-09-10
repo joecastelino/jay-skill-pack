@@ -45,14 +45,14 @@ The TL (Toyota of Lancaster) menu-sales pipeline. Sibling of `sct-menu-sales-api
   - closed: `TOL-Menu-Sales-Closed-Scorecard-<date>-Paged.{png,pdf}`
   (uses its own headless Playwright — independent of the :9223 session.)
 
-Python interpreter for all of these: `/home/itadmin/.hermes/hermes-agent/venv/bin/python3.11`.
+Python interpreter for all of these: `/home/itadmin/.hermes/hermes-agent/venv/bin/python3.12`.
 
 ## Run sequence
 
 ### Opened (daily)
 ```sh
 cd /home/itadmin/tekion-reports
-PY=/home/itadmin/.hermes/hermes-agent/venv/bin/python3.11
+PY=/home/itadmin/.hermes/hermes-agent/venv/bin/python3.12
 $PY tol_menu_sales_api.py
 $PY render_menu_sales_paged_tol.py $(date +%F)
 ```
@@ -60,9 +60,9 @@ $PY render_menu_sales_paged_tol.py $(date +%F)
 **First-run / missing dependency:** `render_menu_sales_paged_tol.py` uses Playwright for headless
 rendering. If it fails with `ModuleNotFoundError: No module named 'playwright'`:
 ```sh
-python3.11 -m ensurepip                          # if pip not available for python3.11
-python3.11 -m pip install playwright
-python3.11 -m playwright install chromium
+python3.12 -m ensurepip                          # if pip not available for python3.12
+python3.12 -m pip install playwright
+python3.12 -m playwright install chromium
 ```
 
 ### Closed MTD (daily, after seeding the month once)
@@ -335,7 +335,7 @@ Toyota of Lancaster` cron (runs at noon AND ~8PM), the opened script can exceed
 the 600s foreground terminal cap. The CLOSED daily-append run hit the same 600s
 cap on the 8:05 PM 7/02 run **even with NO scraper running** (per-call backoff
 inside `search_closed`/`scan_ro_safe` alone can add up). **Just run both scripts
-as background jobs by default** for evening runs: `python3.11 -u <script> >
+as background jobs by default** for evening runs: `python3.12 -u <script> >`
 data/<name>.log 2>&1` with `background=true, notify_on_complete=true`, then read
 the log. A timed-out foreground attempt may still leave written JSONs — the closed
 one can be a valid partial (master written before timeout), but always re-run
