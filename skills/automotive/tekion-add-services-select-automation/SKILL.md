@@ -47,9 +47,16 @@ const match = opts.find(o => o.innerText.includes('Your Service Name'));
 match.dispatchEvent(new PointerEvent('click', {bubbles: true, cancelable: true, pointerId: 1, pointerType: 'mouse'}));
 ```
 
-**Critical gotcha**: Every call to `onInputChange` CONSUMES the blank row, even if no option is picked. You get ONE shot per page load. After picking an option, a new blank row appears — you can chain multiple adds without reloading.
+**🔴 CRITICAL GOTCHA — One Shot Per Page Load**: Every call to `onInputChange` CONSUMES the blank "Select" row, even if no option is picked and nothing appears in the dropdown. The blank row's innerText changes from "Select" to empty/non-select, and no new blank appears until AFTER you successfully pick an option. This means:
+- You get ONE attempt to search-and-pick per page load
+- If the search returns no matching options, you must Save the current state and reload before trying again
+- After successfully picking, a NEW blank row auto-appears — chain multiple adds in the same page session
+- Every failed attempt costs ~25 seconds (reload + expand row + try again)
 
-**Unreliable after page reload**: The fiber tree depth and component structure can change after a `location.reload()`. This approach works best on a freshly-expanded row with NO prior reload.
+**Why options may not appear even when onInputChange is called** (discovered at BC 2026-09-11):
+- The menu must be pre-opened (menuIsOpen: true on the Select fiber). Use Approach #2 below.
+- After a page reload, the fiber tree depth may change. Re-scan for the Select component with `onInputChange` dynamically rather than assuming depth 14.
+- Some Included Services won't appear in search even though they exist as Active in the Included Services list. At BC, 5 of 21 BG services were not searchable (BGMOA, BGFSC, DFSC, DFC variants) — likely a status or configuration difference. Verify a service is searchable before trying to add it.
 
 ## Working Approach #2: `execCommand` + `onInputChange` (More Reliable)
 
@@ -132,6 +139,43 @@ c.dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true, view: 
 3. **Expand universal row**: `browser_console` → click last pivotIcon
 4. **Add each service**: `browser_console` → execCommand + onInputChange + pick + tiers
 5. **Save between batches** or after all done
+
+## 🏆 Better Approach: API Menu JSON Manipulation (when Add Services is too many)
+
+When adding 10+ services, the one-shot-per-page-load constraint makes the UI approach impractically slow. The preferred approach:
+1. Use the browser to click **Save** (which fires `PUT /api/service-module/u/opcode/service-menu/setup?publish=false` → 200)
+2. Capture the PUT payload via XHR hook BEFORE clicking Save
+3. Modify the JSON to add service IDs programmatically in Python
+4. Re-PUT the modified JSON
+
+**⚠️ Direct API calls (without browser) are BLOCKED** — plain `fetch()` or `XMLHttpRequest` to `/api/service-module/u/opcode/service-menu/<id>` returns 500 "Token doesn't exist or is invalid". The SPA's axios interceptor adds proprietary auth headers (`ARC_NA`, dealerId, tek-siteId, etc.) that cannot be replicated from raw API calls or localStorage tokens alone. All API operations MUST go through the browser's authenticated session.
+
+**XHR hook pattern** (arm BEFORE the action that triggers the API call):
+```javascript
+window.__captured = [];
+const origOpen = XMLHttpRequest.prototype.open;
+XMLHttpRequest.prototype.open = function(method, url) {
+  this.__method = method;
+  this.__url = url;
+  return origOpen.apply(this, arguments);
+};
+const origSend = XMLHttpRequest.prototype.send;
+XMLHttpRequest.prototype.send = function(body) {
+  if (/service-menu/.test(this.__url || '')) {
+    this.addEventListener('load', function() {
+      window.__captured.push({
+        method: this.__method,
+        url: this.__url,
+        status: this.status,
+        body: body,
+        response: this.responseText?.slice(0, 500000)
+      });
+    });
+  }
+  return origSend.apply(this, arguments);
+};
+```
+Note: The hook is wiped on page reload (window recreated). Arm it every time after navigation.
 
 ## Known Limitations
 

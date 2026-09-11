@@ -883,74 +883,26 @@ Ruben could have hit any of the three.
 Script: `/home/itadmin/bc-menu-build/create_bg_batch.py` — all 21 created (BFX created first manually, then batch of 17, then 3 retries).
 Services: FISVC, DIESELFI, BGMOA, BGFSC, DFSC, DFC, TRANS, TRSV10, TRSV/FILTER8, TRSV/FILTER, BATT, PSSERV, COOLANT, COOLANTD, CABIN, BGEPR, BGEPRD, BFX, FRONTDIFSVC, REARDIFSVC, TCASESVC.
 
-### ⚠️ Add Services Select Automation — CRITICAL
-The Ant Design v5 Select in the Add Services section does NOT respond to standard DOM events.
-See dedicated skill: **`tekion-add-services-select-automation`** for the ONLY two approaches that work.
-
 **Current state (2026-09-11):**
-- 5 of 21 BG services are ON the 60K row: REARDIFSVC, BFX, FISVC, DIESELFI, TRANS
-- 11 more are visible in the Add Services search options: TRSV10, TRSV/FILTER8, TRSV/FILTER, BATT, PSSERV, COOLANT, COOLANTD, BGEPR, BGEPRD, FRONTDIFSVC, TCASESVC
-- 5 are NOT appearing in the Add Services search: CABIN, BGMOA, BGFSC, DFSC, DFC
-  → These need investigation — likely the Included Service status or configuration differs.
+- **5 of 21** are ON the 60K row: REARDIFSVC, BFX, FISVC, DIESELFI, TRANS
+- **11 more** are visible in the Add Services search: TRSV10, TRSV/FILTER8, TRSV/FILTER, BATT, PSSERV, COOLANT, COOLANTD, BGEPR, BGEPRD, FRONTDIFSVC, TCASESVC
+- **5 are NOT appearing** in search: CABIN, BGMOA, BGFSC, DFSC, DFC
+  → These need investigation — likely the Included Service status or configuration differs from the searchable ones.
 
-**The working interaction pattern** (from browser_console / Playwright):
-1. `execCommand('insertText')` to type into the Select input
-2. Then trigger React `onInputChange` via fiber tree (depth ~14)
-3. Wait 2+ seconds for options to render
-4. Each `onInputChange` call CONSUMES the blank row — get one shot per page load
+### ⚠️ Add Services Select Automation — CRITICAL FINDINGS (2026-09-11)
+The Ant Design v5 Select in the Add Services section has been extensively analyzed. See dedicated skill: **`tekion-add-services-select-automation`**.
 
-### BC BUILD SCRIPT
-`/home/itadmin/bc-menu-build/build_60k.py` — creates universal row, targets :9225, dealer 1251.
-Successfully creates row (makeId click → "Chevrolet" option → model "All" → year "All" → trim modal Save).
+**Key findings from BC build session:**
+- `execCommand('insertText')` + React fiber `onInputChange` (depth ~14) is the ONLY reliable trigger
+- Each `onInputChange` call **CONSUMES the blank row** — one attempt per page load
+- Browser tools (`browser_console`) work for typing; :9225 `/eval` alone is insufficient
+- **Direct API calls are BLOCKED** (500 "Token doesn't exist") — axios interceptor auth unreplicable
+- **Best path for batch adds**: capture the Save PUT payload via XHR hook, modify JSON, re-PUT
 
-### ⚠️ BC vs BT CRITICAL DIFFERENCES (the "why rollout_lib.py breaks at BC")
-1. **Ant Design v5** — BC uses `ant-v5-select` components (not v4). Select dropdowns don't match
-   `.ant-select-dropdown-menu-item` — items may use `[class*=select-item-option]` or different classes.
-   CSS-class-based option finding from BT's `click_option_exact()` DOES NOT WORK.
-2. **`BASE_SYSTEM_INTERVAL_SELECT`** is an `ant-v5-select-selection-search-input` — clicks on the
-   input alone don't open the dropdown. Need to click the parent `.ant-v5-select` or
-   `.ant-v5-select-selector`. JS `.dispatchEvent(click)` on the selector also didn't open it.
-3. **Add Services "Select"** dropdown also ant-v5 — value-setter on the input doesn't trigger
-   the option search. Options are virtualized — items below the fold have coords like y=-1801.
-4. **4-tier checkbox pattern** [Apply-all, Basic, Value, Premium] vs BT's 3-tier [Apply-all, Basic, Premium].
-   `set_premium_only()` from rollout_lib targets idx 2 in a 3-cb array — needs adaptation.
-
-### ✅ PROVEN PATTERN: Add Services ant-v5 select at BC (2026-09-11)
-The per-char input-event typing pattern **WORKS** for the Add Services react-select at BC.
-BT's `open_select_under('Add Services')` → `/type` → `click_option_exact()` does NOT work here,
-but this JS-native pattern does:
-
-```js
-// 1. Find the blank Add Services row (the one showing "Select")
-const blank = [...document.querySelectorAll('[id^=ADDED_SERVICES_NAME_]')]
-  .filter(e => e.offsetParent).findLast(e => e.innerText.trim() === 'Select');
-// 2. Focus the inner input via JS (NOT /mouse click, not value-setter)
-const inp = blank.querySelector('input');
-inp.focus();
-inp.click();
-// 3. Type each character with per-char input events (NOT execCommand, NOT /type endpoint)
-const text = "search keyword";
-let cur = '';
-for (const ch of text) {
-  cur += ch;
-  Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(inp, cur);
-  inp.dispatchEvent(new Event('input', {bubbles: true}));
-}
-// 4. Wait 3-4s for options to render
-// 5. Pick option with includes() matching — options display as "OPCODE_DESCServiceName" concatenated!
-const option = [...document.querySelectorAll('[class*=option]')]
-  .filter(e => e.offsetParent && e.innerText.includes(serviceName))[0];
-['mousedown','mouseup','click'].forEach(t => option.dispatchEvent(new MouseEvent(t, {...})));
-// 6. Set tiers — BC uses [Apply-all, Basic, Value, Premium] (4 checkboxes)
-```
-
-**Key gotchas:**
-- The `/type` endpoint on :9225 throws 500 for these selects — use the per-char JS pattern instead
-- Option text is concatenated: `"BRAKE FLUID EXCHANGEPerform Brake Fluid Exchange Service"` — never
-  exact-match; always use `includes()`
-- After picking an option, a new blank "Select" row spawns below with a new `ADDED_SERVICES_NAME_N` ID
-- Setting Premium-only = checkbox pattern `[false, false, false, true]` for [Apply-all, Basic, Value, Premium]
-- Save MUST be a real bridge /mouse click at the Save button's coordinates (synthetic .click() no-ops)
+### BC vs BT — UI Automation Differences
+1. **Ant Design v5** — BC uses v5 Selects, BT uses v4. Option CSS classes differ.
+2. **4-tier checkbox** — BC has [Apply-all, Basic, Value, Premium]; BT has [Apply-all, Basic, Premium]
+3. **BT's rollout_lib.py does NOT work at BC** — option class names and checkbox indices are different
 
 ### Session management for BC builds
 - **:9223** shared with crons — don't use for BC UI work (drift risk)
