@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-11T05:30:23",
+ "generated": "2026-09-11T05:45:22",
  "skill_count": 214,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 170,
+   "times_used": 171,
    "last_used": "2026-09-11"
   },
   {
@@ -699,6 +699,14 @@
    "last_used": "2026-08-24"
   },
   {
+   "name": "tekion-pipeline-operations",
+   "path": "automotive/tekion-pipeline-operations",
+   "category": "automotive",
+   "description": "Audit, diagnose, and repair the Tekion scraper pipeline including OTP fetching, session reuse, lock starvation, Puppeteer navigation timeouts, and Tekion 3.0 compatibility.",
+   "times_used": 3,
+   "last_used": "2026-09-11"
+  },
+  {
    "name": "tekion-tech-flag-hours-pay",
    "path": "automotive/tekion-tech-flag-hours-pay",
    "category": "automotive",
@@ -849,14 +857,6 @@
    "description": "Run a Tekion Parts Physical Inventory or Bin Spot Check audit \u2014 the full Setup \u2192 Counting \u2192 Reconciliation \u2192 Summary workflow that compares system count vs physical count, surfaces variance, and writes on-hand adjustments. Use when Joe asks about counting parts, bin spot checks, inventory variance, reconciling shelf qty vs Tekion, or \"Make Adjustments\". Load alongside tekion-sitemap.",
    "times_used": 2,
    "last_used": "2026-06-29"
-  },
-  {
-   "name": "tekion-pipeline-operations",
-   "path": "automotive/tekion-pipeline-operations",
-   "category": "automotive",
-   "description": "Audit, diagnose, and repair the Tekion scraper pipeline including OTP fetching, session reuse, lock starvation, Puppeteer navigation timeouts, and Tekion 3.0 compatibility.",
-   "times_used": 2,
-   "last_used": "2026-09-01"
   },
   {
    "name": "tekion-rebuild-broken-report-builder-report",
