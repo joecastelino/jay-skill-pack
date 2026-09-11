@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-11T09:45:47",
+ "generated": "2026-09-11T10:00:27",
  "skill_count": 214,
  "skills": [
   {
@@ -207,8 +207,8 @@
    "path": "automotive/tekion-opcode-create",
    "category": "automotive",
    "description": "Create a NEW opcode from scratch in Tekion's Opcode Management application \u2014 the full Default-tab field reference (opcode type, eligibility, category, service type, labor, pay-type pricing, parts, cost centers, associated opcodes, sublet, auto-dispatch). Canonical workflow distilled from Tekion KB0025686. Use when asked to CREATE/build a new opcode (vs editing pricing on an existing one \u2014 for that use tekion-opcode-default-pricing / tekion-opcode-overrides).",
-   "times_used": 22,
-   "last_used": "2026-09-02"
+   "times_used": 23,
+   "last_used": "2026-09-11"
   },
   {
    "name": "tekion-vi-api-migration",
@@ -291,6 +291,14 @@
    "last_used": "2026-08-31"
   },
   {
+   "name": "tekion-parts-appointments-recalls-only",
+   "path": "automotive/tekion-parts-appointments-recalls-only",
+   "category": "automotive",
+   "description": "Restrict Tekion Parts RO Sales appointment notifications to recall opcodes only (or any opcode subset) by mass-toggling the per-opcode \"Consider for Parts preparation on Appointment\" flag. Covers the Bulk Update UI, the underlying bulk-update API for scale, and full verification. Built for Glade at SCT 2026-07-20; applies to any store.",
+   "times_used": 14,
+   "last_used": "2026-09-11"
+  },
+  {
    "name": "tekion-parts-autoorder-diagnosis",
    "path": "automotive/tekion-parts-autoorder-diagnosis",
    "category": "automotive",
@@ -321,14 +329,6 @@
    "description": "Build a vehicle-scoped PARTS override row on a Tekion menu-included opcode via Service Menu Setups \u2192 Included Services \u2192 Edit Service \u2192 Overrides \u2192 Parts, driven by the persistent-browser :9223 HTTP endpoints (/eval, /click, /type, /press). Covers the exact DOM (react-select Make, ant-dropdown checkbox Model/Year multi-selects, Trim Details modal), the verified click-paths, and the costly pitfalls (wrong /eval key, navigate-away row wipe, coordinate drift, disabled trim input). Use when swapping/adding parts on an opcode that lives INSIDE a service menu (e.g. BGCVTF CVT fluid \u2192 E-TAF for Corollas).",
    "times_used": 13,
    "last_used": "2026-08-05"
-  },
-  {
-   "name": "tekion-parts-appointments-recalls-only",
-   "path": "automotive/tekion-parts-appointments-recalls-only",
-   "category": "automotive",
-   "description": "Restrict Tekion Parts RO Sales appointment notifications to recall opcodes only (or any opcode subset) by mass-toggling the per-opcode \"Consider for Parts preparation on Appointment\" flag. Covers the Bulk Update UI, the underlying bulk-update API for scale, and full verification. Built for Glade at SCT 2026-07-20; applies to any store.",
-   "times_used": 13,
-   "last_used": "2026-09-11"
   },
   {
    "name": "tekion-roles-permissions",
@@ -571,6 +571,14 @@
    "last_used": "2026-08-28"
   },
   {
+   "name": "tekion-parts-appointments-opcode-scoping",
+   "path": "automotive/tekion-parts-appointments-opcode-scoping",
+   "category": "automotive",
+   "description": "Restrict Tekion Parts-on-Appointments (Parts RO Sales > Appointments queue) to a subset of opcodes \u2014 e.g. recalls only, per Glade at SCT. Covers the per-opcode \"Consider for Parts preparation on Appointment\" checkbox, Bulk Update, the limited Appointments-tab filters, and how to derive a store's recall keep-list from the opcode list. Load for any \"parts department should only see X appointments\" request.",
+   "times_used": 5,
+   "last_used": "2026-09-11"
+  },
+  {
    "name": "tekion-ro-job-paytype-triage",
    "path": "automotive/tekion-ro-job-paytype-triage",
    "category": "automotive",
@@ -601,14 +609,6 @@
    "description": "Definitively answer \"where did notification X go / does notification Y exist / who gets notified when Z happens\" in Tekion. Dumps the COMPLETE list of user notification event types (all modules) from the internal notification-preference API instead of scrolling the giant Profile Settings table, then maps the request to the right config surface (per-user Profile Settings vs Service Settings vs Dispatch vs Scheduling vs Parts Settings). Load for any \"I can't find the setting that notifies ...\" ticket.",
    "times_used": 4,
    "last_used": "2026-08-25"
-  },
-  {
-   "name": "tekion-parts-appointments-opcode-scoping",
-   "path": "automotive/tekion-parts-appointments-opcode-scoping",
-   "category": "automotive",
-   "description": "Restrict Tekion Parts-on-Appointments (Parts RO Sales > Appointments queue) to a subset of opcodes \u2014 e.g. recalls only, per Glade at SCT. Covers the per-opcode \"Consider for Parts preparation on Appointment\" checkbox, Bulk Update, the limited Appointments-tab filters, and how to derive a store's recall keep-list from the opcode list. Load for any \"parts department should only see X appointments\" request.",
-   "times_used": 4,
-   "last_used": "2026-09-11"
   },
   {
    "name": "tekion-parts-so-gl-account-routing",
