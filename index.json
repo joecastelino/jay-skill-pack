@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-11T14:45:13",
- "skill_count": 217,
+ "generated": "2026-09-11T15:00:32",
+ "skill_count": 218,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -1143,6 +1143,14 @@
    "path": "automotive/dealerdetail-persona-and-dedup",
    "category": "automotive",
    "description": "Split the DealerDetail advisor dashboard by Tekion persona (SERVICE_ADVISOR vs an \"Others\" bucket for cashiers/warranty clerks/service managers/techs), backfill the persona column from the Tekion users API, and fix duplicate-advisor rows caused by null-name pre-scope-upgrade pulls. Use when advisor numbers look polluted by non-advisors, when you see an \"Unassigned\"/null advisor, when personas are 0/N populated, or when the same Tekion userId appears under two Advisor rows.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "hermes-slack-approval-config",
+   "path": "automotive/hermes-slack-approval-config",
+   "category": "automotive",
+   "description": "Configure who can approve Hermes dangerous command requests in Slack \u2014 add/remove approvers, set SLACK_ALLOWED_USERS, and understand how approval routing works.",
    "times_used": 0,
    "last_used": null
   },
