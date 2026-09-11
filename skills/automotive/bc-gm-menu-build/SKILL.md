@@ -874,54 +874,84 @@ Ruben could have hit any of the three.
 ## 60K MENU BUILD (started 2026-09-11)
 
 ### 60K Menu ID: `6671ca385371ce62ee4016d9`
-- 46 rows (Chevrolet, Cadillac, Buick, GMC), all `baseSystemInterval: 7500`
+- 46 original rows (Chevrolet, Cadillac, Buick, GMC), all `baseSystemInterval: 7500`
 - Menu level: "Edit Menu - 60000 mi", PUBLISHED
-- 3 tiers active: Basic, Value, Premium (4 checkboxes per row: [Apply-all, Basic, Value, Premium])
-- Row 47 created (Chevrolet/All Models/All Years/All Trims), SAVED via `build_60k.py`
+- 4 tiers: Apply-all (`67f84a57e26de20005f39f43`), Basic (`6671ca385371ce62ee4016dc`), Value (`67f84a57e26de20005f39f44`), Premium (`67f84a57e26de20005f39f45`)
+- **Row 48 (universal row)**: Created via API POST (`build_60k.py`), Chevrolet/ALL_MODELS/ALL_YEARS/ALL_TRIMS, `order: 48`, base system interval 7500 (needs change to 60000)
 
 ### ✅ 21 BG Included Services CREATED at BC (2026-09-11)
 Script: `/home/itadmin/bc-menu-build/create_bg_batch.py` — all 21 created (BFX created first manually, then batch of 17, then 3 retries).
 Services: FISVC, DIESELFI, BGMOA, BGFSC, DFSC, DFC, TRANS, TRSV10, TRSV/FILTER8, TRSV/FILTER, BATT, PSSERV, COOLANT, COOLANTD, CABIN, BGEPR, BGEPRD, BFX, FRONTDIFSVC, REARDIFSVC, TCASESVC.
 
 **Current state (2026-09-11):**
-- **5 of 21** are ON the 60K row: REARDIFSVC, BFX, FISVC, DIESELFI, TRANS
-- **11 more** are visible in the Add Services search: TRSV10, TRSV/FILTER8, TRSV/FILTER, BATT, PSSERV, COOLANT, COOLANTD, BGEPR, BGEPRD, FRONTDIFSVC, TCASESVC
-- **5 are NOT appearing** in search: CABIN, BGMOA, BGFSC, DFSC, DFC
-  → These need investigation — likely the Included Service status or configuration differs from the searchable ones.
+- **ZERO services on the universal row** — the row shows "No rows found" under Add Services. The 5 services added in a previous session were not persisted.
+- **BG service IDs are the missing piece** — the Included Services exist (verifiable via Included Services list search for "BFX" → 1 result), but their internal Tekion IDs need to be harvested from either the Add Services dropdown search API response, the Included Services list API, or the menu PUT payload after adding one service.
 
-### ⚠️ Add Services Select Automation — CRITICAL FINDINGS (2026-09-11)
-The Ant Design v5 Select in the Add Services section has been extensively analyzed. See dedicated skill: **`tekion-add-services-select-automation`**.
+### 🔴 CRITICAL: Ant Design v5 Select — :9225 Synthetic Events FAIL
+The Ant Design v5 Select used in BC's Add Services section does NOT respond to synthetic JS events from the :9225 persistent browser (`element.click()`, MouseEvent dispatch, etc.). The dropdown simply never opens.
 
-**Key findings from BC build session:**
-- `execCommand('insertText')` + React fiber `onInputChange` (depth ~14) is the ONLY reliable trigger
-- Each `onInputChange` call **CONSUMES the blank row** — one attempt per page load
-- Browser tools (`browser_console`) work for typing; :9225 `/eval` alone is insufficient
-- **Direct API calls are BLOCKED** (500 "Token doesn't exist") — axios interceptor auth unreplicable
-- **Best path for batch adds**: capture the Save PUT payload via XHR hook, modify JSON, re-PUT
+**What DOES work:**
+- **Playwright `browser_*` tools** — `browser_click` + `browser_type` fire real browser events that Ant Design respects
+- **React fiber `onInputChange`** — at depth ~14 from the Select's fiber, calling `props.onInputChange('BFX')` triggers the search callback (but the dropdown still doesn't OPEN without a real click first)
+- **`execCommand('insertText')`** — works for typing into the Select's search input AFTER it's focused
+
+**What does NOT work on :9225:**
+- `element.click()` / `element.dispatchEvent(new MouseEvent('click', ...))` — silently no-ops
+- `/mouse` coordinate clicks — position is correct but SyntheticPointerEvent ignored by antd
+- Native `value` setter + `input`/`change` events on the search input — value changes but dropdown doesn't open
+- `element.focus()` — no visible effect
+
+### ⭐ REACT FIBER STATE EXTRACTION (new 2026-09-11 — THE reliable way to get Tekion SPA data)
+When the SPA's UI is fighting you, extract data directly from React's internal state. This works for ANY page, not just menus.
+
+**Technique:**
+```js
+// Find ALL React-enabled elements
+const reactEls = [...document.querySelectorAll('*')].filter(el => 
+  Object.keys(el).some(k => k.startsWith('__reactFiber'))
+);
+
+// Walk fiber trees looking for known state shapes
+for (const el of reactEls.slice(0, 500)) {
+  const fiberKey = Object.keys(el).find(k => k.startsWith('__reactFiber'));
+  let fiber = el[fiberKey];
+  for (let i = 0; i < 40 && fiber; i++) {
+    const ms = fiber.memoizedState;
+    if (ms?.serviceMenu?.menus?.length > 10) {
+      // Found the menu state! ms.serviceMenu = full menu JSON
+      window.__menuState = ms.serviceMenu;
+      break;
+    }
+    fiber = fiber.return;
+  }
+}
+```
+
+**Key state shapes found at BC (2026-09-11):**
+- `serviceMenu` object at depth 12/18 from leaf fibers — contains `{id, intervals, menus[], tiers[?], menuStatus, ...}`
+- Each `menus[i]` has `{order, make, models[], years[], trims[], servicesMetaData, priceConfig, ...}`
+- `servicesMetaData.services[]` = `{referenceId, tierMappings[], applicability, ...}`
+- Tiers are NOT in `serviceMenu.tiers` directly — they're loaded separately. Known tier IDs for BC 60K: Apply-all `67f84a57e26de20005f39f43`, Basic `6671ca385371ce62ee4016dc`, Value `67f84a57e26de20005f39f44`, Premium `67f84a57e26de20005f39f45`.
+
+**Usage for 60K build:** The full menu JSON (654KB) was extracted via this method and saved to `/home/itadmin/bc-menu-build/60k-current-full.json`. This provides the exact structure needed to build a modified PUT payload.
+
+### Recommended Build Path (2026-09-11)
+1. **Get BG IDs**: Use Playwright browser → Included Services page → expandable search → capture API response per BG opcode. OR add ONE service to the menu row via Playwright, Save, capture the PUT payload which contains the service's `referenceId`.
+2. **Modify menu JSON**: Take `/home/itadmin/bc-menu-build/60k-current-full.json`, inject service entries for all 21 BG services into row 48's `servicesMetaData.services[]`, assign Premium-tier-only via `tierMappings`.
+3. **PUT the modified JSON**: Via Playwright browser's XHR hook + Save, or via direct API call if auth headers can be captured.
+4. **Quote-verify**: On test VIN `1GYKPHRS9PZ214217` (2023 Cadillac XT6 Sport Platinum) at 60K.
 
 ### BC vs BT — UI Automation Differences
 1. **Ant Design v5** — BC uses v5 Selects, BT uses v4. Option CSS classes differ.
 2. **4-tier checkbox** — BC has [Apply-all, Basic, Value, Premium]; BT has [Apply-all, Basic, Premium]
 3. **BT's rollout_lib.py does NOT work at BC** — option class names and checkbox indices are different
+4. **:9225 synthetic events work for BT (v4) but FAIL for BC (v5)** — Playwright browser is the only reliable option for BC Select interactions
 
 ### Session management for BC builds
 - **:9223** shared with crons — don't use for BC UI work (drift risk)
 - **:9225** dedicated BC browser — start via `/home/itadmin/persistent-browser-2/`
-- **Session cloning** (:9223→:9225 localStorage injection): works but stale dealer context
-  causes "Your role has been changed. Please re-login to proceed." at BC. Reliable path:
-  clear localStorage on :9225, fresh OTP login.
-- **Fresh login recipe**: navigate /login → type username → Next → type password → Login →
-  find `#otp` input (ant-input, type=text, NOT type=tel) → `/type` endpoint with selector="#otp"
-  → mouse-click Verify button → lands on /home at default dealer (usually 1251/BC).
-- **OTP retrieval**: `himalaya envelope list -a personal -f "[Gmail]/All Mail" -s 5` →
-  find "Tekion-Login OTP" from devadmin@tekion.com → `himalaya message read ... <id>`.
-
-### 21 BG services still unbuilt
-`bg-op-list.json` lists 21 opcodes (FISVC through TCASESVC) with prices — but their
-Included Services were **never created** at BC. None of them appear in the Included Services
-list. Creating them (Add Service → Pull From Opcode → Custom → Active, one per opcode)
-is prerequisite to adding them to any menu. BT's 25 SM-prefix services existed before
-the menu build started — that's why BT rollout was "easy."
+- **Playwright browser** (`browser_*` tools) — use for Ant Design v5 Select interactions. Requires fresh login each session (30-60s). Fires REAL browser events.
+- **OTP retrieval**: `himalaya envelope list -a personal -f "[Gmail]/All Mail" -s 5` → find "Tekion-Login OTP" → `himalaya message read ... <id>` → grep 6-digit code.
 
 ## BC INCLUDED SERVICES — Create recipe from add-service page
 The Add Service form at `/ro/service-menu-setups/included-service/add-service/default`

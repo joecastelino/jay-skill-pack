@@ -79,27 +79,42 @@ let depth = 0;
 while (node && depth < 80) {
   const ms = node.memoizedState;
   if (ms) {
-    if (ms.menus && Array.isArray(ms.menus)) {
-      // FOUND! ms.menus = full menu array
-      // ms.tiers = tier configuration
-      // Each menu has .servicesMetaData.services[] with .referenceId and .displayName
+    // ⭐ CORRECTED (2026-09-11): State is nested under `serviceMenu`, NOT at `memosizedState.menus` directly!
+    if (ms.serviceMenu?.menus && Array.isArray(ms.serviceMenu.menus)) {
+      // FOUND! ms.serviceMenu = full menu object with id, intervals, menus[], etc.
+      // ms.serviceMenu.menus[] = all vehicle rows
     }
-    // Also check for: ms.servicesMetaData, ms.tiers, ms.opcodes
+    // Direct menus (without serviceMenu wrapper) is possible but rare — check both
+    if (ms.menus && Array.isArray(ms.menus) && ms.menus.length > 5) {
+      // Alternative shape
+    }
   }
-  node = node.return; // Walk UP the tree
+  node = node.return;
   depth++;
 }
 ```
 
+**Proven state shapes (verified 2026-09-11):**
+- **Service Menu Edit page**: `memoizedState.serviceMenu` at depth 12-18
+  - `serviceMenu.id`, `.menus[]` (48 rows for BC 60K), `.intervals[]`, `.menuStatus`
+  - Each menu: `.order`, `.make`, `.models[]`, `.years[]`, `.servicesMetaData.services[]`
+  - Each service: `.referenceId` (hex ID), `.tierMappings[]`, `.key`
+  - ⚠️ `displayName` may be missing — resolved at render time by UI
+  - ⚠️ `tiers` may NOT be in this state object — search for separate tier state
+- **React elements in Tekion SPA**: 2,000-3,000 per page — limit search to first 800
+
 **Key paths in menu state:**
-- `memoizedState.menus[]` — all vehicle rows
-- `memoizedState.menus[N].servicesMetaData.services[]` — services on row N, each has:
+- `memoizedState.serviceMenu.menus[]` — all vehicle rows (MUST check `.serviceMenu` nesting)
+- `memoizedState.serviceMenu.menus[N].servicesMetaData.services[]` — services on row N:
   - `referenceId` — the included service ID (hex string)
-  - `displayName` — human-readable name
-  - `tierIds` — which tiers this service is active for
-- `memoizedState.tiers[]` — tier configuration, each has:
-  - `id` — tier ID
-  - `tierName` — "Basic", "Value", "Premium", etc.
+  - `key` — composite key string
+  - `tierMappings[]` — which tiers this service is active for
+  - `applicability`, `actionType`, `source`, `type`
+- Tier data may be in a separate fiber — known tier IDs for BC 60K:
+  - Apply-all: `67f84a57e26de20005f39f43`
+  - Basic: `6671ca385371ce62ee4016dc`
+  - Value: `67f84a57e26de20005f39f44`
+  - Premium: `67f84a57e26de20005f39f45`
 
 **Also check React Context providers** — walk `.child` and `.sibling` too if walking `.return` doesn't find it:
 ```js
@@ -165,3 +180,6 @@ When the persistent browser (:9225) is fighting you, the Playwright-powered `bro
 4. **Token in localStorage isn't enough** — the `t_token` JWT needs additional context headers from axios interceptor. Can't replicate from outside.
 5. **Don't use `/mouse` for React checkboxes** — the persistent browser's `/mouse` endpoint dispatches events that React's synthetic event system ignores for checkboxes. Use `browser_click` or the React fiber approach instead.
 6. **Save button only fires PUT when form is dirty** — clicking Save on a clean form = no network activity. Must make a real change first.
+7. **🔴 :9225 synthetic events FAIL for Ant Design v5 Selects** (verified 2026-09-11 at BC): `element.click()`, MouseEvent dispatch, and `/mouse` coordinate clicks all silently no-op on Ant Design v5 Select dropdowns. The dropdown never opens. BT/Ant Design v4 is fine — this is a v5-specific regression. **Use Playwright `browser_click` which fires real browser events**, or use React fiber `onInputChange` to trigger the search callback (but the dropdown still requires a real click to visually OPEN).
+8. **React fiber `serviceMenu` nesting** — state is at `memoizedState.serviceMenu.menus`, NOT `memoizedState.menus` directly. The `serviceMenu` wrapper contains `id`, `intervals[]`, `menuStatus`, etc. alongside `menus[]`.
+9. **`displayName` often missing from React state** — service names and other UI-resolved data may only exist in the rendered DOM, not in component state.

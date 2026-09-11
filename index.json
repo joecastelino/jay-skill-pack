@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-11T12:00:40",
+ "generated": "2026-09-11T12:15:55",
  "skill_count": 217,
  "skills": [
   {
@@ -23,7 +23,7 @@
    "path": "automotive/agent-to-agent-bridge",
    "category": "automotive",
    "description": "Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine.",
-   "times_used": 117,
+   "times_used": 118,
    "last_used": "2026-09-11"
   },
   {
@@ -55,7 +55,7 @@
    "path": "automotive/bt-tony-menu-rebuild",
    "category": "automotive",
    "description": "The Blackstone Toyota (BT, dealer 1249) service-menu rebuild project for Tony Garcia (Service Manager). Tony wants menus restructured into Factory Recs / Factory Recs Plus with 25 ordered add-on services. Contains the FULL locked spec, Joe's approved decisions, the opcode audit results, and the build plan. Load for ANY \"BT menu\", \"Tony menu\", \"Factory Recs\", or Blackstone Toyota service menu work. STATUS 2026-07-21: full 5K\u2013200K range (5K-step) built, PUBLISHED, Tony-validated; Phase 7 generic Transmission Fluid placeholders DONE; Phase 8 Tony's BG MENU REVAMP 2026 part-match batch DONE + quote-verified (baseline tony-partmatch-baseline-20260721.json). Remaining: x2.5K half-step menus + EV rows only.",
-   "times_used": 57,
+   "times_used": 58,
    "last_used": "2026-09-11"
   },
   {
@@ -75,20 +75,20 @@
    "last_used": "2026-09-03"
   },
   {
+   "name": "bc-gm-menu-build",
+   "path": "automotive/bc-gm-menu-build",
+   "category": "automotive",
+   "description": "The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-override plan for vehicle-correct GM parts, and open decisions. Load for ANY \"GM menu\", \"BC menu build\", \"GMLOF\", or Blackstone Chevrolet service menu work.",
+   "times_used": 45,
+   "last_used": "2026-09-11"
+  },
+  {
    "name": "tekion-kb-search-scrape",
    "path": "automotive/tekion-kb-search-scrape",
    "category": "automotive",
    "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
    "times_used": 45,
    "last_used": "2026-09-03"
-  },
-  {
-   "name": "bc-gm-menu-build",
-   "path": "automotive/bc-gm-menu-build",
-   "category": "automotive",
-   "description": "The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-override plan for vehicle-correct GM parts, and open decisions. Load for ANY \"GM menu\", \"BC menu build\", \"GMLOF\", or Blackstone Chevrolet service menu work.",
-   "times_used": 44,
-   "last_used": "2026-09-11"
   },
   {
    "name": "bc-menu-sales-reports",
@@ -915,6 +915,14 @@
    "last_used": "2026-07-07"
   },
   {
+   "name": "bc-customer-list-scrub",
+   "path": "automotive/bc-customer-list-scrub",
+   "category": "automotive",
+   "description": "Compare/scrub BC customer lists (GM Rewards, Consolidated Leads, etc.) \u2014 match customers across lists, flag overlaps, and produce Joe's ranked master output with GM Rewards first (ranked by $) and secondary list appended. Load for ANY BC customer data comparison, list merge, or \"scrub these two lists.\"",
+   "times_used": 1,
+   "last_used": "2026-09-11"
+  },
+  {
    "name": "hermes-gateway-timeout-restart-loop",
    "path": "automotive/hermes-gateway-timeout-restart-loop",
    "category": "automotive",
@@ -1009,6 +1017,14 @@
    "description": "Reopen a CLOSED Tekion repair order (RO) when the UI shows no \"Reopen\" option. Verified live at VW of Clovis (dealer 1891) on RO 141673, 2026-08-27 \u2014 flipped CLOSED \u2192 READY_FOR_INVOICE via the internal reopen endpoint.",
    "times_used": 1,
    "last_used": "2026-08-27"
+  },
+  {
+   "name": "tekion-spa-data-extraction",
+   "path": "automotive/tekion-spa-data-extraction",
+   "category": "automotive",
+   "description": "Extract data from Tekion's SPA when raw API calls fail due to the axios auth interceptor. Covers XHR hooks, React fiber state extraction, dirty-form PUT capture, and Playwright browser tools \u2014 the four proven methods for getting menu JSON, included service IDs, and other SPA-held data.",
+   "times_used": 1,
+   "last_used": "2026-09-11"
   },
   {
    "name": "tekion-tech-clock-time-by-opcode",
@@ -1107,14 +1123,6 @@
    "last_used": null
   },
   {
-   "name": "bc-customer-list-scrub",
-   "path": "automotive/bc-customer-list-scrub",
-   "category": "automotive",
-   "description": "Compare/scrub BC customer lists (GM Rewards, Consolidated Leads, etc.) \u2014 match customers across lists, flag overlaps, and produce Joe's ranked master output with GM Rewards first (ranked by $) and secondary list appended. Load for ANY BC customer data comparison, list merge, or \"scrub these two lists.\"",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
    "name": "claude-code-headless-jay",
    "path": "automotive/claude-code-headless-jay",
    "category": "automotive",
@@ -1207,14 +1215,6 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tekion-spa-data-extraction",
-   "path": "automotive/tekion-spa-data-extraction",
-   "category": "automotive",
-   "description": "Extract data from Tekion's SPA when raw API calls fail due to the axios auth interceptor. Covers XHR hooks, React fiber state extraction, dirty-form PUT capture, and Playwright browser tools \u2014 the four proven methods for getting menu JSON, included service IDs, and other SPA-held data.",
    "times_used": 0,
    "last_used": null
   },
