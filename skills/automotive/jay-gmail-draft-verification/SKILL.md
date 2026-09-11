@@ -375,3 +375,11 @@ unaffected (SMTP, verify `\Sent`).
   exist and cause confusion if accidentally targeted — check profile-scoped path
   first.
 - Clean up downloaded verification files from `/tmp/` after checking (temp only, not evidence to keep).
+- **Prefer `himalaya` over raw `imaplib` for draft existence/list checks** (2026-09-10) — 
+  `imaplib`'s `X-GM-RAW` search consistently fails with `BAD [b'Could not parse command']`
+  when run inside `execute_code`'s Python sandbox, even with the correct `CHARSET`/`UTF-8`
+  preamble. `himalaya envelope list -a default -f '[Gmail]/Drafts' -s 10` works reliably.
+  Reserve raw `imaplib` only for byte-level checks (MIME part extraction, PDF byte-compare,
+  `data:` URI detection) that `himalaya message read` can't do — and even then, use
+  `himalaya` to find the UID first, then fetch with `imaplib` by that known UID (skip the
+  broken `X-GM-RAW` search path entirely).
