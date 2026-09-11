@@ -19,7 +19,12 @@ triggers:
   - Keep-list ON: **RECALL** (generic), **23TA13**, **23TC01**, **23TC05** — the only 3 Active opcodes in SCT's 106-opcode "Recalls" service type (50 Inactive / 53 Archived left checked, harmless).
   - Consequence: Parts gets NO appointment-prep notifications for anything non-recall at SCT (menus, tires, ToyotaCare pre-pull all silenced) — this was the explicit intent.
   - Maintenance caveat: **new opcodes default the checkbox ON** — future Toyota campaign codes (24TA.., 25TC..) auto-flow correctly, but any NEW non-recall opcode created later must be unchecked. A weekly sweep was offered to Joe but NOT yet scheduled.
-- Other stores (BC/BT/TL/SV/AR/VC): not deployed; derive each store's recall opcode set fresh — never reuse SCT's list.
+- **TL (1092) — IN PROGRESS 2026-09-11** (Joe requested deployment; awaiting keep-list approval):
+  - **48 ACTIVE opcodes** under the "Recalls" service type (total service type: 48 Active + unknown Inactive/Archived). Service type sidebar scrollable container = `[class*="root_dealerInfoList_itemListContainer"]` (scrollHeight 849, clientHeight 455 — Recalls tab at ~x166, y264 after scrolling).
+  - **30 real Toyota campaign codes** (20TA02, 20TA024RN, 20TA03, 20TA05, 20TA06, 20TC01, 21TA01, 21TA03, 21TA04, 21TA05, 21TA06, 21TC03, 21TC05, 21TD03, 21TG01, 21TH01, 22TA02, 22TA05, 22TA07, 22TA09, 22TC01, 22TC05, 22TC07, 22TC08, 22TD02, 22TE02, 23TA09, 23TC05, 23TC06, 23TJ01R1, 24TA07) — identified by regex `^\d{2}[A-Z]{2}\d{2,4}(R\d)?$`.
+  - **18 internal/legacy recall opcodes** (90L, BST, D0L, DSF, E04, EOL, EOM, ESS, FON, ISERVICE, JOA, JOB, JOR, JOU, KOA, KOB, ZKG) — all labeled SAFETY RECALL/SSC/LSC/CSP; all Individual Service / VEHICLE category except ISERVICE (MAINTENANCE). These are redundant if a generic RECALL exists.
+  - **No generic "RECALL" opcode** exists at TL — SCT had one (DIAGNOSTICS category). Joe directed: "Do the generic recall build. It's cleaner." Per-store variance: **some stores lack a generic RECALL; derive via API search for opcode==RECALL before assuming.** The proposed TL keep-list = newly-created RECALL + 30 campaign codes (exclude the 18 internals).
+  - **TL differs from SCT**: SCT had 3 Active campaign codes (23TA13/23TC01/23TC05) + RECALL. TL has 30 Active campaign codes — much broader because TL hasn't archived old campaigns. The 18 internals are a TL-specific artifact.
 - Why not a list filter: Parts RO Sales → Appointments tab filter fields are only Appointment Date/Time, Appointment Status, Part Status, Counter Person — no opcode/recall field exists, so opcode-level config is the only clean path.
 
 # Tekion — Parts Appointments for Recalls Only (parts-prep flag mass toggle)

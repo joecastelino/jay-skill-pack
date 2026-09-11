@@ -83,37 +83,68 @@ if not otp:
 })()
 ```
 
-## Dealer Switching (CRITICAL)
+## Dealer Switching (CRITICAL — updated for Tekion 3.0, verified 2026-09-11)
 
-The dealer switcher is notoriously difficult. **Do NOT use the chevron icon (e36)** — it often doesn't work.
+The dealer switcher changed in Tekion 3.0. Old `.ant-popover-inner-content` selectors no longer apply.
 
-### Method that works (confirmed reliable):
+### Method that works (verified on :9223, TL 1092):
 
-1. Click the dealer container via JS:
+1. **Click the dealer pill** at top-right (~1120, 32 on /home) using the :9223 `/mouse` endpoint:
+```bash
+curl -s 'http://localhost:9223/mouse' -X POST -H 'Content-Type: application/json' \
+  -d '{"x":1120,"y":32}'
+```
+The `/mouse` endpoint reliably triggers the React click handler — eval-based `el.click()` or `dispatchEvent` often fail.
+
+2. **The popover opens** with class `[class*="root_dealerInfo"]` (NOT `.ant-popover-inner-content`). It appears at ~(946, 57), w=313, h=360. Only 6-7 dealers are visible without scrolling.
+
+3. **Scroll the list** to reveal dealers below the fold (TL and VC are below the 360px viewport):
 ```js
-document.querySelector('.root_dealerSelect_container__eXjxN2P5EN')?.click();
+const list = document.querySelector('[class*="root_dealerInfoList_itemListContainer"]');
+if (list && list.scrollHeight > list.clientHeight) {
+    list.scrollTop = list.scrollHeight;  // scroll to bottom
+}
+// Typical: scrollHeight=336, clientHeight=260
 ```
 
-2. The dealer popover opens. The dealer list is inside `.ant-popover-inner-content` rendered as a portal. **IMPORTANT**: The popover content may not appear in the DOM immediately after `.click()` — the portal needs time to render. Use a `setTimeout` delay (~500ms) before querying the popover, or use `browser_snapshot` + `browser_vision` to verify it's open. **DO NOT use `browser_snapshot` to find dealer items** — the popover isn't in the accessibility tree. Instead, use JS with a delay to find and click the target:
-
+4. **Find and click the target dealer** via tree-walker (most reliable — dealer text nodes render as exact names):
 ```js
-// Find dealer items in the popover
-const inner = document.querySelector('.ant-popover-inner-content');
-const items = inner.querySelectorAll('li, div, span, [role="option"], [class*="item"]');
-for (const el of items) {
-    const text = el.textContent?.trim();
-    if (text?.startsWith('ST') && text?.includes('Stevens')) {
-        el.click();
-        break;
+const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+let node;
+while (node = walker.nextNode()) {
+    if (node.textContent.trim() === 'Toyota of Lancaster') {  // exact match
+        // Walk up to clickable row container
+        let row = node.parentElement;
+        while (row && row !== document.body) {
+            const r = row.getBoundingClientRect();
+            if (r.height >= 30 && r.height <= 50 && r.width > 100) {
+                // Mark it and return coords
+                const cx = r.x + r.width/2;
+                const cy = r.y + r.height/2;
+                // Use /mouse endpoint to click
+                return {x: cx, y: cy};
+            }
+            row = row.parentElement;
+        }
     }
 }
 ```
+Then click with: `curl -s 'http://localhost:9223/mouse' -X POST -d '{"x":<x>,"y":<y>}'`
 
-**Important**: Each dealer item renders as text like `STStevens Creek Toyota` (code + name, no space). Search by prefix match (e.g., `text.startsWith('ST')`) rather than exact match.
+**NOTE**: `element.click()` on the found row DIV does NOT work — the React event handlers need the native mouse event that `/mouse` provides.
 
-3. **Verify** the switch — look for "ST Stevens Creek Toyota" in the snapshot. The line shows the new dealer code and name.
+5. **Verify** the switch:
+```js
+localStorage.currentActiveDealerId  // should match target dealer ID
+```
 
-**Store codes:** BT=Blackstone Toyota, BC=Blackstone Chevy, ST=Stevens Creek Toyota, SV=Stevens Creek VW, TL=Toyota of Lancaster, AR=Alfa Romeo SJ, VC=VW Clovis.
+**Pitfalls:**
+- The popover closes quickly between actions — always combine open+scroll+find+click in rapid sequence (within the same eval call or with minimal delays).
+- Dealer items render as `[class*="cursor-pointer root_dealerInfoItem_container"]` divs (h=42), each containing an `[class*="itemGroup"]` with `[class*="itemName"]`.
+- **TL (1092) and VC (1891) are always below the fold** — scroll first, then find.
+- Do NOT reuse coords across sessions — always re-derive from the current DOM.
+
+**Dealer IDs (all 7):** AR=6195, BC=1251, BT=1249, ST=876, SV=826, TL=1092, VC=1891. 8th entry "AM"=American Motors Customs & Classics (uncertain if real store).
 
 ## Opcode Management Navigation
 
