@@ -19,12 +19,12 @@ triggers:
   - Keep-list ON: **RECALL** (generic), **23TA13**, **23TC01**, **23TC05** — the only 3 Active opcodes in SCT's 106-opcode "Recalls" service type (50 Inactive / 53 Archived left checked, harmless).
   - Consequence: Parts gets NO appointment-prep notifications for anything non-recall at SCT (menus, tires, ToyotaCare pre-pull all silenced) — this was the explicit intent.
   - Maintenance caveat: **new opcodes default the checkbox ON** — future Toyota campaign codes (24TA.., 25TC..) auto-flow correctly, but any NEW non-recall opcode created later must be unchecked. A weekly sweep was offered to Joe but NOT yet scheduled.
-- **TL (1092) — IN PROGRESS 2026-09-11** (Joe requested deployment; awaiting keep-list approval):
-  - **48 ACTIVE opcodes** under the "Recalls" service type (total service type: 48 Active + unknown Inactive/Archived). Service type sidebar scrollable container = `[class*="root_dealerInfoList_itemListContainer"]` (scrollHeight 849, clientHeight 455 — Recalls tab at ~x166, y264 after scrolling).
-  - **30 real Toyota campaign codes** (20TA02, 20TA024RN, 20TA03, 20TA05, 20TA06, 20TC01, 21TA01, 21TA03, 21TA04, 21TA05, 21TA06, 21TC03, 21TC05, 21TD03, 21TG01, 21TH01, 22TA02, 22TA05, 22TA07, 22TA09, 22TC01, 22TC05, 22TC07, 22TC08, 22TD02, 22TE02, 23TA09, 23TC05, 23TC06, 23TJ01R1, 24TA07) — identified by regex `^\d{2}[A-Z]{2}\d{2,4}(R\d)?$`.
-  - **18 internal/legacy recall opcodes** (90L, BST, D0L, DSF, E04, EOL, EOM, ESS, FON, ISERVICE, JOA, JOB, JOR, JOU, KOA, KOB, ZKG) — all labeled SAFETY RECALL/SSC/LSC/CSP; all Individual Service / VEHICLE category except ISERVICE (MAINTENANCE). These are redundant if a generic RECALL exists.
-  - **No generic "RECALL" opcode** exists at TL — SCT had one (DIAGNOSTICS category). Joe directed: "Do the generic recall build. It's cleaner." Per-store variance: **some stores lack a generic RECALL; derive via API search for opcode==RECALL before assuming.** The proposed TL keep-list = newly-created RECALL + 30 campaign codes (exclude the 18 internals).
-  - **TL differs from SCT**: SCT had 3 Active campaign codes (23TA13/23TC01/23TC05) + RECALL. TL has 30 Active campaign codes — much broader because TL hasn't archived old campaigns. The 18 internals are a TL-specific artifact.
+- **TL (1092) — MASS-UNCHECK DONE 2026-09-11, RECALL OPCODE + REMAINING PIECES PENDING** (Joe approved keep-list):
+  - **981 active opcodes** at TL. Mass-uncheck: **950 unchecked, 31 kept ON** via 10 in-page fetch batches (all 200 OK). Header capture via `history.pushState` + `PopStateEvent` trick.
+  - **Keep-list: 30 Toyota campaign codes** (20TA02–24TA07) from Recalls service type. 
+  - **Generic RECALL opcode creation blocked by Skill field** — defaults to "Skills Default" which is NOT a valid value. Must be set to "tech/generic". All other fields filled and verified.
+  - **REMAINING**: RECALL opcode creation, free-text placeholder, notify-immediately toggle, backlog sweep, verification.
+  - **TL vs SCT**: TL has 30 active campaign codes vs SCT's 3. TL lacks a generic RECALL opcode (SCT has one).
 - Why not a list filter: Parts RO Sales → Appointments tab filter fields are only Appointment Date/Time, Appointment Status, Part Status, Counter Person — no opcode/recall field exists, so opcode-level config is the only clean path.
 
 # Tekion — Parts Appointments for Recalls Only (parts-prep flag mass toggle)
@@ -83,6 +83,124 @@ becomes recalls-only. There is NO list-level recall filter on the Appointments t
 - Related Scheduling Settings knobs (General tab): "Notify Parts department of
   appointment part request" (immediately vs N days before), hold-parts-on-missed
   duration. Advisors can also mark a single appointment "no part needed".
+
+## 🔑 Reliable header capture: `history.pushState` + `PopStateEvent` (2026-09-11 TL deployment)
+
+The XHR hook is armed BEFORE the API call fires. But React Query caches the
+opcode search response — just being on `/ro/opcode` won't re-fire the XHR.
+Clicking UI elements (Reset, status filter) is unreliable. **THE RELIABLE
+METHOD** is to force React Query to re-fetch by toggling the route:
+
+```js
+// 1. Arm XHR hook
+XMLHttpRequest.prototype.open = function(m,u) { this.__u = u; /* ... */ };
+XMLHttpRequest.prototype.send = function(b) {
+    this.addEventListener('load', function() {
+        if (this.__u && this.__u.includes('/opcode/search')) {
+            window.__capHeaders = Object.assign({}, this.__h);
+            window.__capCount = JSON.parse(this.responseText).data?.count;
+        }
+    });
+    return origSend.apply(this, arguments);
+};
+
+// 2. Navigate away and back to force a fresh fetch
+history.pushState({}, '', '/ro/opcode/list');
+window.dispatchEvent(new PopStateEvent('popstate'));
+// Wait ~1s
+history.pushState({}, '', '/ro/opcode');
+window.dispatchEvent(new PopStateEvent('popstate'));
+// Now window.__capHeaders is populated with all 16 auth headers
+```
+
+The captured headers include `tekion-api-token`, `roleId`, `userId`, `tenantname`,
+`dealerId`, `tek-siteId`, `original-userid`, `original-tenantid`, `clientId`,
+`locale`, `program`, `applicationId`, `subApplicationId`, `productIds`.
+
+## 🔑 In-page `fetch()` with captured headers — the ONLY reliable execution path (2026-09-11 TL deployment)
+
+**External Python `urllib` ALWAYS fails** (500 "Unknown Error in identity" or
+401 "session expired") even with the exact same headers — Tekion's auth
+requires the SPA's httpOnly cookies. **In-page `fetch()` with captured headers
+always succeeds:**
+
+```js
+var h = Object.assign({}, window.__capHeaders);
+h['Content-Type'] = 'application/json';
+
+var resp = await fetch('/api/service-module/u/opcode/search', {
+    method: 'POST', headers: h, body: JSON.stringify({...}),
+    credentials: 'include'
+});
+// resp.status === 200 ✓
+```
+
+**Pattern for mass operations (TL: 981 opcodes, 10 batches, all 200 OK):**
+```js
+// Pull all pages
+var allHits = [];
+for (var start = 0; ; start += 200) {
+    var resp = await fetch('/api/service-module/u/opcode/search', {
+        method: 'POST', headers: h,
+        body: JSON.stringify({pageInfo: {start, rows: 200}, ...}),
+        credentials: 'include'
+    });
+    var hits = (await resp.json()).data.hits;
+    allHits = allHits.concat(hits);
+    if (hits.length < 200) break;
+}
+
+// Bulk-update in batches of 100 with 300ms pacing
+for (var i = 0; i < toUpdate.length; i += 100) {
+    var batch = toUpdate.slice(i, i + 100);
+    await fetch('/api/service-module/u/opcode/bulk-update/default', {
+        method: 'POST', headers: h,
+        body: JSON.stringify({
+            opcodesToUpdate: batch,
+            sectionsToUpdate: [{section: 'ELIGIBLE_FOR_PARTS_PREPARATION', selectionOperator: null}],
+            opcode: {eligibleForPartPreparation: false}
+        }),
+        credentials: 'include'
+    });
+    await new Promise(r => setTimeout(r, 300));
+}
+```
+
+**Why this works when external calls don't**: The browser's `fetch()` with
+`credentials: 'include'` sends the httpOnly session cookie that Tekion's
+backend validates. The captured headers provide the user/dealer/role context,
+but the cookie is the actual auth gate. External Python can't access httpOnly
+cookies — only in-page JavaScript can.
+
+## 🔑 Dealer switcher popover SILENTLY steals all clicks (2026-09-11 TL deployment)
+
+If the dealer switcher popover opens mid-form (triggered by clicking anywhere
+near the top-right corner), **ALL subsequent `/mouse` clicks and
+`elementFromPoint()` calls resolve to popover elements**, not the form. The
+popover's DOM sits above the form in z-order and is invisible to the
+`document.activeElement` flow — you'll be typing into a dealer search box
+instead of a form field. Always check:
+
+```js
+// After any unexpected form silence, check for the popover
+var popover = [].slice.call(document.querySelectorAll('[class*="root_dealerInfo"]'))
+    .filter(e => e.offsetParent && e.offsetHeight > 50);
+// If found, close it:
+document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));
+```
+
+## 🔑 Opcode create form: Skill field defaults to "Skills Default" and blocks Create (2026-09-11 TL)
+
+The Skill field on `/ro/opcode/add` defaults to "Skills Default" — this is NOT
+a valid value and the Create button silently fails (no error toast, no red
+border, just stays on the add page). The field MUST be explicitly set to
+`tech/generic` (or another valid skill). Finding the react-select control is
+tricky: `SKILL_FIELD_ID` may be missing, `elementFromPoint()` near the label
+may hit the Opcode Type field instead, and the TreeWalker may not find the
+"Skills Default" text node. **Most reliable method**: find the Skill LABEL
+text node (always at ~x242), then scan rightward to find the visible
+react-select `[class*=singleValue]` at ~x480, read its text to confirm it's
+"Skills Default", then click and type-filter.
 
 ## Verifying it worked / handling "it's not working" complaints (verified SCT 2026-07-21)
 
