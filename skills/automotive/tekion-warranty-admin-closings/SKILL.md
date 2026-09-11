@@ -61,7 +61,7 @@ All via persistent browser server `http://localhost:9223` `/eval` (see persisten
 
 ```python
 from jay_mail import send_report
-send_report(subject=..., html=..., to=..., cc=..., from_name="AMG Fixed Ops")
+send_report(subject=..., html=..., to=..., cc=..., from_name="Joe Castelino")
 ```
 
 Never send with a "Jay" sender name. Joe sees it and will ask "wtf is this????"
