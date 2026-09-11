@@ -201,6 +201,18 @@ the renderer) — the name is baked in at pull time.
 Note some ids resolve to non-advisor personas (e.g. BC `8c0d2da8…` = Dale Alexander, INVENTORY_MANAGER)
 — they still carry deferred lines as RO primary advisor; keep them but don't assume they're writers.
 
+## Reference run (BC / 1251, Thu 9/10/2026)
+33 declined lines · 14 ROs · $23,484.28 · 14 Critical. Erik Mercado #1 $18,185.94 (5 lines /
+3 ROs — 77% of the day, driven by RO 102509 OWN A CAR wholesale "fuel system replacement"
+at $11,487.10 + flush at $3,079.83), Michael Reyes $2,955.14, Humberto Dominguez $1,089.36,
+Jacob Debussey $572.13 (single RO 102933, all 4 lines Critical — tires/wipers/alignment),
+Dale Alexander $428.49 (6 lines / 3 ROs / all Critical / all $0-priced internal recon),
+Dimetri Reynoso $147.76, Juan Ramirez $105.46 (3 Critical on RO 102758, $30 cabin filter +
+unpriced). Draft UID **43255**. PDF 8 pages.
+Stacey reported "IMAP UID (Drafts): 132 (APPENDUID All-Mail: 43255 — ignore...)" — BOTH numbers
+are wrong AND inverted. Real Drafts UID = 43255, All-Mail = 261315. Reconfirming: Stacey's
+self-reported UIDs are never reliable; always resolve via himalaya envelope list.
+
 ## Reference run (BC / 1251, Wed 9/9/2026)
 21 declined lines · 11 ROs · $11,884.44 · 3 Critical. Houa Moua #1 $5,361.07 (5 lines / 3 ROs —
 driven by RO 102517 SIERRA AUTO SALES "tear down" $4,980.31, a wholesale account per the
@@ -330,12 +342,34 @@ Joe asked for 6 AM (he's up by 4) — not the 7:30 AM originally proposed below.
   she reported `DRAFT_UID=80` for a draft whose real UID was **42675**. The raw fetch response
   makes it obvious: `b'80 (X-GM-LABELS () UID 42675 FLAGS (\Draft))'` — the leading `80` is the
   sequence number, `UID 42675` is the truth. Never quote her number to Joe; always resolve the
-  real UID yourself via `X-GM-RAW` subject search and report that. Her other self-report tokens
+  real UID yourself via `X-GM-RAW` subject search and report that.
+  **Worse case — BOTH of her numbers can be wrong AND inverted at once (2026-09-10):** she
+  reported `"IMAP UID (Drafts folder): 132 (APPENDUID All-Mail: 43255 — ignore, the
+  Drafts-folder UID is what matters)"` — she had it exactly backwards. Real Drafts UID = **43255**;
+  real All-Mail UID = **261315** (neither of her numbers). She is confidently wrong about *which
+  field is which* and even adds a wrong "ignore that one" instruction. Treat every number she
+  reports as noise: `himalaya envelope list -a personal -f "[Gmail]/Drafts" -s 5` gave the true
+  UID 43255 in one call (himalaya's ID column matched the real IMAP UID here — it is reliable
+  for *listing* even though her numbers are not). Her other self-report tokens
   (CID_PNG, HTML_BYTES, IN_DRAFTS) have been accurate. Also expect her to mangle underscores in
   token names (`DATAURIIN_HTML`) — formatting only, not a failed field.
 - **Report `Critical` from the JSON, not the renderer.** Count `severity == "CRITICAL"` across
   every advisor's `detail` array (keys are `advisor`/`lines`/`ros`/`amt`/`detail`, and
   `advisorId` — NOT `name`/`amount`/`total`; guessing key names yields a row of `None`s).
+  **EXACT SCHEMA (verified 2026-09-10 — author this down instead of probing; a wrong guess
+  costs a full round-trip of `None`s):**
+  ```
+  top-level : store, dealer, date, total_lines, total_ros, total_amt, advisors, trend, generated
+              # total_amt — NOT total_amount / amount / totalAmt
+  advisor[] : advisorId, advisor, lines, ros, amt, detail
+  detail[]  : ro, customer, vehicle, concern, opcode, severity, amt, closed
+              # ro/customer/concern/amt — NOT roNumber/customerName/description/declinedAmount
+  trend[]   : date, dow, lines, ros, amt      # NOTE: no `critical` key in trend at all
+  ```
+  `total_amt` can read `None` from a mis-keyed probe — if your total prints `None`, you used the
+  wrong key, not a broken pull (the pull itself already printed the real total on stdout).
+  The trailing-7 `critical` count the email asks for must be computed from `detail[]` of the
+  current day only; the `trend` array never carries it.
   Cross-check against the PDF page-1 "FLAGGED CRITICAL" tile — they must match (29 = 29).
 - **A draft Joe "can't find" in Gmail is usually STALE, not missing.** (Pre-cron history; since
   2026-08-25 job `d0bfeeef5851` produces one every 6 AM, so a missing draft now means the CRON
