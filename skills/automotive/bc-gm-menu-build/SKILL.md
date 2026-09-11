@@ -895,6 +895,43 @@ Successfully creates row (makeId click → "Chevrolet" option → model "All" �
 4. **4-tier checkbox pattern** [Apply-all, Basic, Value, Premium] vs BT's 3-tier [Apply-all, Basic, Premium].
    `set_premium_only()` from rollout_lib targets idx 2 in a 3-cb array — needs adaptation.
 
+### ✅ PROVEN PATTERN: Add Services ant-v5 select at BC (2026-09-11)
+The per-char input-event typing pattern **WORKS** for the Add Services react-select at BC.
+BT's `open_select_under('Add Services')` → `/type` → `click_option_exact()` does NOT work here,
+but this JS-native pattern does:
+
+```js
+// 1. Find the blank Add Services row (the one showing "Select")
+const blank = [...document.querySelectorAll('[id^=ADDED_SERVICES_NAME_]')]
+  .filter(e => e.offsetParent).findLast(e => e.innerText.trim() === 'Select');
+// 2. Focus the inner input via JS (NOT /mouse click, not value-setter)
+const inp = blank.querySelector('input');
+inp.focus();
+inp.click();
+// 3. Type each character with per-char input events (NOT execCommand, NOT /type endpoint)
+const text = "search keyword";
+let cur = '';
+for (const ch of text) {
+  cur += ch;
+  Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(inp, cur);
+  inp.dispatchEvent(new Event('input', {bubbles: true}));
+}
+// 4. Wait 3-4s for options to render
+// 5. Pick option with includes() matching — options display as "OPCODE_DESCServiceName" concatenated!
+const option = [...document.querySelectorAll('[class*=option]')]
+  .filter(e => e.offsetParent && e.innerText.includes(serviceName))[0];
+['mousedown','mouseup','click'].forEach(t => option.dispatchEvent(new MouseEvent(t, {...})));
+// 6. Set tiers — BC uses [Apply-all, Basic, Value, Premium] (4 checkboxes)
+```
+
+**Key gotchas:**
+- The `/type` endpoint on :9225 throws 500 for these selects — use the per-char JS pattern instead
+- Option text is concatenated: `"BRAKE FLUID EXCHANGEPerform Brake Fluid Exchange Service"` — never
+  exact-match; always use `includes()`
+- After picking an option, a new blank "Select" row spawns below with a new `ADDED_SERVICES_NAME_N` ID
+- Setting Premium-only = checkbox pattern `[false, false, false, true]` for [Apply-all, Basic, Value, Premium]
+- Save MUST be a real bridge /mouse click at the Save button's coordinates (synthetic .click() no-ops)
+
 ### Session management for BC builds
 - **:9223** shared with crons — don't use for BC UI work (drift risk)
 - **:9225** dedicated BC browser — start via `/home/itadmin/persistent-browser-2/`
@@ -921,6 +958,19 @@ is **ant-v5** throughout. Known working pattern from BT's batch creation:
 2. Opcode react-select FIRST (picking opcode auto-resets name + hrs)
 3. Then name + Customer Hrs + Labor Define Here radio
 4. Save = real /mouse click (synthetic .click() no-ops)
+
+### ✅ PROVEN BATCH CREATION SCRIPT (2026-09-11, 17/17 services created)
+Script at `/home/itadmin/bc-menu-build/create_bg_batch.py` — navigates to add-service page,
+fills opcode + name + hrs, saves via /mouse click, navigates back to included-service list,
+repeats for each service. Key details:
+- Opcode react-select at x≈319,y≈234 on the Add form: focus inner input → per-char typing → wait 3.5s
+- Option pick: find option where `innerText.includes(opcodeName)` → mousedown/mouseup/click dispatch
+- Name (`#name`): focus + setSelectionRange + execCommand('insertText')
+- Customer Hrs (`#CUSTOMER_HOURS_FIELD`): native value-setter + input/change events
+- Save button coords: find button with `innerText.trim()==='Save'` → /mouse click at its center
+- Navigate back: soft pushState to the included-service list → Discard modal if prompted → loop
+- Pace: ~8s per service; all 17 created in ~2.5 min
+
 ### Included-Service Overrides mechanics (learned in the Path B test 2026-07-12)
 - **Overrides tab structure**: left sub-nav Labor / Parts / Fees / Identifier &
   Jobs; EACH sub-section has its own Pull From Opcode ⟷ Define Here radio and
