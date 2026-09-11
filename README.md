@@ -2,7 +2,7 @@
 
 Skill library for **Jay**, the Tekion DMS specialist agent at American Motors Group — plus general-purpose agent skills. Built for the [Hermes Agent](https://github.com/NousResearch) skill system (`SKILL.md` + YAML frontmatter, with optional `references/`, `scripts/`, `templates/`).
 
-**214 skills** · auto-synced from the live agent · last sync: 2026-09-11 05:00
+**214 skills** · auto-synced from the live agent · last sync: 2026-09-11 05:15
 
 ## Install into another agent
 
@@ -123,7 +123,7 @@ Secrets (passwords, app passwords, tokens) are redacted with `<PLACEHOLDER>` mar
 | 104 | [`tekion-parts-ordering-receiving`](skills/automotive/tekion-parts-ordering-receiving/SKILL.md) | automotive | 2 | 2026-07-06 | Order parts (purchase orders), handle Special Order Requests (SOR/SOP), and receive parts in Tekion's Parts module. Covers the 8 PO types, the SOR→special-order-PO flow, Parts Receiving app (web + mobile scan-gun), Ma... |
 | 105 | [`tekion-pdf-print-copies-diagnosis`](skills/automotive/tekion-pdf-print-copies-diagnosis/SKILL.md) | automotive | 2 | 2026-09-04 | Diagnose "the customer invoice prints 2 times" / duplicate document printing at any AMG Tekion store. Root cause lives in PDF Settings → Print tab → AutoPrint Settings: the Quantity column = copies per print event. Al... |
 | 106 | [`tekion-physical-inventory`](skills/automotive/tekion-physical-inventory/SKILL.md) | automotive | 2 | 2026-06-29 | Run a Tekion Parts Physical Inventory or Bin Spot Check audit — the full Setup → Counting → Reconciliation → Summary workflow that compares system count vs physical count, surfaces variance, and writes on-hand adjustm... |
-| 107 | [`tekion-pipeline-operations`](skills/automotive/tekion-pipeline-operations/SKILL.md) | automotive | 2 | 2026-09-01 | Audit, diagnose, and repair the Tekion scraper pipeline including OTP fetching, session reuse, lock starvation, and Puppeteer navigation timeouts. |
+| 107 | [`tekion-pipeline-operations`](skills/automotive/tekion-pipeline-operations/SKILL.md) | automotive | 2 | 2026-09-01 | Audit, diagnose, and repair the Tekion scraper pipeline including OTP fetching, session reuse, lock starvation, Puppeteer navigation timeouts, and Tekion 3.0 compatibility. |
 | 108 | [`tekion-rebuild-broken-report-builder-report`](skills/automotive/tekion-rebuild-broken-report-builder-report/SKILL.md) | automotive | 2 | 2026-09-01 | Diagnose a Tekion Report Builder custom report that a manager says is "not working" (wrong/low numbers, blank, zero rows), then REBUILD it as a live OpenAPI-sourced report. Covers pulling the report's real definition,... |
 | 109 | [`tekion-report-cron-self-contained-runner`](skills/automotive/tekion-report-cron-self-contained-runner/SKILL.md) | automotive | 2 | 2026-09-03 | Build any long-running (>20 min) Tekion report cron as a self-contained shell runner (scan -> render -> email in ONE flock'd process) instead of an agent-babysat background job. Use when creating a new report cron, wh... |
 | 110 | [`tekion-vehicle-override-row-builder`](skills/automotive/tekion-vehicle-override-row-builder/SKILL.md) | automotive | 2 | 2026-07-03 | Add vehicle/part override rows to a Tekion opcode (Overrides → Parts tab). Copy existing row, modify model/year via checkbox dropdowns, set part/price, save. Only works in real browser tool — headless Playwright canno... |

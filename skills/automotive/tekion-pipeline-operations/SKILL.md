@@ -1,11 +1,11 @@
 ---
 name: tekion-pipeline-operations
-description: Audit, diagnose, and repair the Tekion scraper pipeline including OTP fetching, session reuse, lock starvation, and Puppeteer navigation timeouts.
+description: Audit, diagnose, and repair the Tekion scraper pipeline including OTP fetching, session reuse, lock starvation, Puppeteer navigation timeouts, and Tekion 3.0 compatibility.
 triggers:
   - scraper pipeline broken
   - tekion pipeline audit
   - otp fetch failing
-version: 2.0.0
+version: 2.1.0
 tags: [tekion, puppeteer, scraper, pipeline, dms]
 ---
 
@@ -286,7 +286,77 @@ dealer's bucket, not an app-wide OVERALL_QUOTA event — reuse this any time Joe
 asks whether an outage is fleet-wide or store-specific instead of guessing from
 which recovery watcher happens to be running.
 
-## Codex Computer Use (Future)
+## Tekion 3.0 Compatibility (verified 2026-09-11)
+
+Tekion Service 3.0 rolled out ~September 2026. Full system health check confirmed
+ALL critical pipelines survived:
+
+| System | Status | Notes |
+|--------|--------|-------|
+| Login/OTP flow | ✅ | `login.py` unchanged, same 21-key localStorage + 5 cookies |
+| Global Search | ✅ | `input[placeholder="Search here..."]`, `.ant-tabs-tab`, `.rt-tr` all same selectors |
+| Sales Order tab | ✅ | Still appears in global search dropdown, scraper can click it |
+| Caliber scraper (tekion-scraper.ts) | ✅ | Running successfully, extracting Gross/Net/GP from SO detail pages |
+| VI API scraper | ✅ | 2 AM cron completes, all 7 store files with correct 15-key schema |
+| Persistent browser (:9223) | ✅ | Session injects, dealer switching works, survives server restarts |
+
+**URL changes in 3.0 (NOT impactful to scraper):**
+- RO routes moved: `/repair-orders` → `/ro/repair-orders` (all under `/ro/` prefix)
+- The Caliber scraper navigates via global search + Sales Order tab, not RO URLs, so unaffected
+
+**Potential 3.0 issue (unconfirmed):**
+- SCT RO list page MTD Total Sales showed $0.00 post-upgrade — may be recalculation delay
+
+## "Already running, skipping" — Normal vs. Zombie (updated 2026-09-11)
+
+When the 15-min `cron-pipeline.sh` log shows "Already running, skipping" repeatedly,
+the FIRST check is whether the 1 AM nightly backfill (`cron-tekion.sh`) is still
+running. The nightly processes 3000+ invoices over 6-8 hours — during which EVERY
+15-min run correctly defers. This is NORMAL and not a zombie.
+
+**Quick triage:**
+```bash
+# 1. Check if the nightly log is actively writing
+tail -3 /home/itadmin/caliber-ops/logs/tekion-nightly.log
+# Timestamps within last ~2min + "Searching invoice N" = nightly is alive and working
+
+# 2. Check the pipeline watchdog — stale PID kills are ALSO normal during nightly:
+# Watchdog kills finished parallel scraper processes; the main one keeps going.
+# "[Watchdog: killing stale scraper PID NNN (age Ns)]" ≠ broken pipeline.
+
+# 3. Only if NO recent timestamps in nightly log AND "Already running" >2h:
+# THEN check for a zombie (see Section 5b below)
+```
+
+**Watchdog stale-PID kills are normal cleanup** (verified 2026-09-11):
+The nightly scraper spawns multiple parallel browser processes. Some finish early
+while others run long. The watchdog kills the finished ones. This is housekeeping,
+not a sign of failure. Don't confuse watchdog kills with a broken pipeline.
+
+## Comprehensive Health Check (post-upgrade or periodic)
+
+Run this after any Tekion upgrade or when Joe asks "does everything still work?":
+
+```bash
+# 1. Browser server
+curl -s http://localhost:9223/health
+
+# 2. Check if authenticated (navigate to /home, check for "Welcome back")
+# Use :9223 /eval to read document.body.innerText
+
+# 3. VI data freshness (should be <6h old for all 7 stores)
+ls -lt /home/itadmin/the-goods/data/{bt,bc,st,sv,tl,ar,vc}.json | head -7
+
+# 4. Caliber scraper — check nightly log for recent progress
+tail -5 /home/itadmin/caliber-ops/logs/tekion-nightly.log
+
+# 5. OpenAPI token test
+python3 -c "import sys; sys.path.insert(0,'/home/itadmin/dealer-detail/scripts'); \
+  from tekion_client import TekionClient; c = TekionClient('st'); print(c.get_token()[:20])"
+
+# 6. Global Search — click input[placeholder="Search here..."], type invoice #, 
+#    verify .ant-tabs-tab includes "Sales Order", .rt-tr rows render
+```
 
 Codex with computer use can replace Puppeteer for Tekion automation:
 - AI vision understands the UI naturally (no fragile selectors)

@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-11T05:00:06",
+ "generated": "2026-09-11T05:15:13",
  "skill_count": 214,
  "skills": [
   {
@@ -854,7 +854,7 @@
    "name": "tekion-pipeline-operations",
    "path": "automotive/tekion-pipeline-operations",
    "category": "automotive",
-   "description": "Audit, diagnose, and repair the Tekion scraper pipeline including OTP fetching, session reuse, lock starvation, and Puppeteer navigation timeouts.",
+   "description": "Audit, diagnose, and repair the Tekion scraper pipeline including OTP fetching, session reuse, lock starvation, Puppeteer navigation timeouts, and Tekion 3.0 compatibility.",
    "times_used": 2,
    "last_used": "2026-09-01"
   },
