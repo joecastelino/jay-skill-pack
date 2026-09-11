@@ -313,6 +313,40 @@ need the browser or a fresh header capture:
    as designed. Fix = advisor re-saves the appointment to regenerate (surfaces instantly if
    notify-immediately is ON).
 
+## Tekion 3.0 changes (verified 2026-09-11)
+
+The recall-appointment workflow survives 3.0 unchanged — all 4 pieces (opcode flags, free-text
+placeholder, notify toggle, parts queue) remain intact. However, several UI navigation paths
+and UI elements changed:
+
+- **RO opcode URLs**: `/ro/opcode/edit/<OP>` (added `/ro/` prefix). The old `/opcode/edit/...`
+  still redirects.
+- **Scheduling Settings**: Left-nav replaced the old `.ant-tabs-tab` tab bar. The sub-pages are
+  now separate routes: `/dse-v2/scheduling-settings/general`, `.../service-advisors`, etc.
+  Click "General" in the left-nav (a plain element, not `.ant-tabs-tab`) to reach the
+  notify toggle.
+- **Notify Parts setting simplified**: The old "Notify Parts department of appointment part
+  request few days before scheduled time" + N-days dropdown + "immediately" toggle is now a
+  SINGLE toggle: **"Notify Parts department of appointment part request immediately"**.
+  No more N-days window — it's ON/OFF only.
+
+**Verification method for 3.0**: Standalone headless Playwright with `storage_state` is the
+reliable path. :9223 `/eval` has payload-size issues and `fetch()` from inside the page still
+500s (Tekion's axios auth interceptor doesn't attach). The proven pattern:
+```python
+from playwright.sync_api import sync_playwright
+# ... launch with storage_state=ss_path ...
+page.goto("/home") → switch dealer via UI clicks → 
+page.goto("/ro/opcode/edit/RECALL") → check body text
+page.goto("/dse-v2/scheduling-settings") → click "General" → check body text
+page.goto("/parts/ro-sales/appointment-request") → check "Pending Requests"
+```
+
+**Token-calling the opcode search API externally still fails** (both `t_token` and
+`dse_t_user.accessToken` return 500 from urllib/curl) — the auth mechanism requires
+the SPA's axios interceptor + httpOnly cookie. For API-level verification, capture
+headers via XHR hook from within the SPA (the skill's original method still works).
+
 ## KB references
 KB0012918 (configure parts prep + opcode exclusion + bulk update note),
 KB0012911 (order/hold/fulfill on appointments), KB0021854 (Part Status filter),

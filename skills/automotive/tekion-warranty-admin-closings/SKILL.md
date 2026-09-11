@@ -55,7 +55,16 @@ All via persistent browser server `http://localhost:9223` `/eval` (see persisten
 - **MONTH-END (last business day) IS A HUGE OUTLIER — expect ~4-5x a normal day (verified Mon 08/31/2026).** BC closed **243** ROs, **90** warranty / **$187,307.22**, with **66/90 reopened (73%)** — vs. a normal weekday of 15-36 warranty ROs / $7K-$36K. Do NOT treat a month-end spike as a bug or double-count; verify `unique ROs == warranty row count` (90/90 here) and send it. The reopened share is also abnormally high on close-out, so the exposure line matters most on these days.
 - **PDF RENDER: Playwright from `execute_code`/the venv can die with `AttributeError: module 'inspect' has no attribute 'FrameInfo'`** — caused by a stray `/tmp/inspect.py` shadowing the stdlib `inspect` module when cwd is `/tmp`. Fix: write the render script to a NON-/tmp dir (e.g. `/home/itadmin/tekion-reports/_pdfwork/`) and run `python3 -I <script>` with that dir as cwd and `PYTHONPATH=""`. Also note `pdftoppm` is NOT installed on this box — to `vision_analyze` the deliverable, screenshot the same HTML in Playwright (`page.screenshot`) instead of rasterizing the PDF.
 
-## 🚨 MANDATORY WINDOW RULE — NEVER PULL A DAY AT T+1 ALONE (set 2026-08-31)
+## 🚨 SENDER RULE — NEVER FROM "JAY" (set 2026-09-11)
+
+**ALL email MUST route through Stacey.** The `jay_mail.py` direct-SMTP path is a LAST RESORT only, and only when Stacey is confirmed down. If you must fall back to `jay_mail.py`, ALWAYS override `from_name`:
+
+```python
+from jay_mail import send_report
+send_report(subject=..., html=..., to=..., cc=..., from_name="AMG Fixed Ops")
+```
+
+Never send with a "Jay" sender name. Joe sees it and will ask "wtf is this????"
 
 The daily job read Fri 08/28 the next morning and got **20 ROs / $7,209.68**. The settled truth was **36 / $22,116.88** — 67% of the day's warranty dollars missing. Cause: reopened ROs keep settling warranty lines after re-close, so `paySplitTotalsV3.wpAmounts.amount` is still 0/partial at the next-morning read and the `warranty > 0` filter silently drops them. **A day is only stable at T+3.**
 
