@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-11T11:45:39",
- "skill_count": 216,
+ "generated": "2026-09-11T12:00:40",
+ "skill_count": 217,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -55,7 +55,7 @@
    "path": "automotive/bt-tony-menu-rebuild",
    "category": "automotive",
    "description": "The Blackstone Toyota (BT, dealer 1249) service-menu rebuild project for Tony Garcia (Service Manager). Tony wants menus restructured into Factory Recs / Factory Recs Plus with 25 ordered add-on services. Contains the FULL locked spec, Joe's approved decisions, the opcode audit results, and the build plan. Load for ANY \"BT menu\", \"Tony menu\", \"Factory Recs\", or Blackstone Toyota service menu work. STATUS 2026-07-21: full 5K\u2013200K range (5K-step) built, PUBLISHED, Tony-validated; Phase 7 generic Transmission Fluid placeholders DONE; Phase 8 Tony's BG MENU REVAMP 2026 part-match batch DONE + quote-verified (baseline tony-partmatch-baseline-20260721.json). Remaining: x2.5K half-step menus + EV rows only.",
-   "times_used": 56,
+   "times_used": 57,
    "last_used": "2026-09-11"
   },
   {
@@ -87,7 +87,7 @@
    "path": "automotive/bc-gm-menu-build",
    "category": "automotive",
    "description": "The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-override plan for vehicle-correct GM parts, and open decisions. Load for ANY \"GM menu\", \"BC menu build\", \"GMLOF\", or Blackstone Chevrolet service menu work.",
-   "times_used": 43,
+   "times_used": 44,
    "last_used": "2026-09-11"
   },
   {
@@ -155,6 +155,14 @@
    "last_used": "2026-09-10"
   },
   {
+   "name": "tekion-service-menu-setups",
+   "path": "automotive/tekion-service-menu-setups",
+   "category": "automotive",
+   "description": "Navigate to, read, and inspect Tekion Service Menu Setups (the service-menu builder where interval menus, tiers, tags, opcodes, included services and inspections are configured). Covers the non-obvious nav path, the page/tab structure, where free-text \"notes\"/tags live, and the headless storage_state harness that reaches it reliably. Use when asked to find/check/edit a service menu, a menu's tag/name, or \"the last service menu\".",
+   "times_used": 29,
+   "last_used": "2026-09-11"
+  },
+  {
    "name": "tekion-ro-close-blocked-triage",
    "path": "automotive/tekion-ro-close-blocked-triage",
    "category": "automotive",
@@ -169,14 +177,6 @@
    "description": "Tekion Service Scheduling Settings \u2014 appointment slot times, capacities, service advisors, shops, transportation, vehicle/opcode exclusions, and the consumer scheduler. Covers the \"lowest ceiling wins\" capacity model, shop top-down matching, the daily overnight scheduler + \"Run Scheduler\" button, parts-on-appointment notifications, and the concierge mobile write-up flow. Load for any appointment/scheduling/capacity setup or troubleshooting in Tekion.",
    "times_used": 28,
    "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-service-menu-setups",
-   "path": "automotive/tekion-service-menu-setups",
-   "category": "automotive",
-   "description": "Navigate to, read, and inspect Tekion Service Menu Setups (the service-menu builder where interval menus, tiers, tags, opcodes, included services and inspections are configured). Covers the non-obvious nav path, the page/tab structure, where free-text \"notes\"/tags live, and the headless storage_state harness that reaches it reliably. Use when asked to find/check/edit a service menu, a menu's tag/name, or \"the last service menu\".",
-   "times_used": 28,
-   "last_used": "2026-09-11"
   },
   {
    "name": "tekion-standard-reports-performance",
@@ -1103,6 +1103,14 @@
    "path": "apple/imessage",
    "category": "apple",
    "description": "Send and receive iMessages/SMS via the imsg CLI on macOS.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "bc-customer-list-scrub",
+   "path": "automotive/bc-customer-list-scrub",
+   "category": "automotive",
+   "description": "Compare/scrub BC customer lists (GM Rewards, Consolidated Leads, etc.) \u2014 match customers across lists, flag overlaps, and produce Joe's ranked master output with GM Rewards first (ranked by $) and secondary list appended. Load for ANY BC customer data comparison, list merge, or \"scrub these two lists.\"",
    "times_used": 0,
    "last_used": null
   },
