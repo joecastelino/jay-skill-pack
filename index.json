@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-11T05:15:13",
+ "generated": "2026-09-11T05:30:23",
  "skill_count": 214,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 169,
-   "last_used": "2026-09-10"
+   "times_used": 170,
+   "last_used": "2026-09-11"
   },
   {
    "name": "agent-to-agent-bridge",
