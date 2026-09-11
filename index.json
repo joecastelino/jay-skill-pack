@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-11T15:00:32",
+ "generated": "2026-09-11T15:15:36",
  "skill_count": 218,
  "skills": [
   {
@@ -307,6 +307,14 @@
    "last_used": "2026-08-07"
   },
   {
+   "name": "tekion-roles-permissions",
+   "path": "automotive/tekion-roles-permissions",
+   "category": "automotive",
+   "description": "Create/duplicate a Tekion custom ROLE and toggle its PERMISSIONS via the Roles admin page (/core/roles). Verified live at Blackstone Chevrolet 2026-07-10 (created \"Concierge\" cloned from ServiceAdvisor + enabled deal viewing). Covers the no-duplicate-button trap, permission pill mechanics, and save/verify flow.",
+   "times_used": 14,
+   "last_used": "2026-09-11"
+  },
+  {
    "name": "hermes-agent-provider-switch",
    "path": "automotive/hermes-agent-provider-switch",
    "category": "automotive",
@@ -329,14 +337,6 @@
    "description": "Build a vehicle-scoped PARTS override row on a Tekion menu-included opcode via Service Menu Setups \u2192 Included Services \u2192 Edit Service \u2192 Overrides \u2192 Parts, driven by the persistent-browser :9223 HTTP endpoints (/eval, /click, /type, /press). Covers the exact DOM (react-select Make, ant-dropdown checkbox Model/Year multi-selects, Trim Details modal), the verified click-paths, and the costly pitfalls (wrong /eval key, navigate-away row wipe, coordinate drift, disabled trim input). Use when swapping/adding parts on an opcode that lives INSIDE a service menu (e.g. BGCVTF CVT fluid \u2192 E-TAF for Corollas).",
    "times_used": 13,
    "last_used": "2026-08-05"
-  },
-  {
-   "name": "tekion-roles-permissions",
-   "path": "automotive/tekion-roles-permissions",
-   "category": "automotive",
-   "description": "Create/duplicate a Tekion custom ROLE and toggle its PERMISSIONS via the Roles admin page (/core/roles). Verified live at Blackstone Chevrolet 2026-07-10 (created \"Concierge\" cloned from ServiceAdvisor + enabled deal viewing). Covers the no-duplicate-button trap, permission pill mechanics, and save/verify flow.",
-   "times_used": 12,
-   "last_used": "2026-09-10"
   },
   {
    "name": "tekion-flag-vs-actual-hours-report",
@@ -939,6 +939,14 @@
    "last_used": "2026-06-29"
   },
   {
+   "name": "hermes-slack-approval-config",
+   "path": "automotive/hermes-slack-approval-config",
+   "category": "automotive",
+   "description": "Configure who can approve Hermes dangerous command requests in Slack \u2014 add/remove approvers, set SLACK_ALLOWED_USERS, and understand how approval routing works.",
+   "times_used": 1,
+   "last_used": "2026-09-11"
+  },
+  {
    "name": "slack-store-thread-cron-retarget",
    "path": "automotive/slack-store-thread-cron-retarget",
    "category": "automotive",
@@ -1143,14 +1151,6 @@
    "path": "automotive/dealerdetail-persona-and-dedup",
    "category": "automotive",
    "description": "Split the DealerDetail advisor dashboard by Tekion persona (SERVICE_ADVISOR vs an \"Others\" bucket for cashiers/warranty clerks/service managers/techs), backfill the persona column from the Tekion users API, and fix duplicate-advisor rows caused by null-name pre-scope-upgrade pulls. Use when advisor numbers look polluted by non-advisors, when you see an \"Unassigned\"/null advisor, when personas are 0/N populated, or when the same Tekion userId appears under two Advisor rows.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "hermes-slack-approval-config",
-   "path": "automotive/hermes-slack-approval-config",
-   "category": "automotive",
-   "description": "Configure who can approve Hermes dangerous command requests in Slack \u2014 add/remove approvers, set SLACK_ALLOWED_USERS, and understand how approval routing works.",
    "times_used": 0,
    "last_used": null
   },
