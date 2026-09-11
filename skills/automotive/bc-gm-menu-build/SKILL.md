@@ -871,7 +871,56 @@ Ruben could have hit any of the three.
   19435372 = $90.53 inside FISVC vs $27.85 pour-in — deliberate?
 - [ ] LOFHD = LOFMOBILE1 = $279.95 tie acceptable?
 
-## Mechanics notes (this store)
+## 60K MENU BUILD (started 2026-09-11)
+
+### 60K Menu ID: `6671ca385371ce62ee4016d9`
+- 46 rows (Chevrolet, Cadillac, Buick, GMC), all `baseSystemInterval: 7500`
+- Menu level: "Edit Menu - 60000 mi", PUBLISHED
+- 3 tiers active: Basic, Value, Premium (4 checkboxes per row: [Apply-all, Basic, Value, Premium])
+- Row 47 created (Chevrolet/All Models/All Years/All Trims), SAVED via `build_60k.py`
+
+### BC BUILD SCRIPT
+`/home/itadmin/bc-menu-build/build_60k.py` — creates universal row, targets :9225, dealer 1251.
+Successfully creates row (makeId click → "Chevrolet" option → model "All" → year "All" → trim modal Save).
+
+### ⚠️ BC vs BT CRITICAL DIFFERENCES (the "why rollout_lib.py breaks at BC")
+1. **Ant Design v5** — BC uses `ant-v5-select` components (not v4). Select dropdowns don't match
+   `.ant-select-dropdown-menu-item` — items may use `[class*=select-item-option]` or different classes.
+   CSS-class-based option finding from BT's `click_option_exact()` DOES NOT WORK.
+2. **`BASE_SYSTEM_INTERVAL_SELECT`** is an `ant-v5-select-selection-search-input` — clicks on the
+   input alone don't open the dropdown. Need to click the parent `.ant-v5-select` or
+   `.ant-v5-select-selector`. JS `.dispatchEvent(click)` on the selector also didn't open it.
+3. **Add Services "Select"** dropdown also ant-v5 — value-setter on the input doesn't trigger
+   the option search. Options are virtualized — items below the fold have coords like y=-1801.
+4. **4-tier checkbox pattern** [Apply-all, Basic, Value, Premium] vs BT's 3-tier [Apply-all, Basic, Premium].
+   `set_premium_only()` from rollout_lib targets idx 2 in a 3-cb array — needs adaptation.
+
+### Session management for BC builds
+- **:9223** shared with crons — don't use for BC UI work (drift risk)
+- **:9225** dedicated BC browser — start via `/home/itadmin/persistent-browser-2/`
+- **Session cloning** (:9223→:9225 localStorage injection): works but stale dealer context
+  causes "Your role has been changed. Please re-login to proceed." at BC. Reliable path:
+  clear localStorage on :9225, fresh OTP login.
+- **Fresh login recipe**: navigate /login → type username → Next → type password → Login →
+  find `#otp` input (ant-input, type=text, NOT type=tel) → `/type` endpoint with selector="#otp"
+  → mouse-click Verify button → lands on /home at default dealer (usually 1251/BC).
+- **OTP retrieval**: `himalaya envelope list -a personal -f "[Gmail]/All Mail" -s 5` →
+  find "Tekion-Login OTP" from devadmin@tekion.com → `himalaya message read ... <id>`.
+
+### 21 BG services still unbuilt
+`bg-op-list.json` lists 21 opcodes (FISVC through TCASESVC) with prices — but their
+Included Services were **never created** at BC. None of them appear in the Included Services
+list. Creating them (Add Service → Pull From Opcode → Custom → Active, one per opcode)
+is prerequisite to adding them to any menu. BT's 25 SM-prefix services existed before
+the menu build started — that's why BT rollout was "easy."
+
+## BC INCLUDED SERVICES — Create recipe from add-service page
+The Add Service form at `/ro/service-menu-setups/included-service/add-service/default`
+is **ant-v5** throughout. Known working pattern from BT's batch creation:
+1. Single-pass async JS block via /eval (SPA randomly bounces between execute_code calls)
+2. Opcode react-select FIRST (picking opcode auto-resets name + hrs)
+3. Then name + Customer Hrs + Labor Define Here radio
+4. Save = real /mouse click (synthetic .click() no-ops)
 ### Included-Service Overrides mechanics (learned in the Path B test 2026-07-12)
 - **Overrides tab structure**: left sub-nav Labor / Parts / Fees / Identifier &
   Jobs; EACH sub-section has its own Pull From Opcode ⟷ Define Here radio and
