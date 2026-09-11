@@ -879,6 +879,26 @@ Ruben could have hit any of the three.
 - 3 tiers active: Basic, Value, Premium (4 checkboxes per row: [Apply-all, Basic, Value, Premium])
 - Row 47 created (Chevrolet/All Models/All Years/All Trims), SAVED via `build_60k.py`
 
+### ✅ 21 BG Included Services CREATED at BC (2026-09-11)
+Script: `/home/itadmin/bc-menu-build/create_bg_batch.py` — all 21 created (BFX created first manually, then batch of 17, then 3 retries).
+Services: FISVC, DIESELFI, BGMOA, BGFSC, DFSC, DFC, TRANS, TRSV10, TRSV/FILTER8, TRSV/FILTER, BATT, PSSERV, COOLANT, COOLANTD, CABIN, BGEPR, BGEPRD, BFX, FRONTDIFSVC, REARDIFSVC, TCASESVC.
+
+### ⚠️ Add Services Select Automation — CRITICAL
+The Ant Design v5 Select in the Add Services section does NOT respond to standard DOM events.
+See dedicated skill: **`tekion-add-services-select-automation`** for the ONLY two approaches that work.
+
+**Current state (2026-09-11):**
+- 5 of 21 BG services are ON the 60K row: REARDIFSVC, BFX, FISVC, DIESELFI, TRANS
+- 11 more are visible in the Add Services search options: TRSV10, TRSV/FILTER8, TRSV/FILTER, BATT, PSSERV, COOLANT, COOLANTD, BGEPR, BGEPRD, FRONTDIFSVC, TCASESVC
+- 5 are NOT appearing in the Add Services search: CABIN, BGMOA, BGFSC, DFSC, DFC
+  → These need investigation — likely the Included Service status or configuration differs.
+
+**The working interaction pattern** (from browser_console / Playwright):
+1. `execCommand('insertText')` to type into the Select input
+2. Then trigger React `onInputChange` via fiber tree (depth ~14)
+3. Wait 2+ seconds for options to render
+4. Each `onInputChange` call CONSUMES the blank row — get one shot per page load
+
 ### BC BUILD SCRIPT
 `/home/itadmin/bc-menu-build/build_60k.py` — creates universal row, targets :9225, dealer 1251.
 Successfully creates row (makeId click → "Chevrolet" option → model "All" → year "All" → trim modal Save).
