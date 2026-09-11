@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-11T12:30:38",
+ "generated": "2026-09-11T12:46:21",
  "skill_count": 217,
  "skills": [
   {
@@ -55,7 +55,7 @@
    "path": "automotive/bt-tony-menu-rebuild",
    "category": "automotive",
    "description": "The Blackstone Toyota (BT, dealer 1249) service-menu rebuild project for Tony Garcia (Service Manager). Tony wants menus restructured into Factory Recs / Factory Recs Plus with 25 ordered add-on services. Contains the FULL locked spec, Joe's approved decisions, the opcode audit results, and the build plan. Load for ANY \"BT menu\", \"Tony menu\", \"Factory Recs\", or Blackstone Toyota service menu work. STATUS 2026-07-21: full 5K\u2013200K range (5K-step) built, PUBLISHED, Tony-validated; Phase 7 generic Transmission Fluid placeholders DONE; Phase 8 Tony's BG MENU REVAMP 2026 part-match batch DONE + quote-verified (baseline tony-partmatch-baseline-20260721.json). Remaining: x2.5K half-step menus + EV rows only.",
-   "times_used": 59,
+   "times_used": 61,
    "last_used": "2026-09-11"
   },
   {
@@ -63,8 +63,16 @@
    "path": "automotive/sct-menu-sales-api-scorecard",
    "category": "automotive",
    "description": "Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters to the frozen 316 TEK* maintenance opcodes, resolves advisor names via the persistent browser session on :9223, renders a light-format PNG+PDF scorecard, vision-verifies, and emails. Use for the daily Menu Sales Opened Performance Report cron.",
-   "times_used": 51,
-   "last_used": "2026-09-10"
+   "times_used": 52,
+   "last_used": "2026-09-11"
+  },
+  {
+   "name": "bc-gm-menu-build",
+   "path": "automotive/bc-gm-menu-build",
+   "category": "automotive",
+   "description": "The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-override plan for vehicle-correct GM parts, and open decisions. Load for ANY \"GM menu\", \"BC menu build\", \"GMLOF\", or Blackstone Chevrolet service menu work.",
+   "times_used": 47,
+   "last_used": "2026-09-11"
   },
   {
    "name": "tekion-autonomous-login",
@@ -73,14 +81,6 @@
    "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
    "times_used": 47,
    "last_used": "2026-09-03"
-  },
-  {
-   "name": "bc-gm-menu-build",
-   "path": "automotive/bc-gm-menu-build",
-   "category": "automotive",
-   "description": "The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-override plan for vehicle-correct GM parts, and open decisions. Load for ANY \"GM menu\", \"BC menu build\", \"GMLOF\", or Blackstone Chevrolet service menu work.",
-   "times_used": 46,
-   "last_used": "2026-09-11"
   },
   {
    "name": "tekion-kb-search-scrape",
