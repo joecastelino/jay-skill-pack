@@ -44,6 +44,10 @@ The server runs from the profile home because Codex subagents resolve `~` there:
 
 ## Start/Stop
 
+**⚠️ `headless: false` IS HARDCODED in server.js — xvfb-run is MANDATORY.**
+Starting without it crashes immediately: `Missing X server or $DISPLAY` →
+`The platform failed to initialize. Exiting.`
+
 ```bash
 # Kill old server
 fuser -k 9223/tcp
@@ -392,6 +396,11 @@ each digit. Wait for a NEW OTP email by envelope ID (>last seen), not by count.
 
 ## Pitfalls
 
+- **💀 3AM DAILY RESET KILLS ALL BROWSER PROCESSES.** The persistent directories
+  (`/home/itadmin/persistent-browser*/browser-data/`) survive but the node processes
+  die. There is NO auto-restart — no systemd unit, no pm2, no cron entry. After 3AM,
+  ALL THREE ports (9223/9224/9225) must be manually restarted with `xvfb-run -a node
+  server.js`. First morning cron that hits a dead browser will fail silently.
 - **:9223 "hijacked" by the ServiceNow KB tab = WRONG BOUND PAGE. One-line fix: `/pages/select`
   (root-caused 2026-08-24; supersedes the earlier "switch to :9225 or restart" advice).**
   After KB work (`tekion-kb-search-scrape`), `POST /navigate` to `app.tekioncloud.com/...`

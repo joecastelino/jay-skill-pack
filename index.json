@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-11T16:15:09",
- "skill_count": 218,
+ "generated": "2026-09-11T16:30:16",
+ "skill_count": 219,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -1151,6 +1151,14 @@
    "path": "automotive/dealerdetail-persona-and-dedup",
    "category": "automotive",
    "description": "Split the DealerDetail advisor dashboard by Tekion persona (SERVICE_ADVISOR vs an \"Others\" bucket for cashiers/warranty clerks/service managers/techs), backfill the persona column from the Tekion users API, and fix duplicate-advisor rows caused by null-name pre-scope-upgrade pulls. Use when advisor numbers look polluted by non-advisors, when you see an \"Unassigned\"/null advisor, when personas are 0/N populated, or when the same Tekion userId appears under two Advisor rows.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "hermes-system-audit",
+   "path": "automotive/hermes-system-audit",
+   "category": "automotive",
+   "description": "Run a comprehensive system audit of the AMG Hermes fleet \u2014 gateway services, persistent browser servers, cron jobs, GBrain, disk, memory, and agent profiles. Use when Joe reports agent degradation, after weekend incidents, or for recurring health checks.",
    "times_used": 0,
    "last_used": null
   },
