@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-11T12:15:55",
+ "generated": "2026-09-11T12:30:38",
  "skill_count": 217,
  "skills": [
   {
@@ -55,7 +55,7 @@
    "path": "automotive/bt-tony-menu-rebuild",
    "category": "automotive",
    "description": "The Blackstone Toyota (BT, dealer 1249) service-menu rebuild project for Tony Garcia (Service Manager). Tony wants menus restructured into Factory Recs / Factory Recs Plus with 25 ordered add-on services. Contains the FULL locked spec, Joe's approved decisions, the opcode audit results, and the build plan. Load for ANY \"BT menu\", \"Tony menu\", \"Factory Recs\", or Blackstone Toyota service menu work. STATUS 2026-07-21: full 5K\u2013200K range (5K-step) built, PUBLISHED, Tony-validated; Phase 7 generic Transmission Fluid placeholders DONE; Phase 8 Tony's BG MENU REVAMP 2026 part-match batch DONE + quote-verified (baseline tony-partmatch-baseline-20260721.json). Remaining: x2.5K half-step menus + EV rows only.",
-   "times_used": 58,
+   "times_used": 59,
    "last_used": "2026-09-11"
   },
   {
@@ -79,7 +79,7 @@
    "path": "automotive/bc-gm-menu-build",
    "category": "automotive",
    "description": "The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-override plan for vehicle-correct GM parts, and open decisions. Load for ANY \"GM menu\", \"BC menu build\", \"GMLOF\", or Blackstone Chevrolet service menu work.",
-   "times_used": 45,
+   "times_used": 46,
    "last_used": "2026-09-11"
   },
   {
@@ -891,6 +891,14 @@
    "last_used": "2026-09-03"
   },
   {
+   "name": "tekion-spa-data-extraction",
+   "path": "automotive/tekion-spa-data-extraction",
+   "category": "automotive",
+   "description": "Extract data from Tekion's SPA when raw API calls fail due to the axios auth interceptor. Covers XHR hooks, React fiber state extraction, dirty-form PUT capture, and Playwright browser tools \u2014 the four proven methods for getting menu JSON, included service IDs, and other SPA-held data.",
+   "times_used": 2,
+   "last_used": "2026-09-11"
+  },
+  {
    "name": "tekion-vehicle-override-row-builder",
    "path": "automotive/tekion-vehicle-override-row-builder",
    "category": "automotive",
@@ -1017,14 +1025,6 @@
    "description": "Reopen a CLOSED Tekion repair order (RO) when the UI shows no \"Reopen\" option. Verified live at VW of Clovis (dealer 1891) on RO 141673, 2026-08-27 \u2014 flipped CLOSED \u2192 READY_FOR_INVOICE via the internal reopen endpoint.",
    "times_used": 1,
    "last_used": "2026-08-27"
-  },
-  {
-   "name": "tekion-spa-data-extraction",
-   "path": "automotive/tekion-spa-data-extraction",
-   "category": "automotive",
-   "description": "Extract data from Tekion's SPA when raw API calls fail due to the axios auth interceptor. Covers XHR hooks, React fiber state extraction, dirty-form PUT capture, and Playwright browser tools \u2014 the four proven methods for getting menu JSON, included service IDs, and other SPA-held data.",
-   "times_used": 1,
-   "last_used": "2026-09-11"
   },
   {
    "name": "tekion-tech-clock-time-by-opcode",

@@ -874,52 +874,105 @@ Ruben could have hit any of the three.
 ## 60K MENU BUILD (started 2026-09-11)
 
 ### 60K Menu ID: `6671ca385371ce62ee4016d9`
-- 46 original rows (Chevrolet, Cadillac, Buick, GMC), all `baseSystemInterval: 7500`
+- 48 rows total (Chevrolet, Cadillac, Buick, GMC + universal row), most `baseSystemInterval: 7500`
 - Menu level: "Edit Menu - 60000 mi", PUBLISHED
 - 4 tiers: Apply-all (`67f84a57e26de20005f39f43`), Basic (`6671ca385371ce62ee4016dc`), Value (`67f84a57e26de20005f39f44`), Premium (`67f84a57e26de20005f39f45`)
 - **Row 48 (universal row)**: Created via API POST (`build_60k.py`), Chevrolet/ALL_MODELS/ALL_YEARS/ALL_TRIMS, `order: 48`, base system interval 7500 (needs change to 60000)
+- Full menu JSON extracted from React state: `/home/itadmin/bc-menu-build/60k-current-full.json` (654KB)
+- Modified JSON with all BG services: `/home/itadmin/bc-menu-build/60k-modified-with-bg.json` (719KB)
 
-### ✅ 21 BG Included Services CREATED at BC (2026-09-11)
-Script: `/home/itadmin/bc-menu-build/create_bg_batch.py` — all 21 created (BFX created first manually, then batch of 17, then 3 retries).
-Services: FISVC, DIESELFI, BGMOA, BGFSC, DFSC, DFC, TRANS, TRSV10, TRSV/FILTER8, TRSV/FILTER, BATT, PSSERV, COOLANT, COOLANTD, CABIN, BGEPR, BGEPRD, BFX, FRONTDIFSVC, REARDIFSVC, TCASESVC.
+### ✅ BG Included Services — 20 of 21 CREATED at BC (2026-09-11)
+BGMOA was never created (not in the batch script). The other 20 were created via `create_bg_batch.py`.
+Their internal Tekion IDs were extracted from the Add Services dropdown using the React fiber technique (see below).
 
-**Current state (2026-09-11):**
-- **ZERO services on the universal row** — the row shows "No rows found" under Add Services. The 5 services added in a previous session were not persisted.
-- **BG service IDs are the missing piece** — the Included Services exist (verifiable via Included Services list search for "BFX" → 1 result), but their internal Tekion IDs need to be harvested from either the Add Services dropdown search API response, the Included Services list API, or the menu PUT payload after adding one service.
+**Complete BG Service ID Map** (`/home/itadmin/bc-menu-build/bg-service-ids.json`):
+| Opcode | ID | Search Term |
+|--------|----|-------------|
+| BFX | `6aa430863e59c33633ef2c7a` | PERFORM |
+| FISVC | `6aa430fc39b7a93e09ba4de7` | PERFORM |
+| DIESELFI | `6aa4311b73c23ff1a340e160` | PERFORM |
+| TRANS | `6aa431e7b2b0ff2dc9daca61` | PERFORM |
+| TRSV10 | `6aa43207fb56c402a991aab5` | PERFORM |
+| TRSV/FILTER8 | `6aa4322673c23ff1a340e796` | PERFORM |
+| TRSV/FILTER | `6aa43246fb56c402a991ac6d` | PERFORM |
+| BATT | `6aa4326673c23ff1a340e94c` | PERFORM |
+| PSSERV | `6aa43285a7aeb80a0183765e` | PERFORM |
+| COOLANT | `6aa432a5231f95cb73cf9256` | PERFORM |
+| COOLANTD | `6aa432c473c23ff1a340ebab` | PERFORM |
+| BGEPR | `6aa4330453e75422304156ed` | PERFORM |
+| BGEPRD | `6aa4332353e75422304157d7` | PERFORM |
+| FRONTDIFSVC | `6aa433433e59c33633ef3ece` | PERFORM |
+| REARDIFSVC | `6aa43362fb56c402a991b384` | PERFORM |
+| TCASESVC | `6aa4338273c23ff1a340f076` | PERFORM |
+| BGFSC | `6aa431889422bddf66308d02` | INSTALL |
+| DFSC | `6aa431a7b2b0ff2dc9dac8e9` | INSTALL |
+| DFC | `6aa431c7fb56c402a991a93d` | INSTALL |
+| CABIN | `6aa432e453e7542230415629` | CABIN |
+| BGMOA | ❌ NOT CREATED | — |
 
-### 🔴 CRITICAL: Ant Design v5 Select — :9225 Synthetic Events FAIL
-The Ant Design v5 Select used in BC's Add Services section does NOT respond to synthetic JS events from the :9225 persistent browser (`element.click()`, MouseEvent dispatch, etc.). The dropdown simply never opens.
+### ⭐ HOW BG IDs WERE EXTRACTED — tuc-react-select Dropdown Method (2026-09-11)
+The Add Services dropdown on the menu edit page uses **Tekion's custom `tuc-react-select`** (NOT Ant Design). The dropdown options contain service IDs in their React fiber's `memoizedProps.data.value`.
 
-**What DOES work:**
-- **Playwright `browser_*` tools** — `browser_click` + `browser_type` fire real browser events that Ant Design respects
-- **React fiber `onInputChange`** — at depth ~14 from the Select's fiber, calling `props.onInputChange('BFX')` triggers the search callback (but the dropdown still doesn't OPEN without a real click first)
-- **`execCommand('insertText')`** — works for typing into the Select's search input AFTER it's focused
+**Extraction process:**
+1. On the menu edit page, expand a row (click its pivot icon)
+2. Find the blank Add Services input: `document.getElementById('ADDED_SERVICES_NAME_1')`
+3. Focus it and type a search term (PERFORM / INSTALL / CABIN)
+4. The dropdown renders options with role="option"
+5. For each option, walk its React fiber: `Object.keys(el).find(k=>k.startsWith('__reactFiber'))`
+6. Walk up the fiber chain looking for `memoizedProps.data.value` — that's the service ID
 
-**What does NOT work on :9225:**
-- `element.click()` / `element.dispatchEvent(new MouseEvent('click', ...))` — silently no-ops
-- `/mouse` coordinate clicks — position is correct but SyntheticPointerEvent ignored by antd
-- Native `value` setter + `input`/`change` events on the search input — value changes but dropdown doesn't open
-- `element.focus()` — no visible effect
+**Search terms for BC BG services:**
+- "PERFORM" → finds 16 BG services (BFX through TCASESVC)
+- "INSTALL" → finds BGFSC, DFSC, DFC
+- "CABIN" → finds CABIN
 
-### ⭐ REACT FIBER STATE EXTRACTION (new 2026-09-11 — THE reliable way to get Tekion SPA data)
-When the SPA's UI is fighting you, extract data directly from React's internal state. This works for ANY page, not just menus.
+### 🔴 CRITICAL: Bare fetch/XHR CANNOT replicate SPA's axios auth
+Every attempt to PUT the modified menu JSON via `fetch()` or `XMLHttpRequest` (even with `credentials:'include'` and localStorage tokens) returns HTTP 500 "Token doesn't exist or is invalid." The SPA's axios interceptor adds auth headers that bare fetch can't replicate. The only way to PUT is through the SPA's own axios — either by clicking Save in the UI, or by accessing the SPA's axios instance directly.
 
-**Technique:**
+### 📋 Service Entry Format for menu PUT payload
+Each service in `servicesMetaData.services[]` follows this structure:
+```json
+{
+  "referenceId": "<BG_SERVICE_ID>",
+  "included": true,
+  "type": "ADDED",
+  "order": null,
+  "actionType": null,
+  "source": null,
+  "tierMappings": [
+    {"packageType": "PREMIUM", "drivingCondition": "NORMAL", "enabled": true},
+    {"packageType": "PREMIUM", "drivingCondition": "SEVERE", "enabled": true},
+    {"packageType": "BASIC", "drivingCondition": "NORMAL", "enabled": false},
+    {"packageType": "BASIC", "drivingCondition": "SEVERE", "enabled": false},
+    {"packageType": "VALUE", "drivingCondition": "NORMAL", "enabled": false},
+    {"packageType": "VALUE", "drivingCondition": "SEVERE", "enabled": false}
+  ],
+  "applicability": null,
+  "key": "<BG_SERVICE_ID>_null"
+}
+```
+Package types: PREMIUM, BASIC, VALUE. Each has NORMAL + SEVERE driving conditions = 6 tierMappings per service. For Premium-only assignment, enable only PREMIUM NORMAL + PREMIUM SEVERE.
+
+### Current State (2026-09-11)
+- **ZERO services on row 48 in the UI** — "No rows found" under Add Services
+- **Modified JSON built** at `/home/itadmin/bc-menu-build/60k-modified-with-bg.json` (719KB) with all 20 BG IDs injected into row 48's `servicesMetaData`
+- **BLOCKED**: Cannot PUT the modified JSON — bare fetch/XHR gets 500 "Token doesn't exist". Need to either: (a) use Playwright browser to add services one-by-one in the UI, (b) find the SPA's axios instance, or (c) add one service to dirty the form, capture the SPA's own PUT via XHR hook, modify it, and re-route.
+
+### ⭐ REACT FIBER STATE EXTRACTION (THE reliable way to get Tekion SPA data)
+When the SPA's UI is fighting you, extract data directly from React's internal state. Works for ANY page.
+
+**Menu state extraction:**
 ```js
-// Find ALL React-enabled elements
 const reactEls = [...document.querySelectorAll('*')].filter(el => 
   Object.keys(el).some(k => k.startsWith('__reactFiber'))
 );
-
-// Walk fiber trees looking for known state shapes
 for (const el of reactEls.slice(0, 500)) {
   const fiberKey = Object.keys(el).find(k => k.startsWith('__reactFiber'));
   let fiber = el[fiberKey];
   for (let i = 0; i < 40 && fiber; i++) {
     const ms = fiber.memoizedState;
     if (ms?.serviceMenu?.menus?.length > 10) {
-      // Found the menu state! ms.serviceMenu = full menu JSON
-      window.__menuState = ms.serviceMenu;
+      window.__menuState = ms.serviceMenu; // Full menu JSON
       break;
     }
     fiber = fiber.return;
@@ -927,25 +980,19 @@ for (const el of reactEls.slice(0, 500)) {
 }
 ```
 
-**Key state shapes found at BC (2026-09-11):**
-- `serviceMenu` object at depth 12/18 from leaf fibers — contains `{id, intervals, menus[], tiers[?], menuStatus, ...}`
-- Each `menus[i]` has `{order, make, models[], years[], trims[], servicesMetaData, priceConfig, ...}`
-- `servicesMetaData.services[]` = `{referenceId, tierMappings[], applicability, ...}`
-- Tiers are NOT in `serviceMenu.tiers` directly — they're loaded separately. Known tier IDs for BC 60K: Apply-all `67f84a57e26de20005f39f43`, Basic `6671ca385371ce62ee4016dc`, Value `67f84a57e26de20005f39f44`, Premium `67f84a57e26de20005f39f45`.
-
-**Usage for 60K build:** The full menu JSON (654KB) was extracted via this method and saved to `/home/itadmin/bc-menu-build/60k-current-full.json`. This provides the exact structure needed to build a modified PUT payload.
-
-### Recommended Build Path (2026-09-11)
-1. **Get BG IDs**: Use Playwright browser → Included Services page → expandable search → capture API response per BG opcode. OR add ONE service to the menu row via Playwright, Save, capture the PUT payload which contains the service's `referenceId`.
-2. **Modify menu JSON**: Take `/home/itadmin/bc-menu-build/60k-current-full.json`, inject service entries for all 21 BG services into row 48's `servicesMetaData.services[]`, assign Premium-tier-only via `tierMappings`.
-3. **PUT the modified JSON**: Via Playwright browser's XHR hook + Save, or via direct API call if auth headers can be captured.
-4. **Quote-verify**: On test VIN `1GYKPHRS9PZ214217` (2023 Cadillac XT6 Sport Platinum) at 60K.
-
-### BC vs BT — UI Automation Differences
-1. **Ant Design v5** — BC uses v5 Selects, BT uses v4. Option CSS classes differ.
-2. **4-tier checkbox** — BC has [Apply-all, Basic, Value, Premium]; BT has [Apply-all, Basic, Premium]
-3. **BT's rollout_lib.py does NOT work at BC** — option class names and checkbox indices are different
-4. **:9225 synthetic events work for BT (v4) but FAIL for BC (v5)** — Playwright browser is the only reliable option for BC Select interactions
+**Dropdown option ID extraction:**
+```js
+const item = dropdownOption; // role="option"
+const fk = Object.keys(item).find(k => k.startsWith('__reactFiber'));
+let f = item[fk];
+for (let i = 0; i < 10 && f; i++) {
+  if (f.memoizedProps?.data?.value) {
+    const serviceId = f.memoizedProps.data.value;
+    break;
+  }
+  f = f.return;
+}
+```
 
 ### Session management for BC builds
 - **:9223** shared with crons — don't use for BC UI work (drift risk)
