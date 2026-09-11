@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-11T11:30:33",
- "skill_count": 215,
+ "generated": "2026-09-11T11:45:39",
+ "skill_count": 216,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -55,7 +55,7 @@
    "path": "automotive/bt-tony-menu-rebuild",
    "category": "automotive",
    "description": "The Blackstone Toyota (BT, dealer 1249) service-menu rebuild project for Tony Garcia (Service Manager). Tony wants menus restructured into Factory Recs / Factory Recs Plus with 25 ordered add-on services. Contains the FULL locked spec, Joe's approved decisions, the opcode audit results, and the build plan. Load for ANY \"BT menu\", \"Tony menu\", \"Factory Recs\", or Blackstone Toyota service menu work. STATUS 2026-07-21: full 5K\u2013200K range (5K-step) built, PUBLISHED, Tony-validated; Phase 7 generic Transmission Fluid placeholders DONE; Phase 8 Tony's BG MENU REVAMP 2026 part-match batch DONE + quote-verified (baseline tony-partmatch-baseline-20260721.json). Remaining: x2.5K half-step menus + EV rows only.",
-   "times_used": 55,
+   "times_used": 56,
    "last_used": "2026-09-11"
   },
   {
@@ -87,7 +87,7 @@
    "path": "automotive/bc-gm-menu-build",
    "category": "automotive",
    "description": "The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-override plan for vehicle-correct GM parts, and open decisions. Load for ANY \"GM menu\", \"BC menu build\", \"GMLOF\", or Blackstone Chevrolet service menu work.",
-   "times_used": 42,
+   "times_used": 43,
    "last_used": "2026-09-11"
   },
   {
@@ -175,8 +175,8 @@
    "path": "automotive/tekion-service-menu-setups",
    "category": "automotive",
    "description": "Navigate to, read, and inspect Tekion Service Menu Setups (the service-menu builder where interval menus, tiers, tags, opcodes, included services and inspections are configured). Covers the non-obvious nav path, the page/tab structure, where free-text \"notes\"/tags live, and the headless storage_state harness that reaches it reliably. Use when asked to find/check/edit a service menu, a menu's tag/name, or \"the last service menu\".",
-   "times_used": 27,
-   "last_used": "2026-07-15"
+   "times_used": 28,
+   "last_used": "2026-09-11"
   },
   {
    "name": "tekion-standard-reports-performance",
@@ -787,6 +787,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-add-services-select-automation",
+   "path": "automotive/tekion-add-services-select-automation",
+   "category": "automotive",
+   "description": "Automate the Ant Design v5 \"Add Services\" Select dropdown in Tekion service menu editing. The Select does NOT respond to normal DOM events \u2014 this skill documents the TWO working approaches discovered through extensive trial and error.",
+   "times_used": 2,
+   "last_used": "2026-09-11"
+  },
+  {
    "name": "tekion-appointment-source-audit",
    "path": "automotive/tekion-appointment-source-audit",
    "category": "automotive",
@@ -921,14 +929,6 @@
    "description": "Retarget an AMG store's Hermes cron report deliveries to a new Slack thread when Joe says \"can this thread be <store> reports only?\", and sweep the whole fleet for dead channel_not_found cron deliveries.",
    "times_used": 1,
    "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-add-services-select-automation",
-   "path": "automotive/tekion-add-services-select-automation",
-   "category": "automotive",
-   "description": "Automate the Ant Design v5 \"Add Services\" Select dropdown in Tekion service menu editing. The Select does NOT respond to normal DOM events \u2014 this skill documents the TWO working approaches discovered through extensive trial and error.",
-   "times_used": 1,
-   "last_used": "2026-09-11"
   },
   {
    "name": "tekion-browser-automation",
@@ -1199,6 +1199,14 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-spa-data-extraction",
+   "path": "automotive/tekion-spa-data-extraction",
+   "category": "automotive",
+   "description": "Extract data from Tekion's SPA when raw API calls fail due to the axios auth interceptor. Covers XHR hooks, React fiber state extraction, dirty-form PUT capture, and Playwright browser tools \u2014 the four proven methods for getting menu JSON, included service IDs, and other SPA-held data.",
    "times_used": 0,
    "last_used": null
   },
