@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-11T10:30:53",
+ "generated": "2026-09-11T10:46:03",
  "skill_count": 214,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 175,
+   "times_used": 176,
    "last_used": "2026-09-11"
   },
   {
@@ -55,7 +55,7 @@
    "path": "automotive/bt-tony-menu-rebuild",
    "category": "automotive",
    "description": "The Blackstone Toyota (BT, dealer 1249) service-menu rebuild project for Tony Garcia (Service Manager). Tony wants menus restructured into Factory Recs / Factory Recs Plus with 25 ordered add-on services. Contains the FULL locked spec, Joe's approved decisions, the opcode audit results, and the build plan. Load for ANY \"BT menu\", \"Tony menu\", \"Factory Recs\", or Blackstone Toyota service menu work. STATUS 2026-07-21: full 5K\u2013200K range (5K-step) built, PUBLISHED, Tony-validated; Phase 7 generic Transmission Fluid placeholders DONE; Phase 8 Tony's BG MENU REVAMP 2026 part-match batch DONE + quote-verified (baseline tony-partmatch-baseline-20260721.json). Remaining: x2.5K half-step menus + EV rows only.",
-   "times_used": 52,
+   "times_used": 54,
    "last_used": "2026-09-11"
   },
   {
@@ -81,6 +81,14 @@
    "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
    "times_used": 45,
    "last_used": "2026-09-03"
+  },
+  {
+   "name": "bc-gm-menu-build",
+   "path": "automotive/bc-gm-menu-build",
+   "category": "automotive",
+   "description": "The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-override plan for vehicle-correct GM parts, and open decisions. Load for ANY \"GM menu\", \"BC menu build\", \"GMLOF\", or Blackstone Chevrolet service menu work.",
+   "times_used": 41,
+   "last_used": "2026-09-11"
   },
   {
    "name": "bc-menu-sales-reports",
@@ -113,14 +121,6 @@
    "description": "Diagnose a Tekion Service Menu pricing problem (e.g. \"a rotation is charging $449.45\") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLODE the menu into individual opcodes using the \"Add Menu Services as separate operations\" setting to find which opcode carries the bad price and its labor-rate method (Fixed vs Service Catalog Pro Dynamic Pricing). Use when Joe flags a wrong/inflated price on a maintenance menu line for a specific RO/vehicle.",
    "times_used": 40,
    "last_used": "2026-08-21"
-  },
-  {
-   "name": "bc-gm-menu-build",
-   "path": "automotive/bc-gm-menu-build",
-   "category": "automotive",
-   "description": "The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-override plan for vehicle-correct GM parts, and open decisions. Load for ANY \"GM menu\", \"BC menu build\", \"GMLOF\", or Blackstone Chevrolet service menu work.",
-   "times_used": 39,
-   "last_used": "2026-09-11"
   },
   {
    "name": "tekion-service-settings",
@@ -643,6 +643,14 @@
    "last_used": "2026-07-07"
   },
   {
+   "name": "google-workspace",
+   "path": "productivity/google-workspace",
+   "category": "productivity",
+   "description": "Gmail, Calendar, Drive, Contacts, Sheets, and Docs integration for Hermes. Uses Hermes-managed OAuth2 setup, prefers the Google Workspace CLI (`gws`) when available for broader API coverage, and falls back to the Python client libraries otherwise.",
+   "times_used": 4,
+   "last_used": "2026-09-11"
+  },
+  {
    "name": "gm-sasar-action-tracker",
    "path": "automotive/gm-sasar-action-tracker",
    "category": "automotive",
@@ -737,14 +745,6 @@
    "description": "Install & configure GBrain (Garry Tan's knowledge brain) \u2014 PGLite, ZeroEntropy embeddings, brain directory, recurring jobs. Use when setting up gbrain from scratch or recovering from a broken install.",
    "times_used": 3,
    "last_used": "2026-07-01"
-  },
-  {
-   "name": "google-workspace",
-   "path": "productivity/google-workspace",
-   "category": "productivity",
-   "description": "Gmail, Calendar, Drive, Contacts, Sheets, and Docs integration for Hermes. Uses Hermes-managed OAuth2 setup, prefers the Google Workspace CLI (`gws`) when available for broader API coverage, and falls back to the Python client libraries otherwise.",
-   "times_used": 3,
-   "last_used": "2026-09-11"
   },
   {
    "name": "amg-wip-payroll-vs-rth-analysis",
