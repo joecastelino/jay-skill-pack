@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-10T18:30:04",
+ "generated": "2026-09-10T18:45:35",
  "skill_count": 214,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 168,
+   "times_used": 169,
    "last_used": "2026-09-10"
   },
   {
@@ -251,20 +251,20 @@
    "last_used": "2026-09-10"
   },
   {
+   "name": "sct-menu-sales-closed-mtd-scorecard",
+   "path": "automotive/sct-menu-sales-closed-mtd-scorecard",
+   "category": "automotive",
+   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales CLOSED Month-To-Date scorecard pipeline from the LIVE Tekion OpenAPI (incremental design) and email the PDF to Joe via Stacey. This is the daily 6 PM companion to the noon/5pm \"Opened\" report (see sct-menu-sales-api-scorecard). Covers the incremental master-file design, the ongoing DEALER_QUOTA outage caveat, and the ask-agent send-confirmation timeout workaround.",
+   "times_used": 16,
+   "last_used": "2026-09-10"
+  },
+  {
    "name": "tekion-advisor-closed-gross-api-report",
    "path": "automotive/tekion-advisor-closed-gross-api-report",
    "category": "automotive",
    "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
    "times_used": 16,
    "last_used": "2026-09-02"
-  },
-  {
-   "name": "sct-menu-sales-closed-mtd-scorecard",
-   "path": "automotive/sct-menu-sales-closed-mtd-scorecard",
-   "category": "automotive",
-   "description": "Run the SCT (Stevens Creek Toyota) Menu Sales CLOSED Month-To-Date scorecard pipeline from the LIVE Tekion OpenAPI (incremental design) and email the PDF to Joe via Stacey. This is the daily 6 PM companion to the noon/5pm \"Opened\" report (see sct-menu-sales-api-scorecard). Covers the incremental master-file design, the ongoing DEALER_QUOTA outage caveat, and the ask-agent send-confirmation timeout workaround.",
-   "times_used": 15,
-   "last_used": "2026-09-09"
   },
   {
    "name": "tekion-opcode-default-pricing",
