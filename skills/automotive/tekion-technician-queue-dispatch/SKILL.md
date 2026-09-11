@@ -10,6 +10,11 @@ triggers:
   - dispatch settings for technician queue
   - reserve technician feature
   - auto assign technician to added job
+  - technician can't pull work
+  - tech can't claim work
+  - claim work button greyed out
+  - technician not getting work
+  - tech at RO hold limit
 ---
 
 # Tekion Technician Queue / Auto Dispatch
@@ -33,6 +38,23 @@ There is NO documented setting that flatly disables dispatch-on-reopen. But leve
 
 ## Rank editing
 Repair Order app → Action → Technician Queue → drag the 6-dot handles to reorder. Requires "Technician Queue Edit" permission.
+
+## "Can't Pull Work" / "Claim Work Won't Work" Triage
+
+When a specific technician reports being unable to claim work (greyed-out button, empty queue, or no response), run this diagnostic checklist BEFORE escalating. Most common root cause = **tech clocked out**.
+
+| # | Check | Where | What to look for |
+|---|-------|-------|-----------------|
+| 1 | **Clocked in?** | Ask the store | #1 most common cause — if not clocked in, Claim Work greys out |
+| 2 | **Active + persona** | Employee record | Active=true, persona=TECHNICIAN (not advisor) |
+| 3 | **Skills assigned?** | Dispatch Settings → Skills | If "Only Assign if Technician has matching Skills"=ON, tech must have at least 1 skill |
+| 4 | **Dispatch toggles** | Dispatch Settings → General | Auto Assign ON? Cross-team ON? |
+| 5 | **RO Hold at limit?** | Dispatch Settings → RO Hold | Compare tech's "No. of Holds (RO)" to current open RO count; "Global Max Hold" may also cap |
+| 6 | **Open RO count** | Dashboard or ROs list | If at hold limit, they can't claim more |
+| 7 | **Reserve Team?** | Dispatch Settings → RO Hold → Reserve Team | If assigned to a reserve team, queue may bypass them |
+| 8 | **Session stale** | Tech's browser | Have them log out/back in or try a different browser |
+
+Dispatch Settings nav: App Grid → Settings → Service Settings → Dispatch Settings (`/service/settings/dispatch-settings`).
 
 ## Unknowns / escalate to PSM
 - Whether reopening a **closed** RO behaves identically to job-add on an OPEN RO under these same toggles — not documented, needs live testing or PSM confirmation.
