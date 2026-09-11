@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-11T08:30:14",
+ "generated": "2026-09-11T08:45:26",
  "skill_count": 214,
  "skills": [
   {
@@ -23,8 +23,8 @@
    "path": "automotive/agent-to-agent-bridge",
    "category": "automotive",
    "description": "Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine.",
-   "times_used": 116,
-   "last_used": "2026-09-10"
+   "times_used": 117,
+   "last_used": "2026-09-11"
   },
   {
    "name": "tekion-openapi-repair-orders",
@@ -267,6 +267,14 @@
    "last_used": "2026-09-02"
   },
   {
+   "name": "tekion-warranty-admin-closings",
+   "path": "automotive/tekion-warranty-admin-closings",
+   "category": "automotive",
+   "description": "Build a \"which warranty admin closed what tickets\" report for any AMG store from the Tekion OpenAPI \u2014 per-clerk RO counts, warranty $ and total RO $, month-to-date or any window. Verified SCT July 2026.",
+   "times_used": 16,
+   "last_used": "2026-09-11"
+  },
+  {
    "name": "tekion-opcode-default-pricing",
    "path": "automotive/tekion-opcode-default-pricing",
    "category": "automotive",
@@ -281,14 +289,6 @@
    "description": "Build a \"parts sold\" report (e.g. tires) for any Tekion store and period with ACTUAL invoiced dollars, split RO vs Sales Order (counter), by counterperson, from the internal part transaction ledger (activity-log API) \u2014 zero OpenAPI quota. Use when Joe asks \"how many X did we sell\" for a parts category, or when the OpenAPI quota is exhausted and RO-level pulls are blocked.",
    "times_used": 15,
    "last_used": "2026-08-31"
-  },
-  {
-   "name": "tekion-warranty-admin-closings",
-   "path": "automotive/tekion-warranty-admin-closings",
-   "category": "automotive",
-   "description": "Build a \"which warranty admin closed what tickets\" report for any AMG store from the Tekion OpenAPI \u2014 per-clerk RO counts, warranty $ and total RO $, month-to-date or any window. Verified SCT July 2026.",
-   "times_used": 15,
-   "last_used": "2026-09-11"
   },
   {
    "name": "tekion-parts-autoorder-diagnosis",
