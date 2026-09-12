@@ -974,12 +974,21 @@ Package types: PREMIUM, BASIC, VALUE. Each has NORMAL + SEVERE driving condition
 header from a real Save request, then direct `fetch()` PUT the modified JSON with that
 header + session cookies. See skill `tekion-xhr-body-injection` (Solution A).
 
-**❌ Verification blocked**: The Cadillac XT6 test VIN (`1GYKPHRS9PZ214217`) decodes
-in Quotes but the odometer field can't be set to 60,000 mi — it stays at 0. Because the
-quote system filters intervals by odometer, the 60K menu never appears in the carousel.
-The odometer input is unresponsive to all interaction methods tried (execCommand,
-native value-setter, /mouse clicks). Need Joe to pull the quote from his end with odo
-set to verify.
+**✅ VERIFIED 2026-09-12: odometer CAN be set via native setter.** The earlier claim
+"unresponsive to all methods" is WRONG — the native value-setter works at BC on a
+2022 Malibu quote (set to 60,000 on input `#vehicleOdometer`). Method:
+```javascript
+var odo = document.getElementById('vehicleOdometer');
+odo.focus();
+var s = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+s.call(odo, '60000');
+odo.dispatchEvent(new Event('input', {bubbles: true}));
+odo.dispatchEvent(new Event('change', {bubbles: true}));
+odo.dispatchEvent(new Event('blur', {bubbles: true}));
+```
+The previous failures may have been VIN/vehicle-specific or from missing the blur event.
+Always verify `.value` after setting — if it shows the formatted number (e.g., "60,000"),
+the set took. The Continue button then works fine.
 
 **Missing**: BGMOA (oil conditioner for gasoline) was never created. 20 of 21 BG
 services exist.

@@ -30,26 +30,58 @@ ALWAYS fails. The SPA's axios interceptor uses a DIFFERENT header: `tekion-api-t
 
 **✅ PROVEN 2026-09-12 — this is the PREFERRED method for bulk writes.**
 
-1. Install a non-blocking XHR hook on the target page (e.g., menu edit page)
-2. Trigger a small legitimate change (toggle a tier checkbox → click Save)
-3. Capture `requestHeaders['tekion-api-token']` from the intercepted XHR
-4. Use that header in a direct `fetch()` call:
+**⚠️ UPDATED 2026-09-12**: The `__requestHeaders` capture method below frequently returns empty/null.
+The **RELIABLE** capture method is hooking `XMLHttpRequest.prototype.setRequestHeader`:
+
 ```javascript
-fetch('/api/service-module/u/opcode/service-menu/setup/<menuId>?publish=false', {
-  method: 'PUT',
-  headers: {
-    'Content-Type': 'application/json',
-    'tekion-api-token': capturedToken  // NOT Authorization: Bearer!
-  },
-  body: JSON.stringify(modifiedMenuJSON),
-  credentials: 'include'  // cookies still matter
+// RELIABLE METHOD: hook setRequestHeader
+(function() {
+    var origSRH = XMLHttpRequest.prototype.setRequestHeader;
+    XMLHttpRequest.prototype.setRequestHeader = function(header, value) {
+        if (header === 'tekion-api-token') {
+            window.__TEKION_TOKEN = value;
+        }
+        return origSRH.call(this, header, value);
+    };
+    // Also capture the body via send hook
+    var origSend = XMLHttpRequest.prototype.send;
+    XMLHttpRequest.prototype.send = function(body) {
+        if (this.__url && this.__url.includes('service-menu/setup') && this.__method === 'PUT') {
+            window.__CAPTURED_BODY = typeof body === 'string' ? body : JSON.stringify(body);
+            window.__CAPTURED_URL = this.__url;
+        }
+        return origSend.call(this, body);
+    };
+    var origOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function(method, url) {
+        this.__method = method;
+        this.__url = url;
+        return origOpen.apply(this, arguments);
+    };
+})();
+```
+
+Then trigger a Save → `window.__TEKION_TOKEN` + `window.__CAPTURED_BODY` are populated.
+Use them for direct `fetch()`:
+
+```javascript
+fetch('/api/service-module/u/opcode/service-menu/setup/<menuId>?publish=true', {
+    method: 'PUT',
+    headers: {
+        'Content-Type': 'application/json',
+        'tekion-api-token': window.__TEKION_TOKEN
+    },
+    body: window.__CAPTURED_BODY,
+    credentials: 'include'
 });
 ```
 
-The `tekion-api-token` header + session cookies = full auth. This allows programmatic
-bulk modifications (e.g., adding 20 services to a row) without clicking through the UI.
+**⚠️ GOTCHA**: The `publish=true` query param goes on the URL, not in the body.
+Saving with `publish=false` creates a DRAFT — verify `response.body.menuStatus` after
+the call. A Save without Publish means NO quotes will see the changes.
 
-**Header capture via XHR hook:**
+### Legacy capture method (unreliable — `__requestHeaders` often empty)
+
 ```javascript
 const origOpen = XMLHttpRequest.prototype.open;
 const origSend = XMLHttpRequest.prototype.send;
@@ -59,13 +91,12 @@ XMLHttpRequest.prototype.open = function(method, url) {
 };
 XMLHttpRequest.prototype.send = function(body) {
   if (this.__url && this.__url.includes('service-menu/setup') && this.__method === 'PUT') {
-    // Store headers for reuse
+    // ⚠️ __requestHeaders is OFTEN EMPTY — prefer setRequestHeader hook above
     window.__SPA_HEADERS = {'tekion-api-token': this.__requestHeaders?.['tekion-api-token']};
     window.__SPA_BODY = typeof body === 'string' ? body : JSON.stringify(body);
   }
   return origSend.call(this, body);
 };
-```
 
 **CRITICAL**: The XHR hook must be installed on the CORRECT page BEFORE triggering the
 save. Do NOT navigate away — the hook is lost. Use `location.reload()` or `pushState`
@@ -195,6 +226,10 @@ After injection and save, verify persistence:
 
 ## Common Pitfalls
 
+- **🔴 XHR injection saves as DRAFT by default.** `publish=false` creates a DRAFT that
+  quotes CANNOT see. Always follow up with a `publish=true` PUT, or use `publish=true` on
+  the initial injection. Verify with `menuStatus` in the PUT response — DRAFT = invisible
+  to quotes. The 60K BC menu sat as DRAFT for 24 hours before this was caught.
 - **XHR interceptors are cleared on page navigation** (`location.href` or `location.reload()`).
   Re-install hooks after EVERY navigation.
 - **The interceptor fires for ALL XHRs**, not just the target. Always filter by URL pattern.
