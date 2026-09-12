@@ -45,7 +45,8 @@ The TL (Toyota of Lancaster) menu-sales pipeline. Sibling of `sct-menu-sales-api
   - closed: `TOL-Menu-Sales-Closed-Scorecard-<date>-Paged.{png,pdf}`
   (uses its own headless Playwright — independent of the :9223 session.)
 
-Python interpreter for all of these: `/home/itadmin/.hermes/hermes-agent/venv/bin/python3.12`.
+Python interpreter for all of these: `/home/itadmin/.hermes/hermes-agent/.venv/bin/python3.11`.
+(NOTE the `.venv` with a dot — `venv` without the dot will fail with "No such file or directory".)
 
 ## Run sequence
 
