@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-12T12:45:12",
+ "generated": "2026-09-12T13:00:52",
  "skill_count": 221,
  "skills": [
   {
@@ -63,16 +63,16 @@
    "path": "automotive/tekion-autonomous-login",
    "category": "automotive",
    "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
-   "times_used": 47,
-   "last_used": "2026-09-03"
+   "times_used": 49,
+   "last_used": "2026-09-12"
   },
   {
    "name": "tekion-kb-search-scrape",
    "path": "automotive/tekion-kb-search-scrape",
    "category": "automotive",
    "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 45,
-   "last_used": "2026-09-03"
+   "times_used": 47,
+   "last_used": "2026-09-12"
   },
   {
    "name": "bc-menu-sales-reports",
@@ -103,8 +103,8 @@
    "path": "automotive/tekion-service-settings",
    "category": "automotive",
    "description": "Reference map of Tekion's Service Settings application (App Grid > Settings > Service Settings) \u2014 the master config for service/RO workflows: General Setup, Job Sequence, Flag Tech on, Round-Up rules, Default Service Advisor, RO/Job Flags, Holds, Parts Request, pay-type setups (Customer/Warranty/Internal/ Insurance), Reminders, Express Mode, Tags, RO KPI List, Quotes, Role Config, Consumer Portal, Approval Settings, Deferred Recommendation Rules, Job Clock Setup, P&L View Setup. Use when asked where/how a service workflow behavior is configured (e.g. \"why do tech flag hours auto-match bill time\", \"how is the recommendation opcode set\", \"where do return-RO / comeback tags come from\").",
-   "times_used": 34,
-   "last_used": "2026-09-03"
+   "times_used": 36,
+   "last_used": "2026-09-12"
   },
   {
    "name": "amg-wip-monthly-column-fill",
@@ -531,6 +531,14 @@
    "last_used": "2026-08-18"
   },
   {
+   "name": "google-workspace",
+   "path": "productivity/google-workspace",
+   "category": "productivity",
+   "description": "Gmail, Calendar, Drive, Contacts, Sheets, and Docs integration for Hermes. Uses Hermes-managed OAuth2 setup, prefers the Google Workspace CLI (`gws`) when available for broader API coverage, and falls back to the Python client libraries otherwise.",
+   "times_used": 6,
+   "last_used": "2026-09-12"
+  },
+  {
    "name": "tekion-coupon-management",
    "path": "automotive/tekion-coupon-management",
    "category": "automotive",
@@ -579,6 +587,14 @@
    "last_used": "2026-09-11"
   },
   {
+   "name": "tekion-fee-charging-tax-diagnosis",
+   "path": "automotive/tekion-fee-charging-tax-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose \"fee X is charging tax and it shouldn't\" in Tekion (e.g. \"BATTFEE is charging tax\") \u2014 the INVERSE of tekion-parts-tax-not-calculating-diagnosis. Root cause is almost always the new Parts Tax Code Setup migration leaving a fee's active pricingSetup.taxConfigs EMPTY so the FEES component tax code applies. Covers the all-fees taxConfigs sweep, why legacy EXCLUDE_TAX_CALCULATIONS is ignored, and the parts sale-order pagination trap that produces false \"found 0\" scans.",
+   "times_used": 4,
+   "last_used": "2026-09-12"
+  },
+  {
    "name": "tekion-notification-settings-audit",
    "path": "automotive/tekion-notification-settings-audit",
    "category": "automotive",
@@ -609,14 +625,6 @@
    "description": "Remove parts from a Tekion RO and VOID the ticket, OR flip the job to INTERNAL pay and close at $0 (Joe's preferred cleanup). Void order - void JOB first, then RO-level void appears. Covers Return Part flow, deleting stuck Request Pending returns via the fulfillment row kebab Remove, the Void Job remove-parts gate, pay-type CP-to-I switch with Confirm PayType Change modal, and the Internal cost-center requirement. Verified live on SCT test RO 574398 (2026-07-31).",
    "times_used": 4,
    "last_used": "2026-08-24"
-  },
-  {
-   "name": "google-workspace",
-   "path": "productivity/google-workspace",
-   "category": "productivity",
-   "description": "Gmail, Calendar, Drive, Contacts, Sheets, and Docs integration for Hermes. Uses Hermes-managed OAuth2 setup, prefers the Google Workspace CLI (`gws`) when available for broader API coverage, and falls back to the Python client libraries otherwise.",
-   "times_used": 4,
-   "last_used": "2026-09-11"
   },
   {
    "name": "gm-sasar-action-tracker",
@@ -769,14 +777,6 @@
    "description": "Pull Tekion's DAY COLLECTION report (cashier collections / money actually collected per day, by payment mode + department + cashier) for any AMG store and any date(s) via the internal cashier API, then render a per-day branded PDF and email it to Joe. Replaces reading the Day Collection screen by hand.",
    "times_used": 2,
    "last_used": "2026-08-31"
-  },
-  {
-   "name": "tekion-fee-charging-tax-diagnosis",
-   "path": "automotive/tekion-fee-charging-tax-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose \"fee X is charging tax and it shouldn't\" in Tekion (e.g. \"BATTFEE is charging tax\") \u2014 the INVERSE of tekion-parts-tax-not-calculating-diagnosis. Root cause is almost always the new Parts Tax Code Setup migration leaving a fee's active pricingSetup.taxConfigs EMPTY so the FEES component tax code applies. Covers the all-fees taxConfigs sweep, why legacy EXCLUDE_TAX_CALCULATIONS is ignored, and the parts sale-order pagination trap that produces false \"found 0\" scans.",
-   "times_used": 2,
-   "last_used": "2026-08-27"
   },
   {
    "name": "tekion-labor-rate-create",
