@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-11T17:30:12",
+ "generated": "2026-09-11T17:45:53",
  "skill_count": 219,
  "skills": [
   {
@@ -7,8 +7,8 @@
    "path": "automotive/jay-brain-and-skill-index",
    "category": "automotive",
    "description": "Operate, diagnose, and repair Jay's GBrain (the single Jay-only knowledge brain) plus the self-maintaining skill index. Use when the nightly brain refresh fails or looks frozen, when `gbrain` is \"command not found\", when GBrain search returns nothing/stale, when session knowledge needs to be captured into the brain so it's retrievable later, or when the skill index needs descriptions/metadata/usage-counts. Covers the bun-PATH break, the multi-brain split, the embedding-key gotcha, and the capture-session / skill-usage tracking scripts.",
-   "times_used": 269,
-   "last_used": "2026-09-10"
+   "times_used": 270,
+   "last_used": "2026-09-11"
   },
   {
    "name": "persistent-browser-server",
@@ -47,15 +47,15 @@
    "path": "automotive/tol-menu-sales-reports",
    "category": "automotive",
    "description": "Run the Toyota of Lancaster (TOL/TL, dealer 1092) Menu Sales scorecards \u2014 Daily Opened and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Sean Preston (spreston@tol-av.com). The Toyota-store sibling of the SCT/Kevin (sct-menu-sales-api-scorecard) and BC/Ruben (bc-menu-sales-reports) pipelines. Use for any \"TOL/TL/Toyota of Lancaster menu report\" or \"Sean Preston report\" request.",
-   "times_used": 64,
-   "last_used": "2026-09-10"
+   "times_used": 65,
+   "last_used": "2026-09-11"
   },
   {
    "name": "sct-menu-sales-api-scorecard",
    "path": "automotive/sct-menu-sales-api-scorecard",
    "category": "automotive",
    "description": "Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters to the frozen 316 TEK* maintenance opcodes, resolves advisor names via the persistent browser session on :9223, renders a light-format PNG+PDF scorecard, vision-verifies, and emails. Use for the daily Menu Sales Opened Performance Report cron.",
-   "times_used": 52,
+   "times_used": 54,
    "last_used": "2026-09-11"
   },
   {
@@ -79,8 +79,8 @@
    "path": "automotive/bc-menu-sales-reports",
    "category": "automotive",
    "description": "Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards \u2014 Daily Closed (2x/day) and Closed Month-To-Date (1x/day) \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben Estrada (Restrada@blackstonegm.com). This is the GM-store sibling of the SCT/Kevin pipeline (sct-menu-sales-api-scorecard). Use for any \"BC menu report\", \"Blackstone Chevy/Cadillac menu sales\", or Ruben report request.",
-   "times_used": 40,
-   "last_used": "2026-09-03"
+   "times_used": 41,
+   "last_used": "2026-09-11"
   },
   {
    "name": "tekion-ghost-bin-negative-onhand",
@@ -451,12 +451,28 @@
    "last_used": "2026-08-18"
   },
   {
+   "name": "bt-menu-sales-reports",
+   "path": "automotive/bt-menu-sales-reports",
+   "category": "automotive",
+   "description": "Run the Blackstone Toyota (BT, dealer 1249) Menu Sales scorecards \u2014 Daily Opened, Daily Closed, and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI. The 4th sibling of the SCT/Kevin, BC/Ruben, and TOL/Sean pipelines. Use for any \"BT menu report\", \"Blackstone Toyota menu sales\", or Tony Garcia menu-sales report request. (Menu REBUILD work is a different skill \u2014 bt-tony-menu-rebuild.)",
+   "times_used": 6,
+   "last_used": "2026-09-11"
+  },
+  {
    "name": "sct-toyotacare-billed-hours-report",
    "path": "automotive/sct-toyotacare-billed-hours-report",
    "category": "automotive",
    "description": "Pull the ToyotaCare (TAC) billed-hours number from Tekion's Advisor Performance report (Reports module) for SCT or any store, using Joe's saved TAC/ToyotaCare filter \u2014 and roll it out to the other 6 AMG stores. Use when Joe asks for ToyotaCare / TAC billed hours, or is building his monthly SCT fixed-ops sheet (\"first number, Toyota Care\").",
    "times_used": 6,
    "last_used": "2026-09-02"
+  },
+  {
+   "name": "tekion-alignment-by-advisor-report",
+   "path": "automotive/tekion-alignment-by-advisor-report",
+   "category": "automotive",
+   "description": "Build a Tekion \"alignments sold this period, broken down by service advisor\" report for ANY AMG store from the LIVE OpenAPI \u2014 counting BOTH dedicated alignment opcodes AND alignments bundled inside a service menu/combo op. Produces a 2-page scorecard (page 1 advisor ranking, page 2 RO-level chip detail). The opcode set is PER-STORE; store configs for SCT (dealer 876) and TL (dealer 1092) are pre-approved below. Use when Joe asks for an \"alignment report\" or \"alignment count by advisor\" for any store.",
+   "times_used": 6,
+   "last_used": "2026-09-11"
   },
   {
    "name": "tekion-api-upgrade-audit",
@@ -513,22 +529,6 @@
    "description": "Search Tekion repair orders for a keyword (e.g. \"calibration\", \"windshield\") across labor descriptions, job concern text, part names, fees, and notes, with a dollar figure on the matching line. Use for ROI/opportunity-sizing questions like \"how much calibration/windshield/etc business did we do in the last N months\". Covers the BT Collision Center / body shop department discovery and the critical \"Per Estimate\" lump-sum blind spot.",
    "times_used": 6,
    "last_used": "2026-08-18"
-  },
-  {
-   "name": "bt-menu-sales-reports",
-   "path": "automotive/bt-menu-sales-reports",
-   "category": "automotive",
-   "description": "Run the Blackstone Toyota (BT, dealer 1249) Menu Sales scorecards \u2014 Daily Opened, Daily Closed, and Closed Month-To-Date \u2014 from the LIVE Tekion OpenAPI. The 4th sibling of the SCT/Kevin, BC/Ruben, and TOL/Sean pipelines. Use for any \"BT menu report\", \"Blackstone Toyota menu sales\", or Tony Garcia menu-sales report request. (Menu REBUILD work is a different skill \u2014 bt-tony-menu-rebuild.)",
-   "times_used": 5,
-   "last_used": "2026-08-21"
-  },
-  {
-   "name": "tekion-alignment-by-advisor-report",
-   "path": "automotive/tekion-alignment-by-advisor-report",
-   "category": "automotive",
-   "description": "Build a Tekion \"alignments sold this period, broken down by service advisor\" report for ANY AMG store from the LIVE OpenAPI \u2014 counting BOTH dedicated alignment opcodes AND alignments bundled inside a service menu/combo op. Produces a 2-page scorecard (page 1 advisor ranking, page 2 RO-level chip detail). The opcode set is PER-STORE; store configs for SCT (dealer 876) and TL (dealer 1092) are pre-approved below. Use when Joe asks for an \"alignment report\" or \"alignment count by advisor\" for any store.",
-   "times_used": 5,
-   "last_used": "2026-07-01"
   },
   {
    "name": "tekion-coupon-management",
