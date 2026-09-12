@@ -430,9 +430,37 @@ print('yaml probs  :',len(p))
 Expect `broken desc: 0`, `auto no-trig: 0`, `yaml probs: 0`, and the `usage-stats.json`
 `times_used` sum must not drop. Back up `usage-stats.json` to /tmp before rebuilding.
 
-**State as of 2026-08-26:** 198 skills, 0 broken descriptions, 125/125 automotive skills
-have triggers, 131/198 overall (the 67 without are generic bundled skills — creative,
-mlops, github — not AMG work).
+**State as of 2026-09-11:** 209 skills (down from 219 via consolidation), 0 broken descriptions,
+137 automotive, 4 no-trigger auto, 11 never-used auto (mostly infra/setup skills).
+`last_verified` field now live in manifest (see below).
+
+### `last_verified` health-signal field (added 2026-09-11)
+
+Skills can now carry a `last_verified: YYYY-MM-DD` frontmatter field. `rebuild-skill-index.sh`
+reads it and includes it in manifest.json. A null value means never verified — could be
+silently broken by UI changes. Stamp verified skills in frontmatter:
+```yaml
+last_verified: 2026-09-11
+```
+
+### `archived/` directory — safe skill removal
+
+Skills moved to `archived/` under the skills root are excluded from the manifest rebuild
+(`"archived/" not in f` in the file glob). Preserves full SKILL.md indefinitely. Use for:
+completed one-and-done projects, deprecated stubs, and merged store-specific clones.
+Never `rm -rf` a skill — always archive.
+
+### Consolidation approach (proven 2026-09-11)
+
+When merging store-specific skills: (1) compare bodies first — they're clones if only
+store ID/opcodes/email/scripts differ, NOT if they've accumulated divergent operational
+history (80-100KB daily run-logs); (2) extract store configs into a table inside the
+consolidated skill; (3) save operational history as references/, not inline; (4) update
+triggers to cover all store queries; (5) archive the originals.
+
+**Menu sales are the counterexample** — NOT merged. Each is 80-100KB with divergent
+operational history. They cross-reference each other as siblings; shared methodology
+lives in the SCT canonical skill.
 
 Files under `/home/itadmin/.hermes/profiles/jay/skills/`:
 - `manifest.json` — enriched: per skill {name, skill_name, path, **description**, **triggers**,

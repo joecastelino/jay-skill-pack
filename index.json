@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-11T17:15:08",
+ "generated": "2026-09-11T17:30:12",
  "skill_count": 219,
  "skills": [
   {
@@ -526,7 +526,7 @@
    "name": "tekion-alignment-by-advisor-report",
    "path": "automotive/tekion-alignment-by-advisor-report",
    "category": "automotive",
-   "description": "Build a Tekion \"alignments sold this period, broken down by service advisor\" report for ANY of the 7 AMG stores from the LIVE OpenAPI \u2014 counting BOTH dedicated alignment opcodes AND alignments bundled inside a service menu/combo op. Produces a 2-page scorecard (page 1 advisor ranking, page 2 RO-level chip detail) and optionally has Stacey draft it. The opcode set is PER-STORE \u2014 never reuse one store's alignment codes on another. Verified live at TL Toyota of Lancaster dealer 1092 on 2026-06-29 (105 alignments, 102 dedicated plus 3 bundled, across 104 ROs, June MTD). Use when Joe asks for an \"alignment report\" or \"alignment count by advisor\" for a store, or any single-opcode \"how many of X did we sell, by advisor\" report.",
+   "description": "Build a Tekion \"alignments sold this period, broken down by service advisor\" report for ANY AMG store from the LIVE OpenAPI \u2014 counting BOTH dedicated alignment opcodes AND alignments bundled inside a service menu/combo op. Produces a 2-page scorecard (page 1 advisor ranking, page 2 RO-level chip detail). The opcode set is PER-STORE; store configs for SCT (dealer 876) and TL (dealer 1092) are pre-approved below. Use when Joe asks for an \"alignment report\" or \"alignment count by advisor\" for any store.",
    "times_used": 5,
    "last_used": "2026-07-01"
   },
@@ -1115,6 +1115,14 @@
    "last_used": null
   },
   {
+   "name": "tekion-parts-shortage-diagnosis",
+   "path": "archived/tekion-parts-shortage-diagnosis",
+   "category": "archived",
+   "description": "[DEPRECATED \u2014 use tekion-parts-autoorder-diagnosis] Old name for the Tekion parts stock-out / why-didn't-this-auto-order diagnosis. All content was merged into tekion-parts-autoorder-diagnosis (the canonical, fuller skill). This file is a redirect only.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
    "name": "tekion-physical-inventory",
    "path": "archived/tekion-physical-inventory",
    "category": "archived",
@@ -1207,14 +1215,6 @@
    "path": "automotive/tekion-parts-gross-fleet-mtd",
    "category": "automotive",
    "description": "Pull TOTAL PARTS GROSS (revenue, cost, gross, GP%, RO vs counter split, by counterperson, by day) for any period across any/all 7 AMG stores from the Tekion part transaction ledger. Zero OpenAPI quota. Use when Joe asks for parts gross / parts sales numbers MTD, last month, or a custom window.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tekion-parts-shortage-diagnosis",
-   "path": "automotive/tekion-parts-shortage-diagnosis",
-   "category": "automotive",
-   "description": "[DEPRECATED \u2014 use tekion-parts-autoorder-diagnosis] Old name for the Tekion parts stock-out / why-didn't-this-auto-order diagnosis. All content was merged into tekion-parts-autoorder-diagnosis (the canonical, fuller skill). This file is a redirect only.",
    "times_used": 0,
    "last_used": null
   },
