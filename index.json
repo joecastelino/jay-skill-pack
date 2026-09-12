@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-11T17:00:26",
+ "generated": "2026-09-11T17:15:08",
  "skill_count": 219,
  "skills": [
   {
@@ -51,27 +51,11 @@
    "last_used": "2026-09-10"
   },
   {
-   "name": "bt-tony-menu-rebuild",
-   "path": "automotive/bt-tony-menu-rebuild",
-   "category": "automotive",
-   "description": "The Blackstone Toyota (BT, dealer 1249) service-menu rebuild project for Tony Garcia (Service Manager). Tony wants menus restructured into Factory Recs / Factory Recs Plus with 25 ordered add-on services. Contains the FULL locked spec, Joe's approved decisions, the opcode audit results, and the build plan. Load for ANY \"BT menu\", \"Tony menu\", \"Factory Recs\", or Blackstone Toyota service menu work. STATUS 2026-07-21: full 5K\u2013200K range (5K-step) built, PUBLISHED, Tony-validated; Phase 7 generic Transmission Fluid placeholders DONE; Phase 8 Tony's BG MENU REVAMP 2026 part-match batch DONE + quote-verified (baseline tony-partmatch-baseline-20260721.json). Remaining: x2.5K half-step menus + EV rows only.",
-   "times_used": 61,
-   "last_used": "2026-09-11"
-  },
-  {
    "name": "sct-menu-sales-api-scorecard",
    "path": "automotive/sct-menu-sales-api-scorecard",
    "category": "automotive",
    "description": "Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters to the frozen 316 TEK* maintenance opcodes, resolves advisor names via the persistent browser session on :9223, renders a light-format PNG+PDF scorecard, vision-verifies, and emails. Use for the daily Menu Sales Opened Performance Report cron.",
    "times_used": 52,
-   "last_used": "2026-09-11"
-  },
-  {
-   "name": "bc-gm-menu-build",
-   "path": "automotive/bc-gm-menu-build",
-   "category": "automotive",
-   "description": "The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-override plan for vehicle-correct GM parts, and open decisions. Load for ANY \"GM menu\", \"BC menu build\", \"GMLOF\", or Blackstone Chevrolet service menu work.",
-   "times_used": 47,
    "last_used": "2026-09-11"
   },
   {
@@ -97,14 +81,6 @@
    "description": "Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards \u2014 Daily Closed (2x/day) and Closed Month-To-Date (1x/day) \u2014 from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben Estrada (Restrada@blackstonegm.com). This is the GM-store sibling of the SCT/Kevin pipeline (sct-menu-sales-api-scorecard). Use for any \"BC menu report\", \"Blackstone Chevy/Cadillac menu sales\", or Ruben report request.",
    "times_used": 40,
    "last_used": "2026-09-03"
-  },
-  {
-   "name": "sct-alignment-by-advisor-report",
-   "path": "automotive/sct-alignment-by-advisor-report",
-   "category": "automotive",
-   "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
-   "times_used": 40,
-   "last_used": "2026-09-01"
   },
   {
    "name": "tekion-ghost-bin-negative-onhand",
@@ -635,14 +611,6 @@
    "last_used": "2026-08-24"
   },
   {
-   "name": "tol-alignment-by-advisor-report",
-   "path": "automotive/tol-alignment-by-advisor-report",
-   "category": "automotive",
-   "description": "Run the Toyota of Lancaster (TL/TOL, Tekion dealer 1092) ALIGNMENT count report, month-to-date, broken down by service advisor (dedicated + bundled + unique ROs, ranked). Produces a 2-page Toyota-red scorecard (page-1 PNG + full PDF) and is drafted to Sean Preston by Stacey. Use when Joe asks for \"the Lancaster/TOL alignment report\" or to schedule it.",
-   "times_used": 4,
-   "last_used": "2026-07-07"
-  },
-  {
    "name": "google-workspace",
    "path": "productivity/google-workspace",
    "category": "productivity",
@@ -673,22 +641,6 @@
    "description": "Diagnose \"failed to apply coupon\" / \"the coupon won't attach to job N\" on a Tekion repair order. The #1 root cause is NOT the coupon \u2014 it is the OPCODE's \"Discount Eligible\" checkbox being unchecked. Covers the full evidence-first triage, the API field mapping that proves it without clicking anything, and how to audit a whole store for un-couponable opcodes.",
    "times_used": 3,
    "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-customer-email-change-investigation",
-   "path": "automotive/tekion-customer-email-change-investigation",
-   "category": "automotive",
-   "description": "Investigate WHO changed customer contact info (esp. email) and WHEN in Tekion \u2014 e.g. a service advisor swapping customer emails to addresses he controls to hijack CSI/survey scores. Covers finding all records on a given email via the OpenAPI customer search, the hard limits on audit data, and the RO-advisor attribution workaround that identifies the suspect.",
-   "times_used": 3,
-   "last_used": "2026-06-29"
-  },
-  {
-   "name": "tekion-customer-email-fraud-scan",
-   "path": "automotive/tekion-customer-email-fraud-scan",
-   "category": "automotive",
-   "description": "Detect CSI/survey-manipulation fraud by scanning Tekion customer records for redirect emails via the OpenAPI customer-search endpoint (GET /customers?email=). Two modes \u2014 KNOWN-EMAIL mode scans all 7 AMG stores for a suspect email Joe names (returns every record currently pointing at it + lastUpdateTime timeline); DISCOVERY mode pages a store's whole customer base to find ALL emails shared across 3+ unrelated customers, then attributes each to the RO-creating advisor (single-advisor-lock = bad actor) to surface ADDITIONAL bad actors beyond the first. Use when Joe says an advisor swapped customer emails to redirect surveys/CSI, asks \"how many customers have email X\" / \"when was this changed\", or \"find anything else / who else is doing this.\" Covers the count-param 400 trap, the floor-not-total caveat, the no-modifiedBy / no-change-history API limits, the exclude-staff-domain+dummy-placeholder rules, and the >=85% single-advisor-lock classification threshold.",
-   "times_used": 3,
-   "last_used": "2026-06-29"
   },
   {
    "name": "tekion-generic-placeholder-part-swap",
@@ -867,14 +819,6 @@
    "last_used": "2026-09-04"
   },
   {
-   "name": "tekion-physical-inventory",
-   "path": "automotive/tekion-physical-inventory",
-   "category": "automotive",
-   "description": "Run a Tekion Parts Physical Inventory or Bin Spot Check audit \u2014 the full Setup \u2192 Counting \u2192 Reconciliation \u2192 Summary workflow that compares system count vs physical count, surfaces variance, and writes on-hand adjustments. Use when Joe asks about counting parts, bin spot checks, inventory variance, reconciling shelf qty vs Tekion, or \"Make Adjustments\". Load alongside tekion-sitemap.",
-   "times_used": 2,
-   "last_used": "2026-06-29"
-  },
-  {
    "name": "tekion-rebuild-broken-report-builder-report",
    "path": "automotive/tekion-rebuild-broken-report-builder-report",
    "category": "automotive",
@@ -929,14 +873,6 @@
    "description": "Compare/scrub BC customer lists (GM Rewards, Consolidated Leads, etc.) \u2014 match customers across lists, flag overlaps, and produce Joe's ranked master output with GM Rewards first (ranked by $) and secondary list appended. Load for ANY BC customer data comparison, list merge, or \"scrub these two lists.\"",
    "times_used": 1,
    "last_used": "2026-09-11"
-  },
-  {
-   "name": "hermes-gateway-timeout-restart-loop",
-   "path": "automotive/hermes-gateway-timeout-restart-loop",
-   "category": "automotive",
-   "description": "Diagnose and fix an AMG agent (Walter II/base or any profile) that is restarting/flaky with systemd \"Failed with result 'timeout'\" + status=9/KILL in the journal. Root cause is a hung LLM turn (e.g. gpt-5.5/Codex stall) holding an in-flight 300s API call that blocks clean shutdown past the 60s TimeoutStopSec, so systemd SIGKILLs the gateway and loops. This is NOT a crash, NOT out-of-credits, and the OpenRouter fallback can't save it. Covers how to tell this apart from a billing failure, the exact systemd-log signature, and the per-agent (and fleet-wide) drop-in fix.",
-   "times_used": 1,
-   "last_used": "2026-06-29"
   },
   {
    "name": "hermes-slack-approval-config",
@@ -1075,14 +1011,6 @@
    "last_used": "2026-08-26"
   },
   {
-   "name": "tekion-warehouse-bin-management",
-   "path": "automotive/tekion-warehouse-bin-management",
-   "category": "automotive",
-   "description": "Answer how Tekion handles bins \u2014 which bin a sale pulls from (Primary Bin), whether you can replenish/auto-transfer between bins, the Warehouse Management app (Bin Change, Bin Reports, locations), and the CDK-migration ghost-bin pattern. Use when Joe asks about \"bins messed up\", choosing a pull bin, per-bin replenishment, bin transfers, or primary vs secondary bins. Load with tekion-sitemap + persistent-browser-server.",
-   "times_used": 1,
-   "last_used": "2026-06-29"
-  },
-  {
    "name": "wsl-cross-distro-hermes-discovery",
    "path": "automotive/wsl-cross-distro-hermes-discovery",
    "category": "automotive",
@@ -1135,6 +1063,78 @@
    "path": "apple/imessage",
    "category": "apple",
    "description": "Send and receive iMessages/SMS via the imsg CLI on macOS.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "bc-gm-menu-build",
+   "path": "archived/bc-gm-menu-build",
+   "category": "archived",
+   "description": "The Blackstone Chevrolet & Cadillac (BC, Tekion dealer 1251) GM service-menu build project. Contains Joe's spec direction (clone the Blackstone Toyota architecture), the verified GMLOF oil-tier price audit, the parts-override plan for vehicle-correct GM parts, and open decisions. Load for ANY \"GM menu\", \"BC menu build\", \"GMLOF\", or Blackstone Chevrolet service menu work.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "bt-tony-menu-rebuild",
+   "path": "archived/bt-tony-menu-rebuild",
+   "category": "archived",
+   "description": "The Blackstone Toyota (BT, dealer 1249) service-menu rebuild project for Tony Garcia (Service Manager). Tony wants menus restructured into Factory Recs / Factory Recs Plus with 25 ordered add-on services. Contains the FULL locked spec, Joe's approved decisions, the opcode audit results, and the build plan. Load for ANY \"BT menu\", \"Tony menu\", \"Factory Recs\", or Blackstone Toyota service menu work. STATUS 2026-07-21: full 5K\u2013200K range (5K-step) built, PUBLISHED, Tony-validated; Phase 7 generic Transmission Fluid placeholders DONE; Phase 8 Tony's BG MENU REVAMP 2026 part-match batch DONE + quote-verified (baseline tony-partmatch-baseline-20260721.json). Remaining: x2.5K half-step menus + EV rows only.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "hermes-gateway-timeout-restart-loop",
+   "path": "archived/hermes-gateway-timeout-restart-loop",
+   "category": "archived",
+   "description": "Diagnose and fix an AMG agent (Walter II/base or any profile) that is restarting/flaky with systemd \"Failed with result 'timeout'\" + status=9/KILL in the journal. Root cause is a hung LLM turn (e.g. gpt-5.5/Codex stall) holding an in-flight 300s API call that blocks clean shutdown past the 60s TimeoutStopSec, so systemd SIGKILLs the gateway and loops. This is NOT a crash, NOT out-of-credits, and the OpenRouter fallback can't save it. Covers how to tell this apart from a billing failure, the exact systemd-log signature, and the per-agent (and fleet-wide) drop-in fix.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "sct-alignment-by-advisor-report",
+   "path": "archived/sct-alignment-by-advisor-report",
+   "category": "archived",
+   "description": "Run the Stevens Creek Toyota (SCT, dealer ST/876) Alignment-by-Advisor report from the LIVE Tekion OpenAPI \u2014 counting BOTH dedicated alignment opcodes (ALIGN/OKAL) AND alignments bundled inside a TEK service-menu op. Produces the Joe-approved 2-page Toyota-red scorecard (page 1 advisor ranking PNG, page 2 RO-level chip detail PDF) and hands to Stacey to DRAFT in Joe's inbox. Supports full-month (last month) or closed month-to-date windows. This is THE canonical AMG alignment-report FORMAT Joe reuses a lot going forward.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-customer-email-change-investigation",
+   "path": "archived/tekion-customer-email-change-investigation",
+   "category": "archived",
+   "description": "Investigate WHO changed customer contact info (esp. email) and WHEN in Tekion \u2014 e.g. a service advisor swapping customer emails to addresses he controls to hijack CSI/survey scores. Covers finding all records on a given email via the OpenAPI customer search, the hard limits on audit data, and the RO-advisor attribution workaround that identifies the suspect.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-customer-email-fraud-scan",
+   "path": "archived/tekion-customer-email-fraud-scan",
+   "category": "archived",
+   "description": "Detect CSI/survey-manipulation fraud by scanning Tekion customer records for redirect emails via the OpenAPI customer-search endpoint (GET /customers?email=). Two modes \u2014 KNOWN-EMAIL mode scans all 7 AMG stores for a suspect email Joe names (returns every record currently pointing at it + lastUpdateTime timeline); DISCOVERY mode pages a store's whole customer base to find ALL emails shared across 3+ unrelated customers, then attributes each to the RO-creating advisor (single-advisor-lock = bad actor) to surface ADDITIONAL bad actors beyond the first. Use when Joe says an advisor swapped customer emails to redirect surveys/CSI, asks \"how many customers have email X\" / \"when was this changed\", or \"find anything else / who else is doing this.\" Covers the count-param 400 trap, the floor-not-total caveat, the no-modifiedBy / no-change-history API limits, the exclude-staff-domain+dummy-placeholder rules, and the >=85% single-advisor-lock classification threshold.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-physical-inventory",
+   "path": "archived/tekion-physical-inventory",
+   "category": "archived",
+   "description": "Run a Tekion Parts Physical Inventory or Bin Spot Check audit \u2014 the full Setup \u2192 Counting \u2192 Reconciliation \u2192 Summary workflow that compares system count vs physical count, surfaces variance, and writes on-hand adjustments. Use when Joe asks about counting parts, bin spot checks, inventory variance, reconciling shelf qty vs Tekion, or \"Make Adjustments\". Load alongside tekion-sitemap.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-warehouse-bin-management",
+   "path": "archived/tekion-warehouse-bin-management",
+   "category": "archived",
+   "description": "Answer how Tekion handles bins \u2014 which bin a sale pulls from (Primary Bin), whether you can replenish/auto-transfer between bins, the Warehouse Management app (Bin Change, Bin Reports, locations), and the CDK-migration ghost-bin pattern. Use when Joe asks about \"bins messed up\", choosing a pull bin, per-bin replenishment, bin transfers, or primary vs secondary bins. Load with tekion-sitemap + persistent-browser-server.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tol-alignment-by-advisor-report",
+   "path": "archived/tol-alignment-by-advisor-report",
+   "category": "archived",
+   "description": "Run the Toyota of Lancaster (TL/TOL, Tekion dealer 1092) ALIGNMENT count report, month-to-date, broken down by service advisor (dedicated + bundled + unique ROs, ranked). Produces a 2-page Toyota-red scorecard (page-1 PNG + full PDF) and is drafted to Sean Preston by Stacey. Use when Joe asks for \"the Lancaster/TOL alignment report\" or to schedule it.",
    "times_used": 0,
    "last_used": null
   },

@@ -1,15 +1,23 @@
 ---
 name: tekion-alignment-by-advisor-report
-description: Build a Tekion "alignments sold this period, broken down by service advisor" report for ANY of the 7 AMG stores from the LIVE OpenAPI — counting BOTH dedicated alignment opcodes AND alignments bundled inside a service menu/combo op. Produces a 2-page scorecard (page 1 advisor ranking, page 2 RO-level chip detail) and optionally has Stacey draft it. The opcode set is PER-STORE — never reuse one store's alignment codes on another. Verified live at TL Toyota of Lancaster dealer 1092 on 2026-06-29 (105 alignments, 102 dedicated plus 3 bundled, across 104 ROs, June MTD). Use when Joe asks for an "alignment report" or "alignment count by advisor" for a store, or any single-opcode "how many of X did we sell, by advisor" report.
+description: Build a Tekion "alignments sold this period, broken down by service advisor" report for ANY AMG store from the LIVE OpenAPI — counting BOTH dedicated alignment opcodes AND alignments bundled inside a service menu/combo op. Produces a 2-page scorecard (page 1 advisor ranking, page 2 RO-level chip detail). The opcode set is PER-STORE; store configs for SCT (dealer 876) and TL (dealer 1092) are pre-approved below. Use when Joe asks for an "alignment report" or "alignment count by advisor" for any store.
 triggers:
   - alignment report
   - alignment count by advisor
   - how many alignments did we sell
   - alignments by service advisor
+  - sct alignment report
+  - alignment by advisor sct
+  - stevens creek alignment report
+  - tol alignment report
+  - lancaster alignment report
+  - toyota of lancaster alignments by advisor
+  - run the TL alignment count
+  - daily alignment report
   - opcode count by advisor for a store
+last_verified: 2026-09-11
 ---
-
-# Tekion Alignment-by-Advisor Report (per-store, OpenAPI)
+# Tekion Alignment-by-Advisor Report (fleet-wide, OpenAPI)
 
 Counts how many **alignments** a store sold in a period, broken down by service
 advisor, capturing BOTH:
@@ -21,37 +29,34 @@ Joe's default for store performance reports is the **per-advisor breakdown**
 (dedicated + bundled + total + unique-RO, ranked). This generalizes to any
 single opcode "how many of X by advisor" question — swap the opcode set.
 
-## Rule #1 — the opcode set is PER STORE. NEVER reuse another store's codes.
-SCT alignments = `ALIGN`/`OKAL`. **TL alignments are completely different**
-(`4ALIGN`, `SMALIGN`, `TEK07030101`, plus combo/seasonal codes). Each store has
-its own scheme. Before building the report you MUST derive the target store's
-alignment opcodes from THAT store's own opcode list, then have Joe approve the
-dedicated-vs-bundled-vs-excluded split. This is a NEVER-GUESS situation.
+## Pre-Approved Store Configurations
 
-## Step 1 — Derive the store's alignment opcodes (browser, :9223)
-Use the same authenticated XHR-capture method as deriving a menu opcode set
-(see memory "DERIVE A STORE'S MENU OPCODE SET" + skill tol-menu-sales-reports):
-1. Confirm :9223 is authenticated and on the target dealer (switch via the dealer
-   pill if needed; verify `localStorage.currentActiveDealerId`).
-2. Go to `/ro/opcode`. Arm an XHR hook on `/opcode/search`. Type `align` into the
-   page-level expandable search (`input[searchfield="ALL"]`) via native-value-setter
-   + input event + synthetic Enter (NOT page.fill — partial-hash classnames time out).
-   A raw in-page fetch to `/opcode/search` 500s on auth — you MUST let the SPA fire it.
-3. Read `data.hits[]`: each has `{opcode, opcodeType, status, category, description}`.
+### SCT — Stevens Creek Toyota (dealer 876)
+| Field | Value |
+|-------|-------|
+| **Dedicated** | `ALIGN`, `OKAL`, `ALIGN00BRA` |
+| **Bundled** | Any `TEK*` op whose operation story contains "align" |
+| **Excluded** | None (all three dedicated codes are real sales) |
+| **Scripts** | `sct_align_full_june.py` (full month), `sct_align_mtd.py` (MTD) |
+| **Renderer** | `render_sct_align_full_june.py` |
+| **Email** | Kevin Stapp, kstapp@sctoyota.com, greeting "Kevin," |
+| **Branding** | Toyota-red (#EB0A1E), logo image `logo_st.png` |
+| **Cron** | `25ec117cfe72` — nightly 7pm MTD to Kevin |
 
-### TL result (verified 2026-06-29) — the canonical classification example
-Searching "align" at TL returned 13 hits. Joe-approved "my read" split:
-- **DEDICATED** (real alignment sale): `4ALIGN` (4 Wheel Alignment), `SMALIGN`
-  (Perform 4 Wheel Alignment), `TEK07030101` (Wheel Alignment Adjust).
-- **BUNDLED** (alignment is part of a combo/menu op): the combo/seasonal codes
-  `RAB`, `5KALIGNMENT`, `15KALIGNMENT`, `FALL`, `SPRING` + alignment inside ANY
-  TL service-menu (TEK*) op — all confirmed by the op story containing "align".
-- **EXCLUDED** (inspection/check-only or not a wheel alignment): `ALIGN`
-  (inspection only), `TEK07140101`/`TEK07140102` (check only), `TEK03100301`
-  (headlamp), `4ALIGNT` (inactive truck variant).
+### TL — Toyota of Lancaster (dealer 1092)
+| Field | Value |
+|-------|-------|
+| **Dedicated** | `4ALIGN` (4 Wheel Alignment), `SMALIGN`, `TEK07030101` |
+| **Bundled** | Combo/seasonal: `RAB`, `5KALIGNMENT`, `15KALIGNMENT`, `FALL`, `SPRING` + any TL SERVICE_MENU/TEK* op story containing "align" |
+| **Excluded** | `ALIGN` (inspection only), `TEK07140101`/`TEK07140102` (check), `TEK03100301` (headlamp), `4ALIGNT` (inactive) |
+| **Scripts** | `tol_align_scan.py`, `render_tol_align_by_advisor.py` |
+| **Email** | Sean Preston, spreston@tol-av.com, greeting "Sean," |
+| **Branding** | Toyota-red (#EB0A1E), typographic (no logo), address 43301 12th St W, Lancaster CA 93534 |
 
-Always present the candidates to Joe as a table and let him confirm the split —
-inspection-only vs performed, and combo->dedicated vs combo->bundled, is HIS call.
+All scripts live in `/home/itadmin/tekion-reports/`. Interpreter: `.venv/bin/python3.11`.
+
+## For NEW stores — derive the opcode set FIRST (browser, :9223)
+Use the authenticated XHR-capture method: switch to target dealer, `/ro/opcode`, arm XHR hook on `/opcode/search`, search "align", present candidates to Joe as a DEDICATED/BUNDLED/EXCLUDED table. NEVER reuse another store's codes — TL used entirely different codes from SCT.
 
 ## Step 0 — PIN THE EXACT WINDOW. "last month" = the FULL calendar month.
 When Joe says "last month," he means the whole prior month (e.g. asked July 1 =>
