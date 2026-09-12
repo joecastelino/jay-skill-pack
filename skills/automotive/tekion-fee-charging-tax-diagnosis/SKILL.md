@@ -354,7 +354,47 @@ Complaint: *"Battfee is charging tax."*
   Tax Setup grid's FEES column; surgical fix needs `taxConfigs` rows that no UI
   writes → Tekion ticket. Verify any change with `actTaxCfg: 3` by API.
 
-## ⚠️ "IT'S FIXED" — always re-pull before agreeing (2026-08-28)
+## "I want ONLY this ONE fee to be taxable" — the INVERSE case (2026-09-12)
+
+This is the mirror image of the main diagnosis: the FEES component is NO TAX for all
+pay types, and the store wants ONE specific fee (e.g. PMAT / paint-and-materials) to
+be taxed while leaving everything else alone.
+
+**Root cause:** the FEES component on `/service/settings/ro-settings/tax-code-settings`
+is set to NO TAX across all pay types. A product group
+`ANY_CUSTOMER_PAY_INTERNAL_WARRANTY_SALES_TAX_FEES_TAX_EXEMPT` exists but is
+redundant (all fees already NO TAX).
+
+**Two fix paths:**
+
+### Path A: Flip FEES to taxable + exempt everything else (DIY, ~30 min)
+1. Change the FEES row CP + CVSC columns from NO TAX to the store's tax rate
+2. In the FEES tax-exempt product group, add every fee EXCEPT the one that should be taxed
+3. CAUTION: SALES-department fees and PARTS-department fees may be governed by
+   different tax grids — verify before adding them to the Service exempt group.
+4. **Blast radius**: missing a fee in the exempt group = it becomes taxable immediately.
+   Get the full fee list from `/core/fees` first and check them all off.
+
+### Path B: Tekion support (surgical, no blast radius, requires backend)
+Add `taxConfigs` rows to the fee's `pricingSetup.active[0]`:
+```json
+"taxConfigs": [
+  {"taxRegimeType": "SALES_TAX", "taxable": true, "payType": "CUSTOMER_PAY", "subPayTypes": ["ALL_CUSTOMER_PAY"]},
+  {"taxRegimeType": "SALES_TAX", "taxable": true, "payType": "WARRANTY", "subPayTypes": ["ALL_WARRANTY_PAY"]},
+  {"taxRegimeType": "SALES_TAX", "taxable": true, "payType": "INTERNAL", "subPayTypes": ["ALL_INTERNAL_PAY"]}
+]
+```
+There is NO UI to write these — the fee edit page (`/core/fees/edit/<CODE>`) has
+zero tax configuration fields. This is what Tekion support tickets for per-fee
+taxability are asking for.
+
+### ⚠️ window.__H is unreliable for cross-dealer fee API scans
+When doing the fee sweep across dealers via the internal API, `window.__H` is
+frequently `undefined` or missing `dealerId`. The API calls require it for auth.
+**Fallback**: use the DOM-based approach — navigate to `/core/fees`, scroll the
+virtualized table to collect all rows, and extract fee codes + departments from
+the grid cells. This reliably captures all visible fees but can't read `taxConfigs`
+counts (those require the internal API).
 Joe declared BATTFEE fixed mid-session. It was not:
 
 ```
