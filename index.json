@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-11T23:45:06",
+ "generated": "2026-09-12T00:01:26",
  "skill_count": 220,
  "skills": [
   {
@@ -755,6 +755,14 @@
    "last_used": "2026-08-31"
   },
   {
+   "name": "tekion-browser-automation",
+   "path": "automotive/tekion-browser-automation",
+   "category": "automotive",
+   "description": "Log into Tekion DMS via browser automation or Puppeteer, retrieve OTP from Gmail IMAP, navigate to modules, switch dealerships, and update opcode pricing (Fixed Price labor rates, add parts, save). Covers Ant Design dropdown patterns, scrollable containers, and the complete opcode edit workflow.",
+   "times_used": 2,
+   "last_used": "2026-09-11"
+  },
+  {
    "name": "tekion-day-collection-report",
    "path": "automotive/tekion-day-collection-report",
    "category": "automotive",
@@ -899,14 +907,6 @@
    "last_used": "2026-08-26"
   },
   {
-   "name": "tekion-browser-automation",
-   "path": "automotive/tekion-browser-automation",
-   "category": "automotive",
-   "description": "Log into Tekion DMS via browser automation or Puppeteer, retrieve OTP from Gmail IMAP, navigate to modules, switch dealerships, and update opcode pricing (Fixed Price labor rates, add parts, save). Covers Ant Design dropdown patterns, scrollable containers, and the complete opcode edit workflow.",
-   "times_used": 1,
-   "last_used": "2026-09-10"
-  },
-  {
    "name": "tekion-department-opcode-census",
    "path": "automotive/tekion-department-opcode-census",
    "category": "automotive",
@@ -1009,6 +1009,14 @@
    "description": "Answer \"we need a deductible fee code\" / \"how do we bill the customer's deductible or hardware overage\" on a Tekion RO covered by a service contract (Fidelity, CVSC, extended warranty). The deductible is a NATIVE field in the pay-type split grid, not a fee \u2014 this skill proves whether it already got collected and explains why a fee code is the wrong fix. Also covers the trap that the OpenAPI CANNOT see the deductible.",
    "times_used": 1,
    "last_used": "2026-08-26"
+  },
+  {
+   "name": "tekion-xhr-body-injection",
+   "path": "automotive/tekion-xhr-body-injection",
+   "category": "automotive",
+   "description": "Bypass Tekion SPA auth for authenticated writes by intercepting the SPA's own XMLHttpRequest and swapping the request body before send. Applies to service-menu saves, publishes, and any PUT/POST where direct fetch/XHR fails with \"Token doesn't exist or is invalid.\" NO auth header replication needed \u2014 the SPA handles it.",
+   "times_used": 1,
+   "last_used": "2026-09-11"
   },
   {
    "name": "wsl-cross-distro-hermes-discovery",
@@ -1231,14 +1239,6 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tekion-xhr-body-injection",
-   "path": "automotive/tekion-xhr-body-injection",
-   "category": "automotive",
-   "description": "Bypass Tekion SPA auth for authenticated writes by intercepting the SPA's own XMLHttpRequest and swapping the request body before send. Applies to service-menu saves, publishes, and any PUT/POST where direct fetch/XHR fails with \"Token doesn't exist or is invalid.\" NO auth header replication needed \u2014 the SPA handles it.",
    "times_used": 0,
    "last_used": null
   },
