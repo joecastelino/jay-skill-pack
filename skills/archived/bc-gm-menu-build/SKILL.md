@@ -926,8 +926,17 @@ The Add Services dropdown on the menu edit page uses **Tekion's custom `tuc-reac
 - "INSTALL" → finds BGFSC, DFSC, DFC
 - "CABIN" → finds CABIN
 
-### 🔴 CRITICAL: Bare fetch/XHR CANNOT replicate SPA's axios auth
-Every attempt to PUT the modified menu JSON via `fetch()` or `XMLHttpRequest` (even with `credentials:'include'` and localStorage tokens) returns HTTP 500 "Token doesn't exist or is invalid." The SPA's axios interceptor adds auth headers that bare fetch can't replicate. The only way to PUT is through the SPA's own axios — either by clicking Save in the UI, or by accessing the SPA's axios instance directly.
+### 🔴 CRITICAL: Auth for direct API calls — SOLVED 2026-09-12
+
+The SPA's axios interceptor adds a `tekion-api-token` header (NOT `Authorization: Bearer`).
+Bare `fetch()` with `Authorization: Bearer <t_token>` fails with 500 "Token doesn't exist".
+
+**Solution**: Install an XHR hook on the menu edit page, trigger a small change (toggle
+a tier checkbox → Save), capture `requestHeaders['tekion-api-token']`, then use that
+header + `credentials: 'include'` in a direct `fetch()` PUT. This works for bulk
+modifications (e.g., adding 20 services to a row in one call).
+
+Full method in skill `tekion-xhr-body-injection` (Solution A).
 
 ### 📋 Service Entry Format for menu PUT payload
 Each service in `servicesMetaData.services[]` follows this structure:
@@ -953,10 +962,27 @@ Each service in `servicesMetaData.services[]` follows this structure:
 ```
 Package types: PREMIUM, BASIC, VALUE. Each has NORMAL + SEVERE driving conditions = 6 tierMappings per service. For Premium-only assignment, enable only PREMIUM NORMAL + PREMIUM SEVERE.
 
-### Current State (2026-09-11)
-- **ZERO services on row 48 in the UI** — "No rows found" under Add Services
-- **Modified JSON built** at `/home/itadmin/bc-menu-build/60k-modified-with-bg.json` (719KB) with all 20 BG IDs injected into row 48's `servicesMetaData`
-- **BLOCKED**: Cannot PUT the modified JSON — bare fetch/XHR gets 500 "Token doesn't exist". Need to either: (a) use Playwright browser to add services one-by-one in the UI, (b) find the SPA's axios instance, or (c) add one service to dirty the form, capture the SPA's own PUT via XHR hook, modify it, and re-route.
+### Current State (2026-09-12 — ✅ ALL 20 BG SERVICES SAVED & PUBLISHED)
+
+**The universal row (row 48) on the 60K menu now has all 20 BG services**, saved and published:
+- Chevrolet + Cadillac makes (MAKE parameter includes both)
+- ALL_MODELS, ALL_YEARS, ALL_TRIMS
+- All 20 services with tier mappings: Premium NORMAL+SEVERE enabled, BASIC/VALUE disabled
+- Menu published (PUT `?publish=true` → 200, status ACTIVE)
+
+**How it was done**: XHR hook on the menu edit page captured the SPA's `tekion-api-token`
+header from a real Save request, then direct `fetch()` PUT the modified JSON with that
+header + session cookies. See skill `tekion-xhr-body-injection` (Solution A).
+
+**❌ Verification blocked**: The Cadillac XT6 test VIN (`1GYKPHRS9PZ214217`) decodes
+in Quotes but the odometer field can't be set to 60,000 mi — it stays at 0. Because the
+quote system filters intervals by odometer, the 60K menu never appears in the carousel.
+The odometer input is unresponsive to all interaction methods tried (execCommand,
+native value-setter, /mouse clicks). Need Joe to pull the quote from his end with odo
+set to verify.
+
+**Missing**: BGMOA (oil conditioner for gasoline) was never created. 20 of 21 BG
+services exist.
 
 ### ⭐ REACT FIBER STATE EXTRACTION (THE reliable way to get Tekion SPA data)
 When the SPA's UI is fighting you, extract data directly from React's internal state. Works for ANY page.

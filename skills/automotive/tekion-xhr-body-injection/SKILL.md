@@ -23,14 +23,59 @@ Direct API calls to Tekion endpoints (via `fetch()` or new `XMLHttpRequest`) fai
 {"status":500,"error":"Internal Server Error","message":"Token doesn't exist or is invalid"}
 ```
 
-Even when you pass the correct `tekion-api-token` header (captured from the SPA), the
-server rejects it. The SPA's axios instance adds auth context (likely via cookies,
-interceptors, or session-tied tokens) that plain `fetch()` / XHR cannot replicate.
+The common mistake is using `Authorization: Bearer <t_token>` (from localStorage) — this
+ALWAYS fails. The SPA's axios interceptor uses a DIFFERENT header: `tekion-api-token`.
 
-## Solution: Intercept the SPA's OWN XHR and swap the body
+## Solution A: Capture `tekion-api-token` via XHR hook, then direct `fetch()`
 
-Instead of making a new request, **intercept `XMLHttpRequest.prototype.send`**, modify the
-body in-flight, and let the SPA's own request go through with valid auth.
+**✅ PROVEN 2026-09-12 — this is the PREFERRED method for bulk writes.**
+
+1. Install a non-blocking XHR hook on the target page (e.g., menu edit page)
+2. Trigger a small legitimate change (toggle a tier checkbox → click Save)
+3. Capture `requestHeaders['tekion-api-token']` from the intercepted XHR
+4. Use that header in a direct `fetch()` call:
+```javascript
+fetch('/api/service-module/u/opcode/service-menu/setup/<menuId>?publish=false', {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+    'tekion-api-token': capturedToken  // NOT Authorization: Bearer!
+  },
+  body: JSON.stringify(modifiedMenuJSON),
+  credentials: 'include'  // cookies still matter
+});
+```
+
+The `tekion-api-token` header + session cookies = full auth. This allows programmatic
+bulk modifications (e.g., adding 20 services to a row) without clicking through the UI.
+
+**Header capture via XHR hook:**
+```javascript
+const origOpen = XMLHttpRequest.prototype.open;
+const origSend = XMLHttpRequest.prototype.send;
+XMLHttpRequest.prototype.open = function(method, url) {
+  this.__method = method; this.__url = url;
+  return origOpen.apply(this, arguments);
+};
+XMLHttpRequest.prototype.send = function(body) {
+  if (this.__url && this.__url.includes('service-menu/setup') && this.__method === 'PUT') {
+    // Store headers for reuse
+    window.__SPA_HEADERS = {'tekion-api-token': this.__requestHeaders?.['tekion-api-token']};
+    window.__SPA_BODY = typeof body === 'string' ? body : JSON.stringify(body);
+  }
+  return origSend.call(this, body);
+};
+```
+
+**CRITICAL**: The XHR hook must be installed on the CORRECT page BEFORE triggering the
+save. Do NOT navigate away — the hook is lost. Use `location.reload()` or `pushState`
+between capture attempts, never `location.href =`.
+
+## Solution B: Intercept the SPA's OWN XHR and swap the body (legacy)
+
+If Solution A fails (rare — 2026-09-12 verified working), fall back to body injection:
+intercept `XMLHttpRequest.prototype.send`, modify the body in-flight, and let the SPA's
+own request go through with valid auth.
 
 ### Core Pattern
 
@@ -167,9 +212,13 @@ After injection and save, verify persistence:
 
 ## When to Use
 
+- **PREFERRED: Solution A** — Capture `tekion-api-token` header via one XHR hook, then
+  use direct `fetch()` for bulk modifications (adding 20+ services, modifying row
+  parameters, publishing). Faster, more reliable, allows programmatic JSON construction.
+- **FALLBACK: Solution B (body injection)** — When the server rejects even valid
+  `tekion-api-token` + cookies (rare edge case).
 - Adding/modifying services on a service menu row (batch additions bypassing UI)
 - Publishing a menu without navigating the confirm dialog
-- Any Tekion write where direct API calls fail with "Token doesn't exist"
 - Modifying row parameters (makes, models, years) without fighting the UI
 
 ## When NOT to Use

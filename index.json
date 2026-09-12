@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-12T04:00:10",
- "skill_count": 220,
+ "generated": "2026-09-12T04:15:09",
+ "skill_count": 221,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -1239,6 +1239,14 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tol-recall-parts-appointment-workflow",
+   "path": "automotive/tol-recall-parts-appointment-workflow",
+   "category": "automotive",
+   "description": "TL (Toyota of Lancaster, dealer 1092) recall-only parts appointment workflow \u2014 deployed 2026-09-12. Mass-uncheck, keep-list, RECALL opcode, placeholder part, notify-immediately, and backlog sweep.",
    "times_used": 0,
    "last_used": null
   },
