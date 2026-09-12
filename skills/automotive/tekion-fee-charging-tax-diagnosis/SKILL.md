@@ -286,6 +286,47 @@ const found=[];
 This is what finally located `taxConfiguration.taxCodeGrid`,
 `taxSummary.formattedTaxByTaxCodeId` and `extra.isNewTaxCodeSetupEnabled`.
 
+## Cross-dealer fee search — fleet-wide sweep (NO dealer switching needed)
+When a fee code doesn't exist at the expected store (or Joe uses an internal abbreviation that
+doesn't match a Tekion fee code), **sweep ALL 7 stores in ONE eval call** — no dealer switching,
+no page nav. This is the fastest way to prove "PMAT doesn't exist anywhere":
+
+```js
+(async function() {
+  var dealers = {AR:'6195', BC:'1251', BT:'1249', ST:'876', SV:'826', TL:'1092', VC:'1891'};
+  var results = {};
+  for (var [code, id] of Object.entries(dealers)) {
+    var H = Object.assign({}, window.__H, {dealerId: id, 'tek-siteId': '-1_' + id});
+    var r = await fetch('/api/service-module/u/fee/v3/search', {
+      method: 'POST', headers: H,
+      body: JSON.stringify({searchText:'',filters:[],sort:[],page:{from:0,size:200}})
+    });
+    var hits = ((await r.json()).data||{}).hits||[];
+    var matching = hits.filter(function(h) {
+      return /PMAT/i.test(h.feeCode) || /PMAT/i.test(h.description);
+    });
+    if (matching.length > 0) {
+      results[code] = matching.map(function(h) {
+        return {code: h.feeCode, desc: h.description, dept: h.department, status: h.dealerFeeStatus};
+      });
+    }
+  }
+  return JSON.stringify(results);
+})()
+```
+
+Send via :9223 `/eval` with key `"js"` (NOT `"expression"`):
+```python
+payload = json.dumps({"js": js}).encode()
+req = urllib.request.Request("http://localhost:9223/eval", data=payload,
+    headers={"Content-Type": "application/json"})
+```
+
+If the result is `{}` across all 7 stores, the fee code genuinely doesn't exist — Joe is using an
+internal abbreviation that doesn't match Tekion's naming. **Ask for clarification immediately**
+rather than continuing to hunt. This is a recurring pattern: Joe and store managers use shorthand
+(e.g. "PMAT" for what might be a parts-materials surcharge) that has no Tekion equivalent.
+
 ## Cross-dealer without switching the UI
 Never switch the UI dealer for a read-only diagnosis — override headers on a copy:
 

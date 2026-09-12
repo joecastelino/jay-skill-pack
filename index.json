@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-12T12:15:19",
+ "generated": "2026-09-12T12:30:20",
  "skill_count": 221,
  "skills": [
   {
@@ -83,20 +83,20 @@
    "last_used": "2026-09-11"
   },
   {
+   "name": "tekion-quotes-menu-price-diagnosis",
+   "path": "automotive/tekion-quotes-menu-price-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose a Tekion Service Menu pricing problem (e.g. \"a rotation is charging $449.45\") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLODE the menu into individual opcodes using the \"Add Menu Services as separate operations\" setting to find which opcode carries the bad price and its labor-rate method (Fixed vs Service Catalog Pro Dynamic Pricing). Use when Joe flags a wrong/inflated price on a maintenance menu line for a specific RO/vehicle.",
+   "times_used": 41,
+   "last_used": "2026-09-12"
+  },
+  {
    "name": "tekion-ghost-bin-negative-onhand",
    "path": "automotive/tekion-ghost-bin-negative-onhand",
    "category": "automotive",
    "description": "Diagnose a part showing NEGATIVE total on-hand in Tekion that stems from a CDK-migration \"ghost bin\" (a location-less legacy bin like 5005 / 5000 / 5001 / 5004 / RC1 / RC2 carried over at CDK\u2192Tekion cutover ~4 yrs ago). The negative lives ONLY on the bin record, has ZERO transactions, is invisible to physical inventory (out of count scope), and poisons the auto-replenishment math (OH+OnOrder stays under reorder point \u2192 perpetual over-ordering). Distinct from a real stock-out. Use when Joe says \"this part shows -11 on hand / negative on hand / auto replenishment isn't working\" AND the negative traces to a non-primary bin. Sibling of tekion-parts-autoorder-diagnosis (that one = velocity/BRP/BSL/Min stock-outs; THIS one = phantom bin balances). WRITE-SIDE FIX PATHS NOW LIVE (2026-07-03): Edit-Part redistribution (zero GL) vs bin-level OH adjustment \u2014 see FIX PATHS section. Case-B $ adjustments still require Joe's explicit go.",
    "times_used": 40,
    "last_used": "2026-08-18"
-  },
-  {
-   "name": "tekion-quotes-menu-price-diagnosis",
-   "path": "automotive/tekion-quotes-menu-price-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose a Tekion Service Menu pricing problem (e.g. \"a rotation is charging $449.45\") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLODE the menu into individual opcodes using the \"Add Menu Services as separate operations\" setting to find which opcode carries the bad price and its labor-rate method (Fixed vs Service Catalog Pro Dynamic Pricing). Use when Joe flags a wrong/inflated price on a maintenance menu line for a specific RO/vehicle.",
-   "times_used": 40,
-   "last_used": "2026-08-21"
   },
   {
    "name": "tekion-service-settings",
@@ -859,6 +859,14 @@
    "last_used": "2026-07-03"
   },
   {
+   "name": "tekion-xhr-body-injection",
+   "path": "automotive/tekion-xhr-body-injection",
+   "category": "automotive",
+   "description": "Bypass Tekion SPA auth for authenticated writes by intercepting the SPA's own XMLHttpRequest and swapping the request body before send. Applies to service-menu saves, publishes, and any PUT/POST where direct fetch/XHR fails with \"Token doesn't exist or is invalid.\" NO auth header replication needed \u2014 the SPA handles it.",
+   "times_used": 2,
+   "last_used": "2026-09-12"
+  },
+  {
    "name": "vw-carefree-care-plus-hours-elr-report",
    "path": "automotive/vw-carefree-care-plus-hours-elr-report",
    "category": "automotive",
@@ -1009,14 +1017,6 @@
    "description": "Answer \"we need a deductible fee code\" / \"how do we bill the customer's deductible or hardware overage\" on a Tekion RO covered by a service contract (Fidelity, CVSC, extended warranty). The deductible is a NATIVE field in the pay-type split grid, not a fee \u2014 this skill proves whether it already got collected and explains why a fee code is the wrong fix. Also covers the trap that the OpenAPI CANNOT see the deductible.",
    "times_used": 1,
    "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-xhr-body-injection",
-   "path": "automotive/tekion-xhr-body-injection",
-   "category": "automotive",
-   "description": "Bypass Tekion SPA auth for authenticated writes by intercepting the SPA's own XMLHttpRequest and swapping the request body before send. Applies to service-menu saves, publishes, and any PUT/POST where direct fetch/XHR fails with \"Token doesn't exist or is invalid.\" NO auth header replication needed \u2014 the SPA handles it.",
-   "times_used": 1,
-   "last_used": "2026-09-11"
   },
   {
    "name": "wsl-cross-distro-hermes-discovery",
