@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-11T16:45:09",
+ "generated": "2026-09-11T17:00:26",
  "skill_count": 219,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 176,
+   "times_used": 177,
    "last_used": "2026-09-11"
   },
   {
@@ -947,6 +947,14 @@
    "last_used": "2026-09-11"
   },
   {
+   "name": "hermes-system-audit",
+   "path": "automotive/hermes-system-audit",
+   "category": "automotive",
+   "description": "Run a comprehensive system audit of the AMG Hermes fleet \u2014 gateway services, persistent browser servers, cron jobs, GBrain, disk, memory, and agent profiles. Use when Joe reports agent degradation, after weekend incidents, or for recurring health checks.",
+   "times_used": 1,
+   "last_used": "2026-09-11"
+  },
+  {
    "name": "slack-store-thread-cron-retarget",
    "path": "automotive/slack-store-thread-cron-retarget",
    "category": "automotive",
@@ -1151,14 +1159,6 @@
    "path": "automotive/dealerdetail-persona-and-dedup",
    "category": "automotive",
    "description": "Split the DealerDetail advisor dashboard by Tekion persona (SERVICE_ADVISOR vs an \"Others\" bucket for cashiers/warranty clerks/service managers/techs), backfill the persona column from the Tekion users API, and fix duplicate-advisor rows caused by null-name pre-scope-upgrade pulls. Use when advisor numbers look polluted by non-advisors, when you see an \"Unassigned\"/null advisor, when personas are 0/N populated, or when the same Tekion userId appears under two Advisor rows.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "hermes-system-audit",
-   "path": "automotive/hermes-system-audit",
-   "category": "automotive",
-   "description": "Run a comprehensive system audit of the AMG Hermes fleet \u2014 gateway services, persistent browser servers, cron jobs, GBrain, disk, memory, and agent profiles. Use when Joe reports agent degradation, after weekend incidents, or for recurring health checks.",
    "times_used": 0,
    "last_used": null
   },
