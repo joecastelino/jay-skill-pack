@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-12T13:30:17",
+ "generated": "2026-09-12T13:45:22",
  "skill_count": 221,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 177,
-   "last_used": "2026-09-11"
+   "times_used": 178,
+   "last_used": "2026-09-12"
   },
   {
    "name": "agent-to-agent-bridge",
@@ -63,7 +63,7 @@
    "path": "automotive/tekion-autonomous-login",
    "category": "automotive",
    "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
-   "times_used": 49,
+   "times_used": 50,
    "last_used": "2026-09-12"
   },
   {
@@ -71,7 +71,7 @@
    "path": "automotive/tekion-kb-search-scrape",
    "category": "automotive",
    "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 47,
+   "times_used": 48,
    "last_used": "2026-09-12"
   },
   {
@@ -103,7 +103,7 @@
    "path": "automotive/tekion-service-settings",
    "category": "automotive",
    "description": "Reference map of Tekion's Service Settings application (App Grid > Settings > Service Settings) \u2014 the master config for service/RO workflows: General Setup, Job Sequence, Flag Tech on, Round-Up rules, Default Service Advisor, RO/Job Flags, Holds, Parts Request, pay-type setups (Customer/Warranty/Internal/ Insurance), Reminders, Express Mode, Tags, RO KPI List, Quotes, Role Config, Consumer Portal, Approval Settings, Deferred Recommendation Rules, Job Clock Setup, P&L View Setup. Use when asked where/how a service workflow behavior is configured (e.g. \"why do tech flag hours auto-match bill time\", \"how is the recommendation opcode set\", \"where do return-RO / comeback tags come from\").",
-   "times_used": 36,
+   "times_used": 37,
    "last_used": "2026-09-12"
   },
   {
@@ -467,6 +467,14 @@
    "last_used": "2026-08-18"
   },
   {
+   "name": "google-workspace",
+   "path": "productivity/google-workspace",
+   "category": "productivity",
+   "description": "Gmail, Calendar, Drive, Contacts, Sheets, and Docs integration for Hermes. Uses Hermes-managed OAuth2 setup, prefers the Google Workspace CLI (`gws`) when available for broader API coverage, and falls back to the Python client libraries otherwise.",
+   "times_used": 7,
+   "last_used": "2026-09-12"
+  },
+  {
    "name": "sct-toyotacare-billed-hours-report",
    "path": "automotive/sct-toyotacare-billed-hours-report",
    "category": "automotive",
@@ -531,14 +539,6 @@
    "last_used": "2026-08-18"
   },
   {
-   "name": "google-workspace",
-   "path": "productivity/google-workspace",
-   "category": "productivity",
-   "description": "Gmail, Calendar, Drive, Contacts, Sheets, and Docs integration for Hermes. Uses Hermes-managed OAuth2 setup, prefers the Google Workspace CLI (`gws`) when available for broader API coverage, and falls back to the Python client libraries otherwise.",
-   "times_used": 6,
-   "last_used": "2026-09-12"
-  },
-  {
    "name": "tekion-coupon-management",
    "path": "automotive/tekion-coupon-management",
    "category": "automotive",
@@ -553,6 +553,14 @@
    "description": "Pull declined/deferred service data (recommendations customers didn't buy) for any Tekion store via the internal Deferred Services report API \u2014 service name, counts, dollar estimates, customer/vehicle/advisor detail. Zero OpenAPI quota; works when OVERALL_QUOTA is exhausted. Use for marketing campaign lists (Autumn) or lost-sales analysis.",
    "times_used": 5,
    "last_used": "2026-09-03"
+  },
+  {
+   "name": "tekion-fee-charging-tax-diagnosis",
+   "path": "automotive/tekion-fee-charging-tax-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose \"fee X is charging tax and it shouldn't\" in Tekion (e.g. \"BATTFEE is charging tax\") \u2014 the INVERSE of tekion-parts-tax-not-calculating-diagnosis. Root cause is almost always the new Parts Tax Code Setup migration leaving a fee's active pricingSetup.taxConfigs EMPTY so the FEES component tax code applies. Covers the all-fees taxConfigs sweep, why legacy EXCLUDE_TAX_CALCULATIONS is ignored, and the parts sale-order pagination trap that produces false \"found 0\" scans.",
+   "times_used": 5,
+   "last_used": "2026-09-12"
   },
   {
    "name": "tekion-journal-entry-error-diagnosis",
@@ -585,14 +593,6 @@
    "description": "Log into Tekion DMS via browser, switch dealerships, navigate to Opcode Management, search for opcodes, and edit opcode details. Covers OTP retrieval via IMAP, session persistence, dealer switching pitfalls, and search quirks.",
    "times_used": 4,
    "last_used": "2026-09-11"
-  },
-  {
-   "name": "tekion-fee-charging-tax-diagnosis",
-   "path": "automotive/tekion-fee-charging-tax-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose \"fee X is charging tax and it shouldn't\" in Tekion (e.g. \"BATTFEE is charging tax\") \u2014 the INVERSE of tekion-parts-tax-not-calculating-diagnosis. Root cause is almost always the new Parts Tax Code Setup migration leaving a fee's active pricingSetup.taxConfigs EMPTY so the FEES component tax code applies. Covers the all-fees taxConfigs sweep, why legacy EXCLUDE_TAX_CALCULATIONS is ignored, and the parts sale-order pagination trap that produces false \"found 0\" scans.",
-   "times_used": 4,
-   "last_used": "2026-09-12"
   },
   {
    "name": "tekion-notification-settings-audit",
@@ -641,6 +641,14 @@
    "description": "Investigate REAL Tekion OpenAPI quota/429 usage per dealer using the APC portal's Transaction Dashboard (ground truth, not assumptions) \u2014 find which store/endpoint is burning quota, when Joe says \"don't assume, go check the APC portal\". Also covers what Plan Details and Usage Dashboard actually show (and don't).",
    "times_used": 3,
    "last_used": "2026-09-02"
+  },
+  {
+   "name": "tekion-browser-automation",
+   "path": "automotive/tekion-browser-automation",
+   "category": "automotive",
+   "description": "Log into Tekion DMS via browser automation or Puppeteer, retrieve OTP from Gmail IMAP, navigate to modules, switch dealerships, and update opcode pricing (Fixed Price labor rates, add parts, save). Covers Ant Design dropdown patterns, scrollable containers, and the complete opcode edit workflow.",
+   "times_used": 3,
+   "last_used": "2026-09-12"
   },
   {
    "name": "tekion-coupon-not-applying-diagnosis",
@@ -761,14 +769,6 @@
    "description": "Answer \"why do appointments from vendor X show as Integration / can we relabel the appointment source\" and audit appointment volume by source (BDC, Consumer, Walk-in, Integration/Open API, AI) per store. Covers Tekion's fixed appointmentSource\u2192category enum, the internal /api/scheduling/u/appointment/search aggregation API, and how to identify which vendor is behind an Integration bucket.",
    "times_used": 2,
    "last_used": "2026-08-31"
-  },
-  {
-   "name": "tekion-browser-automation",
-   "path": "automotive/tekion-browser-automation",
-   "category": "automotive",
-   "description": "Log into Tekion DMS via browser automation or Puppeteer, retrieve OTP from Gmail IMAP, navigate to modules, switch dealerships, and update opcode pricing (Fixed Price labor rates, add parts, save). Covers Ant Design dropdown patterns, scrollable containers, and the complete opcode edit workflow.",
-   "times_used": 2,
-   "last_used": "2026-09-11"
   },
   {
    "name": "tekion-day-collection-report",
