@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-11T23:30:09",
- "skill_count": 219,
+ "generated": "2026-09-11T23:45:06",
+ "skill_count": 220,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -1231,6 +1231,14 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-xhr-body-injection",
+   "path": "automotive/tekion-xhr-body-injection",
+   "category": "automotive",
+   "description": "Bypass Tekion SPA auth for authenticated writes by intercepting the SPA's own XMLHttpRequest and swapping the request body before send. Applies to service-menu saves, publishes, and any PUT/POST where direct fetch/XHR fails with \"Token doesn't exist or is invalid.\" NO auth header replication needed \u2014 the SPA handles it.",
    "times_used": 0,
    "last_used": null
   },
