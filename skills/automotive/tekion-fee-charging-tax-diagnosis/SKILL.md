@@ -20,6 +20,21 @@ symptom, and the same "screen renders a default that isn't saved" trap.
 
 Related: `tekion-fee-not-showing-diagnosis` (fee invisible / not applying).
 
+## Common user confusion — the "Exempt Button"
+
+When Joe asks "where is the exempt button?", he's looking for a per-fee toggle
+to change taxability. Two things to clarify upfront:
+
+1. **"Exclude Tax calculation" (legacy flag) is NOT the answer.** This is the old
+   `EXCLUDE_TAX_CALCULATIONS` override flag on the fee record. It is IGNORED by
+   the new Parts Tax Code Setup engine. A fee can show this flag as true and still
+   get taxed or not taxed — the new engine doesn't read it.
+
+2. **The real "exempt button" is the FEES tax-exempt product group** on the
+   `/service/settings/ro-settings/tax-code-settings` page. A fee is exempt iff its
+   code is a member of that group (or if FEES = NO TAX globally, which makes
+   everything exempt).
+
 ## TL;DR root cause
 
 **Read the "FOUND 2026-08-28" section under *The fix* before diagnosing** — the
@@ -162,10 +177,34 @@ The same pattern exists for labor via opcode-filtered groups
 exemption design**, not a one-off. Expect a product group wherever a
 component is mapped NO TAX but only *some* items are exempt.
 
-**STILL UNVERIFIED:** the exact click path / editor control for the group on the
-tax-code-settings screen. The group's existence and membership come from the API.
-Per Joe's never-guess rule, walk the screen read-only and confirm the control
-before handing anyone a breadcrumb — do not invent one.
+**VERIFIED 2026-09-13 (BT 1249):** the product group row on the tax-code-settings
+page **is clickable** — clicking the row name opens a right-side `ant-v5-popover`
+(~600×200px) showing:
+- **Effective Date**, **Created By**, **Created On**, **Base Component** (FEES)
+- **Fee** list with individual fee labels inside a `.show-more-items` div
+- A **"+N" button** (`data-test-id="...showMoreButton"`) to see additional fees
+  (note: this button did not expand inline when clicked via /mouse or JS `.click()`
+  — may require a genuine browser interaction or may be a tooltip-only indicator)
+
+**DOM landmarks for the popover:**
+```
+.ant-v5-popover.ant-v5-popover-placement-right
+  .ant-v5-popover-inner-content
+    .service-setups_visitingCard_container
+      .service-setups_cardHeader_container        → Effective Date, etc.
+      .p-16
+        .service-setups_ComponentDetailsPopover_detailsContain → Fee list
+          .show-more-items.is-capitalized
+            .root_label_label                     → fee names
+            button[data-test-id*="showMoreButton"] → +N count
+```
+
+**To view/manage group members:** click the product group's row name text in the
+Component column (not the NO TAX dropdowns — those are per-pay-type overrides).
+The popover opens to the right of the row. To **add a fee**, look for an "Add Fee"
+or "+" control within the popover (not yet confirmed — the BT group was
+system-created with 28 fees pre-populated). To **remove a fee**, look for delete
+icons next to individual fee labels.
 
 ### THREE layers decide fee tax — know which one applies
 ```
@@ -367,13 +406,24 @@ redundant (all fees already NO TAX).
 
 **Two fix paths:**
 
-### Path A: Flip FEES to taxable + exempt everything else (DIY, ~30 min)
-1. Change the FEES row CP + CVSC columns from NO TAX to the store's tax rate
-2. In the FEES tax-exempt product group, add every fee EXCEPT the one that should be taxed
-3. CAUTION: SALES-department fees and PARTS-department fees may be governed by
-   different tax grids — verify before adding them to the Service exempt group.
-4. **Blast radius**: missing a fee in the exempt group = it becomes taxable immediately.
-   Get the full fee list from `/core/fees` first and check them all off.
+### Path A: Flip FEES to taxable + exempt everything else (DIY, verified BT 2026-09-13)
+
+**Pre-flight — verify the group already exists:** at BT (and likely all stores migrated
+to the new tax engine), the `FEES_TAX_EXEMPT` product group row already exists in the
+table (created by System). At BT it contained 28 fees.
+
+**Step-by-step:**
+1. Go to `/service/settings/ro-settings/tax-code-settings` (on the correct dealer)
+2. Click the **Edit** button (top-right, ~x=1209, y=309)
+3. In the **FEES** row, change CP and CVSC dropdowns from NO TAX → the store's tax rate
+4. Click the product group row **name** (`ANY_CUSTOMER_PAY_INTERNAL_WARRANTY_SALES_TAX_FEES_TAX_EXEMPT`)
+   in the Component column — this opens the member popover
+5. Verify the target fee (e.g. PMAT) is NOT in the exempt list. If it is, remove it.
+   If any other fee is missing from the list, add it (all other fees must be exempt)
+6. Click **Submit** at the bottom
+
+**Blast radius:** missing a fee in the exempt group = it becomes taxable immediately.
+Get the full fee list from `/core/fees` first and check them all off.
 
 ### Path B: Tekion support (surgical, no blast radius, requires backend)
 Add `taxConfigs` rows to the fee's `pricingSetup.active[0]`:
