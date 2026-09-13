@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-13T16:00:04",
+ "generated": "2026-09-13T16:15:22",
  "skill_count": 221,
  "skills": [
   {
@@ -499,6 +499,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-fee-charging-tax-diagnosis",
+   "path": "automotive/tekion-fee-charging-tax-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose \"fee X is charging tax and it shouldn't\" in Tekion (e.g. \"BATTFEE is charging tax\") \u2014 the INVERSE of tekion-parts-tax-not-calculating-diagnosis. Root cause is almost always the new Parts Tax Code Setup migration leaving a fee's active pricingSetup.taxConfigs EMPTY so the FEES component tax code applies. Covers the all-fees taxConfigs sweep, why legacy EXCLUDE_TAX_CALCULATIONS is ignored, and the parts sale-order pagination trap that produces false \"found 0\" scans.",
+   "times_used": 6,
+   "last_used": "2026-09-13"
+  },
+  {
    "name": "tekion-gross-not-posting-to-advisor",
    "path": "automotive/tekion-gross-not-posting-to-advisor",
    "category": "automotive",
@@ -539,6 +547,14 @@
    "last_used": "2026-08-18"
   },
   {
+   "name": "tekion-browser-navigation",
+   "path": "automotive/tekion-browser-navigation",
+   "category": "automotive",
+   "description": "Log into Tekion DMS via browser, switch dealerships, navigate to Opcode Management, search for opcodes, and edit opcode details. Covers OTP retrieval via IMAP, session persistence, dealer switching pitfalls, and search quirks.",
+   "times_used": 5,
+   "last_used": "2026-09-13"
+  },
+  {
    "name": "tekion-coupon-management",
    "path": "automotive/tekion-coupon-management",
    "category": "automotive",
@@ -553,14 +569,6 @@
    "description": "Pull declined/deferred service data (recommendations customers didn't buy) for any Tekion store via the internal Deferred Services report API \u2014 service name, counts, dollar estimates, customer/vehicle/advisor detail. Zero OpenAPI quota; works when OVERALL_QUOTA is exhausted. Use for marketing campaign lists (Autumn) or lost-sales analysis.",
    "times_used": 5,
    "last_used": "2026-09-03"
-  },
-  {
-   "name": "tekion-fee-charging-tax-diagnosis",
-   "path": "automotive/tekion-fee-charging-tax-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose \"fee X is charging tax and it shouldn't\" in Tekion (e.g. \"BATTFEE is charging tax\") \u2014 the INVERSE of tekion-parts-tax-not-calculating-diagnosis. Root cause is almost always the new Parts Tax Code Setup migration leaving a fee's active pricingSetup.taxConfigs EMPTY so the FEES component tax code applies. Covers the all-fees taxConfigs sweep, why legacy EXCLUDE_TAX_CALCULATIONS is ignored, and the parts sale-order pagination trap that produces false \"found 0\" scans.",
-   "times_used": 5,
-   "last_used": "2026-09-12"
   },
   {
    "name": "tekion-journal-entry-error-diagnosis",
@@ -585,14 +593,6 @@
    "description": "Fix an AMG Hermes agent that is silent on Slack because its SLACK_BOT_TOKEN/SLACK_APP_TOKEN are missing or wrong in the profile .env \u2014 including recovering LOST tokens from old session transcripts without asking Joe to regenerate them at api.slack.com. Use when an agent's service is running but it never answers Slack messages (Autumn case, 2026-07-14).",
    "times_used": 4,
    "last_used": "2026-07-14"
-  },
-  {
-   "name": "tekion-browser-navigation",
-   "path": "automotive/tekion-browser-navigation",
-   "category": "automotive",
-   "description": "Log into Tekion DMS via browser, switch dealerships, navigate to Opcode Management, search for opcodes, and edit opcode details. Covers OTP retrieval via IMAP, session persistence, dealer switching pitfalls, and search quirks.",
-   "times_used": 4,
-   "last_used": "2026-09-11"
   },
   {
    "name": "tekion-notification-settings-audit",
