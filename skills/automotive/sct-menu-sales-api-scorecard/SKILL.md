@@ -30,7 +30,7 @@ Proven 2026-06-15 (8 menus, labor $1,725.50 / parts $801.86 / total $2,527.36).
 
 ## Pipeline (4 steps + 2 verifications)
 
-All scripts use this interpreter: `/home/itadmin/.hermes/hermes-agent/.venv/bin/python3.11` (note the `.venv` dot-prefix, NOT `venv`)
+All scripts use this interpreter: `/home/itadmin/.hermes/hermes-agent/.venv/bin/python` (note the `.venv` dot-prefix, NOT `venv`; binary is `python`, NOT `python3.11` which doesn't exist)
 Data dir (REAL path): `/home/itadmin/tekion-reports/data/`
 `<today>` = today's ISO date, e.g. `2026-06-15`.
 
@@ -1092,7 +1092,7 @@ browser binary must be present:
 <py> -m playwright install chromium
 ```
 
-where `<py>` = `/home/itadmin/.hermes/hermes-agent/.venv/bin/python3.11`.
+where `<py>` = `/home/itadmin/.hermes/hermes-agent/.venv/bin/python`.
 
 If `playwright` is missing, the scraper succeeds but the render step fails with
 `ModuleNotFoundError: No module named 'playwright'`. If only the Python package
