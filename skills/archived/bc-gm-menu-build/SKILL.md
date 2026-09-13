@@ -962,15 +962,22 @@ Each service in `servicesMetaData.services[]` follows this structure:
 ```
 Package types: PREMIUM, BASIC, VALUE. Each has NORMAL + SEVERE driving conditions = 6 tierMappings per service. For Premium-only assignment, enable only PREMIUM NORMAL + PREMIUM SEVERE.
 
-### Current State (2026-09-12 — ✅ ALL 20 BG SERVICES SAVED & PUBLISHED)
+### Current State (2026-09-12 — ⚠️ DRAFT, NOT PUBLISHED)
 
-**The universal row (row 48) on the 60K menu now has all 20 BG services**, saved and published:
-- Chevrolet + Cadillac makes (MAKE parameter includes both)
-- ALL_MODELS, ALL_YEARS, ALL_TRIMS
-- All 20 services with tier mappings: Premium NORMAL+SEVERE enabled, BASIC/VALUE disabled
-- Menu published (PUT `?publish=true` → 200, status ACTIVE)
+**The universal row (row 48) on the 60K menu has all 20 BG services SAVED but the menu is in DRAFT state** — the BG services are invisible to the quote system.
 
-**How it was done**: XHR hook on the menu edit page captured the SPA's `tekion-api-token`
+- 60K menu id: `6671ca385371ce62ee4016d9`
+- `menuStatus: DRAFT` — the menu PUT sent `publish=false` (a Save, not a Publish)
+- Live quote for 2022 Malibu at 60K shows ONLY 2 factory services ($209.97 Engine Oil + Tire Rotate)
+- The 20 BG services won't appear until the Publish button is clicked
+- Make scope: `chevrolet` only (no Cadillac, despite what was intended)
+- Row 48 has all 20 BG services with Premium-only tier mapping, SUM_OF_SERVICES pricing
+
+**Joe reported "unchecked price not working" on this menu** — likely the DRAFT issue (BG services not showing at all), but verify after publishing.
+
+**How it was built**: XHR hook on the menu edit page captured the SPA's `tekion-api-token` header from a real Save request, then direct `fetch()` PUT the modified JSON with that header + session cookies. See skill `tekion-xhr-body-injection` (Solution A). But the PUT used `publish=false`.
+
+**⚠️ Publish attempts on 2026-09-12 were unreliable** — synthetic Publish button clicks didn't trigger the actual API call. The Publish button still shows (not grayed out), confirming the menu is unpublished. A real browser `/mouse` click on the Publish button at ~(1211,689) should work, or use a direct `fetch()` PUT with `publish=true` and the captured `tekion-api-token` header.
 header from a real Save request, then direct `fetch()` PUT the modified JSON with that
 header + session cookies. See skill `tekion-xhr-body-injection` (Solution A).
 
