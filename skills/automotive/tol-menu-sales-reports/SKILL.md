@@ -53,7 +53,7 @@ Python interpreter for all of these: `/home/itadmin/.hermes/hermes-agent/.venv/b
 ### Opened (daily)
 ```sh
 cd /home/itadmin/tekion-reports
-PY=/home/itadmin/.hermes/hermes-agent/venv/bin/python3.12
+PY=/home/itadmin/.hermes/hermes-agent/.venv/bin/python3.11
 $PY tol_menu_sales_api.py
 $PY render_menu_sales_paged_tol.py $(date +%F)
 ```
