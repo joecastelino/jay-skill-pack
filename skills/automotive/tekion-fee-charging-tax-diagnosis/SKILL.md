@@ -203,11 +203,22 @@ view-only.
             button[data-test-id*="showMoreButton"] → +N count (view more)
 ```
 
-**To view group members:** click the product group's row name text in the
-Component column (not the NO TAX dropdowns). The popover opens to the right.
-**To change group membership:** there is NO UI path. The group's fee list is a
-backend filter. Options: (a) flip FEES to taxable globally and let the existing
-group handle exemption, or (b) open a Tekion support ticket to modify the filter.
+**To view group members (READ-ONLY):** click the product group's row name text in
+the Component column. The popover opens to the right showing the fee list.
+System-created groups cannot be edited from this popover.
+
+**To ADD a fee to exemption (VERIFIED 2026-09-14, BT 1249):** use the
+**"Add New Product Group"** button (top-right of the table):
+1. Click **"Add New Product Group"** → opens "Create Group" side panel
+2. Click the **"Fees"** tab (tabs: Parts | Operation | Labor | Fees | Sublet)
+3. Fill **Group Name**, **Effective Date**, click the **Fee** dropdown
+4. The Fee dropdown is a **MULTI-SELECT** — select one or more fees → **Save**
+5. The new group row appears; set pay types to NO TAX
+6. Multiple groups coexist — the tax engine checks all of them
+
+**To REMOVE a fee from exemption:** archive its group row (trash icon in the
+Archive column). For fees inside the system-created 28-fee group, you'd need to
+recreate that group without the target fee, or contact Tekion support.
 
 ### THREE layers decide fee tax — know which one applies
 ```
