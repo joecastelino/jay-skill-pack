@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-14T14:15:03",
+ "generated": "2026-09-14T14:30:51",
  "skill_count": 221,
  "skills": [
   {
@@ -627,6 +627,14 @@
    "last_used": "2026-08-24"
   },
   {
+   "name": "tekion-xhr-body-injection",
+   "path": "automotive/tekion-xhr-body-injection",
+   "category": "automotive",
+   "description": "Bypass Tekion SPA auth for authenticated writes by intercepting the SPA's own XMLHttpRequest and swapping the request body before send. Applies to service-menu saves, publishes, and any PUT/POST where direct fetch/XHR fails with \"Token doesn't exist or is invalid.\" NO auth header replication needed \u2014 the SPA handles it.",
+   "times_used": 4,
+   "last_used": "2026-09-14"
+  },
+  {
    "name": "gm-sasar-action-tracker",
    "path": "automotive/gm-sasar-action-tracker",
    "category": "automotive",
@@ -857,14 +865,6 @@
    "description": "Add vehicle/part override rows to a Tekion opcode (Overrides \u2192 Parts tab). Copy existing row, modify model/year via checkbox dropdowns, set part/price, save. Only works in real browser tool \u2014 headless Playwright cannot render the ant-design vehicle override table.",
    "times_used": 2,
    "last_used": "2026-07-03"
-  },
-  {
-   "name": "tekion-xhr-body-injection",
-   "path": "automotive/tekion-xhr-body-injection",
-   "category": "automotive",
-   "description": "Bypass Tekion SPA auth for authenticated writes by intercepting the SPA's own XMLHttpRequest and swapping the request body before send. Applies to service-menu saves, publishes, and any PUT/POST where direct fetch/XHR fails with \"Token doesn't exist or is invalid.\" NO auth header replication needed \u2014 the SPA handles it.",
-   "times_used": 2,
-   "last_used": "2026-09-12"
   },
   {
    "name": "vw-carefree-care-plus-hours-elr-report",
