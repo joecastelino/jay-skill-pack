@@ -177,14 +177,18 @@ The same pattern exists for labor via opcode-filtered groups
 exemption design**, not a one-off. Expect a product group wherever a
 component is mapped NO TAX but only *some* items are exempt.
 
-**VERIFIED 2026-09-13 (BT 1249):** the product group row on the tax-code-settings
+**VERIFIED 2026-09-13/14 (BT 1249):** the product group row on the tax-code-settings
 page **is clickable** — clicking the row name opens a right-side `ant-v5-popover`
 (~600×200px) showing:
 - **Effective Date**, **Created By**, **Created On**, **Base Component** (FEES)
 - **Fee** list with individual fee labels inside a `.show-more-items` div
 - A **"+N" button** (`data-test-id="...showMoreButton"`) to see additional fees
-  (note: this button did not expand inline when clicked via /mouse or JS `.click()`
-  — may require a genuine browser interaction or may be a tooltip-only indicator)
+
+**CONFIRMED 2026-09-14: the popover is READ-ONLY. There is NO "Add Fee" or "Remove"
+control anywhere in it.** Joe verified this live at BT — 27 fees visible, zero
+edit controls. The product group is a **backend filter expression**
+(`fee:N[code1,code2,...]`) managed via API, not a UI-editable list. The popover is
+view-only.
 
 **DOM landmarks for the popover:**
 ```
@@ -195,16 +199,15 @@ page **is clickable** — clicking the row name opens a right-side `ant-v5-popov
       .p-16
         .service-setups_ComponentDetailsPopover_detailsContain → Fee list
           .show-more-items.is-capitalized
-            .root_label_label                     → fee names
-            button[data-test-id*="showMoreButton"] → +N count
+            .root_label_label                     → fee names (read-only)
+            button[data-test-id*="showMoreButton"] → +N count (view more)
 ```
 
-**To view/manage group members:** click the product group's row name text in the
-Component column (not the NO TAX dropdowns — those are per-pay-type overrides).
-The popover opens to the right of the row. To **add a fee**, look for an "Add Fee"
-or "+" control within the popover (not yet confirmed — the BT group was
-system-created with 28 fees pre-populated). To **remove a fee**, look for delete
-icons next to individual fee labels.
+**To view group members:** click the product group's row name text in the
+Component column (not the NO TAX dropdowns). The popover opens to the right.
+**To change group membership:** there is NO UI path. The group's fee list is a
+backend filter. Options: (a) flip FEES to taxable globally and let the existing
+group handle exemption, or (b) open a Tekion support ticket to modify the filter.
 
 ### THREE layers decide fee tax — know which one applies
 ```
@@ -417,13 +420,17 @@ table (created by System). At BT it contained 28 fees.
 2. Click the **Edit** button (top-right, ~x=1209, y=309)
 3. In the **FEES** row, change CP and CVSC dropdowns from NO TAX → the store's tax rate
 4. Click the product group row **name** (`ANY_CUSTOMER_PAY_INTERNAL_WARRANTY_SALES_TAX_FEES_TAX_EXEMPT`)
-   in the Component column — this opens the member popover
-5. Verify the target fee (e.g. PMAT) is NOT in the exempt list. If it is, remove it.
-   If any other fee is missing from the list, add it (all other fees must be exempt)
+   in the Component column — this opens the read-only member popover
+5. Verify the target fee (e.g. PMAT) is NOT in the exempt list. Verify all other fees
+   ARE in the list. ⚠️ **You CANNOT add missing fees from this popover** — it's view-only.
+   If any existing fee is missing from the group, it will become taxable. Open a Tekion
+   support ticket to add missing fees to the group filter.
 6. Click **Submit** at the bottom
 
-**Blast radius:** missing a fee in the exempt group = it becomes taxable immediately.
-Get the full fee list from `/core/fees` first and check them all off.
+**Blast radius:** if any existing fee is missing from the exempt group, it becomes
+taxable immediately — and you **cannot add it back via UI**. Audit the full fee list
+from `/core/fees` against the popover's member list BEFORE flipping FEES to taxable.
+If fees are missing, open a Tekion ticket first to get them added to the group filter.
 
 ### Path B: Tekion support (surgical, no blast radius, requires backend)
 Add `taxConfigs` rows to the fee's `pricingSetup.active[0]`:
