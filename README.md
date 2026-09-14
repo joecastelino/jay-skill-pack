@@ -2,7 +2,7 @@
 
 Skill library for **Jay**, the Tekion DMS specialist agent at American Motors Group — plus general-purpose agent skills. Built for the [Hermes Agent](https://github.com/NousResearch) skill system (`SKILL.md` + YAML frontmatter, with optional `references/`, `scripts/`, `templates/`).
 
-**221 skills** · auto-synced from the live agent · last sync: 2026-09-14 11:30
+**221 skills** · auto-synced from the live agent · last sync: 2026-09-14 11:45
 
 ## Install into another agent
 
@@ -26,7 +26,7 @@ Secrets (passwords, app passwords, tokens) are redacted with `<PLACEHOLDER>` mar
 | 7 | [`sct-menu-sales-api-scorecard`](skills/automotive/sct-menu-sales-api-scorecard/SKILL.md) | automotive | 57 | 2026-09-13 | Run the SCT (Stevens Creek Toyota) Menu Sales same-day scorecard pipeline from the LIVE Tekion OpenAPI source (NOT Report Builder) and email the PDF to Joe via Stacey. Pulls today's ROs straight from the API, filters ... |
 | 8 | [`tekion-autonomous-login`](skills/automotive/tekion-autonomous-login/SKILL.md) | automotive | 53 | 2026-09-14 | Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session — no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the aut... |
 | 9 | [`tekion-kb-search-scrape`](skills/automotive/tekion-kb-search-scrape/SKILL.md) | automotive | 51 | 2026-09-14 | Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works... |
-| 10 | [`tekion-quotes-menu-price-diagnosis`](skills/automotive/tekion-quotes-menu-price-diagnosis/SKILL.md) | automotive | 43 | 2026-09-14 | Diagnose a Tekion Service Menu pricing problem (e.g. "a rotation is charging $449.45") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLO... |
+| 10 | [`tekion-quotes-menu-price-diagnosis`](skills/automotive/tekion-quotes-menu-price-diagnosis/SKILL.md) | automotive | 44 | 2026-09-14 | Diagnose a Tekion Service Menu pricing problem (e.g. "a rotation is charging $449.45") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLO... |
 | 11 | [`bc-menu-sales-reports`](skills/automotive/bc-menu-sales-reports/SKILL.md) | automotive | 42 | 2026-09-11 | Run the Blackstone Chevrolet & Cadillac (BC, a GM store, dealer 1251) Menu Sales scorecards — Daily Closed (2x/day) and Closed Month-To-Date (1x/day) — from the LIVE Tekion OpenAPI, and have Stacey DRAFT them to Ruben... |
 | 12 | [`tekion-ghost-bin-negative-onhand`](skills/automotive/tekion-ghost-bin-negative-onhand/SKILL.md) | automotive | 40 | 2026-08-18 | Diagnose a part showing NEGATIVE total on-hand in Tekion that stems from a CDK-migration "ghost bin" (a location-less legacy bin like 5005 / 5000 / 5001 / 5004 / RC1 / RC2 carried over at CDK→Tekion cutover ~4 yrs ago... |
 | 13 | [`tekion-service-settings`](skills/automotive/tekion-service-settings/SKILL.md) | automotive | 40 | 2026-09-14 | Reference map of Tekion's Service Settings application (App Grid > Settings > Service Settings) — the master config for service/RO workflows: General Setup, Job Sequence, Flag Tech on, Round-Up rules, Default Service ... |

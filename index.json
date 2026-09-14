@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-14T11:30:13",
+ "generated": "2026-09-14T11:45:16",
  "skill_count": 221,
  "skills": [
   {
@@ -79,7 +79,7 @@
    "path": "automotive/tekion-quotes-menu-price-diagnosis",
    "category": "automotive",
    "description": "Diagnose a Tekion Service Menu pricing problem (e.g. \"a rotation is charging $449.45\") by building a throwaway Quote for the exact VIN+mileage. Isolate a single line's price via uncheck-and-watch-the-total, then EXPLODE the menu into individual opcodes using the \"Add Menu Services as separate operations\" setting to find which opcode carries the bad price and its labor-rate method (Fixed vs Service Catalog Pro Dynamic Pricing). Use when Joe flags a wrong/inflated price on a maintenance menu line for a specific RO/vehicle.",
-   "times_used": 43,
+   "times_used": 44,
    "last_used": "2026-09-14"
   },
   {
