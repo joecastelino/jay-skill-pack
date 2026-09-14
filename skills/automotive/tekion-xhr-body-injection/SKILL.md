@@ -229,7 +229,27 @@ After injection and save, verify persistence:
 - **🔴 XHR injection saves as DRAFT by default.** `publish=false` creates a DRAFT that
   quotes CANNOT see. Always follow up with a `publish=true` PUT, or use `publish=true` on
   the initial injection. Verify with `menuStatus` in the PUT response — DRAFT = invisible
-  to quotes. The 60K BC menu sat as DRAFT for 24 hours before this was caught.
+  to quotes. The 60K BC menu sat as DRAFT for 2 days before this was caught.
+
+### 🔴 RELIABLE PUBLISH: Playwright browser console click (2026-09-14 verified)
+
+When direct `fetch()` with captured `tekion-api-token` fails ("Token doesn't exist or is
+invalid") and :9223 `/mouse` clicks on Publish no-op, use a real Playwright browser:
+
+```javascript
+// In browser_console or page.evaluate:
+var btn = Array.from(document.querySelectorAll('button'))
+  .find(b => b.textContent.trim() === 'Publish');
+btn.click();
+```
+
+Then verify via React fiber state: `menuStatus: "PUBLISHED"` (was "DRAFT").
+Also verify with a real quote on the target interval.
+
+**Failed publish methods (don't reattempt):**
+1. Direct `fetch()` PUT with `publish=true` + captured `tekion-api-token` → 500 "Token doesn't exist"
+2. XHR `open()` URL interceptor swapping `publish=false` → `publish=true` → menu stays DRAFT
+3. :9223 `/mouse` click at Publish coords → no XHR fires
 - **XHR interceptors are cleared on page navigation** (`location.href` or `location.reload()`).
   Re-install hooks after EVERY navigation.
 - **The interceptor fires for ALL XHRs**, not just the target. Always filter by URL pattern.

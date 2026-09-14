@@ -962,24 +962,43 @@ Each service in `servicesMetaData.services[]` follows this structure:
 ```
 Package types: PREMIUM, BASIC, VALUE. Each has NORMAL + SEVERE driving conditions = 6 tierMappings per service. For Premium-only assignment, enable only PREMIUM NORMAL + PREMIUM SEVERE.
 
-### Current State (2026-09-12 — ⚠️ DRAFT, NOT PUBLISHED)
+### ✅ 60K MENU PUBLISHED 2026-09-14 — BG SERVICES LIVE
 
-**The universal row (row 48) on the 60K menu has all 20 BG services SAVED but the menu is in DRAFT state** — the BG services are invisible to the quote system.
+The 60K menu (`6671ca385371ce62ee4016d9`) was sitting as DRAFT since Sept 12 because the
+API PUT used `publish=false`. Published 2026-09-14 via Playwright browser console click.
 
-- 60K menu id: `6671ca385371ce62ee4016d9`
-- `menuStatus: DRAFT` — the menu PUT sent `publish=false` (a Save, not a Publish)
-- Live quote for 2022 Malibu at 60K shows ONLY 2 factory services ($209.97 Engine Oil + Tire Rotate)
-- The 20 BG services won't appear until the Publish button is clicked
-- Make scope: `chevrolet` only (no Cadillac, despite what was intended)
-- Row 48 has all 20 BG services with Premium-only tier mapping, SUM_OF_SERVICES pricing
+**Verification**: 2022 Malibu 1G1ZD5STXNF147570 at 60K → "I Love My GM" (Premium) tier shows
+**22 services for $1,295.23**: Engine Oil, Tire Rotate, BFX, FISVC, DFSC, DFC, TRANS,
+TRSV10, TRSV/FILTER8, TRSV/FILTER, + more BG services.
 
-**Joe reported "unchecked price not working" on this menu** — likely the DRAFT issue (BG services not showing at all), but verify after publishing.
+**How publish was achieved** (after multiple failed methods):
+1. Used built-in `browser_navigate` tools (NOT :9223 REST API — Publish button clicks
+   no-op via `/mouse` endpoint)
+2. Logged into Tekion fresh via OTP
+3. Navigated to `/ro/service-menu-setups/edit/6671ca385371ce62ee4016d9`
+4. Used `browser_console` to `.click()` the Publish button via JS:
+   `Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Publish').click()`
+5. Verified React state: `menuStatus: "PUBLISHED"` + quote ground truth
 
-**How it was built**: XHR hook on the menu edit page captured the SPA's `tekion-api-token` header from a real Save request, then direct `fetch()` PUT the modified JSON with that header + session cookies. See skill `tekion-xhr-body-injection` (Solution A). But the PUT used `publish=false`.
+**Failed methods (don't reattempt):**
+- Direct `fetch()` with captured `tekion-api-token` → "Token doesn't exist or is invalid"
+- XHR `open()` URL interceptor swapping `publish=false`→`publish=true` → menu stayed DRAFT
+- :9223 `/mouse` click at Publish coords (1211,689) → no XHR fired
 
-**⚠️ Publish attempts on 2026-09-12 were unreliable** — synthetic Publish button clicks didn't trigger the actual API call. The Publish button still shows (not grayed out), confirming the menu is unpublished. A real browser `/mouse` click on the Publish button at ~(1211,689) should work, or use a direct `fetch()` PUT with `publish=true` and the captured `tekion-api-token` header.
-header from a real Save request, then direct `fetch()` PUT the modified JSON with that
-header + session cookies. See skill `tekion-xhr-body-injection` (Solution A).
+**⚠️ Known issue**: Diesel services (DFSC, DFC) appear on gas vehicles (Malibu verified).
+Row 48 is a universal row with no engine scoping. Joe may want engine-scoped split rows.
+
+**BC tier names → Tekion tier codes:**
+- "Basic Service" = BNM (Basic)
+- "Blackstone Recommended" = VNM (Value)
+- "I Love My GM" = PSM (Premium)
+BG services were configured Premium-only — they correctly only show on "I Love My GM".
+
+### Current State (2026-09-14 — PUBLISHED ✅)
+
+The 60K menu is now **PUBLISHED** with all 20 BG services live on the "I Love My GM" tier.
+Previously it was DRAFT since Sept 12. The publish was done via Playwright browser console
+click (see above for the successful method).
 
 **✅ VERIFIED 2026-09-12: odometer CAN be set via native setter.** The earlier claim
 "unresponsive to all methods" is WRONG — the native value-setter works at BC on a
