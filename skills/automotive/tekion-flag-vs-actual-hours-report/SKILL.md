@@ -524,6 +524,58 @@ Fetch the per-RO evidence with `clock_by("roId", …)` for the RO universe, then
 `POST /api/rosearchservice/u/ro/search` is a **404 — that endpoint does not exist**;
 RO lookup goes through the clock report + `/openapi/v4.0.0/repair-orders:search`.
 
+## ⭐ TWO TOTALS FOR THE SAME TECH/PERIOD — closed-date scope vs flag-date scope (BC 5576, 2026-09-15)
+
+Joe's framing: *"the tech closed report is higher than the tech flagged report. Tech flagged should
+be more, I believe."* Two PDFs, same tech (Tafolla 5576), same printed range (Sep 1–15 2026),
+exported 61 seconds apart (11:22 / 11:23):
+
+| export | Flagged | Assigned Bill | Actual (clock) | Attendance |
+|---|---|---|---|---|
+| **A** `Tech Performance Report PDF.pdf` | **112.20** | 112.20 | 48.66 | 74.47 |
+| **B** `Tech Performance Report PDF [Tue Sep 1, 2026 to Tue Sep 15, 2026].pdf` | **86.10** | 86.10 | 55.36 | 74.47 |
+
+**Neither is wrong and the tech is NOT short — the two exports scope DIFFERENT RO SETS.**
+B is the screen default (filter `payDay` BTW = FLAG DATE) → 86.10 = the confirmed native
+`/reporting/technician` total. A is scoped by the RO/pay-type **CLOSE date**, so *every* flag entry
+on the ROs that closed inside the window is pulled in regardless of when it was flagged.
+
+**The difference reconciles to the penny — always decompose it this way:**
+
+```
+86.10  (flag-date view)
++30.80 August flags swept in on 4 ROs that CLOSED Sep 1–15
+         101268 +11.00 (flagged Aug 27)      99905 +10.30 (Aug 3–14)
+         100101  +7.50 (Aug 3–13)           101435  +2.00 (Aug 26)
+ -4.70 Sep flags on 4 ROs that have NOT closed yet
+         102705 -1.50 (INVOICED)  102962 -1.20 (PARTIALLY_ASSIGNED/PDI)
+         102759 -1.00 (IN_PROGRESS)  102994 -1.00 (READY_FOR_INVOICE)
+= 112.20
+```
+
+Detection recipe (no extra API calls): parse both PDFs to `(ro, job, op, flagDate, flagged)` rows,
+`Counter`-diff them, then resolve `status` + `closedTime` per differing RO via
+`GET /api/service-module/u/ro/v1/{roId}` (find `roId` with OpenAPI
+`repair-orders:search` filter `{"field":"documentNumber","operator":"IN","values":[...]}` —
+**this filter DOES work at BC**, unlike the `closedTime` filter, and 2 records come back per RO
+when a synthetic `1251_<ro>_<VIN>` id exists — skip ids not starting `6a`).
+
+**Why "flagged should be more" can never hold at BC:** `referenceHoursForFlagging = BILL_HOURS`
+on 100% of entries, so inside one RO set **Flagged == Assigned Bill** exactly (86.10 = 86.10 and
+112.20 = 112.20 in both headers). The only thing that can move is the RO SCOPE.
+
+**Guidance to give Joe:** flag-date (86.10) is the pay-period number and matches the Flag Hours
+Report; the closed-date view (112.20) double-counts older flags that were already paid in the
+previous period (Aug 16–31 = 113.70) and misses flags on still-open ROs. **Never add them or treat
+the difference as missing hours.**
+
+**Which report has which filter:** the standard Service → *Tech Performance* report's filterable
+fields are `Department · Pay Type Closed Date · Make · Service Type` (that is the closed-date view);
+*Tech Performance (Beta)* (`/core/reports/service/tech-performance-v2`) posts to
+`/api/service-module/u/reporting/technician` and only accepts `field:"payDay"` — any other date
+field (`closedTime`, `payTypeClosedTime`, `invoiceDate`, …) returns HTTP 500
+`{"status":"failed"}`, so you cannot reproduce the closed-date total from that endpoint.
+
 ## ⭐ "The RO pays 1.4 but the tech only got 0.2" — the DELTA-ROW display trap (BC 2026-09-15)
 
 This is the most common *false* short-pay complaint, and the index is innocent. Joe's framing:
