@@ -40,6 +40,8 @@ cp -r jay-skill-pack/skills/* ~/.hermes/profiles/<agent>/skills/
 ```
 Then supply real credentials where placeholders appear (`<TEKION_PASSWORD>`, `<GMAIL_APP_PASSWORD>`, `<REDACTED_*>`).
 
+**IMPORTANT CAVEAT (Joe + Jay, 2026-09-14):** Skills alone give a clone agent only ~30-40% of Jay's capability. The biggest gap is MEMORY — accumulated corrections, traps, diagnostic discipline, tool quirks, session rules. A full Jay clone needs: skills + "Jay Core" universal memory (Tekion-common, no AMG data) + scripts tree + infrastructure bootstrap + credentials (separately provisioned). See skill `jay-clone-deployment` for the full architecture and Core memory extraction plan.
+
 ## How the README sorting works
 - Usage counts come from `usage-stats.json` (`{skills:{"<category>/<name>":{times_used,last_used}}}`), maintained automatically by session-end-sync's `log-skill-uses-from-session.py` (+1 per skill per distinct session).
 - Descriptions come from `manifest.json`; if the manifest holds a bare YAML fold marker (`>` / `|`) instead of text (rebuild-skill-index quirk on folded-scalar frontmatter), the script re-parses the SKILL.md frontmatter itself, joining the indented continuation lines. Fix belongs in the script's `frontmatter_desc()`, not the manifest.
