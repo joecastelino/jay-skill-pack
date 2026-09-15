@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-15T11:45:05",
+ "generated": "2026-09-15T12:00:24",
  "skill_count": 222,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 182,
+   "times_used": 183,
    "last_used": "2026-09-15"
   },
   {
@@ -275,6 +275,14 @@
    "last_used": "2026-08-31"
   },
   {
+   "name": "tekion-flag-vs-actual-hours-report",
+   "path": "automotive/tekion-flag-vs-actual-hours-report",
+   "category": "automotive",
+   "description": "Build a \"closed ROs where tech FLAGGED hours were below ACTUAL clocked time\" report (unpaid flat-rate tech time) for any Tekion store, per-tech per-RO grain. Uses two internal endpoints discovered 2026-07-30 - /ro/v1/{id} carries per-tech flag entries (flagTimesWithPayDay) and clockDetails/fetch carries per-tech actual punches. Also documents the repair-orders:search pageNumber-IGNORED pagination trap and its closedTime-bisection fix. Verified SV (826) Jul 1-15 2026.",
+   "times_used": 14,
+   "last_used": "2026-09-15"
+  },
+  {
    "name": "tekion-parts-autoorder-diagnosis",
    "path": "automotive/tekion-parts-autoorder-diagnosis",
    "category": "automotive",
@@ -305,14 +313,6 @@
    "description": "Build an \"actual tech clocked time vs billed time BY OPCODE\" report (over-clock / unapplied-time-at-opcode-grain) for any Tekion store. Uses the internal rosearchservice visibility-dashboard TECH_CLOCK datasource (the engine behind the custom \"Ro Actual Time Report\"), which carries opcode on every clock punch \u2014 something the standard Tech Performance report cannot do (its Unapplied Hours is per-technician only). Verified SV (826) 2026-07-20.",
    "times_used": 13,
    "last_used": "2026-08-28"
-  },
-  {
-   "name": "tekion-flag-vs-actual-hours-report",
-   "path": "automotive/tekion-flag-vs-actual-hours-report",
-   "category": "automotive",
-   "description": "Build a \"closed ROs where tech FLAGGED hours were below ACTUAL clocked time\" report (unpaid flat-rate tech time) for any Tekion store, per-tech per-RO grain. Uses two internal endpoints discovered 2026-07-30 - /ro/v1/{id} carries per-tech flag entries (flagTimesWithPayDay) and clockDetails/fetch carries per-tech actual punches. Also documents the repair-orders:search pageNumber-IGNORED pagination trap and its closedTime-bisection fix. Verified SV (826) Jul 1-15 2026.",
-   "times_used": 13,
-   "last_used": "2026-09-15"
   },
   {
    "name": "tekion-included-service-parts-override",
