@@ -251,6 +251,54 @@ img already had one — strip it, browsers take the first and ignore the second.
 say "CID inline attachment (`multipart/related`, `Content-ID: <scorecard>`) —
 do NOT use a `data:` URI." Verify `data:image not in html` before calling it good.
 
+## Verifying a SEND to Joe (not a draft) — one-pass recipe (verified 2026-09-15, BC 30.80 CSV)
+
+When the ask was "email it to me", do NOT stop at Stacey's `SENT <id>` reply. Her
+id is an IMAP **sequence number** (see below) and is folder-relative. Confirm the
+message is really in Joe's INBOX, unread, really traversed SMTP, and really carries
+the attachment:
+
+```bash
+# 1) does it exist, and in WHICH folder? (himalaya IDs are PER-FOLDER)
+himalaya envelope list -a personal -f INBOX -s 8          # INBOX copy -> id 83210
+himalaya envelope list -a personal -f "[Gmail]/All Mail" -s 8   # same msg -> id 263126
+```
+The `FLAGS` column showing `*` = unread; a lone `R` = already replied/seen. Then
+raw IMAP by that INBOX uid (this is one of the few things himalaya can't print):
+
+```python
+import re, imaplib, email
+pw = re.search(r'raw\s*=\s*"([^"]+)"',
+     open('/home/itadmin/.hermes/profiles/jay/home/.config/himalaya/config.toml').read()).group(1)
+M = imaplib.IMAP4_SSL("imap.gmail.com", 993); M.login("jcastelino@americanmotorscorp.com", pw)
+M.select('INBOX', readonly=True)
+st, d = M.search(None, '(HEADER Subject "BC Tech Perf")')     # WORKS in execute_code
+uid = d[0].split()[-1]
+st, r = M.fetch(uid, '(FLAGS BODY.PEEK[])')
+raw = b"".join(p[1] for p in r if isinstance(p, tuple))
+msg = email.message_from_bytes(raw)
+print(len(re.findall(r'^Received:', raw.decode('utf-8','replace'), re.M)))  # must be >=1
+for p in msg.walk(): print(p.get_content_type(), p.get_filename(), len(p.get_payload(decode=True) or b""))
+M.logout()
+```
+Pass criteria (all four): present in **INBOX**, `FLAGS ()` (unread), **`Received:` >= 1**
+(proves real SMTP traversal — an IMAP-APPENDed message has none), and the attachment
+part present with a non-zero payload. `M.search(None,'(HEADER Subject "...")')` is the
+reliable search here — the `X-GM-RAW` variant is what breaks in `execute_code`, not raw
+`imaplib` as a whole.
+
+## `google_api.py` CANNOT run — `googleapiclient` is not installed anywhere (2026-09-15)
+
+The "check BOTH Gmail auth paths" advice above is aspirational for path #2: every
+invocation of `skills/productivity/google-workspace/scripts/google_api.py` dies with
+`ModuleNotFoundError: No module named 'googleapiclient'` — checked `/usr/bin/python3`
+AND `/home/itadmin/.hermes/hermes-agent/venv/bin/python3`; the package is absent
+system-wide, so this is NOT a stale-token symptom and re-running it wastes turns.
+(`google_token.json` may still be valid — it's the *library* that's missing.) Until
+someone installs `google-api-python-client` into a PERSISTENT venv (not under
+`~/.hermes/profiles/jay/home/`, which the 3AM reset wipes), treat **himalaya IMAP as
+the only working Gmail path** and don't report a Google-API failure as an OAuth failure.
+
 ## Cleaning up duplicate/stale drafts
 Retrying a bridge request to Stacey after a timeout (see agent-to-agent-bridge
 "Exit 124 ≠ failure" pitfall) commonly produces 2-3 drafts with the IDENTICAL
