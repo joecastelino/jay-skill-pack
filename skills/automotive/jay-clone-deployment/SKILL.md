@@ -90,6 +90,35 @@ JAYHOME=/home/itadmin /usr/bin/bash restore-jay-clone.sh
 
 `CREDENTIAL-INVENTORY.txt` lists every captured path + key NAME (never values) — regenerate/read it to answer "did we get secret X".
 
+### Contained testing (MANDATORY before shipping a kit)
+
+`sandbox-restore-test.sh <release-dir> [--full|--macsim]` — runs the REAL restore inside a
+private `unshare -Urm` user+mount namespace:
+
+* `/home/itadmin` is bind-mounted over by a tmpfs → the live profile is unreachable, all writes are RAM
+* `/var/spool/cron/crontabs` and `/run/user/<uid>` are shadowed → crontab/systemd calls are contained
+* it fingerprints the live crontab + home sha256 before/after and prints `UNCHANGED` / `!! CHANGED`
+* pass 2 re-runs with a DIFFERENT `JAYHOME` to exercise the path-rewrite + crontab-rewrite branch
+
+**Rules:**
+1. **Every test mode must be contained.** The namespace wrapped only the default mode; `--macsim`
+   ran outside it and installed a crontab on the LIVE machine three times. It was byte-identical to
+   the real one *only because a bug made the rewrite a no-op* — luck, not design. macsim now passes
+   `--no-activate`.
+2. Add `--no-activate` to any restore invocation that stages files but must not touch cron/services.
+3. Prove containment with a before/after sha256 of the live crontab — don't assert it.
+
+### Bugs found by the sandbox (all fixed)
+
+| Bug | Symptom | Fix |
+|---|---|---|
+| `sed "s\|\Q$A\E\|$B\|g"` | `\Q..\E` is a **perl-ism**; GNU sed takes it literally → substitution silently does NOTHING. Cron lines kept the old home → every job fails on the new machine. | use `perl -pi -e`, then **verify** the output contains the new path and refuse to install otherwise |
+| tar + uid 1000 | Archives record uid/gid 1000. Any host without that uid (macOS, user namespace) can't `chown`, and GNU tar exits **non-zero even though every file extracted** → restore aborts. | always extract with `--no-same-owner` |
+| `mapfile` | macOS bash is 3.2 → command not found | while-read loop |
+| `sha256sum` | absent on macOS | `shasum -a 256` fallback |
+| `$HOME` ≠ passwd home | Jay's `$HOME` is the ephemeral PROFILE home; a sandbox keyed on `$HOME` shadows the wrong dir | resolve via `getent passwd "$(id -un)"` |
+| stale kit in release | Build copies the kit into the release; editing the kit afterwards leaves an OLD restore script shipping | `refresh-release-kit.sh <release> [--push-onedrive]` after ANY kit edit; run it before testing |
+
 ### Pitfalls learned the hard way
 
 1. **Never edit the build/restore script while it is running.** Bash reads incrementally — editing mid-run produced a phantom `syntax error near unexpected token '('` and an empty tier-1 archive. `bash -n` passes; the corruption is only from the concurrent write.
