@@ -157,6 +157,46 @@ folder with the filename/size and a Download button; a deleted one renders an em
 view. **The `GET /contents/<code>` API returns `error-notPremium` for guest content — you
 cannot poll it, so use the browser to verify.**
 
+### Handing off to a receiving agent (the setup prompt)
+
+You do not restore the clone yourself — the owner pastes a **prompt** into the default
+agent on the target machine and that agent does it. Template lives at
+`jay-clone-bundle/SETUP-PROMPT-MACOS.md`. What the prompt must contain and why:
+
+1. **Ask the agent's NAME first, run the restore under the original name, rename LAST.**
+   `restore-jay-clone.sh` hardcodes `.hermes/profiles/jay` in a dozen places (post-unpack
+   check, chmod list, state.db target), so it must run as `jay` and get renamed after.
+2. **Warn loudly against a blind rename.** `s/jay/newname/g` over the tree destroys
+   real identifiers: `jay_mail.py`, `jay_opcode.py`, `jay-clone-bundle`,
+   `jay-skill-pack`, skill names like `jay-brain-and-skill-index`. Rename only the
+   profile DIRECTORY, the literal `profiles/jay` paths, `SOUL.md`, and the launchd label.
+3. **Ship the values inline** — file path, byte size, sha256, passphrase, the 6 tier
+   names, and the exact commands. A receiving agent that has to guess a flag will guess
+   wrong; the prompt already names `JAYHOME="$HOME" /bin/bash ./restore-jay-clone.sh`
+   and explicitly says *don't* pass `--dry-run`/`--no-activate` for a real install.
+4. **Explicit ASK-DON'T-ASSUME rule.** This job mutates a credential store; a plausible
+   invented path is worse than a question. List the exact stop conditions (missing file,
+   sha mismatch, no `gpg`, unknown failure, about to overwrite something).
+5. **Disabling a platform is an `.env` edit + a `platform_toolsets` edit**, not a config
+   flag. For Slack+Telegram, blank exactly:
+   `SLACK_BOT_TOKEN`, `SLACK_APP_TOKEN`, `SLACK_ALLOWED_USERS`, `TELEGRAM_BOT_TOKEN`,
+   `TELEGRAM_ALLOWED_USERS`, `TELEGRAM_ALLOWED_USER_IDS`, `TELEGRAM_HOME_CHANNEL`
+   — and drop the `telegram:`/`slack:` entries from `platform_toolsets:` in `config.yaml`.
+   Back up `.env` first. Hermes auto-connects a platform when its token is present, so
+   blanking the value IS the off switch. State the keep-list (Anthropic, OpenRouter,
+   GitHub, Vercel, Google token, himalaya, and ALL Tekion) so the agent doesn't over-trim.
+6. **The installed crontab contains jobs that deliver to Slack.** Disabling Slack breaks
+   all 10. Make the prompt ASK the owner whether to strip them or keep them for
+   retargeting — do not let the receiving agent decide.
+7. **Require a verification report** at the end: agent answers, memory present, 222
+   skills loaded, browser server on :9223, Slack/Telegram confirmed off.
+8. **Carry the dual-run warning into the prompt** (see below) — the Tekion lock is
+   per-machine, so the receiving agent must not schedule Tekion work without asking.
+
+Honesty note to include: the kit has only ever been exercised via the `--macsim`
+simulation, never on real macOS. Say so, and expect Step 4 (restore) or Step 7
+(launchd) to be where something needs a nudge.
+
 ### Pitfalls learned the hard way
 
 1. **Never edit the build/restore script while it is running.** Bash reads incrementally — editing mid-run produced a phantom `syntax error near unexpected token '('` and an empty tier-1 archive. `bash -n` passes; the corruption is only from the concurrent write.
@@ -169,11 +209,35 @@ cannot poll it, so use the browser to verify.**
 
 ### Transport
 
+**Do NOT try to reach the target machine directly.** Jay probed the fleet MacBook Air over
+SSH with a provisioned key and its LAN addresses; both were unreachable — and the owner's
+instruction was explicit: *"stop trying to connect to the mac in the fleet, just give me a
+secure download link."* The owner transfers it himself. Never route a credential bundle
+through an unrequested push channel; hand over an encrypted artifact + a link and let the
+owner pull it.
+
 The sealed set goes to `/mnt/c/Users/joeca/OneDrive/JayClone-<date>/secure/` (1.5 GB) plus the kit files and `SHA256SUMS.txt` one level up. Plaintext archives stay in the persistent home dir as the on-machine backup — they add no exposure the source machine doesn't already have.
+
+The owner's expected shape of a handoff: **one encrypted file, one hosted link, one
+decryption key, and the ability to erase it after transfer.** Deliver all four. Keep the key
+out of whatever artifact travels, and note the one honest weakness — if the link and the key
+are posted in the same chat thread, anyone with that thread has both. Say that out loud and
+let the owner choose to split the channels.
 
 ### Dual-run hazard (state this to the owner every time)
 
 The clone carries the **same** Slack bot token, Telegram bot token and Tekion localStorage session. Two live instances fight: duplicate Slack replies, Telegram `getUpdates` stealing, Tekion session invalidation (the `/tmp/tekion-session.lock` guard is host-local and does NOT cross machines). Either provision fresh bot tokens for the clone, or keep exactly one machine live.
+
+**If the clone is going to be driven from a desktop app instead of chat** (which is how the
+exec copies are meant to run), the fix is simply to blank the Slack + Telegram tokens — that
+removes the chat-contention half entirely. The **Tekion half remains** and cannot be edited
+away: the same Tekion session on two machines will still collide. Tekion must be serialized
+across machines by hand — one machine running Tekion work at a time.
+
+**Erase-on-command:** hold the gofile `guestToken` and delete the upload once the owner
+confirms the download landed. Don't delete before confirmation, and don't leave a public
+blob sitting there indefinitely — it's AES-256 with the key held separately, but the
+transfer should still be short-lived.
 
 ## Core Memory Extraction (Next Step — Joe's directive)
 

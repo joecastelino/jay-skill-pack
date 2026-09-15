@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-15T14:30:05",
+ "generated": "2026-09-15T14:45:27",
  "skill_count": 222,
  "skills": [
   {
@@ -907,6 +907,14 @@
    "last_used": "2026-09-11"
   },
   {
+   "name": "jay-clone-deployment",
+   "path": "automotive/jay-clone-deployment",
+   "category": "automotive",
+   "description": "Deploy a fresh Jay clone agent for a new dealership/owner \u2014 provision skills, \"Jay Core\" universal memory (Tekion-common, zero AMG data), scripts tree, persistent browser infrastructure, and separately-supplied credentials. Use when Joe or another owner wants a new Jay instance, when discussing what makes Jay effective beyond skills alone, or when extracting/stratifying memory into Core vs Instance layers.",
+   "times_used": 1,
+   "last_used": "2026-09-15"
+  },
+  {
    "name": "slack-store-thread-cron-retarget",
    "path": "automotive/slack-store-thread-cron-retarget",
    "category": "automotive",
@@ -1183,14 +1191,6 @@
    "path": "automotive/install-agent-bridge-into-peer",
    "category": "automotive",
    "description": "Make ANOTHER AMG agent (e.g. Autumn, Don, Ralph) able to message Jay/peers DIRECTLY from their own sessions \u2014 not just be reachable BY Jay. Installs the ask-agent bridge helper + a MEMORY.md entry into the target agent's profile so the capability is discoverable in their real chats. Use when Joe says \"set up a pipeline between <agent> and Jay\" or \"<agent> needs to talk to you\".",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "jay-clone-deployment",
-   "path": "automotive/jay-clone-deployment",
-   "category": "automotive",
-   "description": "Deploy a fresh Jay clone agent for a new dealership/owner \u2014 provision skills, \"Jay Core\" universal memory (Tekion-common, zero AMG data), scripts tree, persistent browser infrastructure, and separately-supplied credentials. Use when Joe or another owner wants a new Jay instance, when discussing what makes Jay effective beyond skills alone, or when extracting/stratifying memory into Core vs Instance layers.",
    "times_used": 0,
    "last_used": null
   },
