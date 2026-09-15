@@ -524,6 +524,86 @@ Fetch the per-RO evidence with `clock_by("roId", …)` for the RO universe, then
 `POST /api/rosearchservice/u/ro/search` is a **404 — that endpoint does not exist**;
 RO lookup goes through the clock report + `/openapi/v4.0.0/repair-orders:search`.
 
+## ⭐ "The RO pays 1.4 but the tech only got 0.2" — the DELTA-ROW display trap (BC 2026-09-15)
+
+This is the most common *false* short-pay complaint, and the index is innocent. Joe's framing:
+*"RO 102964 shows it pays 1.4 but tech shows paid .2 … his total is like 80-something, yesterday
+I showed him at 111, it's upsetting the techs."*
+
+**Root cause = Tekion posts flag DELTAS, and the Tech Flag Hours modal lists them as separate
+editable rows.** When an operation's bill hours are raised *after* it was first flagged (very
+common on PDIs closed days later), auto-flag does **not** replace the original entry — it appends
+a second entry with only the difference:
+
+| Flagged | When | Type | Flagged by |
+|---|---|---|---|
+| 1.20 h | Sep 11 4:57 PM | AUTO_ADDED | Isaiah Estrada Garcia (SERVICE_DISPATCHER, 5574) |
+| **0.20 h** | Sep 14 9:32 AM | AUTO_ADDED | Serena Quezada (WARRANTY_CLERK, 110) |
+
+Total = 1.40 h = the op's billed hours. The tech reads the **bottom row's 0.20** and says he was
+paid 0.20. The modal header right above the rows says `Flagged hrs 1.40 / Labor Cost $72.80`
+(1.40 × $52 wage) — so the RO, the ledger and the labor cost all agree on 1.40.
+
+**Detect the pattern at scale from the package JSON** (no extra API calls) — group the `indexed`
+ledger by `(roNo, operationId)` and list ops with >1 entry:
+
+```python
+byop = collections.defaultdict(list)
+for r in d["indexed"]: byop[(r["roNo"], r["operationId"])].append(r)
+for k,v in byop.items():
+    if len(v) > 1:
+        print(k, " + ".join(f"{r['flagTimeInSeconds']/3600:.2f}" for r in sorted(v,key=lambda x:x['payDay'])))
+```
+BC Sep 1–15: **23 of 61 operations carried >1 flag entry, 41.40 hrs of the 86.10 total.** Five PDI
+ROs closed together showed the identical 1.20 + top-up shape (102956 +0.30, 102959 +0.30,
+102767 +0.20, 102964 +0.20, 102395 +0.00). Batch-flagged ops are the tell.
+
+**Verifying in the UI (the only way to see what the tech sees):**
+- RO detail URL = **`https://app.tekioncloud.com/ro/repair-orders/{roId}`** (roId = `documentId`).
+- Headless Playwright + `storage_state=/home/itadmin/caliber-ops/scripts/.tekion-storage-state.json`
+  → lands on dealer **1251 (BC) by default**; verify auth by "Username" NOT in `body.innerText`.
+- The jobs page renders each line as `<n>. <OPCODE> - <desc> / status / payType / <bill> <actual>
+  <flagged> hrs / $sale $net` — e.g. `1. PDI … I 1.40 0.00 1.40 hrs $0.00 $336.52`.
+- Job kebab selector = **`.ro_KebabMenuTrigger_kebabMenuTrigger__o45j9RrsAn`** (take the LAST
+  `offsetParent!==null` match; the header kebab sits at y≈96, the job row's at y≈221 at 1600px).
+  Click via `/mouse` on its live rect → menu item matching `/flag/i` ("Tech Flag Hours").
+- The per-entry hour cells are **`ant-input-number-input` values** — `innerText` shows them as
+  blank `- hr`, so you MUST read `.value` on the inputs or you will conclude the rows are empty.
+  Rows read `0.20 / 0.20 / 0.20 / 61.72 / 09/14/2026` (hrs, bill hrs, flagged hrs, $, flag date).
+
+### The OTHER half — "80-something vs 111" is a metric/period mismatch, not lost hours
+
+Once the index is proven clean, the total gap is almost always one of:
+- **different pay periods** — a completed period vs the current one, or
+- **different columns on the same screen** — Technician vs Flagged vs Attendance.
+
+Prove it by scanning windows instead of trusting either number. One loop over plausible
+`(start, end)` pairs on `/reporting/technician`, printing `flag / clock / att` for each, found
+exactly ONE window near 111:
+
+| Period | Flagged | Clocked | Attendance |
+|---|---|---|---|
+| Aug 1–15 | 98.40 | 67.31 | 76.41 |
+| Aug 16–31 | **113.70** | **79.18** | 101.79 |
+| Sep 1–15 | **86.10** | 55.37 | 74.47 |
+
+113.70 = the completed Aug 16–31 pay period ("111"), and the same window's **clocked = 79.18**
+("80-something"). Joe's numbers were *both* real — one was Flagged, one was Clocked, and
+neither was short. Report the table, state plainly that the tech is whole, and say which number
+to point at. Proficiency 118% / efficiency 159% / unapplied −13.63 = a tech beating flat rate,
+**not** an underpaid tech.
+
+**Ask which screen the disputed number came from** rather than guessing between the two
+candidates — Joe accepts "I don't know yet", not a confident wrong answer.
+
+### Also surface the manual-adjustment load for that tech
+
+Same run gives it free: filter `flagHourType != "AUTO_ADDED"`. BC Sep: **14.10 of 86.10 hrs were
+hand-keyed** by 5 different users (warranty clerks Yer Vang + Serena Quezada, advisor Houa Moua,
+Juan Ramirez, dispatcher Humberto Dominguez), including a −2.00 reversal. Manual in/out is what
+makes a tech's day-to-day totals jump, and it's the one line a manager should validate — so it
+belongs in the answer alongside "the index is clean".
+
 ## Pitfalls
 - **NEVER hand-roll the TECH_CLOCK `generate-summary-report` body — you get HTTP 400.**
   Writing a plausible `{"reportId","dataSource","groups","filters","defaultFilter","pageInfo"}`
