@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-15T10:30:05",
+ "generated": "2026-09-15T10:45:25",
  "skill_count": 222,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 180,
-   "last_used": "2026-09-14"
+   "times_used": 181,
+   "last_used": "2026-09-15"
   },
   {
    "name": "agent-to-agent-bridge",
@@ -31,8 +31,8 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 94,
-   "last_used": "2026-09-10"
+   "times_used": 95,
+   "last_used": "2026-09-15"
   },
   {
    "name": "tekion-sitemap",
@@ -319,8 +319,8 @@
    "path": "automotive/tekion-flag-vs-actual-hours-report",
    "category": "automotive",
    "description": "Build a \"closed ROs where tech FLAGGED hours were below ACTUAL clocked time\" report (unpaid flat-rate tech time) for any Tekion store, per-tech per-RO grain. Uses two internal endpoints discovered 2026-07-30 - /ro/v1/{id} carries per-tech flag entries (flagTimesWithPayDay) and clockDetails/fetch carries per-tech actual punches. Also documents the repair-orders:search pageNumber-IGNORED pagination trap and its closedTime-bisection fix. Verified SV (826) Jul 1-15 2026.",
-   "times_used": 11,
-   "last_used": "2026-08-31"
+   "times_used": 12,
+   "last_used": "2026-09-15"
   },
   {
    "name": "dealerdetail-api-pipeline-build",
@@ -627,6 +627,14 @@
    "last_used": "2026-08-24"
   },
   {
+   "name": "tekion-tech-flag-hours-pay",
+   "path": "automotive/tekion-tech-flag-hours-pay",
+   "category": "automotive",
+   "description": "Answer \"how do we pay techs for unapplied time / extra clocked hours\" questions and diagnose flag-hours pay problems in Tekion. Covers how tech pay actually flows (flag hours -> Flag Hours Report -> payroll), the manual flag entry modal, adjusting flag time on CLOSED ROs without reopening, the Wage Type Config $0.00 labor-cost trap, and the unapplied-hours definition. Verified via Tekion KB (KB0018796, KB0025203, KB0014998, KB0020953) on the SV RO 372190 case, 2026-07-29.",
+   "times_used": 4,
+   "last_used": "2026-09-15"
+  },
+  {
    "name": "tekion-xhr-body-injection",
    "path": "automotive/tekion-xhr-body-injection",
    "category": "automotive",
@@ -697,14 +705,6 @@
    "description": "Audit, diagnose, and repair the Tekion scraper pipeline including OTP fetching, session reuse, lock starvation, Puppeteer navigation timeouts, and Tekion 3.0 compatibility.",
    "times_used": 3,
    "last_used": "2026-09-11"
-  },
-  {
-   "name": "tekion-tech-flag-hours-pay",
-   "path": "automotive/tekion-tech-flag-hours-pay",
-   "category": "automotive",
-   "description": "Answer \"how do we pay techs for unapplied time / extra clocked hours\" questions and diagnose flag-hours pay problems in Tekion. Covers how tech pay actually flows (flag hours -> Flag Hours Report -> payroll), the manual flag entry modal, adjusting flag time on CLOSED ROs without reopening, the Wage Type Config $0.00 labor-cost trap, and the unapplied-hours definition. Verified via Tekion KB (KB0018796, KB0025203, KB0014998, KB0020953) on the SV RO 372190 case, 2026-07-29.",
-   "times_used": 3,
-   "last_used": "2026-07-30"
   },
   {
    "name": "tekion-tek-opcode-part-replace",
