@@ -739,8 +739,22 @@ To remove a stale brain page immediately (don't wait for 3 AM orphan-purge): `gb
   0.42.21.0 and that is fine).** Two lines (`UPGRADE_AVAILABLE 0.42.21.0 0.46.25.0` + `gbrain 0.42... available.
   Run: gbrain self-upgrade`) are prepended to `gbrain link` / `get` / `orphans` output, so anything that
   parses the JSON (`{"status":"ok"}`) or the frontmatter must strip them: pipe through
-  `| grep -v -i upgrade` (or `head`/`tail` past them). **Do NOT run `gbrain self-upgrade` from inside a
-  brain-sync cron** — a mid-run version jump would change import/chunk behavior with no chance to verify;
+  `| head`/`tail` past the banner. **⚠️ DO NOT strip them with `| grep -v -i upgrade` — it strips
+  LEGITIMATE CONTENT lines and causes FALSE DB-stale alarms (learned 2026-09-15 brain-sync cron).**
+  The banner is only the first ~2 lines, but a `grep -v` filters the WHOLE stream, and brain content
+  routinely contains the word "upgrade" — index.md's session titles include "Inventory of Hermes Agent
+  Upgrades...", "Tekion Enterprise API upgrade unlocks GL writes and RO webhooks", "Tekion APC
+  Enterprise Upgrade Audit...". Running the documented DB-vs-disk check as
+  `gbrain get index | grep -v -i upgrade | grep -c 'session-2026'` returned **1269 vs disk 1275**, a
+  convincing-looking 6-page "DB is stale / import-skip" gap that was pure artifact — the 6 diff-flagged
+  "missing" slugs were exactly the 6 whose titles contain "upgrade" (diff size 590 chars ≈ 6 × ~98).
+  The DB page was perfect (raw count == disk 1275). **Correct banner strip is POSITIONAL, not
+  content-based: `| tail -n +3`.** Use `grep -v -i upgrade` only for positional/JSON-status output
+  (e.g. `gbrain link ... | grep -v -i upgrade` to see `{"status":"ok"}`), NEVER when counting or
+  diffing page content. General rule: a content-line filter keyed on a word that can appear in brain
+  pages (upgrade, sync, session, index...) is a latent false-positive detector.
+  Do NOT run `gbrain self-upgrade` from inside a
+  brain-sync cron — a mid-run version jump would change import/chunk behavior with no chance to verify;
   raise it to Joe as a separate maintenance task instead. NOTE the skill body cites v0.42.37 behaviors
   (content-hash import, `list` 42-row cap) while the box actually runs 0.42.21 — those notes still held true.
 - **Run gbrain with `HOME=/home/itadmin`** (the cron HOME). Jay's session HOME differs; both configs
