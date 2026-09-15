@@ -64,6 +64,50 @@ A full Jay clone gets:
 | 5 | Instance memory template | Empty scaffold `instance-memory-template.json` with `{"dealer_ids":{}, "people_map":{}, "preferences":{}}` |
 | 6 | Credentials | Separately provisioned per-owner |
 
+## Full Self-Backup Kit (BUILT & VERIFIED 2026-09-15)
+
+Location: `/home/itadmin/jay-clone-bundle/` — three scripts + README/RESTORE.
+
+```bash
+cd /home/itadmin/jay-clone-bundle
+STAMP=$(date +%Y%m%d-%H%M) /usr/bin/bash build-jay-clone.sh --with-history   # ~2 min, 2.6 GB
+/usr/bin/bash seal-bundle.sh releases/<STAMP>                                # AES-256 → releases/<STAMP>/secure/
+# target machine:
+export PASSPHRASE='...' && bash secure/DECRYPT-AND-RESTORE.sh
+JAYHOME=/home/itadmin /usr/bin/bash restore-jay-clone.sh
+```
+
+**Six tiers** (all relative to the home dir so `tar -C $JAYHOME` reproduces the layout):
+
+| Archive | Contents |
+|---|---|
+| `jay-01-identity` (6.6 MB) | profile `config.yaml`/`SOUL.md`/`.env`/`auth.json`, memories, 222 skills, `cron/jobs.json`, `.ssh`, `.git-credentials`, `google_token.json`+`client_secret`, both himalaya configs, `.tekion-session.json`, `.gbrain/.env`, project `.env*` — **21 credential files** |
+| `jay-02-scripts` | working tree (383 py / 107 sh in `tekion-reports`), `bin`, `caliber-ops`, `the-goods`, `dealer-detail`, all store build dirs |
+| `jay-03-infra` | `persistent-browser*` (incl. the authenticated Tekion localStorage), systemd user units |
+| `jay-04-knowledge` | `tekion-kb`, `brain/`, `.gbrain/brain.pglite` |
+| `jay-05-data` | `tekion-reports/data`, `the-goods/data`, caliber-ops sqlite snapshot |
+| `jay-06-history` | `state.db` snapshot (loose file, not in a tar) + `sessions/` |
+
+`CREDENTIAL-INVENTORY.txt` lists every captured path + key NAME (never values) — regenerate/read it to answer "did we get secret X".
+
+### Pitfalls learned the hard way
+
+1. **Never edit the build/restore script while it is running.** Bash reads incrementally — editing mid-run produced a phantom `syntax error near unexpected token '('` and an empty tier-1 archive. `bash -n` passes; the corruption is only from the concurrent write.
+2. **tar member paths must be relative to `$JAYHOME`'s parent**, i.e. `tar -C $JAYHOME` must land on `.hermes/...`. Building with `-C /` + `home/itadmin/...` extracts to `$JAYHOME/home/itadmin/...` and every post-unpack check silently MISSes. Always `tar -tJf` the result and assert the members before shipping.
+3. **Glob args in a tar wrapper:** expand with `compgen -G` inside the base dir; a bare `dir/*.json` that matches nothing makes GNU tar exit non-zero and (worse) the `[[ -e ]]` guard is evaluated against the base dir, not the build cwd.
+4. **`sqlite3` CLI is NOT installed** on this host. Use Python's `sqlite3` online-backup API for `state.db`/`dev.db` (raw `cp` of a WAL database silently drops recent commits).
+5. **Verify the seal round-trips** — decrypt one archive and diff its sha256 against `SHA256SUMS.txt`. Don't ship an unopened vault.
+6. **Dry-run the restore into a throwaway `JAYHOME`** (`--dry-run` skips crontab/systemd/npm). That's how the path-layout bug was caught.
+7. Store the generated passphrase **outside** the release dir (`~/.jay-clone-passphrase`, 600). Also: never put the passphrase in the same folder that travels.
+
+### Transport
+
+The sealed set goes to `/mnt/c/Users/joeca/OneDrive/JayClone-<date>/secure/` (1.5 GB) plus the kit files and `SHA256SUMS.txt` one level up. Plaintext archives stay in the persistent home dir as the on-machine backup — they add no exposure the source machine doesn't already have.
+
+### Dual-run hazard (state this to the owner every time)
+
+The clone carries the **same** Slack bot token, Telegram bot token and Tekion localStorage session. Two live instances fight: duplicate Slack replies, Telegram `getUpdates` stealing, Tekion session invalidation (the `/tmp/tekion-session.lock` guard is host-local and does NOT cross machines). Either provision fresh bot tokens for the clone, or keep exactly one machine live.
+
 ## Core Memory Extraction (Next Step — Joe's directive)
 
 1. Audit all ~75+ memory entries
