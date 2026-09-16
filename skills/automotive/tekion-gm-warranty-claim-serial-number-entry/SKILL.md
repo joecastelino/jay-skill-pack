@@ -79,7 +79,72 @@ Submit → GM portal credential modal).
 - Verify with DOM, not OCR: `[...document.querySelectorAll('input')].filter(i=>/Add Serial No/.test(i.placeholder||'')).length`
   — non-zero = the claim form is open and its part rows are visible.
 
+## SECOND serial field — the labor line (found 2026-09-16, same session, Joe follow-up)
+Joe's correction: *"that is for NEW serial number … there should be another field kind of like
+where you would put a reprogramming code for the OLD removed serial number"*. So I enumerated the
+whole claim model, not just the rendered form.
+
+Verified from the front-end chunk `roWarrantyClaimForm.<hash>.chunk.js` (fetch the URL straight out
+of `performance.getEntriesByType('resource')` and regex it in-page — `window.__H` XHR hook only
+captures response bodies, and **the hook is wiped by any hard navigation**, so install it AFTER
+the page loads and then drive the SPA):
+
+- **Part row** field ids: `partNumber, partQuantity, partCausalIndicator, serialNumbers (ARRAY),
+  partConditionCode, partAppealActionCode, partCoreAmount, partInvoiceNumber, partDiscount,
+  partExtendedAmount, partNumber, nonGmPartIndicator…`
+  - `serialNumbers` is the part-line serial — multi-value tag input, and the ONLY validation rule on
+    it is `"For causal part, number of serial numbers should match number of quantity"`.
+    **Consequence: a qty-1 causal part accepts exactly ONE serial** (so you cannot smuggle
+    old+new onto the same causal part line).
+- **Labor line** field ids (`otherLaborDetails` rows, table key `otherLaborTableOptions`):
+  `otherLaborOperationCode (Opcode), otherHours (Labor Hours)`, and — additional GM labor-line
+  detail fields that exist in the model but are gated by server config:
+  **`serialNumber`**, **`spsWarrantyClaimCode`** (SPS = GM Service Programming System — this is the
+  "reprogramming code" family Joe referenced), `keyCode`, `batteryTesterCode`, `flushCode`,
+  `gridReference`, `documentId`, `shipDirectOrderNumber`, `diagnosticCode`, `calibrationValue`,
+  `mileageMeasurement`, `brakes`.
+  - Field requirement/visibility comes from the **server-side config**, not the client:
+    the chunk builds `validationConfig` by merging `bootstrap.labourFields` + `gmFields` +
+    `dependencyCodes` (per-labor-opcode dependency map) — helper `en(field, cfg)` reads
+    `cfg[field].required`. The config endpoint is
+    `GET /api/service-module/u/oem/gm/claimForm/transactionType/<ZREG|ZSET|ZFAT|ZACD|ZPTA…>/config`
+    → `{data:{gmFields, causeCodes, bootstrap}}`; there's also `POST …/oem/gm/gmFields`.
+  - **LIVE RESULT on RO 101799 job 3 (BC, ZREG):** adding a row via *Labor Details → Other Labor
+    Details → "+ Add Opcode"* renders ONLY two columns — `otherLaborOperationCode` + `otherHours`
+    (+ REMOVE action). The serial/SPS columns did NOT render, and the row's Opcode combobox opened
+    with **zero options**. So on this claim the labor-line serial is not reachable through the UI.
+- **GM's own field catalog Tekion can send for ZREG = 51 GWM fields** (`data.gmFields`, each with
+  `gwmFieldName` + `required: R/O/NA`). The ONLY serial-bearing entry is
+  **`serialNumber` → GWM "Serial Part Number"** (required = **O**). Serial-ish neighbours you may
+  be tempted to use instead: `Reference Number`, `Causal Part Number`, `Non-GM Part Indicator`,
+  `Original Installation Date/Distance`, `GM Pre-Repair Authorization Code`,
+  `Service Management Authorization Code`. There is **no "Old/Removed Serial" GWM field** in the
+  ZREG catalog.
+- Not serial fields, for completeness: **Additional Details** tab = `authorizationType` +
+  `authorizationNumber` + `generalComments` (+ attachments); **Net Info** = criteria/amount +
+  `Additional Information` column (net items NIC/NIE/NS1/NS2/NPT/NIT/NIS/NIP/NIA/NIF/NIM/NIR;
+  freight-postage codes include "Core"); CCC = complaint category/code, cause code, correction text.
+- The same chunk serves Ford/Volvo/Subaru/etc. claim forms — don't mistake a Ford block
+  (e.g. Ford-only `exchangeSerialInvoice` / "Tech Journal, Battery Code or Serial #") for a GM
+  field. Always confirm the block is under `gmclaimFormV2`/`gmFields`.
+
+**Bottom line to give Joe/store (2026-09-16):** Tekion exposes exactly ONE VIN-claimable serial per
+part line and one *latent* labor-line serial that isn't rendered for GM/ZREG; GM's ZREG field
+catalog has exactly one serial field. If GM's rejection demands a serial Tekion cannot map, the
+claim cannot be completed in Tekion today → finish in GM Global, or file a Tekion enhancement to
+map the labor-line `serialNumber`/`spsWarrantyClaimCode`. Confirm GM's exact field label/rejection
+text (or a rejected RO# — Claim Information info icon) before promising a workaround.
+
 ## Open question to confirm before writing clerk instructions
-Which serial GM actually wants (installed/new vs removed/old unit). Tekion's field is a free-text
-per-part cell, so it can carry either or both (multi-value). Confirm against a real *Rejected*
-claim's stated reason (Claim Information → info icon) before telling clerks what to type.
+Which serial GM actually wants (installed/new vs removed/old unit), and the exact GM-side field
+label GM flags. Get one *Rejected* RO# + the info-icon reason, then decide: (a) part-line serial
+(only if GM's "Serial Part Number" is the removed unit's serial), (b) comments-body workaround
+(`Additional Details → General comments` / Net Info `Additional Information` — GM receives these as
+text, they do NOT satisfy a required serial field), or (c) not possible in Tekion → GM Global
+completion + Tekion enhancement request.
+
+## Clean-up discipline for this recon
+Adding an "Other Labor" row to inspect its columns is an UNSAVED draft change: delete the row
+(REMOVE action in `action-cell-0-REMOVE-Button`) and then click **Cancel** on the claim form.
+Verified clean exit = URL returns to `/ro/repair-orders/<roId>/jobs/<jobId>` with tabs
+`Jobs (n) | Recommendations (n) | MPI …`, part rows untouched, `otherLaborOperationCode-cell` count 0.
