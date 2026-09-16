@@ -218,6 +218,49 @@ Real example (SCT 8/24/2026) — 117 errors, 114 were the mapping gap, 2 were NO
 Call these out separately in the report. Saying "117 JEs, all the same mapping bug" when 2 aren't
 is exactly the kind of wrong root cause Joe rejects instantly.
 
+## 5a-2. VC (VW Clovis, 1891) — DISCOUNT NOT POSTED → out-of-balance JE, 2026-09-16
+
+Reported by Chris Wiese / Carol Brewer (VC business manager): "the discount isn't coming over so it
+goes in error and Carol is manually putting it in." **Second occurrence** (first 9/3, again 9/11).
+
+Two errored JEs, both `CUSTOMER_PAY - Repair Order`, journal `30 - SERVICE CASH SALES`, doc type
+`7 - Repair Order Invoice`, **every GL cell populated (NO blank cell)**, Balance ≠ 0:
+
+| JE | RO | Acct date | Debit | Credit | **Balance** | Discount on RO |
+|---|---|---|---|---|---|---|
+| 122656 | 141821 | 09/03/2026 | $136.63 | $157.50 | **$20.87** | $20.87 |
+| 123249 | 141957 | 03/19/2026 | $167.54 | $197.54 | **$30.00** | $30.00 |
+
+**The discriminator (verified arithmetic — do this, don't trust OCR signs):**
+- 141821 revenue lines `4410 $13.36 + 4770 $77.46 + 2221 tax $5.36 = $96.18` gross;
+  `1188 CASH SALES = $75.31` = **gross minus the $20.87 discount** → `96.18 − 75.31 = 20.87`
+  = the header Balance exactly.
+- 141957: `4410 $3.76 + 4770 $96.19 + tax $5.42 = $105.37`; cash `1188 $75.37`;
+  `105.37 − 75.37 = $30.00` = Balance exactly. (Vision misread 4770 as 80.19 — solving for the
+  unknown from the header Credit total is what exposed it; **never diagnose off a screenshot's
+  per-row digits.**)
+
+So the structure is: **debit cash at the NET amount collected, credit revenue at GROSS, and never
+emit the discount/contra-revenue line** → entry is malformed by exactly the discount → sits in
+Error until someone hand-posts it. **This is the "non-zero balance = malformed entry, lines are
+missing" bucket — a GL-mapping change cannot fix it** (there is no blank cell to fill), and it is
+NOT the §5b/§5c blank-holding-account defect despite being the same store and the same "parts/service
+auto-posting" family.
+
+Unverified root cause (flag as hypothesis, NEVER assert): VC's mapping set is unusually thin —
+`Fixed Operations → Services (3)`, `Part & Accessories (1)`, `Purchase Orders (0)`, `Warranty
+Credit (1)`, `Others (2)`, and the `FIXED OPERATIONS OTHER` card carries a **single row whose
+left-hand dimension cell renders blank** with GL `1188 - CASH SALES` (compare SCT, which has named
+rows: Freight charge / Restocking Fee / Other supplies / Service Cash Holding / Parts Cash Holding).
+A missing discount posting rule is the leading hypothesis; a Tekion auto-posting defect emitting
+no discount line is the second. Discriminator: find a VC RO **with a discount that DID post
+cleanly** — if none exists, it's config; if some post, it's per-RO/Tekion.
+
+Also note the VC Error queue was **empty (0 Result(s))** on 9/16 — consistent with Carol's manual
+fixes clearing them; the JEs are only visible after the fact. Ask for the RO#s before hunting.
+
+---
+
 ## 5b. Known root cause: department-scoped mapping gap
 
 **Symptom pattern seen at SCT 8/21/2026** — 10 Error JEs, all journal `32 - PARTS CASH SALES`,
