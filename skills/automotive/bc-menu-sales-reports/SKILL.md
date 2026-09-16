@@ -240,6 +240,10 @@ VERIFY INDEPENDENTLY (Stacey's word is not proof):
   has produced the summary total wrapped in `<strong>$X</strong>` instead of `<b>$X</b>`. Both
   are valid bold markup — a `<b>`-only check false-negatives and could send you into needless
   rebuild churn. Test with `("<b>$T</b>" in clean or "<strong>$T</strong>" in clean)`.
+  **The `<strong>` span may cover MORE than the figure** (2026-09-15): she produced
+  `<strong>total of $3,074.16 dollars</strong>` — an exact `<strong>$T</strong>` match
+  false-negatived. Accept a `<strong>...</strong>` that merely *contains* the total; check
+  `re.search(r'<strong>[^<]*'+re.escape(T), clean)` rather than the exact wrapped form.
 - Direct IMAP check via himalaya (PATH=/home/itadmin/.local/bin):
   `himalaya envelope list --folder '[Gmail]/Drafts'` → grep "BC m/d".
   `himalaya message read <id> --folder '[Gmail]/Drafts'` → grep
@@ -577,6 +581,12 @@ what her shell pipeline eats. Instead:
    sign followed by a digit inside a double-quoted shell string anywhere in
    your pipeline (that corrupts the figures — it has happened before on this
    report)."*
+   **The two actions are INDEPENDENT — state them as separate steps** (learned
+   2026-09-15): she reliably does the dollar-sign INSERT and just as reliably
+   SKIPS the word REMOVAL, yielding `$3,074.16 dollars` (7× on 9/15). Spell out
+   "(a) DELETE the word `dollars` after every number, and (b) put a dollar-sign
+   before each number" — don't fold them into one sentence. Then verify the bare
+   `" dollars"` count is 0 as a hard gate (see the quoting trap in step 4).
 3. Ask her to echo the total back in the terse DONE line (`TOTAL=<figure as it
    appears in the body>`) so you get a cheap first signal before deep verification.
 4. **Same trick for em-dashes (verified 2026-08-29; FOOTER miss discovered 2026-09-08)**: don't put literal `—`
@@ -585,8 +595,13 @@ what her shell pipeline eats. Instead:
    that reason). Write the literal token `EMDASH` wherever the subject/footer
    needs one and instruct her to substitute a real em-dash. Then add
    `clean.count("EMDASH")` to the post-build leftover greps (must be 0)
-   alongside `' dollars'`/`USD`/`CORRECTION` — that proves the placeholder was
-   actually replaced and didn't leak into the sent body.
+   alongside the space-plus-`dollars` token/`USD`/`CORRECTION` — that proves the
+   placeholder was actually replaced and didn't leak into the sent body.
+   **MATCH THE BARE TOKEN — the quotes in this skill are PROSE quoting, not part of
+   the search string** (bit 2026-09-15): grep `" dollars"` (a space then the word),
+   NOT `"' dollars'"`. Searching for the quote-wrapped literal `' dollars'` returns
+   a false 0-count and hides a real leak; on 9/15 that bug masked 7 live
+   `"<amount> dollars"` occurrences in the draft body.
    **⚠️ FOOTER variant (2026-09-08): Stacey's EMDASH→— replace may succeed in
    the subject but MISS the footer** (both text/plain and text/html). The
    verification grep `EMDASH` count came back 1 (footer only), NOT 0. Fix
@@ -1105,38 +1120,15 @@ Daily Closed 9/1 draft (43016) untouched — different report type, not a duplic
 **Skill-size housekeeping**: 94,263 pre-append (already under the ≤97,000 target thanks to the
 two prunes earlier today) → no prune needed this run. Re-checked `os.path.getsize()` AFTER.
 
-## 2026-09-02 noon Daily Closed run — textbook one-shot, 43rd consecutive clean "N dollars" build
-18 menus, $2,602.44 / $1,646.16 = $4,248.60 (~38% attach, highest rate logged — strong Wednesday).
-Clean one-shot; all byte-for-byte checks passed, no duplicate.
-## 2026-09-02 5pm Daily Closed run — textbook one-shot, 44th consecutive clean "N dollars" build
-24 menus, $3,344.94 / $2,016.38 = $5,361.32 (~35% attach). Clean; all byte-for-byte checks passed,
-deleted stale noon draft. Noon 18/$4,248.60 → 5pm 24/$5,361.32 — strong Daily Closed day.
-## 2026-09-02 6:16pm Closed MTD run — textbook one-shot, 45th consecutive clean "N dollars" build
-28 menus, $4,047.41 labor / $2,298.70 parts = $6,346.11 (Sep 1-2). Advisors: Jacob Debussey 9 /
-$1,295.07, Dimetri Reynoso 7 / $2,304.04, Humberto Dominguez 5 / $1,205.38, Houa Moua 4 /
-$274.52, Michael Reyes 1 / $533.42, Erik Mercado 1 / $474.75, Juan Ramirez 1 / $258.93. Master
-existed (seeded 9/1) → default append; 70 closed ROs today → 24 carried TEK menu opcodes (~34%
-attach — third straight high-attach Wednesday cut) → master 28 rows; `✓ all candidate ROs
-scanned`. Pull via `terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`,
-finished near-instantly. Vision KPI band (crop 460px + 2x LANCZOS on a 1226x1559 PNG) read all
-four tiles exactly and matched JSON.
-**write_file→background-terminal ask pattern, 21st straight run, returned inside ONE 180s wait**
-(`/tmp/bc_ask_0902_mtd.py`, `subprocess.run` argument list, `timeout 560`). Terse DONE line
-correct with `TOTAL=$6,346.11`, her reported id (43063) MATCHED himalaya's, NO self-correction
-text (8th straight zero-wrinkle run) → no duplicate. Verified via the stdlib-`email` parser:
-To=Restrada, Cc real None, From=Joe, Subject auto-decoded with em-dashes, inline PNG
-**byte-for-byte identical** (323,197 bytes), PDF **byte-for-byte identical** (60,119 bytes), all
-10 figures present exactly once, `<b>$6,346.11</b>` bold, greeting + footer present, zero
-' dollars'/USD/EMDASH/CORRECTION leftovers, all 15 leading-digit-stripped and comma-mangled
-variants = 0. Exactly 1 MTD 9/2 draft (43063), MTD Sent count 0 (the single `BC 9/2` Sent hit
-was Stacey's separate auto-sent Daily Opened report, 15041). Left the sibling Daily Closed 9/2
-draft (43048) untouched — different report type.
-**Day-2 MTD note**: MTD (28/$6,346.11) = 9/1 seed (4/$984.79) + today's strong Wednesday (24
-menus) — the MTD≈Daily convergence sentence from 9/1 is no longer needed once the month has 2+
-days of data.
-**Skill-size housekeeping**: 97,593 pre-prune → condensed five confirmatory 8/22-8/25 entries
-(kept the CORRECTION-grep, thousands-comma-prevention, and volume/prefilter lessons) → 95,831
-before appending. SAFE-PRUNE index assertions used; re-checked size AFTER.
+## 2026-09-02 noon + 5pm Daily Closed runs — textbook one-shots (43rd/44th consecutive clean builds)
+Noon 18 menus / $4,248.60 (~38% attach, high Wednesday); 5pm 24 / $5,361.32 (~35%).
+Clean; all checks passed; deleted stale noon draft.
+
+## 2026-09-02 6:16pm Closed MTD run — textbook one-shot, 45th consecutive clean build
+28 menus, $4,047.41 / $2,298.70 = $6,346.11 (Sep 1-2); top Jacob Debussey 9. Default append; 70
+closed ROs, ~34% attach; `✓ all candidate ROs scanned`. All byte-for-byte checks passed, no
+duplicate. **Day-2 MTD note**: MTD (28) = 9/1 seed (4) + today's strong day (24); the
+MTD==Daily convergence sentence is only needed on the 1st.
 
 ## 2026-09-03 noon Daily Closed run — one retry after a Stacey STREAM-STALL (no draft, safe re-fire), then clean build
 9 menus, $1,005.91 labor / $766.31 parts = $1,772.22 (Jacob Debussey 4 / $667.58, Juan
@@ -1172,57 +1164,19 @@ before appending. Re-checked size AFTER.
 Her reported id was **124** vs himalaya's **43085** — the documented APPENDUID mismatch (always grep).
 Morning's stream-stall retry had no downstream effect.
 
-## 2026-09-04 noon Daily Closed run — textbook one-shot, 47th consecutive clean "N dollars" build
-11 menus, $1,064.28 labor / $523.31 parts = $1,587.59 (Michael Reyes 3 / $590.87, Jacob
-Debussey 4 / $315.22, Dimetri Reynoso 2 / $371.30, Humberto Dominguez 1 / $218.84, Houa Moua
-1 / $91.36 — five advisors). 50 closed ROs → 11 carried TEK menu opcodes (~22% attach, Friday
-noon); `✓ all candidate ROs scanned`. Pull + ask each inside ONE 180s wait
-(write_file→background-terminal, 25th straight use, `/tmp/bc_ask_0904_noon.py`). Vision KPI
-band (crop 460px + 2x LANCZOS on a 1226x909 PNG) matched JSON exactly. Terse DONE line correct
-(43129, TOTAL=$1,587.59), id MATCHED himalaya's — her reply showed she self-caught the
-stale-search-UID-vs-APPENDUID wrinkle mid-build ("UID 128 is stale from search. Real UID is
-from APPENDUID") with no re-append → no duplicate. Greeting check (added after the 9/3 MTD
-greeting-drop) passed: `Ruben,` count 1. All byte-for-byte checks passed (PNG 173,578 / PDF
-56,950 exact), all 8 figures exactly once, bold total, zero leftovers/variants, no
-Kevin/dfowlkes leak. Daily-Closed Sent count 0 (single `BC 9/4` Sent hit = Stacey's auto-sent
-Daily Opened, 15161, fired 12:05). No stale prior draft (noon = first run of the day).
+## 2026-09-04 noon Daily Closed run — textbook one-shot, 47th consecutive clean build
+11 menus, $1,064.28 / $523.31 = $1,587.59; top Michael Reyes 3. 50 closed ROs, ~22% attach.
+All checks passed (incl. the added `Ruben,` greeting check post-9/3), no duplicate.
 
-## 2026-09-04 5pm Daily Closed run — textbook one-shot, 48th consecutive clean "N dollars" build
-19 menus, $2,076.13 labor / $1,125.05 parts = $3,201.18 (Jacob Debussey 8 / $685.78, Dimetri
-Reynoso 4 / $1,061.84, Michael Reyes 4 / $934.56, Humberto Dominguez 1 / $218.84, Erik Mercado
-1 / $208.80, Houa Moua 1 / $91.36 — six advisors). 90 closed ROs → 19 carried TEK menu opcodes
-(~21% attach, Friday); `✓ all candidate ROs scanned`. Pull + ask each inside ONE 180s wait
-(write_file→background-terminal, 26th straight use, `/tmp/bc_ask_0904_5pm.py`). Vision KPI band
-(crop 460px + 2x LANCZOS on a 1226x1217 PNG) matched JSON exactly. Terse DONE line correct
-(43133, TOTAL=$3,201.18), id MATCHED himalaya's — her reply self-caught the APPENDUID-regex
-wrinkle mid-build ("my regex grabbed the UIDVALIDITY 6 by mistake") with no re-append; dedupe
-grep run immediately per the self-correction rule → no duplicate. All byte-for-byte checks
-passed (PNG 244,190 / PDF 58,928 exact), all 10 figures exactly once, `<b>$3,201.18</b>` bold,
-greeting `Ruben,` count 1, footer present, zero ' dollars'/USD/EMDASH/CORRECTION leftovers, all
-leading-digit-stripped and comma-mangled variants = 0, no Kevin/dfowlkes leak. Deleted the stale
-noon draft (43129) per the twice-daily cadence rule → exactly 1 draft (43133). Daily-Closed Sent
-count 0.
-**Noon→5pm delta**: noon 11 menus / $1,587.59 → 5pm 19 menus / $3,201.18 — normal Friday build.
-**Skill-size housekeeping**: 97,807 pre-prune → condensed the confirmatory 9/2 noon + 9/2 5pm
-entries → 94,426 before appending. SAFE-PRUNE index assertions used; re-checked size AFTER.
+## 2026-09-04 5pm Daily Closed run — textbook one-shot, 48th consecutive clean build
+19 menus, $2,076.13 / $1,125.05 = $3,201.18; top Jacob Debussey 8. 90 closed ROs, ~21%
+attach. Her reply self-caught the APPENDUID-regex wrinkle mid-build; no re-append -> no
+duplicate. Deleted the stale noon draft. Noon 11 -> 5pm 19, normal Friday build.
 
-## 2026-09-04 6:18pm Closed MTD run — textbook one-shot, 49th consecutive clean "N dollars" build
-67 menus, $8,742.82 labor / $5,832.40 parts = $14,575.22 (Sep 1-4). Advisors: Jacob Debussey
-23 / $2,966.74, Dimetri Reynoso 11 / $3,365.88, Houa Moua 8 / $509.40, Humberto Dominguez 8 /
-$1,940.16, Juan Ramirez 6 / $2,345.38, Michael Reyes 6 / $1,589.42, Erik Mercado 4 / $1,348.68,
-Valentine Nolasco 1 / $509.56. Master existed → default append; 94 closed ROs → 21 carried TEK
-menu opcodes (~22% attach) → master 67 rows; `✓ all candidate ROs scanned`. Pull + ask each
-inside ONE 180s wait (write_file→background-terminal, 27th straight use,
-`/tmp/bc_ask_0904_mtd.py`). Vision KPI band (crop 460px + 2x LANCZOS on a 1226x2921 PNG)
-matched JSON exactly. Terse DONE line correct (43134, TOTAL=$14,575.22), id MATCHED himalaya's,
-NO self-correction text → no duplicate. Verified via the stdlib-`email` parser: To=Restrada,
-Cc real None, From=Joe, Subject auto-decoded with em-dashes, inline PNG **byte-for-byte
-identical** (616,977 bytes), PDF **byte-for-byte identical** (67,822 bytes), all 11 figures
-exactly once, `<b>$14,575.22</b>` bold, greeting `Ruben,` count 1, footer present, zero
-' dollars'/USD/EMDASH/CORRECTION leftovers, all leading-digit-stripped and comma-mangled
-variants = 0, no Kevin/dfowlkes leak. Exactly 1 MTD 9/4 draft (43134), MTD Sent count 0 (single
-`BC 9/4` Sent hit = Stacey's auto-sent Daily Opened, 15161). Sibling Daily Closed draft (43133)
-untouched — different report type.
+## 2026-09-04 6:18pm Closed MTD run — textbook one-shot, 49th consecutive clean build
+67 menus, $8,742.82 / $5,832.40 = $14,575.22 (Sep 1-4); top Jacob Debussey 23. Default
+append; 94 closed ROs, ~22% attach. `✓ all candidate ROs scanned`. All byte-for-byte checks
+passed, no duplicate. Sibling Daily Closed draft left untouched.
 
 ## 2026-09-05 noon Daily Closed run — textbook one-shot, 50th consecutive clean build
 2 menus / $219.62 (light Saturday). All byte-for-byte checks passed; single draft, Daily-Closed
@@ -1305,4 +1259,40 @@ pipeline timing drift, not a defect).
 **Skill-size housekeeping**: 97,957 pre-prune -> condensed 16 confirmatory 8/19-9/5 entries
 (kept the timeout-600, 5pm-no-older-draft, APPENDUID-intermittent, CORRECTION-grep, and
 volume/prefilter lessons) -> 95,533 before appending. SAFE-PRUNE index assertions used; all
+critical trap headings asserted present; re-checked size AFTER.
+
+## 2026-09-15 5pm Daily Closed run — clean data/draft, but Stacey LEFT the word "dollars" in the body (placeholder-not-stripped); 55th consecutive clean "N dollars" build
+14 menus, $2,063.91 labor / $1,010.25 parts = $3,074.16 (Tuesday 5pm). Advisors: Houa Moua 6 /
+$1,267.52, Michael Reyes 2 / $863.99, Juan Ramirez 3 / $607.00, Dimetri Reynoso 1 / $135.11,
+Humberto Dominguez 1 / $127.80, Jacob Debussey 1 / $72.74. 89 closed ROs -> 14 carried TEK
+menu opcodes (~16% attach); `all candidate ROs scanned` printed. Pull + ask each inside ONE 180s
+wait (write_file->background-terminal, `/tmp/bc_ask_0915_5pm.py`). Vision KPI band (crop 460px +
+2x LANCZOS on a 1226x1047 PNG) matched JSON exactly. Terse DONE line correct (43393,
+TOTAL=$3,074.16), id MATCHED himalaya's, NO self-correction text -> no duplicate (but she still
+left the noon draft 43389, as instructed).
+
+**NEW MISS — the "N dollars" placeholder was INSERTED-but-not-REMOVED**: the ask said "put a
+dollar-sign before each number" and used `" dollars"` word form, but did NOT explicitly say to
+DELETE the word "dollars". She inserted every `$` correctly (zero digit corruption) yet LEFT the
+literal word, so the body read `$3,074.16 dollars` / `$1,267.52 dollars` ... 7 times (both
+text/plain and text/html). Not numerically wrong, but not clean. **Fix in the ask wording: say
+BOTH steps explicitly — (a) delete the word "dollars" after each number AND (b) place the
+dollar-sign before the first digit.** The old phrasing only ever mentioned (a) implicitly.
+**Also note my own verification bug**: I grepped for `"' dollars'"` (with literal quote chars)
+instead of `" dollars"` and got a false 0-count, while the real `" dollars"` count was 7. Grep
+the placeholder WITHOUT surrounding quotes.
+**Fix that worked — self-edit + re-APPEND (faster than a rebuild ask)**: stdlib `email` parse of
+the exported .eml -> `.replace(" dollars","")` on both the text/plain and text/html parts via
+`set_content()` -> **regenerate Message-ID** (per the 8/30 Gmail-dedupe trap) -> imaplib APPEND
+(landed 43394) -> expunge 43393 (bad) + 43389 (stale noon). Re-exported 43394 and re-ran the FULL
+suite: To=Restrada, Cc real None, From=Joe, Subject auto-decoded, inline PNG **byte-for-byte
+identical** (206,713 bytes), PDF **byte-for-byte identical** (57,150 bytes), all figures exactly
+once, `dollars` count 0, greeting `Ruben,` 1, footer em-dash present, zero
+USD/EMDASH/CORRECTION/Saturday/Kevin/dfowlkes leftovers, variants 0. Exactly 1 draft (43394);
+Daily-Closed Sent count 0 (ZERO `BC 9/15` Sent hits at all — Stacey's Opened timing drift).
+**Bold-total check**: she wrapped the number as `<strong>total of $3,074.16 dollars</strong>` —
+the strong tag spans more than just the figure. Accept ANY `<strong>...</strong>` containing the
+total; an exact-string match on `<strong>$X</strong>` false-negatives.
+**Skill-size housekeeping**: 97,854 pre-prune -> condensed six confirmatory 9/2-9/4 entries
+(kept the day-2-MTD note) -> 92,286 before appending. SAFE-PRUNE index assertions used; all
 critical trap headings asserted present; re-checked size AFTER.
