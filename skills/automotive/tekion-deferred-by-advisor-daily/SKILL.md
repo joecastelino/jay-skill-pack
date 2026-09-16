@@ -308,6 +308,20 @@ $0-priced lines. He is NOT a writer. The scripts keep him (he legitimately holds
 **call it out explicitly when presenting to Joe** and offer to filter non-advisor personas —
 an unexplained $0.00 row at the bottom of an advisor ranking reads as a bug.
 
+## Reference run (BC / 1251, Tue 9/15/2026)
+34 declined lines · 19 ROs · $13,354.25 · 12 Critical. Erik Mercado #1 $5,272.70 (5 lines /
+2 ROs), Humberto Dominguez $2,115.60, Houa Moua $1,976.41, Michael Reyes $1,964.61
+(3 Critical), Dale Alexander $1,438.79 (**9 lines / 3 ROs / 9 of the 12 Criticals** —
+INVENTORY_MANAGER persona again), Jeremia Navarro $586.14, Juan Ramirez $0.00 (1 unpriced line).
+Draft UID **43399** (All-Mail UID 263536, labels `\Draft` only). PDF 8 pages.
+Trailing-7: Wed 9/9 $11,884.44 → Thu 9/10 $23,484.28 → Fri 9/11 $28,435.78 peak → Sat 9/12
+$9,193.22 → Sun 9/13 $0 → Mon 9/14 $11,396.66 → Tue 9/15 $13,354.25.
+**Recovery: `/tmp/tekion_rec_headers.json` MISSING again (2nd time, was also missing 9/9) — the
+file does not survive across long gaps; STEP ZERO-M1 rebuild from the session file worked first
+try, pull had zero 401s, no browser needed. This is now the default expectation, not an exception.**
+Verification gotcha this run: used `M.search()` (sequence numbers) instead of `M.uid('search')`
+and briefly mis-read the Sent-Mail/All-Mail state — see `jay-gmail-draft-verification` for the fix.
+
 ## Email delivery (via Stacey)
 Route report emails through Stacey (email-agent) on the bridge — never Jay's direct SMTP.
 Store manager recipients: BC → **Ruben Estrada `Restrada@blackstonegm.com`**, greeting "Ruben,";

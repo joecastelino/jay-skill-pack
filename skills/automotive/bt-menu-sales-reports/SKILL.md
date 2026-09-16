@@ -403,4 +403,26 @@ duplicate pair (Aug 1-21, 06:03:56 + 06:04:46) did NOT appear in this Sent listi
 though the skill predicted it would show forever — don't treat its absence (or presence) as
 signal either way; only two hits with TODAY's exact date range mean a fresh double-send.
 
+### (9/16 run, for Mon 9/15) TEXTBOOK CLEAN — 465 dropped once, 587 fallback + dup-check worked
+198 closed ROs, 15 prefilter hits, 15 new rows, `all candidate ROs scanned`. MTD moved
+120 rows/$24,325.86 -> **135 rows / $25,584.80** ($18,636.26 labor + $6,948.54 parts).
+9/15-dated rows alone = 7 menus / $571.32 (rest of the +$1,258.94 delta = older invoiced ROs
+closed) — state both numbers in the body per standing practice. Stacey's first SMTP attempt on
+465 dropped ("Gmail quirk with large MIME", ~372 KB); per the CRITICAL paragraph she fell back to
+**587/STARTTLS** and sent ONCE (no re-send loop, no duplicate). Hand-off 1m48s, verification 1m8s
+— both first try, zero exit-124s with the .sh-wrapper + quoted-heredoc pattern.
+Sent-check = **16 hits, exactly one carrying today's subject** (September 1-15, 06:04:11 PDT) —
+the other 15 are prior sends (Jul 1-28/1-30, Aug 1-8/1-18/1-24/1-25/1-26/1-27/1-31,
+Sept 1-1/1-2/1-3/1-4/1-5/1-10), i.e. the token-match trap is now 15 deep — only the exact-subject
+line matters. The 8/22 duplicate pair is absent again.
+MASTER-SHAPE NUANCE (new): `MASTER-2026-09.json` contains stray **August-dated** rows
+(08/22, 08/28, 08/29 = 3 rows) alongside September rows, and has **no rows** for 09/06, 09/07,
+09/13, 09/14. So when computing "day-dated rows" off a month master, don't assume every row
+carries a date in that month's range, and don't treat a missing day as an error — cross-check
+against that day's own `bt-menu-sales-closed-<date>.json` before concluding anything.
+MTD advisor leaders (9/15): Jon Lo 24/$5,902.63, Jason Davis 32/$5,553.61, Erick Villasenor
+Gonzalez 2/$3,976.09, Michael Rankin 19/$2,496.27, Randy Vung 18/$1,657.41.
+NOTE: prior BT entries stop at 8/24; runs 8/25–9/14 were clean and unlogged — the Sept master
+baselines were 9 rows (9/01) -> 42 (9/04) -> 57 (9/05) -> 120 (9/13) -> 135 (9/15).
+
 ## OVERALL_QUOTA reset behavior (observed 7/8–7/9 outage)\nNOT a fixed midnight reset. Behaves like a rolling ~24h+ bucket tied to when\nthe calls were burned; the 7/8 outage ran **29+ hours** with continuous 429s.\nRecovered capacity can be instantly re-drained by queued crons (11PM\ndealer-detail sync, 2AM VI pull), making it look continuously dead.\nIf dead >24h, escalate: ticket to Tekion asking the actual OVERALL_QUOTA\nlimit, reset schedule, and a raise — it's one org-wide bucket shared by all\n7 stores' pipelines and AMG has co-founder-level contact from the bin\nescalation. Never blind-retry; probe-gate everything.

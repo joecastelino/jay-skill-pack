@@ -402,6 +402,21 @@ buried in the Sent thread, so Joe never sees it and reports "I don't see it."
 Fix = **append-only, fresh Message-ID, left UNREAD.** External recipients are
 unaffected (SMTP, verify `\Sent`).
 
+## `M.search()` returns SEQUENCE numbers, `M.uid('search')` returns UIDs — never mix them (2026-09-16)
+Burned on the BC deferred draft: called `M.search(None, '(HEADER Subject "...")')` on
+Sent Mail, got back `[b'8483', b'8509', b'8512']`, then `M.uid('fetch', '8483', ...)` returned
+unrelated **May 2026** messages ("Fwd: Merchants Fleet cars"). The IDs "existed" but pointed at
+nothing relevant — the sequence numbers were being interpreted as UIDs against a different
+folder state. It looked like the draft had been sent 3x when it hadn't.
+**Rule: if you will fetch by the returned id, use `M.uid('search', None, ...)` so the ids ARE
+UIDs.** `M.search()` output is only valid for `M.fetch()` (also sequence-based), never for
+`M.uid('fetch')`. Same for the All-Mail label check — `M.uid('search', None, '(HEADER Subject ...)')`
+gave the real UID 263536 and `X-GM-LABELS ("\\Draft")`; the sequence-number variant returned
+`[None]`/empty and nearly read as "no labels / phantom".
+Also note: a broad-subject Sent Mail search (`(HEADER Subject "BC Deferred Work by Advisor")`)
+can return unrelated old hits purely from sequence drift — only the EXACT full subject search
+is a valid "was this sent" test, and that returned `[]` (correct).
+
 ## Pitfalls
 - **A "missing" draft may just be Joe trashing it himself** (2026-08-18) — when
   Joe says "I don't see it in Drafts," don't assume Stacey's bridge call failed
