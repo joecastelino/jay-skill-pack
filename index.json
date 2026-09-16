@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-16T10:15:09",
+ "generated": "2026-09-16T10:30:25",
  "skill_count": 223,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 183,
-   "last_used": "2026-09-15"
+   "times_used": 184,
+   "last_used": "2026-09-16"
   },
   {
    "name": "agent-to-agent-bridge",
@@ -71,8 +71,8 @@
    "path": "automotive/tekion-kb-search-scrape",
    "category": "automotive",
    "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 51,
-   "last_used": "2026-09-14"
+   "times_used": 52,
+   "last_used": "2026-09-16"
   },
   {
    "name": "tekion-quotes-menu-price-diagnosis",
@@ -235,6 +235,14 @@
    "last_used": "2026-09-01"
   },
   {
+   "name": "tekion-warranty-admin-closings",
+   "path": "automotive/tekion-warranty-admin-closings",
+   "category": "automotive",
+   "description": "Build a \"which warranty admin closed what tickets\" report for any AMG store from the Tekion OpenAPI \u2014 per-clerk RO counts, warranty $ and total RO $, month-to-date or any window. Verified SCT July 2026.",
+   "times_used": 17,
+   "last_used": "2026-09-16"
+  },
+  {
    "name": "tekion-advisor-closed-gross-api-report",
    "path": "automotive/tekion-advisor-closed-gross-api-report",
    "category": "automotive",
@@ -247,14 +255,6 @@
    "path": "automotive/tekion-parts-appointments-recalls-only",
    "category": "automotive",
    "description": "Restrict Tekion Parts RO Sales appointment notifications to recall opcodes only (or any opcode subset) by mass-toggling the per-opcode \"Consider for Parts preparation on Appointment\" flag. Covers the Bulk Update UI, the underlying bulk-update API for scale, and full verification. Built for Glade at SCT 2026-07-20; applies to any store.",
-   "times_used": 16,
-   "last_used": "2026-09-11"
-  },
-  {
-   "name": "tekion-warranty-admin-closings",
-   "path": "automotive/tekion-warranty-admin-closings",
-   "category": "automotive",
-   "description": "Build a \"which warranty admin closed what tickets\" report for any AMG store from the Tekion OpenAPI \u2014 per-clerk RO counts, warranty $ and total RO $, month-to-date or any window. Verified SCT July 2026.",
    "times_used": 16,
    "last_used": "2026-09-11"
   },
@@ -939,6 +939,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-gm-warranty-claim-serial-number-entry",
+   "path": "automotive/tekion-gm-warranty-claim-serial-number-entry",
+   "category": "automotive",
+   "description": "Answer/execute \"where do I enter the serial number (engine/transmission/valve body) for a GM warranty claim in Tekion?\" \u2014 the field DOES exist, buried in the claim form. Verified live at BC (dealer 1251) 2026-09-16.",
+   "times_used": 1,
+   "last_used": "2026-09-16"
+  },
+  {
    "name": "tekion-labor-time-guide",
    "path": "automotive/tekion-labor-time-guide",
    "category": "automotive",
@@ -1223,14 +1231,6 @@
    "path": "automotive/tekion-computer-use",
    "category": "automotive",
    "description": "Autonomous vision-guided browser automation for Tekion DMS. Uses the persistent Playwright browser server (port 9223) as the interaction layer and Claude Sonnet 4 (via OpenRouter) as the vision/decision-making brain. Claude sees page snapshots, decides what to click/type, and the agent executes via HTTP API calls.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tekion-gm-warranty-claim-serial-number-entry",
-   "path": "automotive/tekion-gm-warranty-claim-serial-number-entry",
-   "category": "automotive",
-   "description": "Answer/execute \"where do I enter the serial number (engine/transmission/valve body) for a GM warranty claim in Tekion?\" \u2014 the field DOES exist, buried in the claim form. Verified live at BC (dealer 1251) 2026-09-16.",
    "times_used": 0,
    "last_used": null
   },
