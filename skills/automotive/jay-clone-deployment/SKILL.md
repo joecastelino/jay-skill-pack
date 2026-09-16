@@ -197,6 +197,31 @@ Honesty note to include: the kit has only ever been exercised via the `--macsim`
 simulation, never on real macOS. Say so, and expect Step 4 (restore) or Step 7
 (launchd) to be where something needs a nudge.
 
+**Two more prompt rules learned 2026-09-16:**
+- **Force `/bin/bash`, not `bash`/`zsh`.** macOS defaults to zsh and `restore-jay-clone.sh`
+  is a bash script; the prompt must invoke `/bin/bash ./restore-jay-clone.sh`.
+- **Prerequisites block.** Make the receiving agent check `df -h ~` (needs ~6 GB) and
+  `command -v` for tar/gpg/perl/node/npm BEFORE extracting, and have it ask before
+  `brew install gnupg`.
+
+### What the shipped tar contains vs. what stays behind (asked every time)
+
+Inside `JayClone-<date>-secure.tar`: `secure/` (the 6 `.tar.xz.gpg`, `DECRYPT-AND-RESTORE.sh`,
+`CREDENTIAL-INVENTORY.txt`, `SHA256SUMS-secure.txt`) plus `README.md`, `RESTORE.md`,
+`RESTORE-MACOS.md`, `restore-jay-clone.sh`, `SHA256SUMS.txt`, `crontab.txt`.
+The restore instructions and the restore script **are** in the tar — a receiving agent needs
+nothing else.
+
+OUTSIDE the tar (build-side, stays in `/home/itadmin/jay-clone-bundle/`): `TRANSFER.md`,
+`SETUP-PROMPT-MACOS.md`, `build-jay-clone.sh`, `sandbox-restore-test.sh`, `seal-bundle.sh`,
+`refresh-release-kit.sh`, `build.log`. If the owner asks "are the handoff notes in the
+package?" the accurate answer is: the *restore* notes yes, the *transfer/dual-run* notes no
+— offer a tiny second upload rather than re-packaging 1.5 GB.
+
+**Recorded delivery (2026-09-15 release, still live until Joe confirms download):**
+link `https://gofile.io/d/CvklCaMo`, sha256 `4f4160…0539`, key in `~/.jay-clone-passphrase`.
+Delete via the held `guestToken` the moment Joe says the download landed.
+
 ### Pitfalls learned the hard way
 
 1. **Never edit the build/restore script while it is running.** Bash reads incrementally — editing mid-run produced a phantom `syntax error near unexpected token '('` and an empty tier-1 archive. `bash -n` passes; the corruption is only from the concurrent write.

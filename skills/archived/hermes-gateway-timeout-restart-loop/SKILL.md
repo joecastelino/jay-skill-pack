@@ -110,6 +110,48 @@ timeout 150 ~/bin/ask-agent walter "post-fix check — reply one line + which mo
 ```
 Clean one-line reply = done.
 
+## Restarting a gateway SAFELY (semantics + the self-restart trick)
+
+### Restart=on-failure, not always
+Jay's unit (`hermes-gateway-jay.service`) has `Restart=on-failure`, `RestartSec=30`,
+`StartLimitBurst=5`, `StartLimitIntervalSec=600`:
+
+| Action | Result |
+|--------|--------|
+| `systemctl --user restart hermes-gateway-<profile>` | ✅ comes back |
+| `systemctl --user stop hermes-gateway-<profile>` | ❌ **stays down** — an explicit stop is not a "failure" |
+| process crashes / killed | ✅ auto-restarts after 30s |
+| 5 failures in 10 min | ⚠️ parks in `failed`; systemd stops trying |
+
+**The start-limit trap:** once it hits the burst limit, a plain `restart` silently refuses.
+Recovery is always:
+```sh
+systemctl --user reset-failed hermes-gateway-<profile>.service
+systemctl --user restart  hermes-gateway-<profile>.service
+```
+
+### `wsl-keepalive.service` will NOT revive the gateway
+Added 2026-09-15 by #5 after the WSL VM idle-shutdown crash (7 reboots in 10 min). It is
+`/bin/sleep infinity` with `Restart=always` and its ONLY job is stopping the WSL VM from
+idle-shutting-down. It has zero awareness of the gateway — **do not conflate the two.**
+
+### Restarting FROM INSIDE the agent (self-restart)
+`KillMode=mixed` means a child process in the gateway's cgroup dies with it, so a plain
+`systemctl restart` launched from a Bash tool call can be killed mid-flight. Escape the cgroup
+with a **transient detached unit** — it fires AFTER the current turn ends:
+```sh
+systemctl-run() { systemd-run --user --collect --quiet "$@"; }
+systemd-run --user --on-active=8 --unit=jay-gw-restart \
+  systemctl --user restart hermes-gateway-jay.service
+```
+Validate the config first (a bad config + restart = dead agent), confirm the timer is armed
+with `systemctl --user list-timers 'jay-gw-restart*'`, then expect to go dark and come back.
+
+### Model / provider changes need a RESTART
+Editing `model.default`/`model.provider` (or delegation.model) takes effect only on a fresh
+gateway start — **never mid-session**. If you change the model and don't restart, the running
+conversation stays on the OLD model and it looks like the edit didn't apply.
+
 ## Pitfalls / lessons (learned the hard way)
 
 ### WSL SESSION RESTART RACE CONDITION — distinct root cause (2026-09-10)

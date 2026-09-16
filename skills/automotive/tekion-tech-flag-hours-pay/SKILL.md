@@ -53,6 +53,27 @@ Reports tile → **Flag Hours Report** → **Add Adjustment** (top right) → se
 = "RO Invoiced" in Service Settings, flag hrs lock at invoice — this adjustment
 path is the sanctioned fix.)
 
+## "The RO pays 1.4 but I only see 0.2" — the modal reading trap (BC RO 102964, 2026-09-16)
+A tech's most common false alarm. The **Tech Flag Hours modal lists each flag
+ENTRY as its own row, and the hours boxes on each row are the DELTA — not the
+running total.** The tech reads the bottom (most recent) row and calls it his pay.
+RO 102964: entries 1.20 (09/11) + 0.20 (09/14) = **1.40**, while the job line reads
+`1.40 / 0.00 / 1.40` (bill / actual / flagged) and the modal totals read Bill 1.40 /
+Flagged 1.40 / Labor Cost $72.80 (= 1.40 × the tech's $52 wage). Nothing is short.
+- The **"1.20 + small top-up"** pattern on PDI ROs is NORMAL: billed hours get
+  raised at RO close, so Tekion posts the difference as a SECOND AUTO_ADDED flag
+  instead of replacing the first.
+- **The RO document does NOT carry assigned-billed hours** — the per-tech billing
+  field read 0.00 on all 103 op rows. Assigned-billed lives only in the flag
+  ledger / modal. Any screen showing 0.00 or 0.20 is not the total.
+- **Assigned Billed = Flagged at BC** (tech-level flag reference = `BILL_HOURS`,
+  verified on every entry) — re-check per store; they diverge elsewhere.
+- Totals that "changed" (80-something vs 111) are almost always two different
+  METRICS in the same period (assigned-billed vs clocked) or adjacent pay periods —
+  sum every candidate metric/window before answering.
+Full triage + the report deliverable: skill **tekion-tech-payroll-reconciliation**
+(section "Variant: ONE RO looks short").
+
 ## Traps / diagnostics
 - **$0.00 Labor Cost next to a flagged tech = Wage Type Config missing/empty** on
   that tech's employee profile. Flagged hours then carry ZERO cost to the RO/GL —
