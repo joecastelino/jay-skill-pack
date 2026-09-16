@@ -313,6 +313,16 @@ the correct path on the first attempt.
 
 ## Pitfall: month rollover day (1st of month) + outage recurrence
 
+**Verified 2026-09-15 (outage day 15) — OUTAGE APPEARS CLEARED.** Clean run, no
+429s anywhere: `prefilter: 6 of 276` TEK candidates, `scan batch 1/1 done (6 menu
+rows, 0 failed)`, master 33→39 rows (+6 new menus today: labor $12,841.90, parts
+$6,344.79, total $19,186.69). First all-candidates-scanned day in the September
+window. Emitted RB JSON had NO `quota_outage_note` and none is needed. Do not
+carry the outage caveat forward unless a fresh `/operations` 429 is observed —
+re-probe each run. Email stage again 3 calls, body-file + one short send ask
+worked first try (`OK BYTES=139835`, byte-exact vs `ls -la`), Sent list showed a
+real 18:03 send, MIME check `MIME=REAL filename=SCT-...-2026-09-15.pdf`.
+
 **Verified 2026-09-09 (outage day 9):** still active — same signature (`/jobs`
 200, `/operations` 429 DEALER_QUOTA on every candidate, unchanged after the
 8-min retry). Day-9 unpriceable candidates: 583559, 583548, 583498, 583396,
