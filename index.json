@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-16T11:45:06",
+ "generated": "2026-09-16T12:00:19",
  "skill_count": 223,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 184,
+   "times_used": 185,
    "last_used": "2026-09-16"
   },
   {
@@ -523,6 +523,14 @@
    "last_used": "2026-08-31"
   },
   {
+   "name": "tekion-journal-entry-error-diagnosis",
+   "path": "automotive/tekion-journal-entry-error-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose Tekion Accounting Journal Entries stuck in ERROR status (auto-posting JEs that failed to post). Covers the JE list/detail URLs, reading GL posting lines out of the DOM, finding the blank/unmapped GL account, and tracing the root cause back to a missing row in GL Account Transaction Mapping. Use for \"look at journal entries\", \"JEs in error\", \"auto posting failed\", \"GL account blank on journal entry\".",
+   "times_used": 6,
+   "last_used": "2026-09-16"
+  },
+  {
    "name": "tekion-oem-rewards-integration",
    "path": "automotive/tekion-oem-rewards-integration",
    "category": "automotive",
@@ -569,14 +577,6 @@
    "description": "Pull declined/deferred service data (recommendations customers didn't buy) for any Tekion store via the internal Deferred Services report API \u2014 service name, counts, dollar estimates, customer/vehicle/advisor detail. Zero OpenAPI quota; works when OVERALL_QUOTA is exhausted. Use for marketing campaign lists (Autumn) or lost-sales analysis.",
    "times_used": 5,
    "last_used": "2026-09-03"
-  },
-  {
-   "name": "tekion-journal-entry-error-diagnosis",
-   "path": "automotive/tekion-journal-entry-error-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose Tekion Accounting Journal Entries stuck in ERROR status (auto-posting JEs that failed to post). Covers the JE list/detail URLs, reading GL posting lines out of the DOM, finding the blank/unmapped GL account, and tracing the root cause back to a missing row in GL Account Transaction Mapping. Use for \"look at journal entries\", \"JEs in error\", \"auto posting failed\", \"GL account blank on journal entry\".",
-   "times_used": 5,
-   "last_used": "2026-08-28"
   },
   {
    "name": "tekion-ro-job-paytype-triage",
