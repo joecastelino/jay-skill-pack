@@ -1212,6 +1212,13 @@ outage tracking the August 10-day arc. **Confirmed continuing 9/6-9/8 (days 6-8,
 Venv upgrade 9/6 (3.11→3.12) silently killed 9/6+9/7 self-heal watchers (PY path dead).
 Fixed: use `python3` not `python3.11`. See "SELF-HEAL PY PATH TRAP" in Pitfalls.
 8 consecutive days blocked — recommend Tekion support ticket.
+**Outage resolved from 9/10 onward** (9/10-9/14 clean, no self-heal armed). 2026-09-15 clean
+run: 208 alignments (190 dedicated + 18 bundled), 208 ROs, 16 advisors, top Jason Sulon 23.
+**DON'T BABYSIT THE MAIN NIGHTLY** — `process wait` is clamped to 180s, so a 25-55 min scan
+burns ~10-18 iterations and can exhaust the turn loop. Wrap it: launch the scan background,
+then a tiny background shell that `tail --pid=$SCANPID -f /dev/null` blocks on the scan PID and
+runs `render_sct_align.py` on exit; wait only on that. Recipe + healthy-scan tells:
+`references/recent-runs-and-waiter.md`.
 
 ## BUG FOUND + FIXED 2026-08-31 — ALIGN00**R**BA vs ALIGN00**B**RA
 `ALIGN_OPC` had `ALIGN00BRA`, but the opcode SCT actually uses is **`ALIGN00RBA`** (R and
