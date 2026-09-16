@@ -517,6 +517,18 @@ each digit. Wait for a NEW OTP email by envelope ID (>last seen), not by count.
 - **React ignores synthetic events** — always use `/press` for form submission, never JS `.click()`
 - **Crash recovery** — if page crashes, server auto-creates new page from persistent context
 - **500 errors on click/type** — element not found or ref stale; run `/snapshot` first
+- **COUNTERPOINT (verified 2026-09-16, BC warranty daily): the cold restart DID lose the session this time.**
+  Start state was `/health` → connection refused (server fully dead). Recovery was the standard `fuser -k 9223/tcp` →
+  `rm -f browser-data/Singleton{Lock,Cookie,Socket}` → `xvfb-run -a node server.js` → `/health` ok, `/url` = `about:blank`.
+  Then `/navigate https://app.tekioncloud.com/home` returned the requested URL, but `/eval` showed
+  `login?redirectTo=/home`, `Welcome back: false`, `t_token: false`, **20 localStorage keys** — the persistent profile had
+  NOT retained auth. So "restart always preserves the session" is a coin flip, not a guarantee. **Cheap fix that worked
+  in ~60s and needed no dealer pill:** `python3 /home/itadmin/tekion-auth/login.py --force` (fresh OTP, `LOGGED_IN`,
+  138198B / 21 keys) → `POST /cookies` from `.tekion-storage-state.json` (`added:5`) → `/navigate /login` → set all 21
+  keys one-per-`/eval` → `/navigate /home` → `welcome:true`, `dealer:"1251"`, 22 keys. It landed **directly on BC/1251**,
+  which was the target store for that job. Sequence to keep: restart → navigate → check for "Welcome back" → on login form,
+  go straight to `--force` + cookie/localStorage inject (don't bother with the dealer pill if the fresh login already
+  resolves to the store you need).
 - **A COLD SERVER RESTART DOES *NOT* DROP THE TEKION SESSION — do NOT preemptively run login.py
   (verified 2026-08-18, SCT daily bin check).** Starting state was the worst case: `/health` gave
   `Connection refused` (server fully dead, not just wedged). Full recovery was `fuser -k 9223/tcp`
