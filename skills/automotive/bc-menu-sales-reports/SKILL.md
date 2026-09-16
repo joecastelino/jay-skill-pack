@@ -1295,3 +1295,22 @@ entries (kept the month-end-normal-append note, the seed-is-fast-on-the-1st note
 sentence requirement, and the SAFE-PRUNE procedure) → before appending. SAFE-PRUNE index
 assertions used; all critical trap headings asserted present; re-checked size AFTER.
 
+## 2026-09-16 noon Daily Closed run — textbook one-shot, 57th consecutive clean "N dollars" build
+4 menus, $568.28 labor / $215.27 parts = $783.55 (Wednesday noon). Advisors: Houa Moua 2 /
+$572.20, Humberto Dominguez 1 / $146.31, Jacob Debussey 1 / $65.04. 46 closed ROs -> 4 carried TEK
+menu opcodes (~9% attach); `all candidate ROs scanned` printed. Pull + ask each inside ONE 180s
+wait (write_file->background-terminal, `/tmp/bc_ask_0916_noon.py`, `timeout 560`, subprocess arg
+list). Vision KPI band (crop 460px + 2x LANCZOS on a 1226x900 PNG) matched JSON exactly. Terse
+DONE line correct (43411, TOTAL=$783.55), id MATCHED himalaya's, NO self-correction text -> no
+duplicate. Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
+auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (104,063 bytes), PDF
+**byte-for-byte identical** (52,739 bytes), all 6 figures exactly once, bold total via
+`<strong>` (containing-match), greeting `Ruben,` count 1 (both parts), footer em-dash present,
+zero ' dollars'/USD/EMDASH/CORRECTION/Saturday/Sunday/Kevin/dfowlkes leftovers. Exactly 1 BC
+9/16 draft (43411); other BC drafts were 9/15 Daily+MTD and a BC Deferred Work report — different
+dates/report types, not duplicates. Daily-Closed Sent count 0 (zero `BC 9/16` Sent hits at all =
+Stacey's Opened pipeline timing drift, not a defect).
+**Minor false-positive note**: the leading-digit-stripped variant grep flagged `$65.04` — but
+that IS the correct Jacob Debussey figure (no leading digit to strip). Only variants that are
+NOT substrings/correct figures are real defects; the comma-bearing figures are the load-bearing
+checks.
