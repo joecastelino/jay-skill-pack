@@ -1025,37 +1025,17 @@ a SECOND entry. A full run entry is ~2.5-3KB, so prune to **≤97,000 BEFORE app
 re-check `os.path.getsize()` AFTER — the pre-append check alone will lie to you.
 
 ## 2026-08-31 6:16pm Closed MTD run — MONTH-END FINAL for August, textbook one-shot, 39th consecutive clean "N dollars" build
-230 menus, $35,887.94 labor / $22,801.21 parts = $58,689.15 (Aug 1-31) — **final August MTD**,
-a new monthly high on every axis. Advisors: Juan Ramirez 52 / $15,381.59, Houa Moua 45 /
-$9,705.35, Humberto Dominguez 37 / $12,035.19, Dimetri Reynoso 30 / $7,114.73, Jacob Debussey
-29 / $4,784.46, Michael Reyes 19 / $4,273.98, Erik Mercado 12 / $4,069.97, Jeremia Navarro 6 /
-$1,323.88. Master asof was 2026-08-30 → default append (no seed/catch-up); **187 closed ROs → 15
-carried TEK menu opcodes (~8% attach)** → master 230 rows; `✓ all candidate ROs scanned`. Pull via
-`terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`. Vision KPI band
-(crop 460px + 2x LANCZOS on a 1226x8463 PNG) read all four tiles exactly and matched JSON; master
-`_gross` sums matched the emitted report `totals` exactly.
-**write_file→background-terminal ask pattern, 15th straight run, returned inside ONE 180s wait in
-just 88s** (`/tmp/bc_ask_0831_mtd.py`, `subprocess.run` argument list, `timeout 560`). Terse DONE
-line correct with `TOTAL=$58,689.15`, her reported id (42874) MATCHED himalaya's, and her reply
-contained NO self-correction text at all (2nd straight run with zero wrinkle) → no duplicate.
-Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject auto-decoded
-with em-dashes, inline PNG **byte-for-byte identical** (1,798,095 bytes), PDF **byte-for-byte
-identical** (94,491 bytes), all 11 figures present exactly once, `<b>$58,689.15</b>` bold,
-greeting + footer present, zero ' dollars'/USD/EMDASH/CORRECTION/Saturday/Sunday leftovers, all
-13 leading-digit-stripped and comma-mangled variants = 0. Exactly 1 MTD 8/31 draft, MTD Sent
-count 0 (the single `BC 8/31` Sent hit was Stacey's separate auto-sent Daily Opened report,
-14894). Left the sibling Daily Closed 8/31 draft (42873) untouched — different report type.
-**Month-end note**: the 31st MTD run is just a normal default append — there is no special
-month-end/close-out mode. The NEXT run (Sep 1) will find no
-`bc-menu-closed-mtd-MASTER-2026-09.json` and must therefore use `--seed` per the run sequence.
-Expect that first September run to be much slower (paced full-month backfill) — plan for several
-`process(action="wait")` cycles, and do NOT mistake the seed's longer runtime for a hang.
-**Skill-size housekeeping**: SKILL.md was 99,888 pre-append (over the ≤97,000 target). Condensed
-THREE purely-confirmatory MTD entries (2026-08-18, 2026-08-20, 2026-08-27) down to their
-load-bearing lessons — kept the "grep full subject + report-type words" dedupe rule, the "USD
-false-positive inside the base64 payload" gotcha, and the "300s cap / two process-waits" note —
-landing at 95,433 before this append. Confirms the 8/31-5pm lesson: prune to ≤97,000 BEFORE
-appending and re-check `os.path.getsize()` AFTER. Never prune trap/failure-mode sections.
+230 menus, $35,887.94 labor / $22,801.21 parts = $58,689.15 (Aug 1-31) — final August MTD, a new
+monthly high on every axis. Master asof 2026-08-30 → default append; 187 closed ROs → 15 carried
+TEK menu opcodes (~8% attach); `✓ all candidate ROs scanned`. All byte-for-byte checks passed, no
+duplicate; her id MATCHED himalaya's, zero self-correction text. Sibling Daily Closed draft left
+untouched. Ask returned in just 88s inside ONE 180s wait.
+**Month-end note**: the 31st MTD run is just a normal default append — there is NO special
+month-end/close-out mode. The NEXT run (Sep 1) finds no `bc-menu-closed-mtd-MASTER-<new-month>.json`
+and must use `--seed` per the run sequence (see the 9/1 entry: the 1st-of-month seed is NOT slow).
+**Skill-size lesson — prune to ≤97,000 BEFORE appending, and re-check size AFTER**: pre-append
+99,888 → one condense (98,154) → appended anyway → 101,080, STILL over. A full run entry is
+~2.5-3KB, so a pre-append check alone will lie to you.
 **SAFE-PRUNE PROCEDURE (index-based splicing can silently delete a trap section)**: the fast way
 to prune is `secs = re.split(r'(?m)^(?=## )', text)` then reassigning `secs[i]` by index — but
 section indices SHIFT as the file grows, so a stale index can overwrite the quota-exhaustion or
@@ -1066,9 +1046,9 @@ exists — `for m in ["PARALLEL STACEY AUTO-SEND","Quota exhaustion","EMAIL VERI
 "SELF-VERIFY the inline PNG","Use the stdlib `email` parser","APPENDUID","explicit --config",
 "Transient IMAP stream error",'STRIPS "$digit"',"Headless/cron gotcha","exceeds the 600s
 foreground cap","300s","re-APPENDing an edited","opcode-mapping divergence","CORRECTED
-2026-08-18"]: assert m in text`, (3) check `duplicate headings == []` and that the frontmatter
-still starts the file. Condense entries in place (keep the heading + its load-bearing lesson)
-rather than deleting them outright — that preserves the run-history chain and makes an
+2026-08-18","SAFE-PRUNE"]: assert m in text`, (3) check `duplicate headings == []` and that the
+frontmatter still starts the file. Condense entries in place (keep the heading + its load-bearing
+lesson) rather than deleting them outright — that preserves the run-history chain and makes an
 accidental clobber obvious as a missing heading.
 
 ## 2026-09-01 noon Daily Closed run — FIRST SEPTEMBER RUN, textbook one-shot, 40th consecutive clean "N dollars" build
@@ -1084,11 +1064,10 @@ point)**: `--daily-only` works with zero special handling when the new month's M
 exist yet — the `--seed` requirement is MTD-only; do not seed before a Daily. Stacey's Opened
 pipeline timing drifts late (fired 17:07), so a missing Opened Sent hit at noon is not a defect.
 ## 2026-09-01 6:16pm Closed MTD run — FIRST SEPTEMBER SEED, textbook one-shot, 42nd consecutive clean "N dollars" build
-4 menus, $702.47 labor / $282.32 parts = $984.79 (Sep 1-1). Advisors: Dimetri Reynoso 2 /
-$319.51, Humberto Dominguez 1 / $491.67, Jacob Debussey 1 / $173.61. **`--seed` run** —
+4 menus, $702.47 labor / $282.32 parts = $984.79 (Sep 1-1). **`--seed` run** —
 `data/bc-menu-closed-mtd-MASTER-2026-09.json` did not exist (month rollover), so the run
-sequence's seed branch applied. 37 closed ROs in month -> 5 carried TEK menu opcodes -> 4 menu
-rows; `✓ all candidate ROs scanned`.
+sequence's seed branch applied. 37 closed ROs -> 5 TEK menu opcodes -> 4 rows; `✓ all candidate
+ROs scanned`. All byte-for-byte checks passed, no duplicate.
 **The month-rollover seed is NOT slow when the month is 1 day old** — the 8/31 MTD entry warned
 to expect a much slower paced full-month backfill and several `process(action="wait")` cycles,
 but on the 1st the "full month" window is 09-01..09-01, so the paced scan is a single batch and
@@ -1096,29 +1075,11 @@ finished inside ONE 180s wait almost instantly. Only expect the long backfill if
 mid-month (e.g. after an outage or a missed rollover). Don't over-budget waits on a 1st-of-month
 seed.
 **MTD == Daily on the 1st**: the seed's numbers are bit-identical to the same day's 5pm Daily
-Closed run ($984.79). That is correct, not a duplicate/stale-data bug — but Ruben sees two
-emails with the same total, so put an explicit sentence in the MTD body ("September 1 is the
-first business day of the month, so the month-to-date figures currently match today's daily
-closed report; they will build through the month"). Included this run. This is the MTD analogue
-of the closed-Sunday "figures unchanged from yesterday" sentence.
-Vision KPI band (crop 460px + 2x LANCZOS on a 1226x900 PNG) read all four tiles exactly
-($702.47 / $282.32 / $984.79 / 4) and matched JSON; master `_gross` sums matched the emitted
-report `totals` exactly.
-**write_file→background-terminal ask pattern, 18th straight run, returned inside ONE 180s wait**
-(`/tmp/bc_ask_0901_mtd.py`, `subprocess.run` argument list, `timeout 560`). Terse DONE line
-correct with `TOTAL=$984.79`, her reported id (43017) MATCHED himalaya's, and her reply
-contained NO self-correction text (5th straight run with zero wrinkle) → no duplicate. She also
-explicitly named the sibling Daily Closed draft (43016) as untouched.
-Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
-auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (106,899 bytes), PDF
-**byte-for-byte identical** (51,924 bytes), all 6 figures present exactly once,
-`<b>$984.79</b>` bold, greeting + footer present, zero
-' dollars'/USD/EMDASH/CORRECTION/Saturday/Sunday/Monday leftovers, all 13 leading-digit-stripped
-and comma-mangled variants = 0. Exactly 1 MTD 9/1 draft (43017), MTD Sent count 0 (the single
-`BC 9/1` Sent hit was Stacey's separate auto-sent Daily Opened report, 14981). Left the sibling
-Daily Closed 9/1 draft (43016) untouched — different report type, not a duplicate.
-**Skill-size housekeeping**: 94,263 pre-append (already under the ≤97,000 target thanks to the
-two prunes earlier today) → no prune needed this run. Re-checked `os.path.getsize()` AFTER.
+Closed run. That is correct, not a duplicate/stale-data bug — but Ruben sees two emails with the
+same total, so put an explicit sentence in the MTD body ("September 1 is the first business day of
+the month, so the month-to-date figures currently match today's daily closed report; they will
+build through the month"). This is the MTD analogue of the closed-Sunday "figures unchanged from
+yesterday" sentence.
 
 ## 2026-09-02 noon + 5pm Daily Closed runs — textbook one-shots (43rd/44th consecutive clean builds)
 Noon 18 menus / $4,248.60 (~38% attach, high Wednesday); 5pm 24 / $5,361.32 (~35%).
@@ -1296,3 +1257,41 @@ total; an exact-string match on `<strong>$X</strong>` false-negatives.
 **Skill-size housekeeping**: 97,854 pre-prune -> condensed six confirmatory 9/2-9/4 entries
 (kept the day-2-MTD note) -> 92,286 before appending. SAFE-PRUNE index assertions used; all
 critical trap headings asserted present; re-checked size AFTER.
+## 2026-09-15 6:16pm Closed MTD run — textbook one-shot, 56th consecutive clean "N dollars" build
+155 menus, $19,495.42 labor / $11,761.66 parts = $31,257.08 (Sep 1-15). Advisors: Jacob Debussey
+41 / $5,152.56, Houa Moua 33 / $3,911.11, Juan Ramirez 20 / $4,845.67, Humberto Dominguez 21 /
+$4,242.16, Dimetri Reynoso 16 / $4,038.48, Erik Mercado 10 / $4,456.97, Michael Reyes 12 /
+$3,422.21, Valentine Nolasco 2 / $1,187.92. Master existed (asof 9/14, 141 rows) → default append;
+90 closed ROs → 14 carried TEK menu opcodes (~16% attach) → master 155 rows; `✓ all candidate ROs
+scanned`. Pull via `terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
+Vision KPI band (crop 460px + 2x LANCZOS on a 1226x5913 PNG) matched JSON exactly; master `_gross`
+sums matched the emitted report `totals` exactly.
+**write_file→background-terminal ask pattern, returned inside ONE 180s wait** — clean one-shot,
+DONE 43395, `TOTAL=$31,257.08`, her id MATCHED himalaya's, NO self-correction text → no duplicate.
+TAKE NOTE: **python3.11 does NOT exist in the venv** (`bin/python3` = python3.12); the cron prompt
+still names python3.11 — use `bin/python3` or the run fails. Verify with `ls venv/bin/python*`.
+Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject auto-decoded
+with em-dashes, inline PNG **byte-for-byte identical** (1,256,315 bytes), PDF **byte-for-byte
+identical** (82,042 bytes), all 11 figures exactly once, `<b>$31,257.08</b>` bold, greeting
+`Ruben,` count 1, footer em-dash present, zero ' dollars'/USD/EMDASH/CORRECTION/Saturday/Sunday/
+Monday/Kevin/dfowlkes leftovers, leading-digit-stripped variants = 0. Exactly 1 MTD 9/15 draft
+(43395); MTD Sent count 0. Sibling 9/15 Daily Closed draft (43394) left untouched.
+**NEW schema trap — the EMITTED report JSON is NOT the master schema**: the emitted
+`bc-menu-sales-closed-<date>.json` has keys
+`report, dealer, source, window, pulled_at, tekion_sync_time, expected_records, row_count,
+complete, totals, rows` — the per-row list is **`rows`**, NOT `records` (only the MTD MASTER uses
+the `records` dict). Computing the advisor breakdown with `d["records"]` raises `KeyError:
+'records'` and wastes a step. Read `totals` from the emitted JSON for the authoritative KPIs and
+take the per-advisor grouping from the MASTER's `records` dict (both agree on `_gross` sums — the
+emitted `totals` carries all four fields, so diff them as the skill's sanity check).
+**NEW verification false-positive — substring hits in the leading-digit/comma-mangled variant
+grep**: checking `"1,257.08" in clean` returns 1 purely because it is a SUFFIX of the correct
+`31,257.08` (same for any `X,YYY.ZZ` variant that happens to sit inside a larger correct figure).
+Do NOT read that as comma-mangling. Only a variant that is NOT a substring of a correct figure is
+a real defect; the leading-digit-stripped forms (`$257.08`, `$495.42`, …) are the load-bearing
+check and were all 0.
+**Skill-size housekeeping**: 97,457 pre-prune → condensed the confirmatory 8/31-MTD and 9/1-seed
+entries (kept the month-end-normal-append note, the seed-is-fast-on-the-1st note, the MTD==Daily
+sentence requirement, and the SAFE-PRUNE procedure) → before appending. SAFE-PRUNE index
+assertions used; all critical trap headings asserted present; re-checked size AFTER.
+
