@@ -357,3 +357,97 @@ DATA: 171 opened ROs, 6 menus / $1,159.78 ($732.78 labor + $427.00 parts) — be
 in weeks. Gustavo Alatorre 4/$515.20, Unassigned 1/$328.88, Mauricio Orellana 1/$315.70.
 The 8/26 empty-`records` JSON quirk did NOT recur — `rows` was fully populated (6 rows).
 Opened drafts stack = 8 (08/21-08/27 hyphen + perennial 08/02 em-dash UID 41547), no dupes.
+
+## (8/31 8:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, TRUE dedupe, all 4 asks first try
+Both scripts ran FOREGROUND clean in seconds (no scraper contention). Hand-off RC=0 FIRST TRY
+in 72s; draft correct FIRST TRY, TRUE dedupe (she found+deleted noon draft UID 105 on her own;
+subject-list showed exactly one 08/31 hit). All 3 verification asks returned FIRST try with
+"use raw IMAP, NOT the Gmail API" leading + the 3-line numbered part probe: subject-list 41s,
+part-probe 75s, Sent-check 111s. Part sizes DECODED (PNG 57,557 / PDF 51,397 = exact on-disk).
+MILD BOGUS-UID: her save said UID 109, subject-list said UID 108 — the "if that UID is wrong,
+find it by that exact subject" wording self-healed it. Sent-check = 4 hits, all old em-dash-era
+(06/30-07/03), zero today = no leak.
+DATA: 129 opened ROs scanned, **5 menus / $707.26** ($518.10 labor + $189.16 parts) — best
+opened day since 8/27. Gustavo Alatorre 3/$470.73 (RO 399398 TEK10000BNM 2023 Highlander;
+399419 TEK30000BNM 2024 RAV4; 399422 TEK10000BNM 2018 Tundra 4WD); Michael Hachey 2/$236.53
+(RO 399475 TEK10000BNM 2019 RAV4; 399480 TEK10000BNM 2024 RAV4). `records` empty (0) while
+`rows` had all 5 — the 8/26 quirk STILL RECURS; ALWAYS read `rows`.
+`totals.parts_price` ($399.35) != `parts_gross` ($189.16) — scorecard/email use GROSS.
+Opened drafts stack = 12 (08/21-08/31 + perennial 08/02 em-dash UID 19; 08/28 UID 91 also
+em-dash). No true dupes.
+
+## (8/31 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s, all 4 asks first try
+No concurrent scrapers; both scripts ran FOREGROUND clean in seconds. Hand-off RC=0 FIRST TRY
+in 87s; draft correct FIRST TRY at IMAP UID 105, no dedupe needed (no prior draft with today's
+exact subject). All 3 verification asks returned FIRST try with "use raw IMAP, NOT the Gmail
+API" leading + the 3-line numbered part probe: subject-list 38s, part-probe 97s, Sent-check 30s.
+Part sizes DECODED (PNG 49,958 / PDF 47,242 = exact on-disk bytes) — 4th consecutive decoded run.
+BOGUS-UID trap did NOT recur (reported UID 105 == subject-list UID 105). Sent-check = 6 hits,
+all old em-dash-era sends (06/29-07/03), zero today = no leak.
+DATA: 87 opened ROs scanned, **3 menus / $479.17** ($344.43 labor + $134.74 parts) — ends the
+two-day $0 streak (8/30 noon + EOD both zero). Gustavo Alatorre wrote ALL 3 (single-advisor day):
+RO 399398 TEK10000BNM 2023 Highlander $110.85; RO 399419 TEK30000BNM 2024 RAV4 $241.41;
+RO 399422 TEK10000BNM 2018 Tundra 4WD $126.91. `records` empty (0) while `rows` had all 3 —
+the 8/26 quirk STILL RECURS every run; ALWAYS read `rows`, never `records`.
+`totals.parts_price` ($297.99) != `parts_gross` ($134.74) — scorecard/email use GROSS.
+Opened drafts stack = 12 (08/21-08/31 + perennial 08/02 em-dash UID 19); note 08/28 (UID 91) is
+also an EM-DASH subject now, so the hyphen search stem surfaces 10 hyphen + 2 em-dash. No dupes.
+
+## (8/30 8:05PM, Closed MTD) TEXTBOOK CLEAN RUN — zero exit-124s, all 4 asks first try
+Backgrounded the closed daily-append defensively (5 concurrent `tekion-scraper` SVW processes
+live) but it finished in well under 170s with no backoff — 163 closed ROs, prefilter 0 of 163
+carried a TEK menu opcode (so no new rows today), master holds 44 MTD rows, `✓ all candidate ROs
+scanned (no truncation)`. NOTE: a 0-prefilter day still produces a valid MTD report — the master
+carries the month's accumulated rows; don't mistake "0 new" for a starved pull (163 ROs scanned
+proves health).
+Hand-off RC=0 FIRST TRY in 105s; draft correct FIRST TRY at IMAP UID 105 (himalaya id 42839),
+no dedupe needed (no prior draft with today's exact subject). All 3 verification asks returned
+FIRST try with "use raw IMAP, NOT the Gmail API" leading + the 3-line numbered part probe:
+subject-list 36s, part-probe 108s, Sent-check 33s. Part sizes came back DECODED (PNG 105,550 /
+PDF 90,818 = exact on-disk bytes) — third consecutive run in decoded form. Bolded total
+$9,859.34 confirmed in body. BOGUS-UID trap did NOT recur (reported 42839/UID 105 == subject-list
+UID 105). Sent-check = 6 hits, all old em-dash-era sends (06/29-07/03), zero today = no leak.
+DATA: 44 menus MTD / **$9,859.34** ($6,664.52 labor + $3,194.82 parts), Aug 1-30 closed-to-date.
+Gustavo Alatorre 21/$2,874.61; Michael Hachey 6/$2,557.27; Eduardo Jimenez 5/$1,152.14; 10
+advisors on the board. `rows` populated (44), `records` key ABSENT entirely in the closed JSON
+(the closed schema uses `rows` + `row_count` + `expected_records`, not `records`) — read `rows`.
+TOL drafts stack = 14 (11 Opened 08/21-08/30 + perennial 08/02 em-dash UID 19, plus 3 Closed-MTD:
+Aug 1-28, 1-29, 1-30). No true dupes; older Closed-MTD drafts have unique date ranges — leave them.
+
+## (8/30 8:05PM, Opened) TEXTBOOK CLEAN RUN — second $0 day in a row, zero exit-124s
+Ran with 5 concurrent `tekion-scraper` processes live; backgrounded the pull defensively but it
+finished in <60s with no backoff. Hand-off RC=0 FIRST TRY in 78s, draft correct FIRST TRY at
+IMAP UID 104, and TRUE dedupe (noon draft UID 101 actually deleted — subject-list showed exactly
+one 08/30 hit). All 3 verification asks returned FIRST try with "use raw IMAP, NOT the Gmail API"
+leading + the 3-line numbered part probe: subject-list 40s, part-probe 70s, Sent-check 36s.
+Part sizes came back DECODED again (PNG 43,937 / PDF 29,223 = exact on-disk bytes), same as
+8/30 noon — the base64-inflated form seen 8/28-8/29 seems to have stopped; either is fine.
+BOGUS-UID trap did NOT recur (reported UID 104 == subject-list UID). Sent-check = 4 hits, all
+old em-dash-era sends (06/30-07/03), zero today = no leak.
+DATA: 79 opened ROs scanned, **0 menus / $0.00** — GENUINE zero (`complete: true`,
+`expected_records: 0`, `rows` AND `records` both empty). SECOND consecutive $0 opened day
+(noon 8/30 was also 0/61 ROs) — Sunday, low menu volume; not starvation.
+Opened drafts stack = 11 (08/21-08/30 + perennial 08/02 em-dash UID 19); 13 TOL drafts total
+incl. 2 Closed-MTD. No true dupes.
+
+## (8/30 12:05PM, Opened) TEXTBOOK CLEAN RUN — genuine $0 day, all 4 asks first try
+Ran with 5 concurrent `tekion-scraper` processes live; backgrounded the pull defensively
+per the 429 section but it finished in ~60s with no backoff. Hand-off RC=0 first try, draft
+correct FIRST TRY at IMAP UID 101 (All-Mail APPENDUID 42830), no dedupe needed (0 prior
+drafts with today's exact subject). All 3 verification asks returned FIRST try with "use raw
+IMAP, NOT the Gmail API" leading + the 3-line numbered part probe. Zero exit-124s anywhere.
+NEW: part sizes came back DECODED, not base64-inflated (PNG 44,088 / PDF 29,224 = exact
+on-disk bytes), unlike 8/28-8/29. Either form is fine — confirm non-zero, don't flag either.
+BOGUS-UID trap did NOT recur (reported UID 101 == subject-list UID).
+Sent-check = 6 hits, all old em-dash-era sends (06/29-07/03), zero today = no leak.
+DATA: 61 opened ROs scanned, **0 menus / $0.00** — a GENUINE zero (`menus: 0`, `rows` AND
+`records` both empty, `complete: true`, `expected_records: 0`). First $0 opened day since
+the 8/23-8/25 streak, after four straight non-zero days. On a true-zero day the usual
+"`records` empty but `rows` populated" quirk is uninformative — `complete: true` plus a
+non-trivial RO scan count is what proves a real zero vs. a starved pull.
+Opened drafts stack = 11 (08/21-08/30 + perennial 08/02 em-dash UID 19); 13 TOL drafts total
+incl. 2 Closed-MTD. No true dupes; em-dash vs hyphen subjects can't collide.
+SKILL MAINTENANCE: SKILL.md hit the 100,000-char skill_manage limit this run. Fixed by
+moving the 8/20-8/27 per-run logs into `references/run-log-archive-aug2026.md` (now ~78KB).
+When the next size error appears, archive the OLDEST per-run `## (M/DD ...)` sections the
+same way — never delete procedure/pitfall sections.
