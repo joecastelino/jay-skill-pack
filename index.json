@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-16T12:30:03",
+ "generated": "2026-09-16T12:46:29",
  "skill_count": 223,
  "skills": [
   {
@@ -59,20 +59,20 @@
    "last_used": "2026-09-14"
   },
   {
+   "name": "tekion-kb-search-scrape",
+   "path": "automotive/tekion-kb-search-scrape",
+   "category": "automotive",
+   "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
+   "times_used": 54,
+   "last_used": "2026-09-16"
+  },
+  {
    "name": "tekion-autonomous-login",
    "path": "automotive/tekion-autonomous-login",
    "category": "automotive",
    "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
    "times_used": 53,
    "last_used": "2026-09-14"
-  },
-  {
-   "name": "tekion-kb-search-scrape",
-   "path": "automotive/tekion-kb-search-scrape",
-   "category": "automotive",
-   "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 52,
-   "last_used": "2026-09-16"
   },
   {
    "name": "tekion-quotes-menu-price-diagnosis",
@@ -795,6 +795,14 @@
    "last_used": "2026-08-31"
   },
   {
+   "name": "tekion-gm-warranty-claim-serial-number-entry",
+   "path": "automotive/tekion-gm-warranty-claim-serial-number-entry",
+   "category": "automotive",
+   "description": "Answer/execute \"where do I enter the serial number (engine/transmission/valve body) for a GM warranty claim in Tekion?\" \u2014 the field DOES exist, buried in the claim form. Verified live at BC (dealer 1251) 2026-09-16.",
+   "times_used": 2,
+   "last_used": "2026-09-16"
+  },
+  {
    "name": "tekion-labor-rate-create",
    "path": "automotive/tekion-labor-rate-create",
    "category": "automotive",
@@ -937,14 +945,6 @@
    "description": "Confirm/refute a store claim that an RO, recommendation, or deferred service \"went to a different customer number for the same customer\" in Tekion. Finds duplicate customer records sharing a phone/VIN, maps which customer id each RO + recommendation was stamped with, and identifies who wrote it.",
    "times_used": 1,
    "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-gm-warranty-claim-serial-number-entry",
-   "path": "automotive/tekion-gm-warranty-claim-serial-number-entry",
-   "category": "automotive",
-   "description": "Answer/execute \"where do I enter the serial number (engine/transmission/valve body) for a GM warranty claim in Tekion?\" \u2014 the field DOES exist, buried in the claim form. Verified live at BC (dealer 1251) 2026-09-16.",
-   "times_used": 1,
-   "last_used": "2026-09-16"
   },
   {
    "name": "tekion-labor-time-guide",
