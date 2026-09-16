@@ -95,6 +95,16 @@ After scraping, persist so it's searchable in GBrain:
 4. If it documents a workflow, also create/patch a `tekion-*` skill + update `tekion-sitemap`.
 
 ## Pitfalls
+- **THE KB SCRAper HIJACKS :9223's BOUND PAGE — run KB searches FIRST, or on a separate port
+  (verified 2026-09-16).** `kb_search_scrape.py` drives the *same* page the Tekion app is on, so
+  it navigates it to `tekion.service-now.com`. Sometimes that leaves TWO tabs (`/pages/select`
+  rescues you), but it can also leave **`/pages` = `count:1`** with the Tekion tab GONE — the
+  open RO/claim-form/modal state is destroyed, and subsequent `/eval` calls return **HTTP 500**
+  because `localStorage.t_user` no longer exists on the ServiceNow origin. Rule: before any
+  `/eval`, check `/url` + `/pages`; if the bound page is a `tekion.service-now.com` URL, either
+  `/pages/select` a Tekion tab or `/navigate` back to `app.tekioncloud.com` (localStorage for
+  the Tekion origin survives — it's per-origin). Practical order for a research+live-recon task:
+  do ALL KB lookups first, THEN do the live Tekion DOM work.
 - Full page navigation WIPES any injected XHR/fetch hooks — reinstall after load, or
   just use the direct article URL method (no hooks needed).
 - The ServiceNow Table API (`/api/now/table/kb_knowledge`) returns 401; the SP search
