@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-17T16:30:03",
+ "generated": "2026-09-17T16:45:42",
  "skill_count": 227,
  "skills": [
   {
@@ -15,7 +15,7 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 186,
+   "times_used": 188,
    "last_used": "2026-09-17"
   },
   {
@@ -31,8 +31,8 @@
    "path": "automotive/tekion-openapi-repair-orders",
    "category": "automotive",
    "description": "Pull repair orders, jobs, operations (opcode + labor $), parts, and vehicle data from the official Tekion OpenAPI \u2014 no browser, no OTP. Also covers logging into the APC partner portal (apc.tekioncloud.com) to scrape API docs and download OpenAPI specs.",
-   "times_used": 96,
-   "last_used": "2026-09-15"
+   "times_used": 98,
+   "last_used": "2026-09-17"
   },
   {
    "name": "tekion-sitemap",
@@ -211,6 +211,14 @@
    "last_used": "2026-09-17"
   },
   {
+   "name": "tekion-parts-appointments-recalls-only",
+   "path": "automotive/tekion-parts-appointments-recalls-only",
+   "category": "automotive",
+   "description": "Restrict Tekion Parts RO Sales appointment notifications to recall opcodes only (or any opcode subset) by mass-toggling the per-opcode \"Consider for Parts preparation on Appointment\" flag. Covers the Bulk Update UI, the underlying bulk-update API for scale, and full verification. Built for Glade at SCT 2026-07-20; applies to any store.",
+   "times_used": 19,
+   "last_used": "2026-09-17"
+  },
+  {
    "name": "tekion-parts-sales-orders",
    "path": "automotive/tekion-parts-sales-orders",
    "category": "automotive",
@@ -233,14 +241,6 @@
    "description": "Scrape any Tekion Report Builder CUSTOM report (e.g. \"SCT Menu Sales Opened\") headlessly \u2014 find the report id, open it under the right dealer, expand grouped rows, parse to JSON, render a manager-ready scorecard (PNG+PDF), and email it via Stacey. Use whenever Joe/managers want recurring Tekion report data without downloading PDFs from Tekion's emailed reports.",
    "times_used": 18,
    "last_used": "2026-09-01"
-  },
-  {
-   "name": "tekion-parts-appointments-recalls-only",
-   "path": "automotive/tekion-parts-appointments-recalls-only",
-   "category": "automotive",
-   "description": "Restrict Tekion Parts RO Sales appointment notifications to recall opcodes only (or any opcode subset) by mass-toggling the per-opcode \"Consider for Parts preparation on Appointment\" flag. Covers the Bulk Update UI, the underlying bulk-update API for scale, and full verification. Built for Glade at SCT 2026-07-20; applies to any store.",
-   "times_used": 17,
-   "last_used": "2026-09-17"
   },
   {
    "name": "tekion-warranty-admin-closings",
@@ -699,6 +699,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-internal-api-access",
+   "path": "automotive/tekion-internal-api-access",
+   "category": "automotive",
+   "description": "Call Tekion's INTERNAL (browser) APIs directly from the page \u2014 /api/service-module/u/* and friends \u2014 without driving the UI. Solves the \"Token doesn't exist or is invalid\" / \"Missing headers\" walls that block bare fetch calls. Use whenever an internal Tekion endpoint is needed (reading RO/job JSON, payer splits, split writes) or the app's React Query cache hides the call you need to capture.",
+   "times_used": 3,
+   "last_used": "2026-09-17"
+  },
+  {
    "name": "tekion-menu-custom-price-row",
    "path": "automotive/tekion-menu-custom-price-row",
    "category": "automotive",
@@ -713,6 +721,14 @@
    "description": "Audit, diagnose, and repair the Tekion scraper pipeline including OTP fetching, session reuse, lock starvation, Puppeteer navigation timeouts, and Tekion 3.0 compatibility.",
    "times_used": 3,
    "last_used": "2026-09-11"
+  },
+  {
+   "name": "tekion-technician-queue-dispatch",
+   "path": "automotive/tekion-technician-queue-dispatch",
+   "category": "automotive",
+   "description": "Explains Tekion's Technician Queue / Claim Work auto-dispatch behavior \u2014 why a tech gets pulled out of the queue when an advisor opens/reopens an RO, and what settings can change that behavior. Use when diagnosing \"why did my tech get grabbed out of queue\" or \"can we stop a tech from being pulled on RO reopen\" questions.",
+   "times_used": 3,
+   "last_used": "2026-09-17"
   },
   {
    "name": "tekion-tek-opcode-part-replace",
@@ -811,14 +827,6 @@
    "last_used": "2026-09-16"
   },
   {
-   "name": "tekion-internal-api-access",
-   "path": "automotive/tekion-internal-api-access",
-   "category": "automotive",
-   "description": "Call Tekion's INTERNAL (browser) APIs directly from the page \u2014 /api/service-module/u/* and friends \u2014 without driving the UI. Solves the \"Token doesn't exist or is invalid\" / \"Missing headers\" walls that block bare fetch calls. Use whenever an internal Tekion endpoint is needed (reading RO/job JSON, payer splits, split writes) or the app's React Query cache hides the call you need to capture.",
-   "times_used": 2,
-   "last_used": "2026-09-17"
-  },
-  {
    "name": "tekion-labor-rate-create",
    "path": "automotive/tekion-labor-rate-create",
    "category": "automotive",
@@ -897,6 +905,14 @@
    "description": "Add vehicle/part override rows to a Tekion opcode (Overrides \u2192 Parts tab). Copy existing row, modify model/year via checkbox dropdowns, set part/price, save. Only works in real browser tool \u2014 headless Playwright cannot render the ant-design vehicle override table.",
    "times_used": 2,
    "last_used": "2026-07-03"
+  },
+  {
+   "name": "tol-recall-parts-appointment-workflow",
+   "path": "automotive/tol-recall-parts-appointment-workflow",
+   "category": "automotive",
+   "description": "TL (Toyota of Lancaster, dealer 1092) recall-only parts appointment workflow \u2014 deployed 2026-09-12. Mass-uncheck, keep-list, RECALL opcode, placeholder part, notify-immediately, and backlog sweep.",
+   "times_used": 2,
+   "last_used": "2026-09-17"
   },
   {
    "name": "vw-carefree-care-plus-hours-elr-report",
@@ -1035,6 +1051,14 @@
    "last_used": "2026-08-27"
   },
   {
+   "name": "tekion-stuck-ro-triage-and-recall-census",
+   "path": "automotive/tekion-stuck-ro-triage-and-recall-census",
+   "category": "automotive",
+   "description": "Triage a Tekion RO that was \"written up but never dispatched / we missed it\", and census every RO at a store carrying one recall campaign. Covers the RO status pipeline (UI label \u2194 API enum), where the \"To Be Dispatched\" list comes from, why an RO never appears on it, the recall-sibling scan, and the report shape Joe expects. Built on BC RO 103410 / recall N262551720, 2026-09-17.",
+   "times_used": 1,
+   "last_used": "2026-09-17"
+  },
+  {
    "name": "tekion-tech-clock-time-by-opcode",
    "path": "automotive/tekion-tech-clock-time-by-opcode",
    "category": "automotive",
@@ -1049,14 +1073,6 @@
    "description": "Reconcile a store manager's semi-monthly tech payroll sheet (attendance + assigned/flagged billed hours per tech) against Tekion's Tech Performance data via API. Use when Joe says \"the tech performance report doesn't match what <manager> turned in on payroll\" or sends a payroll PDF/spreadsheet to audit. Verified BC (1251) Aug 16-31 2026 \u2014 caught a $1,700 payroll error.",
    "times_used": 1,
    "last_used": "2026-09-03"
-  },
-  {
-   "name": "tekion-technician-queue-dispatch",
-   "path": "automotive/tekion-technician-queue-dispatch",
-   "category": "automotive",
-   "description": "Explains Tekion's Technician Queue / Claim Work auto-dispatch behavior \u2014 why a tech gets pulled out of the queue when an advisor opens/reopens an RO, and what settings can change that behavior. Use when diagnosing \"why did my tech get grabbed out of queue\" or \"can we stop a tech from being pulled on RO reopen\" questions.",
-   "times_used": 1,
-   "last_used": "2026-09-10"
   },
   {
    "name": "wsl-cross-distro-hermes-discovery",
@@ -1279,22 +1295,6 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tekion-stuck-ro-triage-and-recall-census",
-   "path": "automotive/tekion-stuck-ro-triage-and-recall-census",
-   "category": "automotive",
-   "description": "Triage a Tekion RO that was \"written up but never dispatched / we missed it\", and census every RO at a store carrying one recall campaign. Covers the RO status pipeline (UI label \u2194 API enum), where the \"To Be Dispatched\" list comes from, why an RO never appears on it, the recall-sibling scan, and the report shape Joe expects. Built on BC RO 103410 / recall N262551720, 2026-09-17.",
-   "times_used": 0,
-   "last_used": null
-  },
-  {
-   "name": "tol-recall-parts-appointment-workflow",
-   "path": "automotive/tol-recall-parts-appointment-workflow",
-   "category": "automotive",
-   "description": "TL (Toyota of Lancaster, dealer 1092) recall-only parts appointment workflow \u2014 deployed 2026-09-12. Mass-uncheck, keep-list, RECALL opcode, placeholder part, notify-immediately, and backlog sweep.",
    "times_used": 0,
    "last_used": null
   },
