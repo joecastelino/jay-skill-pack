@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-17T12:45:20",
+ "generated": "2026-09-17T13:00:54",
  "skill_count": 226,
  "skills": [
   {
@@ -547,6 +547,14 @@
    "last_used": "2026-08-20"
   },
   {
+   "name": "tekion-parts-so-gl-account-routing",
+   "path": "automotive/tekion-parts-so-gl-account-routing",
+   "category": "automotive",
+   "description": "Diagnose \"this parts Sales Order / counter sale is hitting the WRONG GL account\" (e.g. a Wholesale SO posting to a retail parts sales account). Covers the GLAM Fixed Operations > Part & Accessories > Parts-Counter mapping table, its 6 keying dimensions, the customer.taxable snapshot-vs-master trap, the 2026-08-19 store-wide NO-TAX code rollout that flipped every wholesale order to taxable, date-window bisection (search pagination is silently ignored), and the internal API endpoints to pull a full SO for evidence. Use for any \"why did SO X go to retail instead of wholesale\" or \"where did the taxable status change\" question.",
+   "times_used": 6,
+   "last_used": "2026-09-17"
+  },
+  {
    "name": "tekion-ro-fee-waiver-investigation",
    "path": "automotive/tekion-ro-fee-waiver-investigation",
    "category": "automotive",
@@ -609,14 +617,6 @@
    "description": "Definitively answer \"where did notification X go / does notification Y exist / who gets notified when Z happens\" in Tekion. Dumps the COMPLETE list of user notification event types (all modules) from the internal notification-preference API instead of scrolling the giant Profile Settings table, then maps the request to the right config surface (per-user Profile Settings vs Service Settings vs Dispatch vs Scheduling vs Parts Settings). Load for any \"I can't find the setting that notifies ...\" ticket.",
    "times_used": 4,
    "last_used": "2026-08-25"
-  },
-  {
-   "name": "tekion-parts-so-gl-account-routing",
-   "path": "automotive/tekion-parts-so-gl-account-routing",
-   "category": "automotive",
-   "description": "Diagnose \"this parts Sales Order / counter sale is hitting the WRONG GL account\" (e.g. a Wholesale SO posting to a retail parts sales account). Covers the GLAM Fixed Operations > Part & Accessories > Parts-Counter mapping table, its 6 keying dimensions, the customer.taxable snapshot-vs-master trap, the 2026-08-19 store-wide NO-TAX code rollout that flipped every wholesale order to taxable, date-window bisection (search pagination is silently ignored), and the internal API endpoints to pull a full SO for evidence. Use for any \"why did SO X go to retail instead of wholesale\" or \"where did the taxable status change\" question.",
-   "times_used": 4,
-   "last_used": "2026-09-02"
   },
   {
    "name": "tekion-ro-traffic-heatmap-report",
