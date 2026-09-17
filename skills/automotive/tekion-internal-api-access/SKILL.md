@@ -94,6 +94,58 @@ The app PERSISTS its query cache (`localStorage['persist:primary']`), so re-visi
 - open the modal on an **RO/job you have NOT opened this session** (fresh entity ⇒ real call)
 - or skip capture entirely: build the headers above and call the endpoint directly.
 
+## XHR-hook header capture — the `setRequestHeader` timing trap (hit 2026-09-17, BC)
+
+Arming the hook and then reading `window.__H` gave **`{}` / `kh:0` three times in a row** because
+the override was installed INSIDE `send()`. **axios calls `xhr.open()` → `xhr.setRequestHeader(...)`
+→ `xhr.send()`**, so a `setRequestHeader` patch applied during `send()` is installed *after* every
+real header was already set. Patch the **prototype at hook-install time**:
+
+```js
+var oset = XMLHttpRequest.prototype.setRequestHeader;
+XMLHttpRequest.prototype.setRequestHeader = function(k,v){
+  try{ (this.__hh = this.__hh || []).push([k,v]); }catch(e){}
+  return oset.apply(this, arguments);
+};
+XMLHttpRequest.prototype.open = function(m,u){ this.__m=m; this.__u=u; this.__hh=[]; return oopen.apply(this,arguments); };
+XMLHttpRequest.prototype.send = function(b){
+  var self=this;
+  this.addEventListener('load', function(){
+    if(self.__u && self.__u.indexOf('/api/')>=0){
+      var h={}; (self.__hh||[]).forEach(function(p){h[p[0]]=p[1]});
+      if(Object.keys(h).length>4){ window.__H=h; window.__Hu=self.__u; }
+    }
+  });
+  return osend.apply(this,arguments);
+};
+```
+Verified BC/1251: **15 headers** captured incl. `tekion-api-token`, roleId, userId, tenantname,
+dealerId, tek-siteId, original-userid, original-tenantid, clientId, locale, program, applicationId,
+subApplicationId, productIds. Save them to `/tmp/<store>_hdr.json` and **replay from plain Python
+urllib** — that worked for every endpoint below with NO in-page fetch and NO cookie juggling
+(the recalls-only skill's "external urllib always fails" applies to *hand-built* headers; a full
+captured set works). The token is user-scoped but **`dealerId` + `tek-siteId` are store-scoped —
+swap those two (−1_<dealer>) to read another store's data with the same capture.**
+
+**Triggering a fresh XHR once the hook is armed:** re-entering a page for an entity already in the
+persisted React Query cache fires NOTHING. `history.pushState + PopStateEvent` **DOES work when the
+target is an entity you have not opened this session** (verified: pushState to a never-opened RO id
+fired the RO's calculation/recommendation XHRs). Target a fresh id, not the one on screen.
+
+## Verified endpoints at BC (dealer 1251, 2026-09-17) — RO dispatch/stuck-RO triage
+
+| Endpoint | Result |
+|---|---|
+| `GET /api/service-module/u/ro/<roId>` | 200 — `{data:{jobs[],recommendations[],sublets[],ro{}}}`; `ro` carries **`status`, `assignedTechDetails[{techId,status,techStatus}]`, `promiseTime`, `closedTime`, `roNo`, `tagNo`, `source`, `appointmentId`, `allAdvisorIds`, `vehicleInfo`, `customerInfo`, `totals`** |
+| `GET /api/scheduling/u/appointment/<apptId>` | 200 — **`appointmentStatus`, `appointmentSource` (BDC_SCHEDULING…), `preRoStatus`, `roNo`, `roId`, `assignedTechIds[]`, `campaignDetails`, `appointmentTakerUserId`, `createdTime`, `updatedByUserId`, `serviceAdvisorId`** ("TEK00" = unassigned placeholder) |
+| `GET /api/service-module/u/ro/<roId>/audit` `/history` `/status-history` `/technician` `/jobs/<jid>` | **404 empty** — no RO status/assignment history is exposed. **There is no API timestamp for "when was a technician assigned"** — if a ticket hinges on it, say so rather than guessing. |
+
+### Dispatch Settings live at `/ro/dispatch-settings` (NOT `/service/settings/dispatch-settings` → blank page)
+Toggle states are readable from the `ant-switch` classes: `ant-switch ant-switch-checked` = ON,
+plain `ant-switch` = OFF. BC as found: **Auto Assign Technician to Added Job = ON**, Choose between
+Multiple Technician on RO = OFF, Only Assign if Technician has matching Skills = ON,
+Auto assign same-as-last-service = OFF, who-submitted-Recommendation = ON, previously-Deferred = ON.
+
 ## Pitfalls
 
 - The persistent-browser server exposes only /health /pages /screenshot /snapshot /url /click /console

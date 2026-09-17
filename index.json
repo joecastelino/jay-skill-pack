@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-17T16:15:04",
- "skill_count": 226,
+ "generated": "2026-09-17T16:30:03",
+ "skill_count": 227,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -1279,6 +1279,14 @@
    "path": "automotive/tekion-process-automation",
    "category": "automotive",
    "description": "Tekion CRM Process Automation \u2014 the tile where lead processes/rules fire. Covers Rules vs Processes, the New Lead Decision Tree, reading the process list (active vs run count), building/editing a process (step types, delay tasks, conditions), exit conditions, and the yes=left/no=right convention. Load for any CRM lead-automation, decision-tree, or \"why didn't this task fire\" question. This is CRM-side, NOT Fixed Ops.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "tekion-stuck-ro-triage-and-recall-census",
+   "path": "automotive/tekion-stuck-ro-triage-and-recall-census",
+   "category": "automotive",
+   "description": "Triage a Tekion RO that was \"written up but never dispatched / we missed it\", and census every RO at a store carrying one recall campaign. Covers the RO status pipeline (UI label \u2194 API enum), where the \"To Be Dispatched\" list comes from, why an RO never appears on it, the recall-sibling scan, and the report shape Joe expects. Built on BC RO 103410 / recall N262551720, 2026-09-17.",
    "times_used": 0,
    "last_used": null
   },
