@@ -919,34 +919,14 @@ partial-day even on very light Saturdays.
 **Explicit "leave the older noon draft alone, I will clean it up myself" line worked again** —
 she named the noon uid as untouched in her own reply. Keep it on every 5pm ask.
 
-## 2026-08-30 5pm Daily Closed run — second zero-menu Sunday of the day, textbook one-shot, 35th consecutive clean build
-0 menus, $0.00 labor / $0.00 parts = $0.00. **0 closed ROs** for the second run that day (BC
-service closed all Sunday — same as 8/23, both runs legitimately zero). `✓ all candidate ROs
-scanned`; empty-table variant; vision KPI band (crop 460px + 2x LANCZOS on a 1226x900 PNG) read
-all four tiles $0.00 / 0. Pull via `terminal(background=true)` + a SINGLE
-`process(action="wait", timeout=180)`, finished near-instantly.
-**write_file→background-terminal ask pattern, 11th straight run, returned inside ONE 180s wait**
-(`/tmp/bc_ask_0830_5pm.py`, `subprocess.run` argument list, `timeout 560`). Terse DONE line
-correct with `TOTAL=$0.00`, her reported id (42835) MATCHED himalaya's. Her reply contained the
-recurring "Himalaya ID ≠ IMAP UID, let me search by subject" wrinkle — a POST-append verification
-step, not a rebuild, so no duplicate; dedupe grep confirmed only 42835 + the expected stale noon
-draft. Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
-auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (52,819 bytes), PDF
-**byte-for-byte identical** (39,494 bytes), `<b>$0.00</b>` bold exactly once, "Sunday, August 30"
-present, greeting + footer present, zero 'Saturday'/' dollars'/USD/EMDASH/CORRECTION leftovers.
-Deleted the stale noon draft (42833) per the twice-daily cadence rule, kept 42835 → exactly 1
-draft. Daily-Closed Sent count 0 (the single `BC 8/30` Sent hit was Stacey's separate auto-sent
-Daily Opened report, 14819).
-**Weekday-verification rule paid off**: computed the weekday with `TZ=America/Los_Angeles date
-+"%Y-%m-%d %A %H:%M"` as the FIRST action, so the ask said "Sunday, August 30" correctly and the
-8/30-noon Saturday/Sunday authoring error did not repeat. Make that date command step 0 of every
-BC run whose email names the day of week.
-**Note the 8/30-noon Message-ID re-APPEND trap did not apply here** — no self-edit was needed
-because the first build was clean. That trap only bites when you edit and re-append an .eml.
-**Skill-size housekeeping**: SKILL.md hit 100,588 chars after this append (over the 100k limit).
-Condensed the purely-confirmatory 2026-08-19 noon and 2026-08-19 5pm entries → back to 98,490.
-**Check `os.path.getsize()` on SKILL.md AFTER every append**, not just before — a ~2.5KB run
-entry can push a 98K file over the limit. Prune oldest confirmatory entries; never trap sections.
+## 2026-08-30 5pm Daily Closed run — second zero-menu Sunday, textbook one-shot
+0 menus / $0.00 (0 closed ROs; second zero run of the day, same as 8/23). Write_file->background-terminal
+ask, ONE 180s wait, her id matched himalaya's, no duplicate; `<b>$0.00</b>`, "Sunday, August 30" present,
+all byte-for-byte checks passed. Deleted the stale noon draft (twice-daily cadence).
+**Weekday-verification rule (load-bearing)**: `TZ=America/Los_Angeles date +"%Y-%m-%d %A %H:%M"` must be
+step 0 of every run whose email names the day of week — the 8/30-noon run mislabeled Sunday as Saturday.
+**Skill-size lesson**: check `os.path.getsize()` AFTER every append, not just before; prune oldest
+confirmatory entries (never trap sections).
 
 ## 2026-08-31 noon Daily Closed run — textbook one-shot, 37th consecutive clean build
 3 menus, $558.94 / $264.63 = $823.57 (Jacob Debussey 1, Houa Moua 1, Humberto Dominguez 1).
@@ -1024,32 +1004,21 @@ condensed one entry (98,154) → appended anyway → **101,080, still over the l
 a SECOND entry. A full run entry is ~2.5-3KB, so prune to **≤97,000 BEFORE appending**, and always
 re-check `os.path.getsize()` AFTER — the pre-append check alone will lie to you.
 
-## 2026-08-31 6:16pm Closed MTD run — MONTH-END FINAL for August, textbook one-shot, 39th consecutive clean "N dollars" build
-230 menus, $35,887.94 labor / $22,801.21 parts = $58,689.15 (Aug 1-31) — final August MTD, a new
-monthly high on every axis. Master asof 2026-08-30 → default append; 187 closed ROs → 15 carried
-TEK menu opcodes (~8% attach); `✓ all candidate ROs scanned`. All byte-for-byte checks passed, no
-duplicate; her id MATCHED himalaya's, zero self-correction text. Sibling Daily Closed draft left
-untouched. Ask returned in just 88s inside ONE 180s wait.
-**Month-end note**: the 31st MTD run is just a normal default append — there is NO special
-month-end/close-out mode. The NEXT run (Sep 1) finds no `bc-menu-closed-mtd-MASTER-<new-month>.json`
-and must use `--seed` per the run sequence (see the 9/1 entry: the 1st-of-month seed is NOT slow).
-**Skill-size lesson — prune to ≤97,000 BEFORE appending, and re-check size AFTER**: pre-append
-99,888 → one condense (98,154) → appended anyway → 101,080, STILL over. A full run entry is
-~2.5-3KB, so a pre-append check alone will lie to you.
-**SAFE-PRUNE PROCEDURE (index-based splicing can silently delete a trap section)**: the fast way
-to prune is `secs = re.split(r'(?m)^(?=## )', text)` then reassigning `secs[i]` by index — but
-section indices SHIFT as the file grows, so a stale index can overwrite the quota-exhaustion or
-`$digit`-corruption playbook with a run log and NOTHING looks wrong afterward. Always: (1) print
-`enumerate` of `(i, len(s), first_line)` and confirm each target index's heading is the
-confirmatory run entry you intended, (2) after writing, assert every critical trap heading still
-exists — `for m in ["PARALLEL STACEY AUTO-SEND","Quota exhaustion","EMAIL VERIFICATION",
-"SELF-VERIFY the inline PNG","Use the stdlib `email` parser","APPENDUID","explicit --config",
-"Transient IMAP stream error",'STRIPS "$digit"',"Headless/cron gotcha","exceeds the 600s
-foreground cap","300s","re-APPENDing an edited","opcode-mapping divergence","CORRECTED
-2026-08-18","SAFE-PRUNE"]: assert m in text`, (3) check `duplicate headings == []` and that the
-frontmatter still starts the file. Condense entries in place (keep the heading + its load-bearing
-lesson) rather than deleting them outright — that preserves the run-history chain and makes an
-accidental clobber obvious as a missing heading.
+## 2026-08-31 6:16pm Closed MTD run — MONTH-END FINAL for August
+230 menus, $35,887.94 / $22,801.21 = $58,689.15 (Aug 1-31), a monthly high on every axis. Default append;
+all byte-for-byte checks passed. **Month-end note**: the 31st MTD run is a NORMAL default append — there is
+NO special month-end mode. The next run (Sep 1) finds no new-month master and must use `--seed`.
+**SAFE-PRUNE PROCEDURE (index-based splicing can silently delete a trap section)**: `re.split(r'(?m)^(?=## )', text)`
+then reassigning by index is fast, but indices SHIFT as the file grows — a stale index can overwrite the
+quota-exhaustion or `$digit`-corruption playbook with a run log and nothing looks wrong. Always:
+(1) print `enumerate` of `(i, len(s), first_line)` and confirm each target index's heading,
+(2) after writing assert every critical trap heading still exists (PARALLEL STACEY AUTO-SEND, Quota exhaustion,
+EMAIL VERIFICATION, SELF-VERIFY the inline PNG, Use the stdlib `email` parser, APPENDUID, explicit --config,
+Transient IMAP stream error, STRIPS "$digit", Headless/cron gotcha, 600s foreground cap, 300s,
+re-APPENDing an edited, opcode-mapping divergence, CORRECTED 2026-08-18, SAFE-PRUNE),
+(3) check duplicate headings == [] and that the frontmatter still starts the file. Condense entries IN PLACE
+(keep the heading + load-bearing lesson) rather than deleting them outright — preserves the run-history chain
+and makes an accidental clobber obvious as a missing heading.
 
 ## 2026-09-01 noon Daily Closed run — FIRST SEPTEMBER RUN, textbook one-shot, 40th consecutive clean "N dollars" build
 1 menu / $288.26 (Dimetri Reynoso). Clean one-shot; all byte-for-byte checks passed.
@@ -1092,33 +1061,12 @@ duplicate. **Day-2 MTD note**: MTD (28) = 9/1 seed (4) + today's strong day (24)
 MTD==Daily convergence sentence is only needed on the 1st.
 
 ## 2026-09-03 noon Daily Closed run — one retry after a Stacey STREAM-STALL (no draft, safe re-fire), then clean build
-9 menus, $1,005.91 labor / $766.31 parts = $1,772.22 (Jacob Debussey 4 / $667.58, Juan
-Ramirez 2 / $457.01, Valentine Nolasco 1 / $509.56, Humberto Dominguez 1 / $118.17, Houa
-Moua 1 / $19.90 — five advisors). 35 closed ROs -> 9 carried TEK menu opcodes (~26% attach,
-Thursday noon); `all candidate ROs scanned` printed. Pull via `terminal(background=true)` + a
-SINGLE `process(action="wait", timeout=180)`. Vision KPI band (crop 460px + 2x LANCZOS on a
-1226x900 PNG) matched JSON exactly.
-**NEW wrinkle — Stacey stream-stall mid tool-call, and the SAFE-RETRY protocol that worked**:
-the first ask (write_file->background-terminal, 22nd straight use) came back with her reply
-ending in "Stream stalled mid tool-call (execute_code); the action was not executed" — no DONE
-line, no draft built. Before re-firing: (1) dedupe grep confirmed ZERO BC 9/3 drafts existed,
-(2) `pgrep -af 'hermes chat'` confirmed her process was dead. Only with BOTH confirmed (nothing
-appended + nothing still running) is a re-fire safe — this is the stream-stall analogue of the
-exit-124 rule ("timeout is not proof of failure"); a stall AFTER an append would leave a draft,
-so always grep first. The retry (same script re-run) built clean: DONE 43076,
-TOTAL=$1,772.22, id MATCHED himalaya's. Her retry reply contained self-correction text
-(f-string/regex script rewrites, all PRE-append) -> dedupe grep run immediately per the 8/19
-rule -> exactly 1 draft, no duplicate.
-Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
-auto-decoded with em-dashes, inline PNG byte-for-byte identical (156,483 bytes), PDF
-byte-for-byte identical (53,577 bytes), all 8 figures present exactly once, bold total
-present, greeting + footer present, zero ' dollars'/USD/EMDASH/CORRECTION leftovers, all
-leading-digit-stripped and comma-mangled variants = 0, no Kevin/dfowlkes leak. Daily-Closed
-Sent count 0 (the single `BC 9/3` Sent hit was Stacey's auto-sent Daily Opened report, 15096,
-fired 12:04). No stale prior draft (noon = first run of the day).
-**Skill-size housekeeping**: 98,095 pre-prune -> condensed the confirmatory 8/28 MTD and 9/1
-noon entries (kept the month-rollover-Daily note and Opened-timing-drift note) -> 94,044
-before appending. Re-checked size AFTER.
+9 menus, $1,005.91 / $766.31 = $1,772.22. 35 closed ROs -> 9 TEK menu opcodes (~26% attach).
+**Stacey stream-stall + SAFE-RETRY protocol**: her reply ended "Stream stalled mid tool-call
+(execute_code); the action was not executed" — no DONE line, no draft. Before re-firing:
+(1) dedupe grep confirmed ZERO drafts existed, (2) `pgrep -af 'hermes chat'` confirmed her process was dead.
+Only with BOTH confirmed (nothing appended + nothing running) is a re-fire safe — the stream-stall analogue
+of the exit-124 rule. The retry built clean (DONE 43076, id matched himalaya's), no duplicate.
 
 ## 2026-09-03 5pm Daily Closed run — textbook one-shot, 46th consecutive clean build
 18 menus / $4,498.85. All byte-for-byte checks passed, no duplicate; deleted the stale noon draft.
@@ -1314,3 +1262,27 @@ Stacey's Opened pipeline timing drift, not a defect).
 that IS the correct Jacob Debussey figure (no leading digit to strip). Only variants that are
 NOT substrings/correct figures are real defects; the comma-bearing figures are the load-bearing
 checks.
+
+## 2026-09-16 5pm Daily Closed run — textbook one-shot, 58th consecutive clean "N dollars" build
+10 menus, $1,189.50 labor / $557.63 parts = $1,747.13 (Wednesday 5pm). Advisors: Humberto Dominguez 4 /
+$561.07, Houa Moua 2 / $572.20, Dimetri Reynoso 1 / $133.39, Jacob Debussey 1 / $65.04, Juan Ramirez 1 /
+$146.39, Michael Reyes 1 / $269.04. 88 closed ROs -> 10 carried TEK menu opcodes (~11% attach);
+`all candidate ROs scanned` printed. Pull + ask each inside ONE 180s wait (write_file->background-terminal,
+`/tmp/bc_ask_0916_5pm.py`, `timeout 560`, subprocess arg list). Vision KPI band (crop 460px + 2x LANCZOS on
+a 1226x911 PNG) matched JSON exactly. Terse DONE line correct (id 43414, TOTAL=$1,747.13), her id MATCHED
+himalaya's; her reply DID contain self-correction text ("the total extraction grabbed the first dollar amount
+... the draft is already saved") yet NO duplicate — per the 8/21 refinement the failure was in her
+echo/verification step (POST-append but non-mutating), so dedupe grep confirmed exactly 1 new draft + the
+expected stale noon draft. Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe,
+Subject auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (173,963 bytes), PDF
+**byte-for-byte identical** (56,152 bytes), all 9 figures exactly once, bold total present (`<b>` containing
+match), greeting `Ruben,` count 1 (both parts), footer em-dash present, zero
+' dollars'/USD/EMDASH/CORRECTION/Saturday/Sunday/Monday/Tuesday/Kevin/dfowlkes leftovers, variants = 0.
+Deleted the stale noon draft (43411) per the twice-daily cadence rule → exactly 1 draft (43414);
+Daily-Closed Sent count 0 (zero `BC 9/16` Sent hits at all = Stacey's Opened timing drift, not a defect).
+**Note**: the emitted daily JSON `rows` use `ro_number`/`ro_created` (not `date`/`ro`) and carry no
+`total_gross` — compute per-advisor totals as `labor_gross + parts_gross`; the `totals` dict is authoritative.
+**Skill-size housekeeping**: 99,002 bytes pre-prune -> condensed six confirmatory entries (8/30 5pm + 8/31 MTD
++ 9/3 noon, keeping the weekday step-0 rule, SAFE-PRUNE procedure, and stream-stall safe-retry protocol)
+-> 94,592 before appending. SAFE-PRUNE index assertions used; all critical trap headings asserted present;
+re-checked size AFTER.
