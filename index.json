@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-17T09:45:05",
- "skill_count": 224,
+ "generated": "2026-09-17T10:00:08",
+ "skill_count": 225,
  "skills": [
   {
    "name": "jay-brain-and-skill-index",
@@ -1215,6 +1215,14 @@
    "path": "automotive/local-nemotron-stt-fleet",
    "category": "automotive",
    "description": "Stand up NVIDIA Nemotron 3.5 ASR (streaming, CPU ONNX) as the shared speech-to-text backend for every Hermes agent on this machine, replacing the broken faster-whisper/libcublas path. Use when voice messages arrive untranscribed or when asked to enable local speech recognition for the agent fleet.",
+   "times_used": 0,
+   "last_used": null
+  },
+  {
+   "name": "slack-thread-context-recovery",
+   "path": "automotive/slack-thread-context-recovery",
+   "category": "automotive",
+   "description": "Recover what a context-free Slack message is referring to when the Hermes session that held the thread has already expired (e.g. Joe replies \"so does this work now?\" days later in an old thread). Reads Jay's own raw session JSON on disk to rebuild the thread's history instead of guessing or asking Joe to repeat himself.",
    "times_used": 0,
    "last_used": null
   },

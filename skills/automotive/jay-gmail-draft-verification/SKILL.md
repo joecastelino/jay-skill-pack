@@ -417,6 +417,43 @@ Also note: a broad-subject Sent Mail search (`(HEADER Subject "BC Deferred Work 
 can return unrelated old hits purely from sequence drift — only the EXACT full subject search
 is a valid "was this sent" test, and that returned `[]` (correct).
 
+## Verifying an emailed FILE actually arrived intact (openable attachment) — 2026-09-17
+
+When the ask was "email me the file" and Joe later asks "does this work now?", prove
+the attachment is a REAL part and the file itself is valid — don't restate the send.
+
+```python
+import imaplib, email
+M = imaplib.IMAP4_SSL("imap.gmail.com"); M.login("jcastelino@americanmotorscorp.com", PW)
+M.select('"[Gmail]/All Mail"')                       # ALWAYS All Mail for labels
+t, d = M.search(None, '(SINCE 01-Sep-2026)', '(SUBJECT "BC Rewards")')
+for num in d[0].split():
+    t, d2 = M.fetch(num, '(BODY.PEEK[HEADER] X-GM-LABELS FLAGS)')
+    # then refetch the winner with (RFC822) and walk parts:
+    msg = email.message_from_bytes(raw)
+    print(len(msg.get_all("Received") or []))        # >=1 = really traversed SMTP
+    for p in msg.walk():
+        print(p.get_content_type(), p.get_filename(),
+              p.get("Content-ID"), len(p.get_payload(decode=True) or b""))
+```
+Pass = `\Inbox` present, `Received:` >=1, and the attachment part shows the real MIME
+type (`application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` for xlsx,
+not `text/plain`/inline text) with a plausible byte size matching your local file.
+
+Then validate the FILE ITSELF locally with openpyxl — structure AND formatting, because
+"the file is in the email" is not the same as "the file is what he asked for":
+```python
+import openpyxl
+ws = openpyxl.load_workbook(path).active
+print(ws.max_row, ws.max_column, ws.freeze_panes)
+for r in range(1, ws.max_row+1):         # section banner rows = cell A set, B empty
+    if ws.cell(r,1).value and ws.cell(r,2).value is None: print(r, ws.cell(r,1).value)
+print([(ws.cell(3,c).font.bold, ws.cell(3,c).fill.fgColor.rgb) for c in range(1,4)])
+```
+Checks: sheet dims match the row count you promised, section banner rows in the right
+order (overlap section first, etc.), bold/highlight actually applied to the overlap rows,
+freeze panes set. Report the verified numbers, not the intended ones.
+
 ## Pitfalls
 - **A "missing" draft may just be Joe trashing it himself** (2026-08-18) — when
   Joe says "I don't see it in Drafts," don't assume Stacey's bridge call failed
