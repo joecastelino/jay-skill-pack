@@ -1101,6 +1101,22 @@ duplicates — consistent with the known accumulation pattern (7c-count); don't 
 older ones. Sent-check used the definitive \Draft-flag-in-Drafts method: 0 exact-subject
 hits in Sent, target draft confirmed still in `[Gmail]/Drafts` with `\Draft \Seen` flags.
 
+## (9/16 8:05PM, Closed MTD) TEXTBOOK CLEAN RUN — zero exit-124s despite 5 live scrapers
+Closed append FOREGROUND clean in seconds (5 concurrent `tekion-scraper` processes running, no
+contention): 141 closed ROs, prefilter 1 of 141 carried a TEK menu opcode, 1 new row. Master
+52 -> **53 MTD rows / $8,316.09** ($5,855.29 labor + $2,460.80 parts), Sept 1-16 closed-to-date,
+`✓ all candidate ROs scanned (no truncation)`, `complete: true`. Today's add: Nancy Rojo RO 401495
+TEK85000VNM 2018 Prius c 83,514 mi $133.18 ($73.40 + $59.78). MTD leaders: Brenda Hernandez
+Alvarenga 7/$2,300.72 (27.7%), Michael Hachey 17/$2,293.17 (27.6%) — a $7.55 photo finish — then
+Alatorre 13/$1,692.78. Hand-off RC=0 FIRST TRY (156s, no timeout); draft correct FIRST TRY
+(himalaya id 153 / IMAP UID 43418), NO dedupe needed (no noon Closed draft — EOD-only report).
+All 3 verification asks FIRST try, IMAP-first, zero 124s: subject-list 10 stacked Closed-MTD
+drafts (Sept 1-6/1-8/1-9/1-10/1-11/1-12/1-13/1-14/1-15/1-16, each unique range, NO true dupes;
+note dash-style varies — em-dash on 1-6/1-11/1-15, hyphen elsewhere), part-probe (UID 153 echoed —
+NO bogus-UID, no UID sent in the ask; html + multipart/alternative + image/png CID=scorecard +
+application/pdf), Sent-check short-stem (Sent: 2, both old June 1-29 = token trap 5b, no leak).
+Flag to Joe: 10 unsent Closed-MTD drafts stacked (Sept 1-6 .. 1-16).
+
 ## Cross-store note
 This same pattern (clone the sibling pipeline, derive the store's OWN SERVICE_MENU opcode
 set, set dealer ID + recipient) applies to the remaining AMG stores (SV/AR/VC) when Joe
