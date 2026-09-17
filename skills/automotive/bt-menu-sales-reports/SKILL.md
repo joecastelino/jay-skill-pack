@@ -425,4 +425,21 @@ Gonzalez 2/$3,976.09, Michael Rankin 19/$2,496.27, Randy Vung 18/$1,657.41.
 NOTE: prior BT entries stop at 8/24; runs 8/25–9/14 were clean and unlogged — the Sept master
 baselines were 9 rows (9/01) -> 42 (9/04) -> 57 (9/05) -> 120 (9/13) -> 135 (9/15).
 
+### (9/17 run, for Wed 9/16) TEXTBOOK CLEAN — zero SMTP errors, one-attempt send
+103 closed ROs, 16 prefilter hits, 16 new menu rows, `all candidate ROs scanned`. MTD moved
+135 rows/$25,584.80 -> **151 rows / $32,838.44** ($24,096.89 labor + $8,741.55 parts).
+9/16-dated rows alone = 13 menus / $4,578.31 (rest of the +$7,253.64 delta = older invoiced ROs
+closed) — stated both numbers in the body per standing practice. .sh-wrapper + quoted-heredoc +
+DO-NOT-DOUBLE-SEND paragraph (+ 587 hint): one-attempt send on 465, zero SMTP errors (Stacey hit
+two self-corrected typos in her own inline build script — HTMLBODY/SUBECT — then sent cleanly;
+normal self-healing). Hand-off 1m50s, verification 1m30s, both first try, zero exit-124s.
+Sent-check = **17 hits, exactly one carrying today's subject (September 1-16, 06:04 PDT)** —
+the other 16 all prior sends (Jul 1-28/1-30, Aug 1-8/1-18/1-24/1-25/1-26/1-27/1-31,
+Sept 1-1/1-2/1-3/1-4/1-5/1-10/1-15) — token-match trap now 16 deep; only the exact-subject line
+matters. Stacey's first himalaya invocations errored on syntax (`search --folder`, then `-f sent`)
+and she self-corrected to `envelope list -f '[Gmail]/Sent Mail' -o json` — normal.
+MTD advisor leaders (9/16): Jon Lo 27/$7,142.46, Jason Davis 36/$5,818.11, Erick Villasenor
+Gonzalez 2/$3,976.09, Michael Rankin 20/$3,623.59, Randy Vung 20/$3,064.46, Somnang Ros 8/$2,380.97.
+Master date distribution confirms known gaps (no rows 09/06, 09/07, 09/13, 09/14) — not errors.
+
 ## OVERALL_QUOTA reset behavior (observed 7/8–7/9 outage)\nNOT a fixed midnight reset. Behaves like a rolling ~24h+ bucket tied to when\nthe calls were burned; the 7/8 outage ran **29+ hours** with continuous 429s.\nRecovered capacity can be instantly re-drained by queued crons (11PM\ndealer-detail sync, 2AM VI pull), making it look continuously dead.\nIf dead >24h, escalate: ticket to Tekion asking the actual OVERALL_QUOTA\nlimit, reset schedule, and a raise — it's one org-wide bucket shared by all\n7 stores' pipelines and AMG has co-founder-level contact from the bin\nescalation. Never blind-retry; probe-gate everything.
