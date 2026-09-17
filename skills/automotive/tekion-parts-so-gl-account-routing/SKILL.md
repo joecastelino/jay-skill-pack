@@ -140,6 +140,89 @@ Joe accepts "I haven't nailed that yet"; he does not accept a confident wrong an
 
 ---
 
+## ✅ 2026-09-17 — CLOSED THE LEDGER LOOP + FOUND WHERE THE FLAG COMES FROM
+
+Joe escalated Chris Wiese's (VP Finance) email: *"W/s accounts w taxable sale accounts — we were told
+that this was fixed. This is the one that was an emergency."* Everything below is verified live at SCT (876).
+
+### A) The posted GL entries ARE readable — Chart of Accounts → Postings tab
+
+`/accounting/chartOfAccounts/list` → click the account name (e.g. `SLS PRT WHOLESALE MECH-TOY`) →
+`/accounting/chartOfAccounts/dealer/<id>/account/<id>_4750/edit` → **Postings** tab.
+
+Captured endpoint (arm XHR hook AFTER the navigate, then click the Postings tab):
+```
+POST /api/accounting/u/glAccount/v2/postings/m/search
+body: {"durationType":"MONTH_TO_DATE"|"PREVIOUS_MONTH"|"QUARTER_TO_DATE"|"LAST_QUARTER"|"YEAR_TO_DATE",
+       "request":{"sort":[{"field":"scheduledTime","order":"DESC"}],
+                  "filters":[{"field":"dealerId","operator":"IN","values":[],"key":"dealerId"},
+                             {"field":"glAccountId.original","operator":"IN","values":["876_4750"],"key":"glAccountId.original"}],
+                  "searchText":"","groupBy":[],"includeFields":[],"searchableFields":[],"excludeFields":[],
+                  "pageInfo":{"start":0,"rows":200}},
+       "fetchCurrentBalance":true}
+```
+Key hit fields: `parentRefType` (`PART_RETAIL_SALE_ORDER` / `CUSTOM`), **`parentRefText` = the SO number**,
+`parentRefId` (internal SO id), `credit`, `debit`, `scheduledTime`, `journalName`, `glAccountId`.
+- **`pageInfo.start` DOES paginate here** (unlike `/sale/order/search`). Duplicate-page break still worth keeping.
+- `rows` maxes at ~200 (500 → empty). `durationType:"CUSTOM"` invalid; BTW on `scheduledTime` is IGNORED
+  while a duration preset is set — use the presets. There is **no searchText matching** on refText (returns 0).
+- Aggregate **in-page with JS** (`window.__agg`) and read back in ≤14k slices — 200 hits ≈ 120KB.
+- The UI's `Reference Number` column shows `SO#-invoiceSeq` (e.g. `335680-1`); the API's `parentRefText`
+  is **the bare SO number**. Search on the bare number.
+
+### B) The ledger proof (dollars, not theory)
+
+| Bucket | 4740 (retail counter) | 4750 (wholesale) |
+|---|---|---|
+| Jul | $94,242 | $817,897 |
+| Aug 1–20 | $61,703 | $598,409 |
+| Aug 21–31 | **$290,196** | **$35,001** |
+| Sep 1–17 | **$314,129** | $214,832 |
+
+**Split inverted at 8/20–8/21; total stayed flat (~$30K/day).** Direct per-order proof:
+SO **330928** (Toyota of Palo Alto, created 8/18) → **4750** ✅, vs SOs created 8/22
+(331794 TLS Auto Service, 331802/331803 AutoRange Motors, 331806 Toy Connection, 331810 Choice Auto Repair,
+331828 Leader Auto Repair — all `saleType=WHOLESALE`) → **4740** ❌.
+
+### C) ⭐ WHERE THE `taxable` STATUS COMES FROM — the customer's Tax Exemptions record
+
+Joe's question: *"where did it get this taxable status?"* **Not the customer master, and not the counter
+person.** Pull `/api/cms/u/tax-code-setup/<customerId>` (UI: Customer → **Tax Exemptions** tab) — SO 334499's
+customer (Caliber Oakland 11th 1173, id `0818dabd-37b8-4cb3-a020-46f2282cedc0`, displayId 351427):
+
+```
+module "Parts"    taxExempt: false      module "Service"  taxExempt: false
+  WHOLESALE → PARTS/CORE_SALE/CORE_RETURN/FEES/LABOUR = "NO TAX" (0%)
+  RETAIL    → same
+createdTime = modifiedTime = 2026-08-20 03:58:13 PDT
+createdBy   = -1        lastModifiedBy = -1        ← SYSTEM, no human
+```
+
+Meanwhile the **master** is unambiguous: `partsTaxInfo[0].taxExempted = true`, `serviceTaxInfo` true,
+`salesTaxInfo` true, reason "Resale Certificate", certs `223-680032` (parts) / `099994523-00272`.
+
+The "NO TAX" code (`6a867038a5537a692d78fdf0`) went effective **2026-08-19 20:10:48 PDT** — **7h47m before**
+that record was written. So the release **re-materialized every customer's exemption as
+`taxExempt:false` + all components mapped to the 0% NO TAX code**. Tax is still $0 (exemption honored via the
+CODE), but the **flag GLAM reads flipped to taxable** → `Taxable|Wholesale → 4740` catches 100% of wholesale.
+
+**This is the cleanest single answer to "where did it change": a system-written Tax Exemptions record at
+8/20 03:58, `createdBy:-1`, 7h47m after the NO TAX code landed.** It supersedes all per-customer theorizing.
+
+### D) The fix (one row)
+
+GLAM → Part & Accessories → **Parts-Counter** → the row
+`All | All | Taxable | Wholesale | All | All → 4740 SLS PRT COUNTER RTL-TOY` — repoint to **4750**.
+Re-verified 2026-09-17: the table is **unchanged from the 9/1 baseline**, so nothing was ever "fixed".
+Only caveat: genuinely-taxable wholesale customers (no resale cert) would also land in 4750.
+Note this is a *dealer-side, reversible* change — and it works at **posting time**, so it also catches the backlog.
+Alternate lever (per-customer): flip `taxExempt` back to `true` on the Tax Exemptions record — but that's
+hundreds of customers and the next Tekion release would likely re-break it. Prefer the GLAM row.
+
+⚠️ Still open: SO 334499 (`postedToAccounting:false`, CLOSED, 8 lines all `NO TAX`@0%) had **no postings in
+either account** — the same unposted-SO mystery as before. Don't claim a dollar total for an individual SO
+without finding its posting row.
+
 ## 🚨 ROOT CAUSE FOUND 2026-09-02 — a store-wide tax-code rollout on 08/19, not a customer edit
 
 Joe's follow-up was *"K, so where did the taxable status change?"* **Answer: it changed on

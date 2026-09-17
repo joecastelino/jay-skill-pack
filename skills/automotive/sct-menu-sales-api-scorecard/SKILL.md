@@ -731,6 +731,20 @@ PITFALLS (all hit on 2026-06-15):
   have working Gmail IMAP creds for this mailbox; that access lives only in
   Stacey's profile. Don't waste a call trying direct himalaya reads from Jay —
   go straight to `ask-agent stacey` for every Sent-folder/draft verification.
+- **FOLD THE ATTACHMENT (MIME) CHECK INTO THE SAME TERSE STACEY VERIFY AS AN
+  `ATT=` FIELD (proven clean one-line 2026-09-17 opened run).** Several spots
+  above still say to run `himalaya message export <id> ... | grep
+  content-type` — but that is IMPOSSIBLE from Jay's profile (himalaya 401s, per
+  the 2026-08-13 note directly above). Do NOT chase it. Instead ask Stacey, in
+  the SAME round-trip as the recipient+total check:
+  `Reply one line only: TS=<ts> | TO=<exact recipient> | TOTAL=<exact $ total in
+  body, or BLANK> | ATT=<yes if it has a real PDF attachment
+  (Content-Disposition attachment), else no>`
+  → 2026-09-17 returned `TS=2026-09-17 12:12:53 -0700 |
+  TO=jcastelino@americanmotorscorp.com | TOTAL=$5,465.20 | ATT=yes` in ONE call,
+  covering recipient + literal numbers + real-attachment presence together. A
+  broken markup-as-text copy shows `ATT=no`. This subsumes the separate
+  himalaya MIME grep for every normal send.
 - **STALE earlier-send collision — verify Sent-copy CONTENTS, not just existence (hit 2026-06-19, 5 PM run).** When a Sent-folder search for today's subject returns copies, do NOT assume they're yours — an EARLIER run the same day (e.g. a noon Opened run, or a validation send TO Joe vs the real send TO Kevin) can leave Sent copies with DIFFERENT numbers and/or a different recipient. On 6/19 the 12:06/12:07 Sent copies were a noon run (7 menus / $5,915.30, to Kevin) while the 5 PM run's correct data (10 menus / $5,234.94, to Joe) was still only a DRAFT. A bare \"2 copies in Sent\" check would have falsely concluded \"already sent\" and skipped the real send. → After a timed-out send, the read-only Sent verify must check the BODY NUMBERS + RECIPIENT of each Sent copy against today's totals, not just that *a* copy with the subject exists. Only conclude \"already sent\" if a Sent copy matches BOTH today's exact totals AND the intended recipient. Otherwise the draft still needs sending.\n  RE-CONFIRMED 2026-06-22 (same-recipient stale-copy trap): an earlier NOON Opened send to Joe (total $1,625.84) sat in Sent while the 5 PM run draft (38623, total $2,384.81 / 8 menus) was still UNSENT. A terse 'is it in Sent? SENT/NOTSENT' replied 'SENT 12:03' — TRUE for the STALE noon copy, which would have falsely ended the task. The stale copy had the SAME recipient AND subject AND date, differing ONLY in TOTAL. The catch: a follow-up read-only ask for TS+TO+TOTAL of the MOST-RECENT Sent copy returned TOTAL=$1,625.84 != today $2,384.81, proving the real send had NOT happened. Recipient-match alone is NOT enough when multiple same-day runs exist; the verify MUST extract the body TOTAL and compare to the opened-JSON total, then re-ask Stacey to SEND the specific newer draft ID with the EXPECTED total stated. A final TS+TO+TOTAL read confirmed $2,384.81 to Joe.\n- **Leftover drafts can be MULTIPLE and must be deleted one round at a time.**
   After a send, ask her to delete the leftover draft; she may then report ANOTHER
   same-subject draft (the second send's leftover). Loop: delete → re-ask

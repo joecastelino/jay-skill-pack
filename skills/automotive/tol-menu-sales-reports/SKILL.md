@@ -1117,6 +1117,20 @@ NO bogus-UID, no UID sent in the ask; html + multipart/alternative + image/png C
 application/pdf), Sent-check short-stem (Sent: 2, both old June 1-29 = token trap 5b, no leak).
 Flag to Joe: 10 unsent Closed-MTD drafts stacked (Sept 1-6 .. 1-16).
 
+## (9/17 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s across ALL 5 calls
+Both scripts foreground clean in seconds (0 scrapers; OPCODE_LIST confirmed = data/tl-menu-opcodes.json).
+91 opened ROs scanned, **3 menus / $406.39** ($299.74 labor + $106.65 parts), `complete: true`,
+`expected_records: 3`. Michael Hachey 2/$258.24 (63.5%), Gregory Grimes 1/$148.15 (36.5%).
+Hand-off RC=0 FIRST TRY (68s); draft correct FIRST TRY — no dedupe needed (no noon Closed/prior draft
+with today's subject). All 4 verification asks FIRST try with "use raw IMAP, NOT the Gmail API" leading,
+ZERO exit-124s: subject-list 63s (Count: 2 = 09/17 UID 43436 + 09/16 UID 43417, exactly one today, no
+true dupe), part-probe 28s (UID fetched: 155 = the himalaya-vs-IMAP numbering quirk; her save id 43436
+matched the subject-list instead — verify by subject as always; multipart/mixed > related >
+alternative(text/plain+text/html) + image/png CID=<scorecard> + application/pdf; sizes 58702/49737 =
+EXACT on-disk bytes), Sent-check 50s short-stem (Sent: 4, ALL old em-dash-era 06/30-07/03, zero today =
+no leak), \Draft-flag check 57s (UID 43436 | \Draft | yes).
+Flag to Joe: only 2 unsent Opened drafts stacked (09/16, 09/17) — the backlog appears cleared.
+
 ## Cross-store note
 This same pattern (clone the sibling pipeline, derive the store's OWN SERVICE_MENU opcode
 set, set dealer ID + recipient) applies to the remaining AMG stores (SV/AR/VC) when Joe
