@@ -513,6 +513,83 @@ disabled). Pre-invoice validation passes clean.
 Request: remove/repair the orphaned deductible payer on job 1 so the job can be invoiced.
 ```
 
+### ⭐ NEW LEVER (discovered 2026-09-17, re-checked on the same RO 398856): `Reopen Payer`
+
+**The RO kebab is NOT static** — it grows options as the RO's financial state changes.
+On 2026-08-27 this RO's kebab had NO reopen entries. On **2026-09-17**, after the RO had
+been re-invoiced (both invoices CLOSED at $0 on 09-15), the same kebab **did** expose:
+
+```
+Add/Edit Coupon · Add/Edit Fee · Audit Logs · Cashier · Hold · Invoice Pdf Preview ·
+Media (N) · Payers View · Profit/Loss View · **Reopen Closed RO** · **Reopen Payer** ·
+**RO Bulk Action** · RO Clocked Time · **Schedule Appointment** · Update Estimate Amounts ·
+View Posting Preview · View RO PDF
+```
+
+**So: always re-read the kebab rather than trusting a prior session's enumeration.**
+
+`Reopen Payer` opens modal **"Reopen following Payer(s)"** — columns
+`Payers | Paytype of Payer | Payer Contribution | Impacted Jobs | Status | Payer Reopen Reason`,
+per-payer required reason dropdown (`Select`), footer `Cancel | Reopen Selected Payer(s)`.
+On 398856 it listed:
+```
+All Customer Payers
+  C - Base Customer                                            $0.00  1
+  166920 - Amir Baig       CUSTOMER_PAY  $0.00  1  Closed  [Select]
+All Internal Payers
+  I - Base Customer                                            $0.00  6
+  94227 - Toyota of Lancaster  INTERNAL   $0.00  6  Closed  [Select]
+```
+⚠ The `X - Base Customer` rows are **pay-type-level** rows, NOT the phantom. The orphan is
+still only detectable by the **chip-count vs Payers-View diff** (3 vs 2). Opening is
+read-only; nothing changes until you pick a reason + `Reopen Selected Payer(s)`.
+**Not yet proven to thaw a frozen job** — the 08-27 RO-level reopen did not, and the lock is
+job-level. Treat it as the last in-app lever before a Tekion support ticket, and get Joe's
+go first (financial state change on a live customer RO).
+
+### ⛔ PROOF THAT NO UI FIX EXISTS on a PARTIALLY_INVOICED job (TL 398856, verified 2026-09-17)
+
+Don't keep the store clicking — dump the **disabled** flags and quote them. On 398856 every
+remediation control Tekion owns was disabled:
+
+**RO kebab → `RO Bulk Action`** (left-nav items carry a `ro_leftPanelItem_disabled__*` class):
+```
+Approval               enabled      Mark as complete        DISABLED
+Job Tags               enabled      Parts Fulfilment Req    DISABLED
+OEM Opcode Entry       enabled      Re open                 DISABLED
+Tech Flag Hrs          enabled      Void job                DISABLED
+Update Cost Centers    enabled
+```
+Read them directly (don't guess from the label):
+```js
+[].slice.call(document.querySelectorAll('[data-test*="roBulkActionsScreen-"]'))
+  .filter(function(e){return e.getAttribute('role')==='button'&&e.offsetParent})
+  .map(function(e){return {name:e.textContent.trim().slice(0,26),
+                           disabled:/disabled/.test((e.className||'').toString())}});
+```
+⚠ The bulk-action left nav **scrolls** (`roBulkActionsScreen_leftPanel`, scrollHeight 590 >
+clientHeight 478). Items below the fold return a y beyond the container and `element.click()`
++ `/mouse` silently no-op. `scrollTop = scrollHeight` first. `Re open`/`Void job` are the last
+two items.
+
+**RO kebab → `Reopen Payer`**: the payer row checkboxes `input[id^="payers_"]` are
+`disabled:true` AND the footer **`Reopen Selected Payer(s)` button is `disabled:true`** —
+and typing a reason into `input[id^="payerReopenReason"]` does **not** enable them. So the
+"new lever" above is real UI but **not usable** on a frozen job. (Reason input itself is a
+free-text field, not a picklist.)
+
+**Job panel `Manage Splits`**: `addNewPayer`, `splitType`, `btnSalesSetupSave` all disabled;
+`btnSalesSetupCancel` is labelled **`Mark as Complete`** and is also disabled — that button IS
+the user's "I can't fully mark the job complete" complaint, so say so.
+
+**`Reopen Closed RO`** kebab item renders enabled (menu items carry no disabled class — you
+cannot read their state from the DOM), but it was already exercised on this RO on 08-27 with
+**no effect on job 1** (payers Closed→Ready for Invoice only; jobs 2–7 gained 2 Need Attention
+each). Don't sell it as a fix.
+
+**Conclusion: an orphaned-payer job frozen in PARTIALLY_INVOICED is a Tekion-side lock.** The
+deliverable is a support ticket, not a click path. Ticket text template is in §3g.
+
 ### Before answering "how do I stop this recurring?" — fleet-scan first
 Free API sweep of the whole opcode family (250 TL ROs / 90 days across TSC1–TSC5)
 returned **zero** other `PARTIALLY_INVOICED`. So it is NOT an opcode config defect and

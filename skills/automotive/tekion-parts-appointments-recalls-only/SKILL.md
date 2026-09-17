@@ -24,7 +24,31 @@ triggers:
   - **Keep-list: 30 Toyota campaign codes** (20TA02–24TA07) from Recalls service type. 
   - **Generic RECALL opcode creation blocked by Skill field** — defaults to "Skills Default" which is NOT a valid value. Must be set to "tech/generic". All other fields filled and verified.
   - **REMAINING**: RECALL opcode creation, free-text placeholder, notify-immediately toggle, backlog sweep, verification.
-  - **TL vs SCT**: TL has 30 active campaign codes vs SCT's 3. TL lacks a generic RECALL opcode (SCT has one).
+  - **TL (1092) — VERIFIED LIVE 2026-09-17 (pieces 1+2 IN, piece 3 OFF, backlog NOT swept):**
+  Live re-pull via :9225 + in-page `fetch` (clone :9223 localStorage into :9225, navigate `/ro/opcode`,
+  hook XHR for 16 headers, then fetch `/api/service-module/u/opcode/search` paginated 200):
+  - **Flags: 981 ACTIVE, 949 OFF, 32 ON** = 31 Toyota campaign codes (20TA02…24TA07, incl. 20TA024RN,
+    21TD03/21TG01/21TH01, 22TC07/22TC08/22TD02/22TE02, 23TC06, 23TJ01R1) **+ generic `RECALL`**. ✅
+  - **`RECALL` opcode EXISTS at TL** (id `RECALL_1092`, ACTIVE, INDIVIDUAL_SERVICE, DIAGNOSTICS, Service Type
+    Recalls, flag ON) with a free-text placeholder part named **"ORDER PARTS RECALL"** (no part number →
+    unresolved → will queue). NOTE the name differs from SCT's "RECALL PART - SEE VIN" — either is fine.
+  - **Effect (the proof):** appointments Sep 13→17 = 905 records, **8** with `PART_REQUEST_PENDING` (0.9%);
+    Sep 1–10 = 1,400 records, **155** pending (11%) → generation down ~92%. ✅
+  - **LEAK (non-zero, unexplained):** the 8 post-flip pending are NON-recall — `LOF4CYL` ("oil filter"),
+    `TIRE4`, `EXHANGEC`/`RDIFF`/`RBRAKE`, menu `TEK45000VNM` — yet all those opcodes read
+    `eligibleForPartPreparation:false`. Their acquisitions carry `sourceRequestedDetail.opcode = null`
+    and `requestedBy` = the booking advisor (a DIFFERENT user per record) → i.e. they look like parts the
+    ADVISOR requested on the appointment rather than opcode-flag-driven generation. Not yet proven either way.
+  - **Notify toggle = OFF** at `/dse-v2/scheduling-settings/general` ("Notify Parts department … immediately"
+    switch `ant-switch-checked:false`; the legacy "few days before" + Days field is still rendered).
+    Consequence: most generated requests sit `invisible:true` until the window (SCT was flipped ON).
+  - **Backlog NOT swept:** TL's `PART_REQUEST_PENDING` query returns **490** records (going back to 2025);
+    only 5 of them are post-flip. So the parts queue at TL still LOOKS non-recall to the manager.
+  - Useful 3.0-safe detail: `:9225 /eval` returns **HTTP 500 whenever the JS payload throws**
+    (e.g. referencing `window.__cap` after a navigation wiped the armed hook) — the 500 is the page-side
+    exception, NOT a session problem. Re-arm the hook on the current page, then retry.
+- **TL vs SCT**: TL has 31 active campaign codes vs SCT's 3. SCT has NO generic RECALL gap; TL's generic
+  RECALL was later created (was blocked on the Skill field on 2026-09-11).
 - Why not a list filter: Parts RO Sales → Appointments tab filter fields are only Appointment Date/Time, Appointment Status, Part Status, Counter Person — no opcode/recall field exists, so opcode-level config is the only clean path.
 
 # Tekion — Parts Appointments for Recalls Only (parts-prep flag mass toggle)
