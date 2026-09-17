@@ -223,6 +223,56 @@ hundreds of customers and the next Tekion release would likely re-break it. Pref
 either account** — the same unposted-SO mystery as before. Don't claim a dollar total for an individual SO
 without finding its posting row.
 
+## 🛑 STOP — JOE'S CORRECTION 2026-09-17: TEKION SHIPPED A FIX ON 9/9. DO NOT EDIT THE GLAM ROW.
+
+**I recommended repointing `Taxable|Wholesale → 4750`. Joe corrected me: "The fix came on 9/9. This SO was
+created 9/8."** He was right, and the daily GL series proves it. **When Joe says a fix shipped, date every
+artifact against the fix date before diagnosing.** I had SO 334499's `createdTime` (9/8 1:44 PM) on screen
+and still built a month-long story around a one-day-late order.
+
+### The boundary, from the ledger (SCT 876, `PART_RETAIL_SALE_ORDER` credits by accounting day)
+
+| Day | 4740 retail counter | 4750 wholesale |
+|---|---|---|
+| Sep 1–4 | $30K–48K/day ❌ | ~$0–3K |
+| Sep 8 | $40,045 ❌ | $295 |
+| Sep 9 | $44,867 ❌ | $7,813 (transition) |
+| Sep 10–11 | $20,926 / $10,362 | $26,054 / **$44,698** |
+| Sep 12 | $6,952 | $644 |
+| **Sep 13 →** | **$2,249** ✅ baseline | — |
+| Sep 14–17 | $4,130 / $4,144 / $2,286 / $1,846 ✅ | **$30,217 / $42,737 / $48,196 / $18,099** ✅ |
+
+4740 returns to its ~$3K/day retail baseline from **9/13**; 4750 returns to a ~$39K/day wholesale run-rate
+from **9/10**. Corroborated on the order side — `customer.taxable` on WHOLESALE SOs by created date:
+
+```
+Aug 20–24   16 T /  4 F
+Aug 25–31   20 T /  0 F
+Sep 01–05   19 T /  1 F
+Sep 06–08   20 T /  0 F     ← last fully-broken day
+Sep 09–12    3 T / 17 F     ← Tekion fix landing
+Sep 13–17    0 T / 20 F     ← fully fixed
+```
+
+**So: orders created 8/20 → ~9/12 keep the broken `taxable=true` snapshot forever; orders created from
+~9/13 stamp `taxable=false` again and match `Non-taxable|Wholesale → 4750` correctly.**
+**The GLAM row is CORRECT as-is — leave it alone.** Repointing it would have broken the post-9/13 recovery.
+
+### What the residual work actually is
+1. **Backlog** — wholesale SOs created **8/20 → 9/12** still hold `taxable=true`; any that haven't posted yet
+   will post to **4740** when they do.
+2. **Reclass** — ~**$520K** of wholesale revenue is sitting in 4740 that belongs in 4750
+   (4740 excess ≈ $256K Aug 21–31 + ≈$236K Sep 1–9 + ≈$29K Sep 10–12, vs a ~$3.1K/day true retail baseline).
+3. Nothing dealer-side needs changing; this is a finance reclass + backlog-cleanup exercise.
+
+### ⚠️ THE DIAGNOSTIC LESSON
+`customer.taxable` is a **snapshot stamped at order creation**, not a live read — so two orders on the same
+day from the same exempt customer can carry opposite flags (331583 World Mufflers `true` with the new
+`taxConfiguration`/NO TAX shape vs 331585 A Rod Auto Collision `false` with `taxConfiguration:null` +
+`taxRegime:SALES_TAX`). **A mid-period fix means any windowed total silently mixes broken and fixed orders —
+always pull the DAILY series before computing an aggregate, and always sort candidate records by
+`createdTime` against the known fix date.** Do not report a month figure as if it were a single regime.
+
 ## 🚨 ROOT CAUSE FOUND 2026-09-02 — a store-wide tax-code rollout on 08/19, not a customer edit
 
 Joe's follow-up was *"K, so where did the taxable status change?"* **Answer: it changed on
