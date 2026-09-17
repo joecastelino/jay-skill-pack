@@ -259,6 +259,20 @@ cleanly** — if none exists, it's config; if some post, it's per-RO/Tekion.
 Also note the VC Error queue was **empty (0 Result(s))** on 9/16 — consistent with Carol's manual
 fixes clearing them; the JEs are only visible after the fact. Ask for the RO#s before hunting.
 
+Source artifacts for this case: **`/home/itadmin/tekion-reports/clvw_141821/`** (Chris's forwarded
+PDF as received in chat + the extracted JE screenshots). NOTE incoming chat attachments land in
+`~/.../cache/documents/` which is WIPED on the daily reset — move them into `/home/itadmin/...`
+in the same turn you receive them.
+
+**Reporting framing that landed well with Joe here:** lead with "the discount is never posted into
+the auto-posting JE — the entry doesn't balance by exactly the discount — it's NOT a wrong-GL-account
+problem: every posting line has an account and there's no blank cell." Then table the two JEs
+(id / RO / acct date / debit / credit / balance / discount), then the arithmetic tell
+(`gross-revenue − cash-collected = Balance`), then the current queue state, then explicitly separate
+**what is proven** from **what is not yet proven** (config vs Tekion) with the single test that
+separates them. Joe's ask was literally "don't do anything, just tell me what is wrong" — diagnosis
+only, no writes (§5e).
+
 ---
 
 ## 5b. Known root cause: department-scoped mapping gap
