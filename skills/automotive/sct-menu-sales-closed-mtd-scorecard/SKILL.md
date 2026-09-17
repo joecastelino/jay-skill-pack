@@ -313,6 +313,16 @@ the correct path on the first attempt.
 
 ## Pitfall: month rollover day (1st of month) + outage recurrence
 
+**Verified 2026-09-16 — OUTAGE STILL CLEAR (day 2 clean).** Clean run, no 429s:
+`prefilter: 6 of 211` TEK candidates, `scan batch 1/1 done (6 menu rows, 0 failed)`,
+master 39→45 rows (+6 new menus today: labor $14,816.49, parts $7,393.90, total
+$22,210.39). No `quota_outage_note`. Interpreter note re-confirmed: the real path
+is `/home/itadmin/.hermes/hermes-agent/.venv/bin/python3.11` (there is NO `venv`
+or `.venv` inside `/home/itadmin/tekion-reports`). Email stage 3 calls, body-file
++ one short send ask worked first try (`OK BYTES=141409`, byte-exact vs `ls -la`);
+Sent list showed real 18:03 send; MIME check
+`MIME=REAL filename=SCT-...-2026-09-16.pdf PDF=YES TOTAL=$22,210.39`.
+
 **Verified 2026-09-15 (outage day 15) — OUTAGE APPEARS CLEARED.** Clean run, no
 429s anywhere: `prefilter: 6 of 276` TEK candidates, `scan batch 1/1 done (6 menu
 rows, 0 failed)`, master 33→39 rows (+6 new menus today: labor $12,841.90, parts
