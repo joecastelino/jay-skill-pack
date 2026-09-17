@@ -575,6 +575,40 @@ transition for this job".
 - Remaining unexplored lane: the INTERNAL `multi-payer-split` write endpoint, which is what the
   disabled Manage Splits Save button calls. Not yet captured — XHR hook got interrupted.
 
+## ✅ RESOLVED 2026-09-17 — the fix that actually worked (TL RO 398856)
+
+**Answer to "can I fix a frozen PARTIALLY_INVOICED job?" — YES, via the internal split API.**
+No Tekion ticket was needed. Full sequence, in order:
+
+1. Read the split: `GET /api/service-module/u/ro/<roId>/job/<jobId>` (headers via
+   skill `tekion-internal-api-access`). Confirm `sum(splits[].postTaxAmount)` vs the RO bucket's
+   `postTaxTotal` from `ro.totals`.
+2. **Rewrite the split** — `PUT /api/service-module/u/multi-payer-split/assetType/RO/assetId/<roId>/job/<jobId>`
+   with the split object FLATTENED at top level.
+   - `RJ1976 "Primary payer should be present"` → add **`primaryPayerId`** at the TOP level of the body.
+     (This was the final blocker; without it every attempt 400s.)
+   - `splitType`/`splitBy` NotBlank → don't nest under `splitInfo`.
+   - `RO1365 post.tax.request.amount.mismatch…` → when `postTax:true`, `postTaxAmount` values must sum to
+     the job's post-tax total.
+   - **Working body** (mirrors a healthy CP job): `{splitType:"TOTAL", splitBy:"PERCENTAGE", postTax:false,
+     primaryPayerId:"<customer payer>", splits:[{payerId, subPayType:"CUSTOMER_PAY",
+     components:[…all splitPercentage:100…], costCenters:[{type:null, costCenter:"COLLECT_AT_CASHIERING",
+     value:"100"}]}]}` — component ids/parents copied verbatim from the pre-change split.
+   - Result: phantom payer row dropped (chip `3 Payers` → `2 Payers`), primary payer corrected.
+3. **Then invoice in the UI** — the write alone does NOT clear the status. Click the RO-level
+   **`#invoice`** button (top-right, enabled once the split is valid) → an invoice panel opens with
+   **"Resync Payer"** and **"Invoice Selected Payer(s)"**.
+4. Click **"Invoice Selected Payer(s)"** → `#btnSalesSetupSave`. ⚠️ TARGET BY TEXT, not id — that id is
+   reused across panels and reads "Save" when the panel is closed; clicking by id silently hits the
+   wrong/stale button. Use `[...buttons].filter(b=>/Invoice Selected Payer/i.test(b.innerText))`.
+
+**Verified outcome:** job 1 `PARTIALLY_INVOICED → INVOICED`, RO `READY_FOR_INVOICE → INVOICED`,
+tag `STATUS_PARTIALLY_INVOICED` gone, replaced by `STATUS_INVOICED`.
+
+**Always snapshot the pre-change `splitInfo` first** (wrote to
+`/home/itadmin/tekion-reports/_ro398856_job1_split_BEFORE.json`) — it's the revert path and the source
+of the component ids.
+
 ## 💰 THE PARTIALLY_INVOICED ROOT CAUSE, PINNED TO DOLLARS (TL RO 398856 job 1, 2026-09-17)
 
 Read the job JSON via `GET /api/service-module/u/ro/<roId>/job/<jobId>` (see skill
@@ -602,7 +636,23 @@ this decides what the customer is actually invoiced. Record the prior `splitInfo
 `payerTaxCodes: []`. A broken one shows `splitBy AMOUNT` with 0% / mismatched `postTaxAmount`s and a
 `payerTaxCodes` entry whose payerId does NOT appear in `ro.customerInfo`.
 
-## ⛔ PROOF THAT NO UI FIX EXISTS on a PARTIALLY_INVOICED job (TL 398856, verified 2026-09-17)
+### ⚠️ CHECK FIRST: is a SERVICE CONTRACT even on the RO?
+
+If the store says "the customer owes $0, the contract should pay", a split rewrite is the WRONG fix until
+you confirm a contract payer EXISTS. Cheap tells that a contract/CVSC is attached — if ALL are absent,
+the ESC was never billed and no amount of split arithmetic will make it pay:
+- RO search **tags** contain `PAY_TYPE: CVSC` and `PAY_TYPE: SPLIT_CUSTOMER_PAY_SPLIT`
+- job `contractDetails` / `thirdPartySplitInfo` / `thirdPartySplitDetail` / `warrantyDetails` non-null
+- the RO's `ro.totals` bucket the money somewhere other than `customerPay` (warrantyPay/internalPay > 0)
+
+Verified counter-example (TL RO 398856): tags showed only `PAY_TYPE: INTERNAL` + `PAY_TYPE: CUSTOMER_PAY`,
+every contract field was null, and the full $65.00 sat in `customerPay`. The ESC had never been attached —
+so this is a Tekion-side unlock (or a rebuild), NOT a payer-split write. A payer row labelled
+`Deductible` with a **blank payer name** is a dangling payer id, not a contract — don't allocate money to it.
+See `tekion-vsc-deductible-vs-fee-code` for how a correct CVSC split renders
+(`<customer> CP Deductible $x / <contract co> CVSC $y`).
+
+## ⛔ PROOF THAT NO UI FIX EXISTS
 
 Don't keep the store clicking — dump the **disabled** flags and quote them. On 398856 every
 remediation control Tekion owns was disabled:

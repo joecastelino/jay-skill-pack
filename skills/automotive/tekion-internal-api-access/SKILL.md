@@ -49,6 +49,21 @@ fetch('/api/…', {headers:H, credentials:'include'})
 | `GET /api/service-module/u/ro/<roId>/job/<jobId>` | 200 — full job doc (payType, primaryPayerId, splitInfo, payerTaxCodes, operations, totals) |
 | `PUT /api/service-module/u/multi-payer-split/assetType/RO/assetId/<roId>/job/<jobId>` | **write path for payer splits** — body = the splitInfo object |
 
+### Job-level routes probed on `/api/service-module/u/ro/<roId>/job/<jobId>` (TL, 2026-09-17)
+
+| Route | Result | Meaning |
+|---|---|---|
+| `POST …/reopen` | 400 `RJ1137 "Can reopen only completed job"` | **EXISTS** — a real job reopen, gated on job being COMPLETED |
+| `GET …/status` | 500 `unexpected.error` | route exists (not a GET-readable resource) |
+| `GET …/split` | 500 `unexpected.error` | route exists |
+| `POST …/void` | 404 empty | not this shape |
+| `POST …/mark-complete` | 404 empty | not this shape |
+| `GET …/paytype`, `GET …/payers` | 404 empty | not these shapes |
+| `GET /ro/<roId>/payers` | 500 `unexpected.error` | route EXISTS (errors on a corrupt payer set) |
+
+Rule of thumb: **404 + empty body = wrong path; `{"status":"failed","errorDetails":{…}}` = right path,
+request rejected.** Use empty/`{}` bodies to probe existence WITHOUT mutating.
+
 `ro` sub-object holds `customerInfo` (id = the customer PAYER id), `totals` (per-bucket
 preTaxTotal/postTaxTotal — the authoritative money), `status`, `invoice`.
 
