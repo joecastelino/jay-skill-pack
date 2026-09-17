@@ -575,6 +575,33 @@ transition for this job".
 - Remaining unexplored lane: the INTERNAL `multi-payer-split` write endpoint, which is what the
   disabled Manage Splits Save button calls. Not yet captured — XHR hook got interrupted.
 
+## 💰 THE PARTIALLY_INVOICED ROOT CAUSE, PINNED TO DOLLARS (TL RO 398856 job 1, 2026-09-17)
+
+Read the job JSON via `GET /api/service-module/u/ro/<roId>/job/<jobId>` (see skill
+`tekion-internal-api-access`). Two objects disagree:
+
+**`ro.totals`** (authoritative money) → `customerPay.postTaxTotal: 6500`, warrantyPay 0, internalPay 0.
+Labor 2909 (untaxed) + parts 3228 @11.25% (tax 363) = preTax 6137 / **postTax 6500**.
+
+**`job.splitInfo`** → `splitType TOTAL, splitBy AMOUNT, postTax TRUE`:
+| payer | who | pct | amt | postTaxAmount |
+|---|---|---|---|---|
+| `3fb60531-…` | **Amir Baig, cust# 166920** (= `ro.customerInfo.id`, the REAL customer) | 0 | 0 | **0** |
+| `7d5c1174-…` | **PHANTOM** (blank payer row, no customer record, zero audit entries) | 100 | 6137 | **2101** |
+
+So the **phantom payer holds 100% of the job and the real customer holds 0%**, and the
+`postTaxAmount` values sum to **2101 ≠ 6500** → `RO1365 post.tax.request.amount.mismatch.with.job.post.tax.total`.
+That mismatch is what freezes the job at PARTIALLY_INVOICED and greys out Mark as Complete.
+
+**Fix = rewrite the split via** `PUT /api/service-module/u/multi-payer-split/assetType/RO/assetId/<roId>/job/<jobId>`
+(flattened body, see the internal-api skill) so the allocation sits on the real customer payer and
+sums to the bucket's `postTaxTotal`. ⚠️ CONFIRM the customer's intended share with Joe before firing —
+this decides what the customer is actually invoiced. Record the prior `splitInfo` verbatim first for revert.
+
+**Diagnostic shortcut:** a HEALTHY job's split looks like `splitBy PERCENTAGE`, `splitPercentage 100`,
+`payerTaxCodes: []`. A broken one shows `splitBy AMOUNT` with 0% / mismatched `postTaxAmount`s and a
+`payerTaxCodes` entry whose payerId does NOT appear in `ro.customerInfo`.
+
 ## ⛔ PROOF THAT NO UI FIX EXISTS on a PARTIALLY_INVOICED job (TL 398856, verified 2026-09-17)
 
 Don't keep the store clicking — dump the **disabled** flags and quote them. On 398856 every
