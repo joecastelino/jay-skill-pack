@@ -547,7 +547,35 @@ read-only; nothing changes until you pick a reason + `Reopen Selected Payer(s)`.
 job-level. Treat it as the last in-app lever before a Tekion support ticket, and get Joe's
 go first (financial state change on a live customer RO).
 
-### ⛔ PROOF THAT NO UI FIX EXISTS on a PARTIALLY_INVOICED job (TL 398856, verified 2026-09-17)
+### 🔌 API OPTIONS FOR A PARTIALLY_INVOICED JOB (tested 2026-09-17, TL RO 398856)
+
+The app-update submitted 2026-07-10 has LANDED — endpoints that were 403 before now return 200
+(`/repair-orders/{rid}/internal-notes`, `/repair-orders/{rid}/ro-warranty-claims`). But the
+job-status WRITE endpoint is still not usable.
+
+| Endpoint | Result | Verdict |
+|---|---|---|
+| `PUT /repair-orders/{roId}/jobs/{jobId}:status` | **always** 400 `invalid.job.status` | **NON-FUNCTIONAL** |
+| ↳ tried: COMPLETED / OPEN / IN_PROGRESS / WORKING / REOPEN / VOID_INITIATED | 400 `invalid.job.status` | rejected |
+| ↳ tried: `VOIDED` | **500** `internal.service.failure` | server crashes on the void path |
+| ↳ empty body `{}` | 400 `invalid.job.status` (NOT a field error) | proves the endpoint never field-validates |
+| `PUT /repair-orders/{id}:status` | proper validation: `{}`→`invalid.request/status must not be null`; bogus→`invalid.ro.status` | **FUNCTIONAL** — enum = `REOPEN · VOID · HOLD · UN_HOLD` |
+
+**CONTROL DISCIPLINE (this is how you avoid a wrong call):** always run a same-status no-op control
+before concluding "the API can't do X". Setting job 2 `COMPLETED→COMPLETED` AND a live open job
+`TECH_ASSIGNED→TECH_ASSIGNED` (different RO 401700) BOTH returned the same 400 — so the 400 was
+never about job 1's state. Without the control I would have wrongly reported "Tekion blocks the
+transition for this job".
+
+**Conclusions:**
+- **Cannot** complete/void/reopen a job via OpenAPI — the job-status endpoint is inert for our app version.
+- **Can** change RO-level status via API. `VOID` is the only API-side escape hatch, but it voids the
+  ENTIRE RO (all jobs + invoices) = real accounting event → requires Joe's explicit go.
+- `REOPEN` here duplicates the UI reopen, which (see below) does NOT thaw a PARTIALLY_INVOICED job.
+- Remaining unexplored lane: the INTERNAL `multi-payer-split` write endpoint, which is what the
+  disabled Manage Splits Save button calls. Not yet captured — XHR hook got interrupted.
+
+## ⛔ PROOF THAT NO UI FIX EXISTS on a PARTIALLY_INVOICED job (TL 398856, verified 2026-09-17)
 
 Don't keep the store clicking — dump the **disabled** flags and quote them. On 398856 every
 remediation control Tekion owns was disabled:
@@ -589,6 +617,33 @@ each). Don't sell it as a fix.
 
 **Conclusion: an orphaned-payer job frozen in PARTIALLY_INVOICED is a Tekion-side lock.** The
 deliverable is a support ticket, not a click path. Ticket text template is in §3g.
+
+### ✅/❌ WHAT AN RO-LEVEL REOPEN ACTUALLY DOES to a PARTIALLY_INVOICED job (TL 398856, 2nd attempt 2026-09-17)
+
+Re-tested end-to-end after Joe reopened the RO from the UI:
+
+| | before reopen | after reopen |
+|---|---|---|
+| jobs 2–7 (Internal) | `CLOSED` | **`COMPLETED`** (+ Need Attention flags) |
+| **job 1 (TSC2)** | **`PARTIALLY_INVOICED`** | **`PARTIALLY_INVOICED` — UNCHANGED** |
+| both payers | `Closed` | **`Ready for Invoice`** |
+| RO header chip | `3 Payers` | `3 Payers` (Payers View still lists **2**) |
+| job panel `Mark as Complete` (`btnSalesSetupCancel`) | disabled | **disabled** |
+| `Manage Splits`: `addNewPayer` / `payer_0_0` / `payer_1_0` / `percentageSplit-payer_1_0` / `btnSalesSetupSave` | disabled | **all still disabled** |
+
+**One thing DID change:** Bulk Action **`Re open` flipped from disabled → ENABLED**.
+…but it is a dead end: `Re open`'s job table listed **jobs 2–7 only** (all `Completed`) —
+**job 1 was NOT in the list**, because the action targets `Completed` jobs and a
+`PARTIALLY_INVOICED` job isn't one. Footer = `Notes for reopening job` + `Cancel` /
+`Reopen Jobs`. So you cannot "reopen the job" to thaw it. `Mark as complete`,
+`Parts Fulfilment Request` and `Void job` stayed disabled; `Reopen Payer`'s checkboxes and
+submit stayed disabled; the **job-level kebab stayed at exactly 3 items**
+(`Job Clocked Time · Job External Note · Tech Flag Hrs`).
+
+**So the full reconnect ladder is: reopen RO → unlock payers → invoice payers at $0 → RO
+returns to Ready for Invoice with job 1 still frozen.** Tried twice (08-27, 09-17), same
+result. Stop offering reopen as a fix; go straight to the support ticket (§3g) and warn
+that reopening costs 6 new Need Attention flags on jobs 2–7.
 
 ### Before answering "how do I stop this recurring?" — fleet-scan first
 Free API sweep of the whole opcode family (250 TL ROs / 90 days across TSC1–TSC5)
