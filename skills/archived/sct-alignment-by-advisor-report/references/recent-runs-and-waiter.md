@@ -27,6 +27,42 @@
    `multipart/alternative:100`) are structural, NOT the zero-byte-PDF trap.
 - Build ask was clean on the FIRST ask (93s). On-disk sizes: PNG 95,990 / PDF 256,386.
 
+## 2026-09-16 — clean run, zero traps, zero escalations
+
+- Pre-flight OPS probe **200** (quota healthy; September DEALER_QUOTA outage fully resolved,
+  no self-heal armed). No same-day index pre-run; no competing consumer.
+- Scan 19:01→19:29 (~27 min, no backoff), **0 failed**.
+- **233 alignments (213 dedicated + 20 bundled), 233 ROs, 16 advisors, daily pace 14.6.**
+- Top advisor **Jason Sulon solo #1 with 27** (Robin Porter / Juan Jose Perez / Cristian
+  Gonzalez 20, Artist Battle 18).
+- **PROBE HELPER NAMING GOTCHA:** the module-level entry point in `sct_menu_sales_api` is
+  `call(method, path, payload=None)`; `sct_align_mtd.py` imports the module as `O`, so its
+  internal calls read `O.call(...)` — but from a standalone `python3 -c` snippet you must do
+  `import sct_menu_sales_api as O; O.call('GET', '/repair-orders/<rid>/jobs/<jid>/operations')`.
+  There is no `O.O`. First attempt tonight failed with
+  `module 'sct_menu_sales_api' has no attribute 'O'`.
+- Waiter pattern (per "DON'T BABYSIT THE MAIN NIGHTLY" below) worked perfectly: scan bg +
+  `wait_render_<mmdd>.sh` bg, waited only on the waiter, render fired automatically at scan
+  exit (exit=0). No manual render step needed.
+
+### Stacey verify (notes 30/31 recipe, all first-try, short sleeps 15/10/10/10s, zero timeouts)
+
+1. Build ask clean on the FIRST ask (133s): `DRAFTSCOUNT=1 | PDFPARTBYTES=363884 | DATAURIIMG=y`.
+2. Date-free SUBJECT+DATE enumeration → 21 total matches, **exactly ONE "(through 9/16)"**
+   dated today → no duplicate, no dedupe. (The other 20 are Joe's unsent August backlog + the
+   July MTD leftover — expected, not a fault.)
+3. `PDFFILENAME=SCT-Alignment-By-Advisor-MTD-2026-09-16.pdf` (correct one-L spelling, carries
+   today's date) | `PDFDECODED_BYTES=269241` = **exact on-disk match**.
+4. `TOHEADER=kstapp@sctoyota.com | SENTTODAY=0`.
+5. PARTS: `RAW_SIZE=546413 | multipart/mixed=368436, multipart/alternative=176868,
+   text/plain=592, text/html=176276, application/pdf=368436`. HTML part 176,276 cleared
+   PNG*4/3 (96,195*4/3=128,260) with the usual heavy-signature headroom; PDF part 368,436 is
+   the normal +2.6% CRLF variance over PDF*4/3 (358,988); RAW_SIZE ≈ html+pdf (544,712).
+   Container parts are structural, NOT the zero-byte-PDF trap.
+- On-disk sizes: PNG 96,195 / PDF 269,241. Her build confirmation's PDF part (363,884) vs the
+  PARTS ask's (368,436) differ slightly — the familiar two-reports-of-the-same-part
+  discrepancy, both pass, not a duplicate signal.
+
 ## DON'T BABYSIT THE MAIN NIGHTLY — the `tail --pid` waiter + render
 
 The alignbg section already forbids agent-babysat scans (the iteration ceiling silently kills
