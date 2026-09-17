@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-17T10:30:08",
+ "generated": "2026-09-17T10:46:07",
  "skill_count": 225,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 185,
-   "last_used": "2026-09-16"
+   "times_used": 186,
+   "last_used": "2026-09-17"
   },
   {
    "name": "agent-to-agent-bridge",
@@ -63,8 +63,8 @@
    "path": "automotive/tekion-kb-search-scrape",
    "category": "automotive",
    "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 54,
-   "last_used": "2026-09-16"
+   "times_used": 55,
+   "last_used": "2026-09-17"
   },
   {
    "name": "tekion-autonomous-login",
@@ -135,7 +135,7 @@
    "path": "automotive/tekion-ro-close-blocked-triage",
    "category": "automotive",
    "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
-   "times_used": 29,
+   "times_used": 30,
    "last_used": "2026-09-17"
   },
   {
@@ -235,6 +235,14 @@
    "last_used": "2026-09-01"
   },
   {
+   "name": "tekion-parts-appointments-recalls-only",
+   "path": "automotive/tekion-parts-appointments-recalls-only",
+   "category": "automotive",
+   "description": "Restrict Tekion Parts RO Sales appointment notifications to recall opcodes only (or any opcode subset) by mass-toggling the per-opcode \"Consider for Parts preparation on Appointment\" flag. Covers the Bulk Update UI, the underlying bulk-update API for scale, and full verification. Built for Glade at SCT 2026-07-20; applies to any store.",
+   "times_used": 17,
+   "last_used": "2026-09-17"
+  },
+  {
    "name": "tekion-warranty-admin-closings",
    "path": "automotive/tekion-warranty-admin-closings",
    "category": "automotive",
@@ -249,14 +257,6 @@
    "description": "Build/run an API-sourced advisor gross report for closed ROs at any AMG store, replacing Tekion's unreliable Advisor Performance Report. Keys on true per-invoice pay-type close time and counts ALL pay types (CP, CVSC, warranty, internal).",
    "times_used": 16,
    "last_used": "2026-09-02"
-  },
-  {
-   "name": "tekion-parts-appointments-recalls-only",
-   "path": "automotive/tekion-parts-appointments-recalls-only",
-   "category": "automotive",
-   "description": "Restrict Tekion Parts RO Sales appointment notifications to recall opcodes only (or any opcode subset) by mass-toggling the per-opcode \"Consider for Parts preparation on Appointment\" flag. Covers the Bulk Update UI, the underlying bulk-update API for scale, and full verification. Built for Glade at SCT 2026-07-20; applies to any store.",
-   "times_used": 16,
-   "last_used": "2026-09-11"
   },
   {
    "name": "tekion-opcode-default-pricing",
@@ -327,7 +327,7 @@
    "path": "automotive/tekion-ro-payer-split-sunbit",
    "category": "automotive",
    "description": "Add a second payer (Sunbit / third-party financier, insurance, another customer) to a Tekion repair-order JOB and split the dollars to them. Covers the \"I added the payer but it stays at $0.00 / 0%\" trap, the exact Manage Splits click path, and the Tekion global-hotkey trap that hijacks the browser mid-flow. Use for any \"split job X to <payer>\" or \"can't get the Sunbit split to work\" ticket.",
-   "times_used": 11,
+   "times_used": 12,
    "last_used": "2026-09-17"
   },
   {
