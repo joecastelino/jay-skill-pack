@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-17T11:30:18",
+ "generated": "2026-09-17T11:45:34",
  "skill_count": 226,
  "skills": [
   {
@@ -115,6 +115,14 @@
    "last_used": "2026-09-01"
   },
   {
+   "name": "tekion-ro-close-blocked-triage",
+   "path": "automotive/tekion-ro-close-blocked-triage",
+   "category": "automotive",
+   "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
+   "times_used": 32,
+   "last_used": "2026-09-17"
+  },
+  {
    "name": "tekion-declined-deferred-services-report",
    "path": "automotive/tekion-declined-deferred-services-report",
    "category": "automotive",
@@ -129,14 +137,6 @@
    "description": "Read, audit, and VERIFY Tekion opcode override rows directly from the backend REST API using the session's own auth token. This is the AUTHORITATIVE source of truth \u2014 the override UI grid frequently renders wrong/empty even when rows exist in the backend. Use to get the true committed row count before a batch, detect incomplete (part-less) rows, and confirm persistence after saving.",
    "times_used": 31,
    "last_used": "2026-09-10"
-  },
-  {
-   "name": "tekion-ro-close-blocked-triage",
-   "path": "automotive/tekion-ro-close-blocked-triage",
-   "category": "automotive",
-   "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
-   "times_used": 31,
-   "last_used": "2026-09-17"
   },
   {
    "name": "tekion-service-menu-setups",
@@ -187,20 +187,20 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-internal-cost-center-gl-routing",
+   "path": "automotive/tekion-internal-cost-center-gl-routing",
+   "category": "automotive",
+   "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
+   "times_used": 22,
+   "last_used": "2026-09-17"
+  },
+  {
    "name": "tekion-vi-api-migration",
    "path": "automotive/tekion-vi-api-migration",
    "category": "automotive",
    "description": "Migrate the Vehicle Inventory (\"The Goods\") browser scraper to the Tekion OpenAPI (vehicle-inventory:search) producing per-store JSON that byte-matches the legacy schema. Covers field mapping, the SOLD-pending rule, Pacific-tz dates, rate-limit discipline, and the Don coordination/cutover handoff.",
    "times_used": 22,
    "last_used": "2026-07-12"
-  },
-  {
-   "name": "tekion-internal-cost-center-gl-routing",
-   "path": "automotive/tekion-internal-cost-center-gl-routing",
-   "category": "automotive",
-   "description": "Answer \"which GL account does this internal RO cost center post to / can I change it / can I use account X as the hold instead\" for Tekion. Covers Setup Fields \u2192 Cost Center Setup, GL Account Transaction Mapping \u2192 Fixed Operations \u2192 Services-Internal, and how to read the Chart of Accounts control type + sub-type before recommending an account swap. Use for PDI / We-Owe / Policy / Safecat / rental internal-pay routing questions.",
-   "times_used": 21,
-   "last_used": "2026-09-01"
   },
   {
    "name": "jay-gmail-draft-verification",
@@ -291,6 +291,14 @@
    "last_used": "2026-08-07"
   },
   {
+   "name": "tekion-ro-payer-split-sunbit",
+   "path": "automotive/tekion-ro-payer-split-sunbit",
+   "category": "automotive",
+   "description": "Add a second payer (Sunbit / third-party financier, insurance, another customer) to a Tekion repair-order JOB and split the dollars to them. Covers the \"I added the payer but it stays at $0.00 / 0%\" trap, the exact Manage Splits click path, and the Tekion global-hotkey trap that hijacks the browser mid-flow. Use for any \"split job X to <payer>\" or \"can't get the Sunbit split to work\" ticket.",
+   "times_used": 14,
+   "last_used": "2026-09-17"
+  },
+  {
    "name": "tekion-roles-permissions",
    "path": "automotive/tekion-roles-permissions",
    "category": "automotive",
@@ -321,14 +329,6 @@
    "description": "Build a vehicle-scoped PARTS override row on a Tekion menu-included opcode via Service Menu Setups \u2192 Included Services \u2192 Edit Service \u2192 Overrides \u2192 Parts, driven by the persistent-browser :9223 HTTP endpoints (/eval, /click, /type, /press). Covers the exact DOM (react-select Make, ant-dropdown checkbox Model/Year multi-selects, Trim Details modal), the verified click-paths, and the costly pitfalls (wrong /eval key, navigate-away row wipe, coordinate drift, disabled trim input). Use when swapping/adding parts on an opcode that lives INSIDE a service menu (e.g. BGCVTF CVT fluid \u2192 E-TAF for Corollas).",
    "times_used": 13,
    "last_used": "2026-08-05"
-  },
-  {
-   "name": "tekion-ro-payer-split-sunbit",
-   "path": "automotive/tekion-ro-payer-split-sunbit",
-   "category": "automotive",
-   "description": "Add a second payer (Sunbit / third-party financier, insurance, another customer) to a Tekion repair-order JOB and split the dollars to them. Covers the \"I added the payer but it stays at $0.00 / 0%\" trap, the exact Manage Splits click path, and the Tekion global-hotkey trap that hijacks the browser mid-flow. Use for any \"split job X to <payer>\" or \"can't get the Sunbit split to work\" ticket.",
-   "times_used": 13,
-   "last_used": "2026-09-17"
   },
   {
    "name": "dealerdetail-api-pipeline-build",
@@ -731,6 +731,14 @@
    "last_used": "2026-08-31"
   },
   {
+   "name": "tekion-vsc-deductible-vs-fee-code",
+   "path": "automotive/tekion-vsc-deductible-vs-fee-code",
+   "category": "automotive",
+   "description": "Answer \"we need a deductible fee code\" / \"how do we bill the customer's deductible or hardware overage\" on a Tekion RO covered by a service contract (Fidelity, CVSC, extended warranty). The deductible is a NATIVE field in the pay-type split grid, not a fee \u2014 this skill proves whether it already got collected and explains why a fee code is the wrong fix. Also covers the trap that the OpenAPI CANNOT see the deductible.",
+   "times_used": 3,
+   "last_used": "2026-09-17"
+  },
+  {
    "name": "gbrain-install",
    "path": "note-taking/gbrain-install",
    "category": "note-taking",
@@ -801,6 +809,14 @@
    "description": "Answer/execute \"where do I enter the serial number (engine/transmission/valve body) for a GM warranty claim in Tekion?\" \u2014 the field DOES exist, buried in the claim form. Verified live at BC (dealer 1251) 2026-09-16.",
    "times_used": 2,
    "last_used": "2026-09-16"
+  },
+  {
+   "name": "tekion-internal-api-access",
+   "path": "automotive/tekion-internal-api-access",
+   "category": "automotive",
+   "description": "Call Tekion's INTERNAL (browser) APIs directly from the page \u2014 /api/service-module/u/* and friends \u2014 without driving the UI. Solves the \"Token doesn't exist or is invalid\" / \"Missing headers\" walls that block bare fetch calls. Use whenever an internal Tekion endpoint is needed (reading RO/job JSON, payer splits, split writes) or the app's React Query cache hides the call you need to capture.",
+   "times_used": 2,
+   "last_used": "2026-09-17"
   },
   {
    "name": "tekion-labor-rate-create",
@@ -883,14 +899,6 @@
    "last_used": "2026-07-03"
   },
   {
-   "name": "tekion-vsc-deductible-vs-fee-code",
-   "path": "automotive/tekion-vsc-deductible-vs-fee-code",
-   "category": "automotive",
-   "description": "Answer \"we need a deductible fee code\" / \"how do we bill the customer's deductible or hardware overage\" on a Tekion RO covered by a service contract (Fidelity, CVSC, extended warranty). The deductible is a NATIVE field in the pay-type split grid, not a fee \u2014 this skill proves whether it already got collected and explains why a fee code is the wrong fix. Also covers the trap that the OpenAPI CANNOT see the deductible.",
-   "times_used": 2,
-   "last_used": "2026-09-17"
-  },
-  {
    "name": "vw-carefree-care-plus-hours-elr-report",
    "path": "automotive/vw-carefree-care-plus-hours-elr-report",
    "category": "automotive",
@@ -961,14 +969,6 @@
    "description": "Confirm/refute a store claim that an RO, recommendation, or deferred service \"went to a different customer number for the same customer\" in Tekion. Finds duplicate customer records sharing a phone/VIN, maps which customer id each RO + recommendation was stamped with, and identifies who wrote it.",
    "times_used": 1,
    "last_used": "2026-08-26"
-  },
-  {
-   "name": "tekion-internal-api-access",
-   "path": "automotive/tekion-internal-api-access",
-   "category": "automotive",
-   "description": "Call Tekion's INTERNAL (browser) APIs directly from the page \u2014 /api/service-module/u/* and friends \u2014 without driving the UI. Solves the \"Token doesn't exist or is invalid\" / \"Missing headers\" walls that block bare fetch calls. Use whenever an internal Tekion endpoint is needed (reading RO/job JSON, payer splits, split writes) or the app's React Query cache hides the call you need to capture.",
-   "times_used": 1,
-   "last_used": "2026-09-17"
   },
   {
    "name": "tekion-labor-time-guide",
