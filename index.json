@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-18T07:30:19",
+ "generated": "2026-09-18T07:45:26",
  "skill_count": 227,
  "skills": [
   {
@@ -15,8 +15,8 @@
    "path": "automotive/persistent-browser-server",
    "category": "automotive",
    "description": "Long-running Playwright browser server (HTTP API on port 9223) that survives across Hermes turns. Use for any SPA that needs a persistent session (Tekion, admin panels, dashboards). Solves the \"browser blanks to about:blank every 2-3 turns\" problem.",
-   "times_used": 188,
-   "last_used": "2026-09-17"
+   "times_used": 189,
+   "last_used": "2026-09-18"
   },
   {
    "name": "agent-to-agent-bridge",
@@ -63,16 +63,16 @@
    "path": "automotive/tekion-kb-search-scrape",
    "category": "automotive",
    "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 55,
-   "last_used": "2026-09-17"
+   "times_used": 56,
+   "last_used": "2026-09-18"
   },
   {
    "name": "tekion-autonomous-login",
    "path": "automotive/tekion-autonomous-login",
    "category": "automotive",
    "description": "Fully autonomous, headless Tekion DMS login that fetches a fresh OTP and saves a reusable session \u2014 no human in the loop. Solves the recurring OTP-staleness race and the Ant Design verify-click failure. Use as the auth layer in front of any Tekion automation (scrapers, opcode updates, computer-use agents).",
-   "times_used": 53,
-   "last_used": "2026-09-14"
+   "times_used": 54,
+   "last_used": "2026-09-18"
   },
   {
    "name": "tekion-quotes-menu-price-diagnosis",
@@ -467,6 +467,14 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-journal-entry-error-diagnosis",
+   "path": "automotive/tekion-journal-entry-error-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose Tekion Accounting Journal Entries stuck in ERROR status (auto-posting JEs that failed to post). Covers the JE list/detail URLs, reading GL posting lines out of the DOM, finding the blank/unmapped GL account, and tracing the root cause back to a missing row in GL Account Transaction Mapping. Use for \"look at journal entries\", \"JEs in error\", \"auto posting failed\", \"GL account blank on journal entry\".",
+   "times_used": 7,
+   "last_used": "2026-09-18"
+  },
+  {
    "name": "tekion-parts-appointments-opcode-scoping",
    "path": "automotive/tekion-parts-appointments-opcode-scoping",
    "category": "automotive",
@@ -515,20 +523,20 @@
    "last_used": "2026-08-26"
   },
   {
+   "name": "tekion-coupon-management",
+   "path": "automotive/tekion-coupon-management",
+   "category": "automotive",
+   "description": "Create/edit service discount coupons in Tekion's Coupon Management app (e.g. tire promos like Bridgestone B3G1, $-off or %-off labor/parts coupons). Covers the real URLs, form mechanics (old antd calendar, react-select GL account), toggle defaults, GL split conventions, and verification. Verified live at SCT 2026-08-02.",
+   "times_used": 6,
+   "last_used": "2026-09-18"
+  },
+  {
    "name": "tekion-gross-not-posting-to-advisor",
    "path": "automotive/tekion-gross-not-posting-to-advisor",
    "category": "automotive",
    "description": "Diagnose \"advisor gross dropped / gross not posting to advisor\" complaints on the Tekion Advisor Performance Report. Usually the report's Status filter (INVOICED vs CLOSED), not a data loss or advisor-reassignment bug.",
    "times_used": 6,
    "last_used": "2026-08-31"
-  },
-  {
-   "name": "tekion-journal-entry-error-diagnosis",
-   "path": "automotive/tekion-journal-entry-error-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose Tekion Accounting Journal Entries stuck in ERROR status (auto-posting JEs that failed to post). Covers the JE list/detail URLs, reading GL posting lines out of the DOM, finding the blank/unmapped GL account, and tracing the root cause back to a missing row in GL Account Transaction Mapping. Use for \"look at journal entries\", \"JEs in error\", \"auto posting failed\", \"GL account blank on journal entry\".",
-   "times_used": 6,
-   "last_used": "2026-09-16"
   },
   {
    "name": "tekion-oem-rewards-integration",
@@ -579,14 +587,6 @@
    "last_used": "2026-08-18"
   },
   {
-   "name": "tekion-coupon-management",
-   "path": "automotive/tekion-coupon-management",
-   "category": "automotive",
-   "description": "Create/edit service discount coupons in Tekion's Coupon Management app (e.g. tire promos like Bridgestone B3G1, $-off or %-off labor/parts coupons). Covers the real URLs, form mechanics (old antd calendar, react-select GL account), toggle defaults, GL split conventions, and verification. Verified live at SCT 2026-08-02.",
-   "times_used": 5,
-   "last_used": "2026-08-26"
-  },
-  {
    "name": "tekion-deferred-services-report",
    "path": "automotive/tekion-deferred-services-report",
    "category": "automotive",
@@ -609,6 +609,14 @@
    "description": "Fix an AMG Hermes agent that is silent on Slack because its SLACK_BOT_TOKEN/SLACK_APP_TOKEN are missing or wrong in the profile .env \u2014 including recovering LOST tokens from old session transcripts without asking Joe to regenerate them at api.slack.com. Use when an agent's service is running but it never answers Slack messages (Autumn case, 2026-07-14).",
    "times_used": 4,
    "last_used": "2026-07-14"
+  },
+  {
+   "name": "tekion-internal-api-access",
+   "path": "automotive/tekion-internal-api-access",
+   "category": "automotive",
+   "description": "Call Tekion's INTERNAL (browser) APIs directly from the page \u2014 /api/service-module/u/* and friends \u2014 without driving the UI. Solves the \"Token doesn't exist or is invalid\" / \"Missing headers\" walls that block bare fetch calls. Use whenever an internal Tekion endpoint is needed (reading RO/job JSON, payer splits, split writes) or the app's React Query cache hides the call you need to capture.",
+   "times_used": 4,
+   "last_used": "2026-09-18"
   },
   {
    "name": "tekion-notification-settings-audit",
@@ -699,14 +707,6 @@
    "last_used": "2026-08-26"
   },
   {
-   "name": "tekion-internal-api-access",
-   "path": "automotive/tekion-internal-api-access",
-   "category": "automotive",
-   "description": "Call Tekion's INTERNAL (browser) APIs directly from the page \u2014 /api/service-module/u/* and friends \u2014 without driving the UI. Solves the \"Token doesn't exist or is invalid\" / \"Missing headers\" walls that block bare fetch calls. Use whenever an internal Tekion endpoint is needed (reading RO/job JSON, payer splits, split writes) or the app's React Query cache hides the call you need to capture.",
-   "times_used": 3,
-   "last_used": "2026-09-17"
-  },
-  {
    "name": "tekion-menu-custom-price-row",
    "path": "automotive/tekion-menu-custom-price-row",
    "category": "automotive",
@@ -785,6 +785,14 @@
    "description": "Build the SCT (Stevens Creek Toyota) Menu Sales CLOSED report for a FULL CALENDAR MONTH, broken down BY SERVICE ADVISOR and GROUPED BY CATEGORY (Basic / Value / Premium). Renders an Advisor x Category matrix plus per-advisor RO-level detail, and emails it to Joe via Stacey. Runs entirely OFFLINE from the per-month master cache \u2014 zero Tekion API calls \u2014 so it works even during a DEALER_QUOTA outage.",
    "times_used": 2,
    "last_used": "2026-09-02"
+  },
+  {
+   "name": "slack-thread-context-recovery",
+   "path": "automotive/slack-thread-context-recovery",
+   "category": "automotive",
+   "description": "Recover what a context-free Slack message is referring to when the Hermes session that held the thread has already expired (e.g. Joe replies \"so does this work now?\" days later in an old thread). Reads Jay's own raw session JSON on disk to rebuild the thread's history instead of guessing or asking Joe to repeat himself.",
+   "times_used": 2,
+   "last_used": "2026-09-18"
   },
   {
    "name": "tekion-add-job-to-ro-button-disabled",
@@ -961,14 +969,6 @@
    "description": "Retarget an AMG store's Hermes cron report deliveries to a new Slack thread when Joe says \"can this thread be <store> reports only?\", and sweep the whole fleet for dead channel_not_found cron deliveries.",
    "times_used": 1,
    "last_used": "2026-08-26"
-  },
-  {
-   "name": "slack-thread-context-recovery",
-   "path": "automotive/slack-thread-context-recovery",
-   "category": "automotive",
-   "description": "Recover what a context-free Slack message is referring to when the Hermes session that held the thread has already expired (e.g. Joe replies \"so does this work now?\" days later in an old thread). Reads Jay's own raw session JSON on disk to rebuild the thread's history instead of guessing or asking Joe to repeat himself.",
-   "times_used": 1,
-   "last_used": "2026-09-17"
   },
   {
    "name": "tekion-department-opcode-census",

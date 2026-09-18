@@ -247,17 +247,76 @@ missing" bucket — a GL-mapping change cannot fix it** (there is no blank cell 
 NOT the §5b/§5c blank-holding-account defect despite being the same store and the same "parts/service
 auto-posting" family.
 
-Unverified root cause (flag as hypothesis, NEVER assert): VC's mapping set is unusually thin —
-`Fixed Operations → Services (3)`, `Part & Accessories (1)`, `Purchase Orders (0)`, `Warranty
-Credit (1)`, `Others (2)`, and the `FIXED OPERATIONS OTHER` card carries a **single row whose
-left-hand dimension cell renders blank** with GL `1188 - CASH SALES` (compare SCT, which has named
-rows: Freight charge / Restocking Fee / Other supplies / Service Cash Holding / Parts Cash Holding).
-A missing discount posting rule is the leading hypothesis; a Tekion auto-posting defect emitting
-no discount line is the second. Discriminator: find a VC RO **with a discount that DID post
-cleanly** — if none exists, it's config; if some post, it's per-RO/Tekion.
+### RESOLVED 2026-09-18 — it is NOT a GLAM gap; the discount GL lives on the COUPON
 
-Also note the VC Error queue was **empty (0 Result(s))** on 9/16 — consistent with Carol's manual
-fixes clearing them; the JEs are only visible after the fact. Ask for the RO#s before hunting.
+Joe asked the discriminator directly: *"how do I fix it in the GLAM?"* **Answer: you don't — GLAM
+has no discount/coupon slot at VC, and the posting template is fine too.** Walked live, dealer 1891:
+
+**1. GLAM maps the SALE side only.**
+- `Fixed Operations → Services (3)` = cards `Service- Customer Pay` / `Service- Internal Pay` /
+  `Service- Warranty Pay`. Columns: **`Pay Type · Service Type · GL Account`** — CP rule rows:
+  `Sublet→4481`, `Rental→9184`, `Express→4410`, `VW Car Care Maintenance→4418`, `All→4402`.
+- `Fixed Operations → Part & Accessories (1)` = card `Parts and Accessories`. Columns: `Pay Type ·
+  Service Type · Source Code · Customer Tax Status · Sale Type (Fixed Ops) · GL Account`. Values in
+  play are only **Wholesale / Retail / Repair Order / Internal** — no `Discount`, no `Coupon`.
+  Rows map the sale side: `4770` (CP RO Express), `4702` (CP RO), `4762/4764` counter,
+  `4704/4706` warranty+internal, `4708` Carefree, `4710` Care/Care Plus.
+- `Fixed Operations → Others (2)` = `FIXED OPERATIONS SALES TAX` (Labor/Parts/Sublet/Deductible →
+  `2221 SALES + USE TAXES PAYABLE`) and `FIXED OPERATIONS OTHER` (one undimensioned row →
+  `1188 CASH SALES`). **The blank dimension cell here is NORMAL at VC — it is NOT the defect**
+  (earlier note in this skill was wrong to call it a leading signal).
+- Therefore `4403 SERV CUST PAY DISCOUNTS VW` / `4703 PARTS CUST PAY DISCOUNTS VW` are the *contra*
+  pair to `4402`/`4702` and can never be produced by a GLAM rule.
+
+**2. The discount GL comes from the COUPON record.** Swept all 11 VC coupons live — every one is
+already correctly mapped, so there was nothing to fix:
+
+| Coupons | Labor GL | Parts GL | Split |
+|---|---|---|---|
+| GF, GIFTCARD, 10LABOR, 10CX, 15PL, 20PRTLBR, 5995LOF, 6995, 4995, 50OFF, 75OFF | 4403 SERV CUST PAY DISCOUNTS VW | 4703 PARTS CUST PAY DISCOUNTS VW | 100 / 100 |
+
+**3. The posting template is fine.** Auto-Posting Settings → Posting Templates → **Repair Order →
+Customer Pay → Fees → `Coupons`** line EXISTS (`Control`/`Control 2` = Default). ⚠️ The `Control` /
+`Control 2` columns are **reference-field pickers, not GL accounts** — the dropdown offers
+`Service Advisor Id, RO Number, VIN, VIN Last 8, Op Code, Part number, Customer Number, Customer
+Name, Stock Number, Claim Number, Third Party Warranty Provider`. Don't mistake them for a GL slot.
+
+**4. Live state 9/18:** JE `122656` (RO 141821) and `123249` (RO 141957) are both **Posted,
+Balance $0.00**, and both now carry the contra lines (`4703 $26.00` + `4403 $4.00` on 123249).
+VC Error queue = **0 Result(s)**. → discounts DO post now; the missing-line condition was
+**time-bounded (pre-fix entries), not a standing config gap**.
+
+**Fix for entries already in error = Refresh JE → Submit** (KB0026965 / KB0017733) — not a mapping
+change, not hand-editing lines. If a *new* RO still drops its discount, get the RO# and trace the
+coupon application on that RO: that would be a coupon-application failure, not GLAM.
+
+### Mechanics for this diagnosis (each of these cost turns to find)
+- **Sweep every coupon's GL split in one loop:** `/core/coupons` lists the codes (read the
+  `N Result(s)` list); each edit page is `/core/coupons/edit/<base64(code)>`. Per page regex
+  `document.body.innerText` for `\b\d{4}\s*-\s*[A-Z][A-Z0-9 &\/\-'.,()]{3,60}` to get the account
+  strings, and read every visible `input` (`"Account Split" = "100.00"` per side). 11 coupons ≈ 2.5 min.
+- **PITFALL — never split "scrollIntoView + read coords" from the `/mouse` click.** Coords go stale
+  between evals (asked for `Repair Order` at y748; the real element was at y476 → the click silently
+  did nothing and the page never switched). Compute the centre AND dispatch in the SAME `/eval`:
+  `el.scrollIntoView({block:'center'}); const b=el.getBoundingClientRect(); const x=..,y=..;
+  const tgt=document.elementFromPoint(x,y)||el;
+  ['pointerdown','mousedown','pointerup','mouseup','click'].forEach(t=>tgt.dispatchEvent(new
+  MouseEvent(t,{bubbles:true,cancelable:true,view:window,clientX:x,clientY:y,button:0})));`
+  Plain `/mouse` **no-ops** on the Auto-Posting Settings sub-tabs (`Repair Order`, `Customer Pay`)
+  and on the GLAM nav; the JS-dispatched sequence works. Return what `elementFromPoint` actually hit
+  so you know you got the right node.
+- **Terminal guard:** a heredoc / `-c` script string containing `&` is rejected by the tool
+  ("uses '&' backgrounding"). Write the script with `write_file` and run the file — bit me on the
+  `Part & Accessories` label.
+- **`re.escape` + `json.dumps` = a broken JS regex:** `re.escape("Part & Accessories")` emits
+  `Part\ &\ Accessories`; the `\ ` survives into the JS string literal as an escaped backslash and
+  the regex never matches a single element. Match labels by exact string equality instead.
+- **Chart of Accounts `Modified Time` is a nightly balance-recompute stamp, NOT an edit date** —
+  on 9/18 every account read `09/18/26 7:22 AM` (even 1188, 1339, 4402…). Never use it to date an
+  account's creation or to establish a fix date; use the JE daily series (§6 fix-date rule).
+- **KB SSO drops during long DMS sessions:** the KB scraper then returns
+  `{"error": "KB not authenticated. ..."}`. Re-run `/home/itadmin/tekion-auth/login.py --force`,
+  then click Get Help → Knowledge Base once on :9223 before retrying the KB scrape.
 
 Source artifacts for this case: **`/home/itadmin/tekion-reports/clvw_141821/`** (Chris's forwarded
 PDF as received in chat + the extracted JE screenshots). NOTE incoming chat attachments land in
