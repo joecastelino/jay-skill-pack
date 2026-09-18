@@ -1215,3 +1215,35 @@ Sent hits at all = Stacey's Opened pipeline timing drift, not a defect).
 volume/prefilter, noon->5pm-partial-cut, renderer-path, USD-false-positive, EMDASH-token, and
 zero-menu-valid lessons) -> 89,423 before appending. SAFE-PRUNE index assertions used; all critical
 trap headings asserted present; no duplicate headings; re-checked size AFTER.
+
+## 2026-09-17 5pm Daily Closed run — NEW MISS: Stacey rewrote the summary sentence ("yesterday", labor/parts dropped); fixed via self-edit + Message-ID-regenerated re-APPEND
+7 menus, $721.20 labor / $349.67 parts = $1,070.87 (Thursday 5pm). Advisors: Jeremia Navarro 2 /
+$662.93, Juan Ramirez 2 / $252.16, Houa Moua 1 / $79.27, Jacob Debussey 1 / $51.66, Michael Reyes 1 /
+$24.85. 95 closed ROs -> 7 carried TEK menu opcodes (~7% attach); `all candidate ROs scanned` printed.
+Pull + ask each inside ONE 180s wait (write_file->background-terminal, `/tmp/bc_ask_0917_5pm.py`,
+`timeout 560`, subprocess arg list, all five prevention lines carried). Vision KPI band (crop 460px +
+2x LANCZOS on a 1226x900 PNG) matched JSON exactly.
+
+**NEW MISS — Stacey PARAPHRASED the summary line and got the DATE wrong**: instead of the
+established body form (greeting, then "N menus closed today (<weekday, Month D>), $X labor gross
+plus $Y parts gross, for a total of $Z") she wrote "7 menus closed **yesterday** totaling
+$1,070.87" and DROPPED the labor/parts split entirely (her `<strong>` bold total survived
+correctly). A DONE line of `TOTAL=$1,070.87` and ALL the standard figure/leftover greps PASS on
+this — only reading the VISIBLE body text catches it. **Add a body-shape check to the standard
+verification: strip the data-URI + tags, then confirm (a) the word "today" (NOT "yesterday") and
+(b) BOTH the `$<labor>` and `$<parts>` figures appear.** Prior drafts confirm the canonical
+wording (9/16 5pm 43414 "10 menus closed today (Wednesday, September 16), $1,189.50 labor gross
+plus $557.63 parts gross, for a total of $1,747.13"; 9/17 noon 43437 "4 menus closed, $527.64
+labor / $239.41 parts = $767.05 total") — she is inconsistent run to run, so check every time.
+**Fix that worked — self-edit + re-APPEND, no rebuild churn**: stdlib `email` parse of the
+exported .eml -> plain `.replace()` of the exact summary `<p>` in text/html and the plain-text
+line -> regenerate Message-ID (del + `make_msgid(domain='americanmotorscorp.com')`, per the 8/30
+Gmail-dedupe trap) -> imaplib APPEND (APPENDUID 43504, Drafts-local id MATCHED) -> expunge 43503.
+Re-exported 43504 and re-ran the FULL suite on the new bytes: PNG byte-for-byte identical
+(142,317 bytes), PDF identical (54,735 bytes), all 8 figures exactly once, bold total present,
+greeting `Ruben,` 1 + footer em-dash present in BOTH parts, zero
+' dollars'/USD/EMDASH/CORRECTION/yesterday/Sunday/Monday/Tuesday/Wednesday/Kevin/dfowlkes
+leftovers, leading-digit-stripped variants 0. Then deleted the stale noon draft (43437) per the
+twice-daily rule -> exactly 1 draft (43504), Daily-Closed Sent count 0.
+**Skill-size housekeeping**: 92,988 bytes pre-append (already <=97,000 — no prune needed) ->
+appended -> re-checked size AFTER.
