@@ -250,6 +250,15 @@ VERIFY INDEPENDENTLY (Stacey's word is not proof):
   `data:image/png;base64` (inline PNG present), `To:` (must be Restrada, NOT Kevin).
   `himalaya envelope list --folder '[Gmail]/Sent Mail' | grep -ic "BC m/d"` must
   be 0 for a draft-only task.
+- **BODY-SHAPE gate — the figure/leftover greps do NOT catch a paraphrased summary**
+  (promoted 2026-09-17 from the 9/17-5pm miss). Stacey can rewrite the summary sentence
+  and get the DATE wrong ("7 menus closed **yesterday** totaling $1,070.87") while the
+  `<b>` total, DONE line, and every figure/leftover grep all PASS. Strip the data-URI +
+  tags, then assert on the VISIBLE text: (a) the correct period word/phrase ("today" for a
+  Daily, the right date range for an MTD) and NOT "yesterday", (b) BOTH the
+  `$<labor>` and `$<parts>` figures present, (c) greeting `Ruben,` count 1 and the footer
+  substring present **in BOTH the text/plain and text/html parts** (the greeting-drop miss
+  of 9/3 was invisible to every other check). Add "yesterday" to the leftover greps (must be 0).
 - Known trap: first build often comes back HASPNG=no (Stacey's check misreads, or
   the inline image really dropped) — re-ask her to REBUILD with the base64 PNG
   embedded inline in the middle of the body; then re-verify HASPNG via raw IMAP.
@@ -616,6 +625,13 @@ what her shell pipeline eats. Instead:
    "EMDASH" not in plain` to the verification step** — the HTML-stripped check
    alone misses it if the data-URI strip skips the footer (or if the EMDASH is
    in the plain-text part only after the data-URI removal).
+5. **Hand her the summary sentence as a VERBATIM string** (promoted 2026-09-17 from the
+   9/17-5pm paraphrase miss): quote the exact sentence to use and add *"use EXACTLY this
+   summary sentence, verbatim, do not paraphrase, do not shorten, do not change any word"*.
+   Without this she invents her own wording and can misstate the period ("yesterday" on a
+   5pm Daily) and silently drop the labor/parts split — a defect no figure or leftover grep
+   detects (see the BODY-SHAPE gate under VERIFY INDEPENDENTLY). With the clause, the 9/17
+   MTD came back canonical on the first try.
 This produced a **clean first build** on 2026-08-18 MTD (111 menus /
 $30,620.08): raw MIME showed `total of <b>$30,620.08</b>` with every digit and
 `$` intact — zero rebuild churn, zero duplicates, no need for the imaplib
@@ -1247,3 +1263,36 @@ leftovers, leading-digit-stripped variants 0. Then deleted the stale noon draft 
 twice-daily rule -> exactly 1 draft (43504), Daily-Closed Sent count 0.
 **Skill-size housekeeping**: 92,988 bytes pre-append (already <=97,000 — no prune needed) ->
 appended -> re-checked size AFTER.
+
+## 2026-09-17 6:16pm Closed MTD run — textbook one-shot, 60th consecutive clean "N dollars" build
+172 menus, $21,406.12 labor / $12,668.96 parts = $34,075.08 (Sep 1-17). Advisors: Jacob Debussey
+43 / $5,269.26, Houa Moua 36 / $4,562.58, Humberto Dominguez 25 / $4,803.23, Juan Ramirez 23 /
+$5,244.22, Dimetri Reynoso 17 / $4,171.87, Michael Reyes 14 / $3,716.10, Erik Mercado 10 /
+$4,456.97, Valentine Nolasco 2 / $1,187.92, Jeremia Navarro 2 / $662.93. Master existed (asof
+9/16, 165 rows) -> default append; 96 closed ROs -> 7 carried TEK menu opcodes (~7% attach) ->
+master 172 rows; `all candidate ROs scanned` printed. Pull via `terminal(background=true)` + a
+SINGLE `process(action="wait", timeout=180)` — returned inside one wait.
+Vision KPI band (crop 460px + 2x LANCZOS on a 1226x6527 PNG) matched JSON exactly; master
+`_gross` sums matched the emitted report `totals` exactly.
+**write_file->background-terminal ask pattern, returned inside ONE 180s wait** (`/tmp/bc_ask_0917_mtd.py`,
+`timeout 560`, subprocess arg list, all five prevention lines + an explicit "use EXACTLY this summary
+sentence, do not paraphrase" clause added in response to the 9/17-5pm paraphrase miss). Clean one-shot,
+DONE 43507, `TOTAL=$34,075.08`, her id MATCHED himalaya's. Her reply DID contain self-correction text
+("verify the total extraction — should be the last dollar figure, not the first") yet NO duplicate —
+same POST-append non-mutating class as 9/16-5pm; dedupe grep confirmed exactly 1 new MTD draft + the
+expected older drafts at other subjects. The added verbatim-sentence clause WORKED: body came out with
+the canonical wording, correct date range, and BOTH the labor and parts figures present.
+Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject auto-decoded
+with em-dashes, inline PNG **byte-for-byte identical** (1,388,317 bytes), PDF **byte-for-byte
+identical** (85,232 bytes), all three headline figures exactly once per part, `<b>$34,075.08</b>`
+bold (exact-tag match), greeting `Ruben,` count 1 in BOTH parts, footer em-dash present
+("Sent from Tekion Open API — live data"), zero
+' dollars'/USD/EMDASH/CORRECTION/Saturday/Sunday/Monday/Tuesday/Wednesday/yesterday/Kevin/dfowlkes
+leftovers, zero leading-digit-stripped variants. Exactly 1 MTD 9/17 draft (43507); the sibling
+9/17 Daily Closed draft (43504) left untouched per the twice-daily rule (different report type,
+NOT a duplicate — note a bare `grep "BC 9/17/26"` on Drafts returns 2, both legitimate). MTD Sent
+count 0 (zero `BC 9/17` Sent hits at all = Stacey's Opened pipeline timing drift, not a defect).
+(The verbatim-sentence ask clause and the BODY-SHAPE verification gate this run validated are
+now promoted to the permanent PREVENTION step 5 and VERIFY INDEPENDENTLY sections above.)
+**Skill-size housekeeping**: 95,779 pre-append (already <=97,000 — no prune needed) -> appended ->
+re-checked size AFTER.
