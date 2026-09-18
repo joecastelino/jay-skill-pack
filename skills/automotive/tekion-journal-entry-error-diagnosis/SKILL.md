@@ -849,6 +849,29 @@ what to do to fix them."** Two rules follow:
 Every step carries its **owner** (§5e hard rule: GL writes are Joe's; offer, state it's a real GL
 write, then stop), and state plainly which items you still owe.
 
+## 5g. The "2 blank lines" trap — `ACCOUNT_INVALID` is the wrong headline; the Error Log names the real field (BC 1251, 2026-09-18)
+
+Symptom: an RO invoice JE (`CUSTOMER_PAY - Repair Order`) sits in the **Error** queue; the entry is **BALANCED** ($Dr == $Cr) with **exactly 2 of N lines showing "Select"** (no GL account); the error key reads `ACCOUNT_INVALID — "GL Account not found: null"`.
+
+**DO NOT conclude "missing GL mapping" from the error key — it is generic.** Open the JE and click **"N Errors"** (top of the entry, next to the title) to expand the **Error Log** table (`Ln. | Field | Error Description | Resolution Steps`). That table names the ACTUAL blocking field.
+
+Real case (JE 563742, RO 103497, $279.31, 2 of 11 lines blank):
+```
+Ln. 2 | Cost Center | A required Cost Centre is missing. | Add the Cost Centre in setup Fields.
+Ln. 3 | Cost Center | A required Cost Centre is missing. | To Fix : Set up Fields -> Cost Centre Set up -> Save and Refresh the JE
+```
+So the fix is **accounting SETUP, not GL mapping**: `/accounting/setupFields` (title "Setup Fields Configuration") → tabs `GL Accounts Setup | Journal Setup | Cost Center Setup`. BC's list showed setup-field dimensions (Department, Account Subtype, Financial Statement Group / Sub Group, Productivity Type, Unit Analysis Group) plus per-document-type entries: `Parts Sale Order - Internal`, `Repair Order - CP Insurance/Warranty Split`, `Repair Order - Internal`, `Repair Order - Warranty`.
+
+**CRITICAL ORDER**: the setup change alone does NOT heal the backlog — each already-errored JE must be opened → **Refresh JE** → **Submit**. Tekion's own resolution text says "Save and **Refresh the JE**".
+
+**Method notes**
+- Errored-JE batches are NOT homogeneous — never extrapolate the blank-line accounts from one entry. Across 8 pulled at BC: 5 were Internal-pay ROs (accts 663/247/481/681/13B/242/463/240/241/307), 3 were CP XPRESS-type (460C/660C/478/678/491/691). Hypothesis-tested "the 2 blanks = 467A PARTS RO DISCOUNT + 460D SLS-CUST MECH DISCOUNTS" and **killed it** — JE 563624 (RO 103491) errored WITH both 467A and 460D already resolved. Pull the error-log table, never infer the blank.
+- Read-only endpoints (in-page fetch; headers from `tcookie` + `localStorage.t_token`):
+  - `POST /api/accounting/u/v2/transaction/m/search` — JE search; body `{sort:[{field:'scheduledTime',order:'DESC'}],filters:[{field:'status',operator:'IN',values:['ERROR'|'POSTED']},{field:'refType',operator:'IN',values:['REPAIR_ORDER']}],searchText:'',pageInfo:{start:0,rows:60},caAppPermission:'CENTRALISED_JOURNAL_ENTRIES'}` → `data.count` + `data.hits[]` with `transactionNumber, refText, transactionAmount, glAccountIds[]`. **Rebuild headers fresh on every call — a cached `window.__H` goes stale and 500s "Token doesn't exist or is invalid".**
+  - `POST /api/accounting/u/glAccount/m/search` — CoA lookup; body `{filters:[],searchText:'<acct#>',pageInfo:{start:0,rows:30},...}` → `accountName`, `accountNumber`, `accountTypeId`. THE way to turn account numbers into plain-English names (`/glAccount/search` 500s; `/glAccount/list` 404s).
+- GLAM module URLs: `?module=FO_OTHERS` (cash holding accts), `?module=SERVICE` (Service Customer Pay → Sublet 466 / Service Contract 460B / XPRESS SERVICE 460C / All 460A), `?module=PARTS_N_ACCESSORIES` (PARTS - REPAIR ORDER → 467/481/484/490/491/478/466 by pay type × service type × source code × sale type).
+- Account numbers→names worth memorizing at BC: 204 PREPAID PARTS (asset), 225 CASH SALES, 242 PARTS & ACCESSORIES, 246/466/666 SUBLET, 247 WORK IN PROCESS - LABOR, 313 HAZARDOUS WASTE, 324 SALES TAXES PAYABLE, 460A/B/C/D customer/service-contract/quick-service/discount labor, 467 PARTS MECH, 467A PARTS RO DISCOUNT, 478/678 parts quick service, 491/691 GAS OIL & GREASE, 460L LYFT.
+
 ## 6. Reporting to Joe
 
 He wants: the count, the pattern (grouped by order/creator/journal — not 10 unrelated bullets), the
