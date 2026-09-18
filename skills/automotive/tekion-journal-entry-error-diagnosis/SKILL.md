@@ -860,7 +860,22 @@ Real case (JE 563742, RO 103497, $279.31, 2 of 11 lines blank):
 Ln. 2 | Cost Center | A required Cost Centre is missing. | Add the Cost Centre in setup Fields.
 Ln. 3 | Cost Center | A required Cost Centre is missing. | To Fix : Set up Fields -> Cost Centre Set up -> Save and Refresh the JE
 ```
-So the fix is **accounting SETUP, not GL mapping**: `/accounting/setupFields` (title "Setup Fields Configuration") → tabs `GL Accounts Setup | Journal Setup | Cost Center Setup`. BC's list showed setup-field dimensions (Department, Account Subtype, Financial Statement Group / Sub Group, Productivity Type, Unit Analysis Group) plus per-document-type entries: `Parts Sale Order - Internal`, `Repair Order - CP Insurance/Warranty Split`, `Repair Order - Internal`, `Repair Order - Warranty`.
+So the fix is **accounting SETUP, not GL mapping**: `/accounting/setupFields` (title "Setup Fields Configuration") → tabs `GL Accounts Setup | Journal Setup | Cost Center Setup`.
+
+**What Cost Center Setup actually contains** (verified BC 1251, 2026-09-18): the tab renders exactly **four document-type cards** (2×2 grid, each expandable) — the six setup-field groups (Department, Account Subtype, Financial Statement Group / Sub Group, Productivity Type, Unit Analysis Group) also render but at **negative-x = the hidden duplicate copy**, ignore them.
+```
+Parts Sale Order - Internal        → (no children)
+Repair Order - CP Insurance/Warranty Split → GM Rewards | Serv Contract Portfolio | Service Contract | Service Contract MPP
+Repair Order - Internal            → 460L Lyft | PDI 263A | Chevy New Car INV 231 | Chevy New Truck INV 237 |
+                                     Used Car INV 240 | Used Truck INV 241 | WeOwe/Due Bill 305 |
+                                     New Car - Lot Damage | Used Car Lot Damage | Service Lot Damage | View More
+Repair Order - Warranty            → (not captured)
+```
+**KEY DIAGNOSTIC**: there is **NO plain "Repair Order – Customer Pay" entry**, and every configured value is a contract / rewards / internal / warranty category. So an ordinary CP line has nothing to inherit → "A required Cost Centre is missing". Tekion names the FIELD but never the expected VALUE — do not claim to know which value; state that the customer-pay RO doc type is unconfigured and the fix is to add it.
+
+**Reading the Cost Center Setup cards**: expand by clicking the **card label centre** (coords from a text query: Parts 368,260 / CP-split 368,342 / RO-Internal 976,260 / RO-Warranty 976,342). Clicking the same label again **collapses** it, and an expanded card's label text disappears from `innerText` — re-query positions before each click, and dump `document.body.innerText.slice(180,1900)` after each toggle.
+
+**The two blank lines, read precisely (do NOT trust the screenshot/vision for this)** — vision misread the amounts and cell assignment. Extract per-cell truth from the DOM: walk the grid, and for each cell collect `innerText` + every `input/select` (`value`, `placeholder`) + `[class*=singleValue]` text. That recovered, for JE 563742 / RO 103497: Ln1 204 PREPAID PARTS $63.52 "Payment Deposit"; **Ln2 blank $110.94 Dr, Control2=LOFL87, Description=23320584**; **Ln3 blank $15.00 Dr, Control2=ROTATE, Description=23320584**; Ln4 460C $-65.00 "Labor Sales"; Ln7 478 $-111.87 "Parts Sales"; Ln10 313 "Fee code - LOFDIS"; Ln11 324 "Tax - 8.35% Tax". The `Control 2` column carries the **opcode**, `Description` carries the line meaning — that is how you identify WHICH job/op the blank line belongs to. A blank line riding the RO's opcodes with an unusual Description is a discount or plan/contract-covered portion — **pull the RO before touching the cost-centre setup**, because a contract piece belongs on the `Repair Order - CP Insurance/Warranty Split` row instead.
 
 **CRITICAL ORDER**: the setup change alone does NOT heal the backlog — each already-errored JE must be opened → **Refresh JE** → **Submit**. Tekion's own resolution text says "Save and **Refresh the JE**".
 

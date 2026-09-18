@@ -162,6 +162,47 @@ When the persistent browser (:9225) is fighting you, the Playwright-powered `bro
 
 **Pitfall:** Session expires; must re-login via OTP.
 
+## Method E: Grid row extraction — cells + input values (beats screenshots/vision)
+
+For any Tekion **grid/table** where you need per-row, per-cell truth (journal-entry posting lines, parts lists, transaction rows), read the DOM — **never** a screenshot. `vision_analyze` reliably misreads Tekion digits and cell assignment (it swapped amounts and mislabeled columns on a JE grid in the 2026-09-18 BC investigation).
+
+Find the header leaf, walk up to the grid container, then per cell grab text **and** form-control state. Inputs hold the real values that `innerText` never shows (placeholder-only cells look empty otherwise):
+
+```javascript
+(function(){
+ function txt(e){return String(e.innerText||'').replace(/\s+/g,' ').trim();}
+ var hn=[].slice.call(document.querySelectorAll('*')).filter(function(x){
+   return txt(x)==='Ln.' && x.getBoundingClientRect().width>0})[0];   // <-- header label
+ if(!hn) return 'noheader';
+ var grid=hn;
+ for(var i=0;i<6 && grid.parentElement;i++){                          // climb to the grid
+   grid=grid.parentElement;
+   if(grid.querySelectorAll('input,select,[role=combobox]').length>=8) break;
+ }
+ var rows=[].slice.call(grid.children).filter(function(c){
+   return c.querySelectorAll('input,select,[role=combobox]').length>0});
+ return JSON.stringify(rows.map(function(r){
+   return [].slice.call(r.children).map(function(c){
+     return {t:txt(c),
+       ins:[].slice.call(c.querySelectorAll('input,select')).map(function(x){
+         return {v:x.value, ph:x.placeholder}}),
+       sel:[].slice.call(c.querySelectorAll('[class*=singleValue],[class*=single-value]'))
+              .map(function(s){return txt(s)})};
+   });
+ })).slice(0,6000);
+})()
+```
+
+Why each piece matters:
+- `ins[].v` — the typed/hidden numeric values (amounts, control numbers, descriptions). `innerText` shows only a `$` for these.
+- `ins[].ph` — the **placeholder is the semantic label** (`Reference`, `Custom`, `Type here`, `Type Here`, `Repair Order`). It tells you what each unnamed control means when headers are ambiguous.
+- `sel[]` — react-select `singleValue` text, i.e. the chosen dropdown option (the GL account / part). Cell text shows `Select` when unset.
+- `.slice(0,6000)` — `/eval` responses get truncated; always cap.
+
+**Interpretation tip**: on JE posting-line grids the columns are `Ln. | GL Account | Amount | Control | Control 2 | Description | Count` where **`Control 2` carries the OPCODE** and **`Description` carries the line's meaning** (`Labor Sales`, `Parts Sales`, `Parts Cost of Sales`, `Fee code - LOFDIS`, `Tax - 8.35% Tax`, `Payment Deposit`). That is how you identify which job/op an unaccounted line belongs to. **There is no Cost Center column on the grid** — cost-centre problems surface only in the Error Log panel.
+
+Note: `elementFromPoint` clicks fail on control cells when a hidden duplicate copy of the component renders at negative x — filter candidates by `rect.x >= 0 && rect.width > 0`.
+
 ## Quick Reference: Which Method When
 
 | What you need | Best method | Why |
