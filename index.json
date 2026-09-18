@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-18T08:30:05",
+ "generated": "2026-09-18T08:45:35",
  "skill_count": 227,
  "skills": [
   {
@@ -63,7 +63,7 @@
    "path": "automotive/tekion-kb-search-scrape",
    "category": "automotive",
    "description": "Search and scrape the Tekion ServiceNow Knowledge Base (tekion.service-now.com) authenticated as Joe, then store articles in the Tekion KB / GBrain. Use whenever you need to look up HOW a Tekion workflow/setting works, find KB articles by keyword, or ingest Tekion documentation. The KB auto-SSOs from the logged-in DMS session \u2014 no separate login needed. Load alongside tekion-sitemap and persistent-browser-server.",
-   "times_used": 56,
+   "times_used": 57,
    "last_used": "2026-09-18"
   },
   {
@@ -355,6 +355,14 @@
    "last_used": "2026-09-14"
   },
   {
+   "name": "tekion-journal-entry-error-diagnosis",
+   "path": "automotive/tekion-journal-entry-error-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose Tekion Accounting Journal Entries stuck in ERROR status (auto-posting JEs that failed to post). Covers the JE list/detail URLs, reading GL posting lines out of the DOM, finding the blank/unmapped GL account, and tracing the root cause back to a missing row in GL Account Transaction Mapping. Use for \"look at journal entries\", \"JEs in error\", \"auto posting failed\", \"GL account blank on journal entry\".",
+   "times_used": 9,
+   "last_used": "2026-09-18"
+  },
+  {
    "name": "tekion-parts-sold-by-source-report",
    "path": "automotive/tekion-parts-sold-by-source-report",
    "category": "automotive",
@@ -371,10 +379,10 @@
    "last_used": "2026-07-15"
   },
   {
-   "name": "tekion-journal-entry-error-diagnosis",
-   "path": "automotive/tekion-journal-entry-error-diagnosis",
+   "name": "tekion-coupon-management",
+   "path": "automotive/tekion-coupon-management",
    "category": "automotive",
-   "description": "Diagnose Tekion Accounting Journal Entries stuck in ERROR status (auto-posting JEs that failed to post). Covers the JE list/detail URLs, reading GL posting lines out of the DOM, finding the blank/unmapped GL account, and tracing the root cause back to a missing row in GL Account Transaction Mapping. Use for \"look at journal entries\", \"JEs in error\", \"auto posting failed\", \"GL account blank on journal entry\".",
+   "description": "Create/edit service discount coupons in Tekion's Coupon Management app (e.g. tire promos like Bridgestone B3G1, $-off or %-off labor/parts coupons). Covers the real URLs, form mechanics (old antd calendar, react-select GL account), toggle defaults, GL split conventions, and verification. Verified live at SCT 2026-08-02.",
    "times_used": 8,
    "last_used": "2026-09-18"
   },
@@ -441,14 +449,6 @@
    "description": "Log into Tekion DMS via browser, switch dealerships, navigate to Opcode Management, search for opcodes, and edit opcode details. Covers OTP retrieval via IMAP, session persistence, dealer switching pitfalls, and search quirks.",
    "times_used": 7,
    "last_used": "2026-09-14"
-  },
-  {
-   "name": "tekion-coupon-management",
-   "path": "automotive/tekion-coupon-management",
-   "category": "automotive",
-   "description": "Create/edit service discount coupons in Tekion's Coupon Management app (e.g. tire promos like Bridgestone B3G1, $-off or %-off labor/parts coupons). Covers the real URLs, form mechanics (old antd calendar, react-select GL account), toggle defaults, GL split conventions, and verification. Verified live at SCT 2026-08-02.",
-   "times_used": 7,
-   "last_used": "2026-09-18"
   },
   {
    "name": "tekion-customer-pay-ro-count",
@@ -611,6 +611,14 @@
    "last_used": "2026-07-14"
   },
   {
+   "name": "slack-thread-context-recovery",
+   "path": "automotive/slack-thread-context-recovery",
+   "category": "automotive",
+   "description": "Recover what a context-free Slack message is referring to when the Hermes session that held the thread has already expired (e.g. Joe replies \"so does this work now?\" days later in an old thread). Reads Jay's own raw session JSON on disk to rebuild the thread's history instead of guessing or asking Joe to repeat himself.",
+   "times_used": 4,
+   "last_used": "2026-09-18"
+  },
+  {
    "name": "tekion-internal-api-access",
    "path": "automotive/tekion-internal-api-access",
    "category": "automotive",
@@ -673,14 +681,6 @@
    "description": "Maintain the PUBLIC skill-pack repo github.com/joecastelino/jay-skill-pack \u2014 the auto-synced, secret-redacted mirror of Jay's entire skill library, README sorted by usage count. Use when Joe asks about the skill pack repo, when a sync fails, when a new secret needs redaction, or when installing Jay's skills into another agent.",
    "times_used": 3,
    "last_used": "2026-09-14"
-  },
-  {
-   "name": "slack-thread-context-recovery",
-   "path": "automotive/slack-thread-context-recovery",
-   "category": "automotive",
-   "description": "Recover what a context-free Slack message is referring to when the Hermes session that held the thread has already expired (e.g. Joe replies \"so does this work now?\" days later in an old thread). Reads Jay's own raw session JSON on disk to rebuild the thread's history instead of guessing or asking Joe to repeat himself.",
-   "times_used": 3,
-   "last_used": "2026-09-18"
   },
   {
    "name": "tekion-apc-quota-usage-investigation",
