@@ -357,6 +357,40 @@ returned in 43s first try on 8/21. Search the SHORT subject stem
 of IMAP subject searches). Expect the token-match trap: 8/21 returned `Sent: 5`, four of
 which were prior sends (Jul 1-28, Jul 1-30, Aug 1-8, Aug 1-18) plus today's exact match.
 
+### (9/18 run, for Thu 9/17) FALSE "SENT" CLAIM from Stacey — caught by INDEPENDENT IMAP CHECK, re-fired clean
+186 closed ROs, 27 prefilter hits, 27 new rows, `all candidate ROs scanned`. MTD moved
+151 rows/$32,838.44 -> **178 rows / $41,690.91** ($30,411.69 labor + $11,279.22 parts).
+9/17-dated rows alone = 17 menus / $5,066.29 (rest of the +$8,852.47 delta = older invoiced
+ROs closed) — stated both numbers in the body per standing practice.
+**NEW, IMPORTANT FAILURE MODE:** Stacey's send hand-off returned a confident
+`SENT | BT Menu Sales - Closed MTD (September 1-17, 2026) | attempts=2` in 1m09s — but an
+independent IMAP check of `[Gmail]/Sent Mail`, `[Gmail]/All Mail` and `INBOX` found NO
+message with that subject anywhere (and nothing in Drafts either). The email was never sent.
+Her log showed only one `exec import smtplib … 8.0s` step with no visible error, i.e. she
+reported success after a failed/aborted SMTP call. **Do NOT trust her "SENT" line — the
+dispatch ask's self-report is NOT evidence.** (This is the mirror image of the 8/22 duplicate:
+there a real send got a false error; here a false success got no send.)
+DETECTION/FIX that worked: re-fired ONCE with a message that (a) stated the previous claim was
+false and nothing exists in Sent/All Mail/INBOX, (b) required the VERBATIM `sendmail()` return
+value or full exception text, `attempts=N`, and the Message-ID as the final reply lines, and
+(c) repeated the DO-NOT-DOUBLE-SEND paragraph. Second run took 3m27s, reported
+`sendmail() returned {}` / `attempts=1` / Message-ID `<178973714067.1990478...@americanmotorscorp.com>`
+and it was TRUE: independent IMAP confirmed exactly ONE message, UID 8873, 18-Sep-2026
+13:12:22 UTC (06:12:22 PDT), To agarcia@blackstonetoyota.com, Cc jcastelino@americanmotorscorp.com,
+multipart/mixed > related > alternative(text/plain+html) + image/png CID=<scorecard> inline +
+application/pdf attachment. Zero duplicates.
+VERIFICATION TIP: don't delegate the Sent-check to Stacey alone — check it yourself from Jay's
+session with a raw imaplib script (creds in `~/.hermes/profiles/email-agent/.../himalaya
+config.toml`, account jcastelino@americanmotorscorp.com; `[Gmail]/Sent Mail`, criteria
+`SUBJECT "BT Menu Sales"` + `SINCE <today>`). It takes ~3-6s and is definitive, whereas her
+own read-only checks take 30-160s. Prior days' sends (Jul 1-28/1-30, Aug 1-8/1-18/1-24/1-25/
+1-26/1-27/1-31, Sept 1-1/1-2/1-3/1-4/1-5/1-10/1-15/1-16) are the usual token-match noise —
+only an exact-subject hit dated today counts. NOTE: CC'd copies also land in INBOX, so INBOX
+is a useful second confirmation source.
+MTD advisor leaders (9/17): Jon Lo 29/$9,882.31, Jason Davis 45/$8,102.22, Michael Rankin
+23/$5,065.54, Erick Villasenor Gonzalez 3/$3,984.61, Gio Elenes 4/$3,144.49, Randy Vung
+21/$3,125.94 (14 advisors on the board).
+
 ### LOW "closed/invoiced ROs today" can be a REAL store-side close lag, not starvation (2026-08-23)
 The 8/23 run (for 8/22, a Saturday) logged `closed/invoiced ROs today: 3` — far below the
 prior two Saturdays (8/08 = 80, 8/15 = 75) and every weekday (66-263). By the standard
