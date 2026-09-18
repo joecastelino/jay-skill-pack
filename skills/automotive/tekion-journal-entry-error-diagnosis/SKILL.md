@@ -30,6 +30,78 @@ All work through the `:9223` persistent browser (`/eval`, `/mouse`, `/type`, `/n
 
 ---
 
+## 0. THE definitive diagnostic + audit trails (verified VC 1891, 2026-09-18)
+
+### Posting Preview = the only thing that names the cause
+**RO → kebab ⋮ (top-right) → "View Posting Preview"** → lines/fields highlighted **RED** identify
+the exact cause: *"Control field invalid"*, *"GL account missing"*, *"Cost center not mapped"*.
+Per **KB0026432** this applies only when the preview shows red fields; if it opens clean while the RO
+still says journal-entry error, that's a different issue.
+⚠️ **A JE Refresh overwrites the failed state — the original lines and error reason are GONE.**
+So run Posting Preview/read the error BEFORE anyone refreshes. Never accept "refresh fixed it" as a
+root cause: refresh is recovery (KB0026965), not diagnosis.
+
+### Documented causes of RO JEs in error (KB0025997 + KB0026432)
+1. Invalid **Control type** on a GL account used in the posting → fix: set Control type to
+   *Custom & Non-Mandatory*, close the RO, then revert.
+2. **Description Mandatory** on the GL account but the line has no description → uncheck it.
+3. **Accounting date in a closed period** → either disable AGS *"Always use cashiering date as
+   accounting date for customer pay ROs and SOs"* or grant previous-month posting permission.
+4. **Missing GL mapping** for a cost center / pay type (KB0015431: "cost centre used in the RO was
+   not mapped in GL Account mapping").
+5. **Vehicle inventory balance $0** block → AGS → *"Send RO/SO postings to error if vehicle
+   inventory account balance is zero"* → turn OFF.
+6. AR **credit limit exceeded**. 7. **Duplicate VIN**. 8. **RO was force-closed** (pushes JE into error).
+Also KB0017795 states the literal error: *"The Journal Entry is not balanced."*
+
+### Audit logs — "did someone change something?" (answers it in one click)
+The **history icon** (`div` with class `icon-history`, top-right ≈ **x1244, y96**; x1229 on account
+edit pages) opens **Audit Logs** with user + timestamp + old→new values. Empty = *"No Logs Available!"*.
+
+| Screen | What its audit proves |
+|---|---|
+| `/accounting/accountSettings` (AGS) | every global accounting setting change |
+| `/accounting/autopostingsettings/list` | Posting Preferences + Templates changes |
+| `/core/coupons/edit/<b64(code)>` | whether the coupon itself was edited |
+| CoA account edit `/accounting/chartOfAccounts/dealer/<d>/account/<d>_<acct>/edit` | account master changes |
+
+**VC result (2026-09-18): nobody changed anything.** Coupon 6995 = *No Logs Available*; acct 4403 =
+*No Logs Available*; Auto-Posting Settings last touched **Carol Brewer, May 30 2023**; AGS last
+touched **Carol Brewer, Jun 30 2026** (added 9191 to *GL Accounts Not Requiring Sales Chain*).
+⇒ When audit trails are silent across the whole window, the change is **Tekion-side**, not dealer-side.
+
+### Release-notes lookup (did Tekion ship a fix?)
+DMS Home → the Release Notes TekTouch's *"Read All (n)"* is an **`<a href="/core/release/<releaseId>">`**
+(read the href — clicking it doesn't navigate in :9223). The release page shows **Released On: <date>**
+and item counts per department; filter with `?departmentId=ACCOUNTING|SERVICE|CORE|SALES|PARTS|...`.
+**VC: ARC September 2026 Release, Released On: Sep 16, 2026** — 23 items / 9 departments; the only
+Accounting item was *"Clear Non-Mandatory Fields on General Ledger Accounts"*. No JE/auto-posting/
+coupon/discount item exists → timing can align with the symptom, but do NOT claim the release fixed it.
+
+### Where the discount GL actually comes from (supersedes "it's in the GLAM")
+The RO discount posting lines take their account **from the COUPON's GL Account Split**
+(Coupon Management → *GL Account Split*: Labor → 4403, Parts → 4703, 100/100 at VC). **GLAM has no
+discount/coupon dimension**: Fixed Operations → *Services* rules use Pay Type / Service Type / GL
+Account (sale accounts only: 4410/4418/4402…), *Part & Accessories* uses Pay Type / Service Type /
+Source Code / Customer Tax Status / **Sale Type (Fixed Ops)** — whose only values are
+Wholesale / Retail / Repair Order / Internal. Discount lines post with **Description = "Coupon Code - <code>"**.
+Related: AGS → Auto Posting → ***GL Accounts Not Requiring Sales Chain*** (KB0020992) is the declared
+list of Sale-type accounts that need no Cost of Sale / Inventory Offset; **Sales Chains** live at
+`/accounting/accountingChain/list` (a Sale-type account normally needs Sale → Cost of Sale → Cost
+Offset). VC's list held only 9162/9163/9167/9191 (F&I income) and 4403/4703 are **not** in it and have
+**no Sales Chain row** — flag it as a config gap, but it is **not proven causal** (a live CP RO posted
+balanced with that gap in place). Check these account flags on the edit page: Control Number Mandatory /
+Control 2 Mandatory / Description Mandatory / Disable Postings (all OFF on 4403/4703).
+
+### Route-discovery trick
+KB articles' *"Take me to …"* links are real DMS routes — navigate the :9223 tab to the KB article and
+read `[...document.querySelectorAll('a')].map(a=>a.getAttribute('href'))`. This is how
+`/accounting/accountSettings` (Accounting Global Settings) and `/accounting/accountingChain/list`
+(Sales Chains) were found. Guessing routes is futile: unknown `/accounting/*` paths silently redirect
+to `chartOfAccounts/list`.
+
+---
+
 ## 1. URLs (verified SCT 876, 2026-08-21)
 
 | Screen | URL |
@@ -289,6 +361,116 @@ VC Error queue = **0 Result(s)**. → discounts DO post now; the missing-line co
 **Fix for entries already in error = Refresh JE → Submit** (KB0026965 / KB0017733) — not a mapping
 change, not hand-editing lines. If a *new* RO still drops its discount, get the RO# and trace the
 coupon application on that RO: that would be a coupon-application failure, not GLAM.
+
+### 5a-3. Joe's follow-up — "it shouldn't have to refresh, something else is wrong" (2026-09-18)
+
+He escalated in four steps: **how do I fix it in the GLAM → it shouldn't need a refresh → why did this
+go into error and MINE did not → did Tekion push an update?** Each time the wrong answer is a
+workaround. He rejected a proposed error-queue watcher outright (*"no, I don't need that. I just need
+to know why"*). **When Joe asks "why", answer the why — do NOT propose automation/monitoring/next
+steps.** Per the fix-date rule, date every artifact against the release date before attributing cause.
+
+**1. The control-case proof (pull the NEW entry, don't trust the screenshot).** Joe opened a fresh RO
+and added a discount. His screenshot was unreadable/OCR-wrong (it read the store as "Volkswagen of
+Cicero" and journal "20"; live is Clovis + journal `30`). Live JE `123820`, RO `142091`, created by
+Joe 09/18 7:52 AM, **Posted, Dr=Cr=$144.23, Balance $0.00, GP $41.70** — and it carries the contra
+lines with the source stamped on them:
+```
+ 8. 4703 PARTS CUST PAY DISCOUNTS VW   $6.31   Description: "Coupon Code - 6995"   Count 0
+ 9. 4403 SERV CUST PAY DISCOUNTS VW   $38.84   Description: "Coupon Code - 6995"   Count 0
+```
+So the discount legs carry a **line description `Coupon Code - <code>`** (the Control/Control-2 columns
+are `-`) and **Count = 0** while sale/tax lines read Count 1. Contrast the failing JEs 122656/123249
+(§5a-2): same store, same journal, same coupon 6995, same LOF job — different outcome. Same coupon +
+same job type + different result = **a time-bounded change, not a data difference.**
+
+**2. ⚠️ REFRESH DESTROYS THE EVIDENCE.** The refresh overwrites the failed record in place (Modified
+Time moves, lines are rewritten). After a refresh you can NOT post-mortem the cause — that's why the
+"why" stayed unanswerable here. **Capture before anyone refreshes: Posting Preview screenshot + the
+original posting-line set + the error text.** If a failing RO still exists, that's the whole answer.
+
+**3. The RO-side root-cause list + the definitive diagnostic (KB0025997 / KB0026432 / KB0015431).**
+These are the current under-reported articles — they supersede treating every error as a GLAM gap:
+1. **Invalid Control type** on a GL account in the posting (fix: set Control type → `Custom &
+   Non-Mandatory`, close, then REVERT it after)
+2. **Description Mandatory** on the GL account but the line has no description
+3. **Accounting date in a closed period** (fix A: turn off *Always use cashiering date as accounting
+   date for customer pay ROs/SOs*; fix B: grant previous-month posting permissions)
+4. **Missing GL account mapping** for a cost center / pay type — KB0015431: *"Cost centre used in the
+   RO was not mapped in the GL Account mapping"*
+5. **Vehicle inventory account balance $0** block setting
+6. AR **credit limit exceeded** · 7. **Duplicate VIN** · 8. **RO was force-closed** (pushes the JE
+   into error; mapping must be corrected before a manual fix)
+
+**THE diagnostic that names the exact field: open the RO → kebab `⋮` (top-right) → "View Posting
+Preview" → red-highlighted fields = the cause** ("Control field invalid", "GL account missing",
+"Cost center not mapped"). KB0026432 warns: if Posting Preview shows *no* red fields, it's a different
+(service-side) defect — don't force-fit this list. Use this on any RO that is still erroring.
+
+**4. What was ruled out at VC (live, dealer 1891) — so it doesn't get re-walked:**
+| Check | Page | VC state |
+|---|---|---|
+| Control type | CoA account edit | 4403/4703 = `Custom` ✓ |
+| Control Number / Control 2 / **Description Mandatory** | CoA account edit | **all OFF** ✓ |
+| Disable Postings | CoA account edit | OFF ✓ |
+| VI balance $0 → error block | AGS → Auto Posting | **OFF** ✓ |
+| Repair Orders Close CP/Internal/Warranty | AGS → Posting Preferences | **Auto-Post** ✓ (RO Adjustment = Draft; Vehicle Inventory Stock-In = Draft) |
+| **Coupons** posting line | Auto-Posting Settings → Templates → RO → Customer Pay → Fees | present ✓ |
+| Discount GL accounts declared? | AGS → Auto Posting → **GL Accounts Not Requiring Sales Chain** | ✗ only 4 F&I accounts (`9162/9163/9167/9191`) |
+| Sales Chain rows for 4403/4703 | `/accounting/accountingChain/list` | **No rows found** ✗ |
+| Account Sub-Type | CoA account edit | **empty** on 4403/4703 |
+
+The last two are the only structural asymmetries left: `4403/4703/4403A` are **`S-Sale` type with no
+Sales Chain and not declared in "GL Accounts Not Requiring Sales Chain"** (KB0020992 says that list is
+exactly for sale accounts needing no Cost of Sale / Inventory Offset). **Do NOT call this the cause** —
+the new JE 123820 posts balanced *with* the gap in place. Present it as a tightening, explicitly
+labelled unproven.
+
+**5. "Did Tekion push an update?" — where to look (KB has NO ARC release notes).**
+DMS Home → the Release Notes card's **`Read All (N)` is an `<a>`, not a button** — read
+`a.getAttribute('href')` → **`/core/release/<24-hex-id>`** (clicking/window.open-hooking both fail;
+the drawer won't expand). Department tabs are `<li>`; the filter also works as a URL param:
+`?departmentId=ACCOUNTING|CORE|SERVICE|SALES|PARTS|TEKION_PAY|ANALYTICS|COMMUNICATIONS|PERMISSIONS`.
+**ARC September 2026 release: `Released On: Sep 16, 2026`** — 23 items / 9 depts. Accounting carried
+exactly ONE item (*Clear Non-Mandatory Fields on General Ledger Accounts* — Account Sub-Type /
+Department / FS Group / FS Sub-Group); Core 4 (printer+scanner logs, Enterprise Security Settings,
+new Get Help widget, "All" in employee-view dealer dropdown); Sales 3 (Total Vehicle Price in
+Desking/Deal Sheets, TVP in Vehicle Inventory, CA CARS Act compliance setup); Parts 1 (False Hold
+icon); Tekion Pay 1 (electronic paper-check); Analytics 1; Communications 1; Permissions 6.
+**Nothing about journal entries, auto-posting, coupons, discounts or GL posting.** So the 9/16 release
+is *timing-consistent* with "failures before / works after" but is **not** a documented posting fix —
+say that plainly instead of implying causation.
+
+### Route + mechanics discoveries that cost turns here
+- **Accounting Global Settings = `/accounting/accountSettings`** (KV0020992's tab list: Journal Entry
+  Settings · Auto Posting · Schedules · Reconciliation Accounts · General Settings). Add to §1 dead
+  ends: `/accounting/global-settings`, `/accounting/globalsettings/list`,
+  `/accounting/accounting-global-settings`, `/accounting/settings/global`, `/accounting/settings`,
+  `/accounting/accountSettings/...` variants **all silently redirect to `chartOfAccounts/list`** —
+  assert `location.href` every time.
+- **Finding a screen's route from the KB (reusable, fast):** open the KB article that links it, then
+  `[...document.querySelectorAll('a')].map(a=>a.getAttribute('href')).filter(h=>/tekioncloud/.test(h))`.
+  That's how `/accounting/accountSettings` and `/accounting/accountingChain/list` were found after
+  URL guessing failed.
+- **Table-level "expandable search" (CoA / Sales Chain / JE list):** a magnifier icon at the RIGHT of
+  the table header (~x1159 on CoA, x1224 at VC Sales Chain, x1111 on the JE list) expands an input
+  whose placeholder is exactly **`Search...`**; type via native value-setter + `input` + Enter.
+  The global box placeholder is **`Search here...`** and does NOT filter these tables — typing there
+  returns the unfiltered list and reads as a false negative. Sales-Chain search for `4403`/`4703`/
+  `DISCOUNT` correctly returned *No rows found*; the CoA search returns whole **rows** (Account Type,
+  Sub-Type, Balance, Control Type, **Count**, Department, Modified Time, Franchise, Active).
+- **CoA account edit URL:** `/accounting/chartOfAccounts/dealer/<dealerId>/account/<dealerId>_<acct>/edit`
+  — tabs Account Details · Postings · Monthly Balances · Daily Balances; the flag toggles
+  (Control Number Mandatory / Control 2 / Description Mandatory / Posting Line Count Adjustment /
+  Disable Postings) are `.ant-switch`/checkbox — read states, never infer.
+- **KB SSO re-bootstrap (corrects the older advice):** when `kb_search_scrape.py` returns
+  `{"error":"KB not authenticated..."}`, the fix is a single `/navigate` to
+  **`https://app.tekioncloud.com/core/knowledge-base/search`** (it runs the SSO handshake in the
+  tracked tab and lands on `tekion.service-now.com/sp`). Do NOT chase the ServiceNow login form —
+  "Use external login" → User ID → just bounces back. And remember the scraper **hijacks the :9223
+  bound page**, so do KB reads before/after DMS DOM work, and re-assert `location.href` after.
+- **The "Error" status tab is STICKY across navigations** — before searching the JE list,
+  click **`All`** or you get `No Rows Found` on a JE that exists (cost a turn here).
 
 ### Mechanics for this diagnosis (each of these cost turns to find)
 - **Sweep every coupon's GL split in one loop:** `/core/coupons` lists the codes (read the
