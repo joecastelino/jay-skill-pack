@@ -26,6 +26,14 @@ NOT on the plan's contract payer, so Tekion never applies the contract allowance
 op prices at RETAIL, the plan's fixed allowance never lands, and the whole balance sits
 on the customer.
 
+## Step 0 — Two clarifying asks up front (don't burn a turn later)
+
+1. **Which store?** Ask in the same breath as starting the fleet sweep (BT staffer
+   U0B7UBQ8Y3T reports these for Blackstone Toyota; RO 153664 case).
+2. **"Where are you seeing the full amount / the 'schedule' figure?"** Stores call the
+   customer-payer balance in Payers View (or the accounting schedule) "the schedule" —
+   pin the exact screen before diagnosing so the answer points at the right surface.
+
 ## Step 1 — Cross-store sweep (never assume the store)
 
 RO numbers are not unique across the 7 stores. `repair-orders:search` with

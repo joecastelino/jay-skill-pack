@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-18T11:30:03",
+ "generated": "2026-09-18T11:45:33",
  "skill_count": 228,
  "skills": [
   {
@@ -335,7 +335,7 @@
    "path": "automotive/tekion-journal-entry-error-diagnosis",
    "category": "automotive",
    "description": "Diagnose Tekion Accounting Journal Entries stuck in ERROR status (auto-posting JEs that failed to post). Covers the JE list/detail URLs, reading GL posting lines out of the DOM, finding the blank/unmapped GL account, and tracing the root cause back to a missing row in GL Account Transaction Mapping. Use for \"look at journal entries\", \"JEs in error\", \"auto posting failed\", \"GL account blank on journal entry\".",
-   "times_used": 12,
+   "times_used": 13,
    "last_used": "2026-09-18"
   },
   {
@@ -731,6 +731,14 @@
    "last_used": "2026-09-11"
   },
   {
+   "name": "tekion-spa-data-extraction",
+   "path": "automotive/tekion-spa-data-extraction",
+   "category": "automotive",
+   "description": "Extract data from Tekion's SPA when raw API calls fail due to the axios auth interceptor. Covers XHR hooks, React fiber state extraction, dirty-form PUT capture, and Playwright browser tools \u2014 the four proven methods for getting menu JSON, included service IDs, and other SPA-held data.",
+   "times_used": 3,
+   "last_used": "2026-09-18"
+  },
+  {
    "name": "tekion-technician-queue-dispatch",
    "path": "automotive/tekion-technician-queue-dispatch",
    "category": "automotive",
@@ -897,14 +905,6 @@
    "description": "Build any long-running (>20 min) Tekion report cron as a self-contained shell runner (scan -> render -> email in ONE flock'd process) instead of an agent-babysat background job. Use when creating a new report cron, when a report \"ran but Joe got no email\", or when a cron's data landed on disk but the render/email tail never executed. Includes the recovery drill for orphaned scan JSON.",
    "times_used": 2,
    "last_used": "2026-09-03"
-  },
-  {
-   "name": "tekion-spa-data-extraction",
-   "path": "automotive/tekion-spa-data-extraction",
-   "category": "automotive",
-   "description": "Extract data from Tekion's SPA when raw API calls fail due to the axios auth interceptor. Covers XHR hooks, React fiber state extraction, dirty-form PUT capture, and Playwright browser tools \u2014 the four proven methods for getting menu JSON, included service IDs, and other SPA-held data.",
-   "times_used": 2,
-   "last_used": "2026-09-11"
   },
   {
    "name": "tekion-vehicle-override-row-builder",
