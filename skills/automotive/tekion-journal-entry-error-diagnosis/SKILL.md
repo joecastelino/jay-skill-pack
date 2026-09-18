@@ -887,6 +887,41 @@ Repair Order - Warranty            → (not captured)
 - GLAM module URLs: `?module=FO_OTHERS` (cash holding accts), `?module=SERVICE` (Service Customer Pay → Sublet 466 / Service Contract 460B / XPRESS SERVICE 460C / All 460A), `?module=PARTS_N_ACCESSORIES` (PARTS - REPAIR ORDER → 467/481/484/490/491/478/466 by pay type × service type × source code × sale type).
 - Account numbers→names worth memorizing at BC: 204 PREPAID PARTS (asset), 225 CASH SALES, 242 PARTS & ACCESSORIES, 246/466/666 SUBLET, 247 WORK IN PROCESS - LABOR, 313 HAZARDOUS WASTE, 324 SALES TAXES PAYABLE, 460A/B/C/D customer/service-contract/quick-service/discount labor, 467 PARTS MECH, 467A PARTS RO DISCOUNT, 478/678 parts quick service, 491/691 GAS OIL & GREASE, 460L LYFT.
 
+## 5h. POSTING PREVIEW BY API — names the exact failing line + cost-centre id (BC 1251, 2026-09-18)
+
+**Endpoint (captured from RO kebab → "View Posting Preview"):**
+`GET /api/service-module/u/ro-read/posting/<roId>/<CUSTOMER_PAY|INTERNAL|WARRANTY>/preview/`
+(trailing slash REQUIRED — without it 404). In-page fetch with the tcookie/t_token headers
+(`tekion-internal-api-access`). Response `data:{transaction{errors}, postings[]}`; `data:null` = nothing
+to post for that pay type ($0 bucket). Each posting line: `glAccountId` (null = unresolved), `debit/credit`,
+`description`, `control2Type` (= opcode), `metaData.autoPostingLineType`, and **`error{errorCode,errorMessage}`**.
+This is a SIMULATION — safe, read-only, works on CLOSED ROs, and it re-runs the engine NOW (so it
+also reveals whether the engine can build a correct entry today).
+
+**Real result, errored JE 563742 / RO 103497:** the two blank lines are
+`autoPostingLineType: RO_OPERATION_COST_CENTER`, Dr $110.94 (LOFL87) + Dr $15.00 (ROTATE), description
+`23320584` (= the service-contract number), error
+`COST_CENTER_NOT_FOUND — "cost center account mapping not found : 6286a3fd005c8e0007455daa"`.
+That id = cost centre **"Service Contract"** under *Repair Order – CP Insurance/Warranty Split*
+(resolve ids via `GET /api/settings/u/customField/accounts` → field `REPAIR_ORDER_CP_IW_SPLIT.options[]`;
+also `REPAIR_ORDER_INTERNAL` options e.g. MPVI=62ab9e738970110006318eca, Service Dept Policy
+67D=6286a30fe21b8400071cad17). ⇒ **The cost centre EXISTS; what is missing is its GL-account MAPPING.**
+This killed the earlier "no CP cost centre configured" story (§5g) — CP jobs carry `COLLECT_AT_CASHIERING`
+and need no cost centre; only the contract-covered portion of a CP job routes through a cost centre.
+
+**Class-B RO 100781 (invoice JE never created):** preview returns NO errors and balances ($1,139.62)
+but **omits the $50 sublet** (PO 13485) — deposit-release line $628.86 vs $678.86 actually collected
+(deposit JE 548017). Control RO 102932 with a sublet previews `466/666/246 "Labor Sublet Category :
+MISCELLANEOUS"` lines. So the engine still cannot produce a correct entry for 100781 → not a mapping
+gap; Tekion-side (sublet ignored). Only visible diff on the sublet job: `laborPreSplits.adjustedPricePerUnit`
+null/`pricingType` null on 100781 vs populated on the control — suggestive, NOT proven.
+
+**Mechanics:** RO kebab = `[class*="KebabMenuTrigger"]` (JS MouseEvent dispatch; `/mouse` no-ops);
+"View Posting Preview" sits at y≈715 = off the 720px viewport → click its `ant-v5-dropdown-menu-item`
+parent via dispatch. Job-level sublet detail = `subletJobInfos[]` on `GET …/ro/<rid>/job/<jid>`
+(`/sublet/<id>` routes 500/404). OpenAPI `/repair-orders:search` filter field is **`documentNumber`**
+(not roNumber); RO id comes back as `fees.id` (no top-level `id`).
+
 ## 6. Reporting to Joe
 
 He wants: the count, the pattern (grouped by order/creator/journal — not 10 unrelated bullets), the
