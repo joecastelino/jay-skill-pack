@@ -765,6 +765,90 @@ always also filter `refText IN [<exact>]`. Deep-linking
 **blank** — open the JE from the list or read it from this API instead.
 Scope the holding account's own postings with `glAccountId.original IN ["<dealer>_<acct>"]`.
 
+### The TWO failure classes — never conflate them (verified BC 2026-09-18)
+A "closed-but-money-stuck" ticket is one of two things, and the fix is different for each:
+
+| Class | Evidence | Fix |
+|---|---|---|
+| **A. Invoice JE failed** | a JE record EXISTS (Error tab / `status ERROR`) with `ACCOUNT_INVALID — "GL Account not found: null"` | fill the blank GL → **Submit** each one |
+| **B. Invoice JE never created** | JE search returns **`count: 1`** (deposit leg only); the Error queue has **nothing** for that RO | nothing to refresh — needs the posting re-triggered or a Tekion ticket |
+
+⚠️ **Never tell anyone "just refresh it" for Class B — there is no record to refresh.** And a mapping
+fix does **not** retroactively heal Class A (the blank is already saved per-record, §5b).
+**Also: warn explicitly against posting a manual journal entry to clear the holding account** — when
+the real JE finally posts it double-counts.
+
+### Class A signature: BALANCED entry with TWO blank lines
+Read the error count straight off the detail header: **`Auto Posting Journal Entry - <id> / 2 Errors`**
+— it states the number of bad lines, so you know how many blanks to look for.
+JE **563742**, RO **103497**, $279.31, 9/17/26, Serena Quezada, journal `30 - SERVICE CASH SALES`,
+doc type `7 - Repair Order Invoice`, description `CUSTOMER_PAY - Repair Order - 103497`:
+```
+Credit $279.31 / Debit $279.31 / Balance $0.00 / Gross Profit $87.02
+1. 204 - PREPAID PARTS                                        ✅ (the release line — CORRECT)
+2. Select   ← blank                                           ❌
+3. Select   ← blank                                           ❌
+4. 460C / 5. 660C - QUICK SERVICE LABOR                       ✅
+6. 247 - WORK IN PROCESS - LABOR                              ✅
+7. 478 / 8. 678 - PARTS-QUICK SERVICE-REPAIR ORDERS           ✅
+9. 242 PARTS & ACCESSORIES  10. 313 HAZARDOUS WASTE  11. 324 SALES TAXES PAYABLE  ✅
+```
+Balance $0.00 + resolved accounts ⇒ **pure mapping gap, not bad RO data** — the entry is structurally
+valid, Tekion simply couldn't resolve 2 accounts. Bad RO data shows a wrong amount or Dr ≠ Cr.
+
+### Diff errored vs posted WITHOUT an XHR hook (the direct-header path)
+§5f says "captured headers"; you can build them inline instead — `t_token` + `tcookie` are enough:
+```js
+var TC=JSON.parse(decodeURIComponent(document.cookie.split('tcookie=')[1].split(';')[0]));
+var H={'tekion-api-token':localStorage.t_token,'roleid':TC.roleId,'tenantname':TC.tenantname,
+  'dealerid':TC.dealerId,'clientId':'web','tek-siteId':TC['tek-siteId'],
+  'correlationId':String(Date.now()),'Content-Type':'application/json'};
+window.__H=H;   // stash it — it survives in-page for later calls
+```
+⚠️ **Omit `Content-Type` and the endpoint returns HTTP 415** (bare `{}` — no body parsed, no error text).
+Then pull POSTED siblings in one call and compare account sets:
+```js
+{filters:[{field:'status',operator:'IN',values:['POSTED']},
+          {field:'refType',operator:'IN',values:['REPAIR_ORDER']}],
+ sort:[{field:'scheduledTime',order:'DESC'}], searchText:'', pageInfo:{start:0,rows:60},
+ caAppPermission:'CENTRALISED_JOURNAL_ENTRIES'}
+```
+Then `hits.filter(h=>/CUSTOMER_PAY/.test(h.description))` → each hit gives
+`transactionNumber, refText, transactionAmount, (h.glAccountIds||[]).length, glAccountIds.join(',')`.
+Real output: same-day healthy `564098`/RO 103570 = **13 accounts**; `564129`/RO 103576 = 10;
+`564070`/RO 103568 = 16 — vs the errored 103497 at **9 resolved + 2 blanks (= 11 lines)**.
+⚠️ **`glAccountIds` come back PREFIXED with the dealer id** (`1251_467A`, `1251_204`) — strip
+`<dealerId>_` before comparing to UI account numbers.
+**Honest limit (hit here): line-count diffs do NOT name the missing account**, because each RO's line
+set depends on its job/opcode mix. To actually name the two blanks you must compare against a sibling
+with the **matching job/pay-type composition**, or read the intended account off a posted twin's line
+list. **Say "I haven't pinned which two accounts are intended — one more step does it" instead of
+guessing** (NEVER-GUESS rule). Reporting the gap as proven-but-unnamed still let Joe act.
+
+### Dead ends in this flow (don't re-burn turns)
+- `POST /api/accounting/u/glAccount/search` → **500** `{"status":"failed"}`;
+  `/api/accounting/u/glAccount/v2/search` → **404**. There is no simple account-name resolver — read
+  names from the CoA list UI (`/accounting/chartOfAccounts/list`).
+- `/repair-orders?roNumber=<n>` via `tekion_client` returned **404** — and `tekion_client` has **no
+  `BASE` export** (it's `api_get(cfg, path, dealer_id, params)`; `load_config` + `get_token` exist).
+  Don't build an RO-side lookup off that module without checking its shape first.
+- Arming the XHR hook **before** `/navigate` is wiped by the page load (`window.__cap` → `[]`).
+  Arm it after the page has settled, or just use the direct-header path above.
+- `open("/tmp/e.json").write(...)` inside `execute_code` throws `io.UnsupportedOperation: not
+  writable` — write once with `write_file`, then append/patch; don't re-`open` in the sandbox.
+
+### Answering Joe: he asked "what do I do to fix them"
+Mid-thread he cut the investigation short: **"no, I don't want to sweep the stores. I need to know
+what to do to fix them."** Two rules follow:
+1. **When Joe asks "how do I fix it", stop investigating and deliver an ORDERED fix procedure** —
+   step 1 mapping (else it recurs) → step 2 clear the existing queue (**each JE individually**, via
+   *Perform action and move to next Journal Entry*) → step 3 Class B handling. Do **not** answer with
+   more scope/more sweeps/more diagnostic steps (§5a-3: answer the question asked).
+2. **Fleet sweeps are opt-in.** Offer them, but a single-store ticket is not an invitation to scan all
+   7 stores — he declined that offer explicitly.
+Every step carries its **owner** (§5e hard rule: GL writes are Joe's; offer, state it's a real GL
+write, then stop), and state plainly which items you still owe.
+
 ## 6. Reporting to Joe
 
 He wants: the count, the pattern (grouped by order/creator/journal — not 10 unrelated bullets), the
