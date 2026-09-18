@@ -63,6 +63,39 @@
   PARTS ask's (368,436) differ slightly — the familiar two-reports-of-the-same-part
   discrepancy, both pass, not a duplicate signal.
 
+## 2026-09-17 — clean run, quota healthy, no self-heal needed
+
+- Pre-flight OPS probe on the same validated RO/job pair (unchanged since 8/3): **200** at
+  19:01 PDT. No same-day index pre-run (no stale-index trap). A caliber-ops
+  `run-scraper.ts` WAS running — left alone per the 8/31 lesson because the OPS probe was
+  clean (a competitor only matters when the probe is 429). No `sct_align_mtd` competitor.
+- Scan 19:02→19:30 (~28 min, checkpoint mtime advancing throughout, no backoff), **0 failed**.
+- **247 alignments (225 dedicated + 22 bundled), 247 ROs, 16 advisors, daily pace 14.5.**
+- Top advisor **Jason Sulon solo #1 with 30** (Cristian Gonzalez 22, Juan Jose Perez 21,
+  Robin Porter / Artist Battle tied 20). `chip_total == totals.total == 247`, `failed=[]`.
+- PNG vision-verified: TOTAL row 225/22/247/247 matches the KPI card, Toyota logo present,
+  16 real human names.
+- **Launch pattern refinement (best so far):** a single self-contained
+  `run_sct_align_nightly_<date>.sh` that does scan→render in ONE flock-guarded background
+  process, plus a foreground `tail --pid=<pid> -f /dev/null` with `timeout=590` to block on it.
+  Cost ~3 iterations total for a 28-min scan (vs ~10-18 clamped `process wait` calls). The
+  waiter renders automatically at scan exit; no manual render step. Preferred going forward.
+
+### Stacey verify (notes 30/31 recipe, all first-try, sleeps only 15/10/10s, zero timeouts)
+
+1. Build ask clean on the FIRST ask (74s) with paths + on-disk sizes baked in:
+   `DRAFTUID=43508 | HTMLPARTBYTES=127418 | PDFPART_BYTES=276825`.
+   HTML part cleared PNG*4/3 (94,974*4/3=126,632) by only **786 bytes** — a tight pass, still
+   a PASS (note 13). PDF part = **exact on-disk match**.
+2. Date-free SUBJECT+DATE enumeration FIRST → 10 total matches, **exactly ONE
+   "(through 9/17)"** dated today → no duplicate, no dedupe, no DRAFTS_COUNT ask needed.
+   (The other 9 are Joe's unsent backlog: 9/16, the August Final CORRECTED, and August
+   nightlies 8/25-8/31 — expected, not a fault.)
+3. `PDFFILENAME=SCT-Alignment-By-Advisor-MTD-2026-09-17.pdf` (correct one-L spelling,
+   carries today's date) | `PDFDECODED_BYTES=276825` = **exact on-disk match**.
+4. `TOHEADER=Kevin <kstapp@sctoyota.com> | SENTTODAY=0`.
+- On-disk sizes: PNG 94,974 / PDF 276,825. Draft-only respected, nothing sent.
+
 ## DON'T BABYSIT THE MAIN NIGHTLY — the `tail --pid` waiter + render
 
 The alignbg section already forbids agent-babysat scans (the iteration ceiling silently kills
@@ -89,18 +122,43 @@ tail --pid=$SCANPID -f /dev/null 2>/dev/null    # blocks until the scan exits
 echo "$(date '+%F %T') scan pid exited" >> "$LOG"
 sleep 3
 $PY -u render_sct_align.py >> "$LOG" 2>&1
-echo "$(date '+%F %T') render exit=$?" >> "$LOG"
+echo "$(date '+%F %T') render exit=$? ===" >> "$LOG"
 ```
 
 Launch the waiter the same way (`terminal(background=true, notify_on_complete=true)`) and wait
 only on it — it exits (code 0) the moment the scan finishes, so one long-gap `wait` gets you a
 rendered PNG/PDF with no manual render step.
 
+**Even better (2026-09-17):** skip the separate waiter and wrap scan→render in ONE
+flock-guarded script:
+
+```bash
+#!/usr/bin/env bash
+# run_sct_align_nightly_<YYYYMMDD>.sh
+set -u
+cd /home/itadmin/tekion-reports
+PY=/home/itadmin/.hermes/hermes-agent/venv/bin/python3
+LOG=data/_sct_align_nightly_<YYYYMMDD>.log
+exec 9>/tmp/sct-align-nightly-<YYYYMMDD>.lock
+flock -n 9 || { echo "already running" >> "$LOG"; exit 1; }
+echo "=== runner started $(date '+%F %T') ===" >> "$LOG"
+$PY -u sct_align_mtd.py >> "$LOG" 2>&1
+RC=$?
+echo "$(date '+%F %T') scan exit=$RC" >> "$LOG"
+[ $RC -ne 0 ] && { echo "SCAN FAILED rc=$RC"; exit $RC; }
+$PY -u render_sct_align.py >> "$LOG" 2>&1
+echo "$(date '+%F %T') render exit=$? ===" >> "$LOG"
+```
+
+Launch with `terminal(background=true, notify_on_complete=true)`, then block in the foreground
+with `tail --pid=<pid> -f /dev/null` at `timeout=590` (re-issue if it returns 124). This costs
+~3 iterations for a 28-min scan and cannot be killed by the iteration ceiling.
+
 **Healthy-scan tells while the waiter is silent** (the scan's own stdout is buffered and may
 show nothing until exit — do NOT kill it):
 - `data/sct-mtd-<date>-closed-index.json` appears after pass 1.
 - `data/sct-mtd-<date>-align-scan.json` checkpoint mtime advances every ~20 ROs
-  (observed 21,963 → 58,694 B over ~10 min on 9/15).
+  (observed 21,963 → 58,694 B over ~10 min on 9/15; 38,056 → 77,407 B on 9/17).
 - The OPS probe returns 200.
 
 The waiter needs no cleanup and is harmless to leave on disk.
