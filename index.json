@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-18T11:15:08",
+ "generated": "2026-09-18T11:30:03",
  "skill_count": 228,
  "skills": [
   {
@@ -830,7 +830,7 @@
    "name": "tekion-gm-warranty-claim-serial-number-entry",
    "path": "automotive/tekion-gm-warranty-claim-serial-number-entry",
    "category": "automotive",
-   "description": "Answer/execute \"where do I enter the serial number (engine/transmission/valve body) for a GM warranty claim in Tekion?\" \u2014 the field DOES exist, buried in the claim form. Verified live at BC (dealer 1251) 2026-09-16.",
+   "description": "Answer \"where do I enter the serial number (engine/transmission/valve body) for a GM warranty claim in Tekion?\" \u2014 NEW/installed serial field exists (claim form \u2192 Part Details). OLD/REMOVED serial has NO field in Tekion GM ZREG catalog (51 GWM fields, only Serial Part Number) so claims reject in GM Global. Verified live BC/1251 2026-09-16/18. Open item - need a rejected RO# to confirm which GM element is flagged before writing clerk cheat sheet or enhancement request.",
    "times_used": 2,
    "last_used": "2026-09-16"
   },

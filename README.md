@@ -2,7 +2,7 @@
 
 Skill library for **Jay**, the Tekion DMS specialist agent at American Motors Group — plus general-purpose agent skills. Built for the [Hermes Agent](https://github.com/NousResearch) skill system (`SKILL.md` + YAML frontmatter, with optional `references/`, `scripts/`, `templates/`).
 
-**228 skills** · auto-synced from the live agent · last sync: 2026-09-18 11:15
+**228 skills** · auto-synced from the live agent · last sync: 2026-09-18 11:30
 
 ## Install into another agent
 
@@ -120,7 +120,7 @@ Secrets (passwords, app passwords, tokens) are redacted with `<PLACEHOLDER>` mar
 | 101 | [`tekion-add-services-select-automation`](skills/automotive/tekion-add-services-select-automation/SKILL.md) | automotive | 2 | 2026-09-11 | Automate the Ant Design v5 "Add Services" Select dropdown in Tekion service menu editing. The Select does NOT respond to normal DOM events — this skill documents the TWO working approaches discovered through extensive... |
 | 102 | [`tekion-appointment-source-audit`](skills/automotive/tekion-appointment-source-audit/SKILL.md) | automotive | 2 | 2026-08-31 | Answer "why do appointments from vendor X show as Integration / can we relabel the appointment source" and audit appointment volume by source (BDC, Consumer, Walk-in, Integration/Open API, AI) per store. Covers Tekion... |
 | 103 | [`tekion-day-collection-report`](skills/automotive/tekion-day-collection-report/SKILL.md) | automotive | 2 | 2026-08-31 | Pull Tekion's DAY COLLECTION report (cashier collections / money actually collected per day, by payment mode + department + cashier) for any AMG store and any date(s) via the internal cashier API, then render a per-da... |
-| 104 | [`tekion-gm-warranty-claim-serial-number-entry`](skills/automotive/tekion-gm-warranty-claim-serial-number-entry/SKILL.md) | automotive | 2 | 2026-09-16 | Answer/execute "where do I enter the serial number (engine/transmission/valve body) for a GM warranty claim in Tekion?" — the field DOES exist, buried in the claim form. Verified live at BC (dealer 1251) 2026-09-16. |
+| 104 | [`tekion-gm-warranty-claim-serial-number-entry`](skills/automotive/tekion-gm-warranty-claim-serial-number-entry/SKILL.md) | automotive | 2 | 2026-09-16 | Answer "where do I enter the serial number (engine/transmission/valve body) for a GM warranty claim in Tekion?" — NEW/installed serial field exists (claim form → Part Details). OLD/REMOVED serial has NO field in Tekio... |
 | 105 | [`tekion-labor-rate-create`](skills/automotive/tekion-labor-rate-create/SKILL.md) | automotive | 2 | 2026-08-18 | Create or complete a Tekion Labor Rate Pricing entry (e.g. a Caliber Collision wholesale-parts labor rate) via the Labor Pricing screen. Covers the list-first dedup check, the create/edit form field mechanics, and the... |
 | 106 | [`tekion-mom-service-gross-fleet`](skills/automotive/tekion-mom-service-gross-fleet/SKILL.md) | automotive | 2 | 2026-08-13 | Produce a month-over-month (or any period-vs-period) SERVICE GROSS read across all 7 AMG stores from the live Tekion OpenAPI — who's winning, who's slipping, and whether it's a VOLUME story or a MARGIN story. Uses a t... |
 | 107 | [`tekion-opcode-labor-billing-audit`](skills/automotive/tekion-opcode-labor-billing-audit/SKILL.md) | automotive | 2 | 2026-08-05 | Audit a Tekion opcode for wrong labor hours / wrong labor rate across recent ROs (e.g. ToyotaCare TEK opcodes billing 0.8 instead of 0.5, or TEW vs W rate). Determines whether root cause is opcode config, advisor beha... |
