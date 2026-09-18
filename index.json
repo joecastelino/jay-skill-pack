@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-18T09:30:07",
+ "generated": "2026-09-18T09:45:39",
  "skill_count": 228,
  "skills": [
   {
@@ -515,6 +515,14 @@
    "last_used": "2026-09-02"
   },
   {
+   "name": "slack-thread-context-recovery",
+   "path": "automotive/slack-thread-context-recovery",
+   "category": "automotive",
+   "description": "Recover what a context-free Slack message is referring to when the Hermes session that held the thread has already expired (e.g. Joe replies \"so does this work now?\" days later in an old thread). Reads Jay's own raw session JSON on disk to rebuild the thread's history instead of guessing or asking Joe to repeat himself.",
+   "times_used": 6,
+   "last_used": "2026-09-18"
+  },
+  {
    "name": "tekion-api-upgrade-audit",
    "path": "automotive/tekion-api-upgrade-audit",
    "category": "automotive",
@@ -585,14 +593,6 @@
    "description": "Search Tekion repair orders for a keyword (e.g. \"calibration\", \"windshield\") across labor descriptions, job concern text, part names, fees, and notes, with a dollar figure on the matching line. Use for ROI/opportunity-sizing questions like \"how much calibration/windshield/etc business did we do in the last N months\". Covers the BT Collision Center / body shop department discovery and the critical \"Per Estimate\" lump-sum blind spot.",
    "times_used": 6,
    "last_used": "2026-08-18"
-  },
-  {
-   "name": "slack-thread-context-recovery",
-   "path": "automotive/slack-thread-context-recovery",
-   "category": "automotive",
-   "description": "Recover what a context-free Slack message is referring to when the Hermes session that held the thread has already expired (e.g. Joe replies \"so does this work now?\" days later in an old thread). Reads Jay's own raw session JSON on disk to rebuild the thread's history instead of guessing or asking Joe to repeat himself.",
-   "times_used": 5,
-   "last_used": "2026-09-18"
   },
   {
    "name": "tekion-deferred-services-report",
