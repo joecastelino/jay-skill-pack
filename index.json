@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-18T10:30:07",
+ "generated": "2026-09-18T10:45:54",
  "skill_count": 228,
  "skills": [
   {
@@ -111,7 +111,7 @@
    "path": "automotive/tekion-ro-close-blocked-triage",
    "category": "automotive",
    "description": "Triage a \"we reopened the RO/invoice but still cannot close it\" ticket at any AMG store. Verify server-side whether the reopen actually persisted (it often did NOT), inspect the live RO in the browser, and identify the real block (accounting period lock, cashiering-only reopen, user lock) before advising.",
-   "times_used": 33,
+   "times_used": 34,
    "last_used": "2026-09-18"
   },
   {
@@ -331,20 +331,20 @@
    "last_used": "2026-08-05"
   },
   {
+   "name": "tekion-journal-entry-error-diagnosis",
+   "path": "automotive/tekion-journal-entry-error-diagnosis",
+   "category": "automotive",
+   "description": "Diagnose Tekion Accounting Journal Entries stuck in ERROR status (auto-posting JEs that failed to post). Covers the JE list/detail URLs, reading GL posting lines out of the DOM, finding the blank/unmapped GL account, and tracing the root cause back to a missing row in GL Account Transaction Mapping. Use for \"look at journal entries\", \"JEs in error\", \"auto posting failed\", \"GL account blank on journal entry\".",
+   "times_used": 12,
+   "last_used": "2026-09-18"
+  },
+  {
    "name": "dealerdetail-api-pipeline-build",
    "path": "automotive/dealerdetail-api-pipeline-build",
    "category": "automotive",
    "description": "Build the DealerDetail Tekion API-driven data pipeline (replacing the email/Excel prototype) by acting as PM and delegating tickets to Claude Code, then verifying independently. Covers the ticket workflow, the live infra (Supabase project, branch, creds), and the hard-won gotchas (Supabase shadow-DB, server-only smoke tests, git credential path, Tekion app-scope 403 on user lookups).",
    "times_used": 10,
    "last_used": "2026-09-01"
-  },
-  {
-   "name": "tekion-journal-entry-error-diagnosis",
-   "path": "automotive/tekion-journal-entry-error-diagnosis",
-   "category": "automotive",
-   "description": "Diagnose Tekion Accounting Journal Entries stuck in ERROR status (auto-posting JEs that failed to post). Covers the JE list/detail URLs, reading GL posting lines out of the DOM, finding the blank/unmapped GL account, and tracing the root cause back to a missing row in GL Account Transaction Mapping. Use for \"look at journal entries\", \"JEs in error\", \"auto posting failed\", \"GL account blank on journal entry\".",
-   "times_used": 10,
-   "last_used": "2026-09-18"
   },
   {
    "name": "tekion-vi-stock-number-rules-fix",
@@ -491,6 +491,14 @@
    "last_used": "2026-09-11"
   },
   {
+   "name": "tekion-parts-so-gl-account-routing",
+   "path": "automotive/tekion-parts-so-gl-account-routing",
+   "category": "automotive",
+   "description": "Diagnose \"this parts Sales Order / counter sale is hitting the WRONG GL account\" (e.g. a Wholesale SO posting to a retail parts sales account). Covers the GLAM Fixed Operations > Part & Accessories > Parts-Counter mapping table, its 6 keying dimensions, the customer.taxable snapshot-vs-master trap, the 2026-08-19 store-wide NO-TAX code rollout that flipped every wholesale order to taxable, date-window bisection (search pagination is silently ignored), and the internal API endpoints to pull a full SO for evidence. Use for any \"why did SO X go to retail instead of wholesale\" or \"where did the taxable status change\" question.",
+   "times_used": 7,
+   "last_used": "2026-09-18"
+  },
+  {
    "name": "tekion-source-code-parts-scrub",
    "path": "automotive/tekion-source-code-parts-scrub",
    "category": "automotive",
@@ -547,6 +555,14 @@
    "last_used": "2026-08-31"
   },
   {
+   "name": "tekion-internal-api-access",
+   "path": "automotive/tekion-internal-api-access",
+   "category": "automotive",
+   "description": "Call Tekion's INTERNAL (browser) APIs directly from the page \u2014 /api/service-module/u/* and friends \u2014 without driving the UI. Solves the \"Token doesn't exist or is invalid\" / \"Missing headers\" walls that block bare fetch calls. Use whenever an internal Tekion endpoint is needed (reading RO/job JSON, payer splits, split writes) or the app's React Query cache hides the call you need to capture.",
+   "times_used": 6,
+   "last_used": "2026-09-18"
+  },
+  {
    "name": "tekion-oem-rewards-integration",
    "path": "automotive/tekion-oem-rewards-integration",
    "category": "automotive",
@@ -561,14 +577,6 @@
    "description": "Build a Tekion parts-sales-by-service-advisor report (e.g. cabin/engine air filters, or any specific part category) for any AMG store \u2014 units, revenue, menu-attach, ranked bar-chart summary AND full RO-level line-item detail per advisor. Use whenever Joe asks for a parts sales report \"broken down by advisor\" or \"like the alignment report\" \u2014 he means BOTH a summary table AND the underlying RO detail, not just aggregate numbers.",
    "times_used": 6,
    "last_used": "2026-08-20"
-  },
-  {
-   "name": "tekion-parts-so-gl-account-routing",
-   "path": "automotive/tekion-parts-so-gl-account-routing",
-   "category": "automotive",
-   "description": "Diagnose \"this parts Sales Order / counter sale is hitting the WRONG GL account\" (e.g. a Wholesale SO posting to a retail parts sales account). Covers the GLAM Fixed Operations > Part & Accessories > Parts-Counter mapping table, its 6 keying dimensions, the customer.taxable snapshot-vs-master trap, the 2026-08-19 store-wide NO-TAX code rollout that flipped every wholesale order to taxable, date-window bisection (search pagination is silently ignored), and the internal API endpoints to pull a full SO for evidence. Use for any \"why did SO X go to retail instead of wholesale\" or \"where did the taxable status change\" question.",
-   "times_used": 6,
-   "last_used": "2026-09-17"
   },
   {
    "name": "tekion-ro-fee-waiver-investigation",
@@ -601,14 +609,6 @@
    "description": "Pull declined/deferred service data (recommendations customers didn't buy) for any Tekion store via the internal Deferred Services report API \u2014 service name, counts, dollar estimates, customer/vehicle/advisor detail. Zero OpenAPI quota; works when OVERALL_QUOTA is exhausted. Use for marketing campaign lists (Autumn) or lost-sales analysis.",
    "times_used": 5,
    "last_used": "2026-09-03"
-  },
-  {
-   "name": "tekion-internal-api-access",
-   "path": "automotive/tekion-internal-api-access",
-   "category": "automotive",
-   "description": "Call Tekion's INTERNAL (browser) APIs directly from the page \u2014 /api/service-module/u/* and friends \u2014 without driving the UI. Solves the \"Token doesn't exist or is invalid\" / \"Missing headers\" walls that block bare fetch calls. Use whenever an internal Tekion endpoint is needed (reading RO/job JSON, payer splits, split writes) or the app's React Query cache hides the call you need to capture.",
-   "times_used": 5,
-   "last_used": "2026-09-18"
   },
   {
    "name": "tekion-tech-flag-hours-pay",
