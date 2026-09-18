@@ -1117,6 +1117,16 @@ NO bogus-UID, no UID sent in the ask; html + multipart/alternative + image/png C
 application/pdf), Sent-check short-stem (Sent: 2, both old June 1-29 = token trap 5b, no leak).
 Flag to Joe: 10 unsent Closed-MTD drafts stacked (Sept 1-6 .. 1-16).
 
+## (9/18 12:05PM, Opened) CLEAN RUN; one execute_code 300s cap hit on a bundled Sent+flag pair
+88 ROs scanned, **5 menus / $579.97** ($456.35 + $123.62). Hachey 4/$474.67, Brenda 1/$105.30.
+Hand-off RC=0 first try (127s), draft UID 161 correct first try (mixed > related > alternative +
+png CID=scorecard 58,249 + pdf 51,026 = exact on-disk), no dedupe needed. Subject-list 57s,
+part-probe 33s first try. TRAP: putting the Sent-check AND the \Draft-flag ask in ONE
+execute_code script (with sleep 30 between) blew execute_code's 300s cap — the Sent-check with
+"also try the em-dash variant" wording stalled. Re-asked as a single terse `SUBJECT "TOL Menu
+Sales" SINCE 17-Sep-2026` search -> Sent: 0 in 30s. Use SINCE-scoped Sent searches (cuts the
+old em-dash-era token hits entirely) and ONE ask per execute_code call.
+
 ## (9/17 12:05PM, Opened) TEXTBOOK CLEAN RUN — zero exit-124s across ALL 5 calls
 Both scripts foreground clean in seconds (0 scrapers; OPCODE_LIST confirmed = data/tl-menu-opcodes.json).
 91 opened ROs scanned, **3 menus / $406.39** ($299.74 labor + $106.65 parts), `complete: true`,

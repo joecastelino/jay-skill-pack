@@ -59,7 +59,7 @@ BC = `cfg["dealers"]["bc"]` = `americanmotorscorporation_1251_0` (dealerId 1251,
 siteId `-1_1251`).
 
 ## Scripts (in /home/itadmin/tekion-reports/)
-Interpreter: `/home/itadmin/.hermes/hermes-agent/venv/bin/python3` — NOT python3.11 (not present in the venv as of 2026-09-08; only python3/python3.12 exist). Always verify with `ls venv/bin/python*` before running.
+Interpreter: `/home/itadmin/.hermes/hermes-agent/venv/bin/python3` — do NOT hardcode python3.11 even though the cron prompt names it. Its presence in the venv is INTERMITTENT (absent 2026-09-08/09-15, present again 2026-09-18 alongside python3.12) — `bin/python3` always exists and always works. Verify with `ls venv/bin/python*` if you must use a versioned binary.
 - `bc_menu_sales_api.py` — base module (copy of SCT's, dealer→bc, opcode list→
   bc-menu-opcodes.json, advisor browser-fallback dealerId→1251, BC labels/files).
 - `bc_menu_sales_closed_mtd.py` — imports `bc_menu_sales_api as O`. Modes:
@@ -1037,52 +1037,13 @@ all 11 figures exactly once, `<b>$10,844.96</b>` bold, greeting present, zero le
 MTD Sent count 0. Sibling Daily Closed draft (43085) untouched.
 
 ## 2026-09-05 6:16pm Closed MTD run — textbook one-shot, 52nd consecutive clean "N dollars" build
-71 menus, $9,056.56 labor / $6,011.74 parts = $15,068.30 (Sep 1-5). Advisors: Jacob Debussey
-23 / $2,966.74, Dimetri Reynoso 12 / $3,529.72, Juan Ramirez 9 / $2,674.62, Humberto Dominguez
-8 / $1,940.16, Houa Moua 8 / $509.40, Michael Reyes 6 / $1,589.42, Erik Mercado 4 / $1,348.68,
-Valentine Nolasco 1 / $509.56. Master existed → default append; 30 closed ROs → 4 carried TEK
-menu opcodes (~13% attach, light Saturday) → master 71 rows; `✓ all candidate ROs scanned`.
-Pull + ask each inside ONE 180s wait (write_file→background-terminal, 30th straight use,
-`/tmp/bc_ask_0905_mtd.py`). Vision KPI band (crop 460px + 2x LANCZOS on a 1226x3057 PNG)
-matched JSON exactly; master `_gross` sums matched `totals` exactly. Terse DONE line correct
-(43143, TOTAL=$15,068.30), id MATCHED himalaya's, NO self-correction text → no duplicate.
-Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
-auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (645,736 bytes), PDF
-**byte-for-byte identical** (68,502 bytes), all 11 figures exactly once, `<b>$15,068.30</b>`
-bold, greeting `Ruben,` count 1 (both parts), footer present, zero
-' dollars'/USD/EMDASH/CORRECTION/Saturday leftovers, stripped/comma-mangled variants = 0, no
-Kevin/dfowlkes leak. Exactly 1 MTD 9/5 draft (43143), MTD Sent count 0 (single `BC 9/5` Sent
-hit = Stacey's auto-sent Daily Opened, 15246). Sibling Daily Closed draft (43142) untouched.
-**Transient-IMAP note**: the combined Drafts+Sent grep command hit the 90s timeout mid-Sent-list;
-per the transient-IMAP rule, split the calls and retried once — Sent check then passed with
-`grep -c "Month-To-Date"` = 0. Write the Sent list to a file and grep it rather than chaining
-two himalaya calls in one command.
-**Skill-size housekeeping**: 96,961 pre-prune → condensed five confirmatory 8/20-8/23 entries
-(kept the retry-loop, Daily-Closed-Sent-filter, APPENDUID-intermittent, renderer-path/timeout,
-and vision-crop lessons) → 95,255 before appending. Re-checked size AFTER.
+71 menus / $15,068.30 (Sep 1-5), light Saturday (~13% attach). All byte-for-byte checks passed, no duplicate.
+**Transient-IMAP note**: a combined Drafts+Sent grep command hit the 90s timeout mid-Sent-list; split the
+calls and retry once. Write the Sent list to a file and grep it rather than chaining two himalaya calls.
 
 ## 2026-09-15 noon Daily Closed run — textbook one-shot, 54th consecutive clean "N dollars" build
-11 menus, $1,467.88 labor / $848.34 parts = $2,316.22 (Tuesday noon). Advisors: Houa Moua 5 /
-$940.87, Michael Reyes 2 / $863.99, Juan Ramirez 1 / $175.71, Dimetri Reynoso 1 / $135.11,
-Humberto Dominguez 1 / $127.80, Jacob Debussey 1 / $72.74. 52 closed ROs -> 11 carried TEK menu
-opcodes (~21% attach); `all candidate ROs scanned` printed. Pull + ask each inside ONE 180s wait
-(write_file->background-terminal, `/tmp/bc_ask_0915_noon.py`). Vision KPI band (crop 460px + 2x
-LANCZOS on a 1226x945 PNG) matched JSON exactly. Terse DONE line correct (43389,
-TOTAL=$2,316.22), id MATCHED himalaya's, NO self-correction text -> no duplicate. Verified via
-the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject auto-decoded with
-em-dashes, inline PNG **byte-for-byte identical** (182,633 bytes), PDF **byte-for-byte
-identical** (56,280 bytes), all 9 figures exactly once, greeting `Ruben,` count 1, footer with
-em-dash present, zero ' dollars'/USD/EMDASH/CORRECTION/Saturday/Kevin/dfowlkes leftovers,
-stripped/comma-mangled variants = 0. Exactly 1 BC 9/15 Daily Closed draft (43389); the only
-other BC drafts were yesterday's 9/14 Daily (43372) + 9/14 MTD (43373) — different date, not
-duplicates. Daily-Closed Sent count 0 (zero `BC 9/15` Sent hits at all — Stacey's Opened
-pipeline timing drift, not a defect).
-**New minor note**: Stacey wrapped the bold total in `<strong>` rather than `<b>` this run — a
-`<b>`-only bold check false-negatives on that. Accept EITHER tag when checking the bold total.
-**Skill-size housekeeping**: 97,957 pre-prune -> condensed 16 confirmatory 8/19-9/5 entries
-(kept the timeout-600, 5pm-no-older-draft, APPENDUID-intermittent, CORRECTION-grep, and
-volume/prefilter lessons) -> 95,533 before appending. SAFE-PRUNE index assertions used; all
-critical trap headings asserted present; re-checked size AFTER.
+11 menus / $2,316.22 (Tuesday noon, ~21% attach). All byte-for-byte checks passed, no duplicate.
+**Lesson**: Stacey wrapped the bold total in `<strong>` rather than `<b>` — accept EITHER tag.
 
 ## 2026-09-15 5pm Daily Closed run — clean data/draft, but Stacey LEFT the word "dollars" in the body (placeholder-not-stripped); 55th consecutive clean "N dollars" build
 14 menus, $2,063.91 labor / $1,010.25 parts = $3,074.16 (Tuesday 5pm). Advisors: Houa Moua 6 /
@@ -1158,79 +1119,21 @@ sentence requirement, and the SAFE-PRUNE procedure) → before appending. SAFE-P
 assertions used; all critical trap headings asserted present; re-checked size AFTER.
 
 ## 2026-09-16 noon Daily Closed run — textbook one-shot, 57th consecutive clean "N dollars" build
-4 menus, $568.28 labor / $215.27 parts = $783.55 (Wednesday noon). Advisors: Houa Moua 2 /
-$572.20, Humberto Dominguez 1 / $146.31, Jacob Debussey 1 / $65.04. 46 closed ROs -> 4 carried TEK
-menu opcodes (~9% attach); `all candidate ROs scanned` printed. Pull + ask each inside ONE 180s
-wait (write_file->background-terminal, `/tmp/bc_ask_0916_noon.py`, `timeout 560`, subprocess arg
-list). Vision KPI band (crop 460px + 2x LANCZOS on a 1226x900 PNG) matched JSON exactly. Terse
-DONE line correct (43411, TOTAL=$783.55), id MATCHED himalaya's, NO self-correction text -> no
-duplicate. Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
-auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (104,063 bytes), PDF
-**byte-for-byte identical** (52,739 bytes), all 6 figures exactly once, bold total via
-`<strong>` (containing-match), greeting `Ruben,` count 1 (both parts), footer em-dash present,
-zero ' dollars'/USD/EMDASH/CORRECTION/Saturday/Sunday/Kevin/dfowlkes leftovers. Exactly 1 BC
-9/16 draft (43411); other BC drafts were 9/15 Daily+MTD and a BC Deferred Work report — different
-dates/report types, not duplicates. Daily-Closed Sent count 0 (zero `BC 9/16` Sent hits at all =
-Stacey's Opened pipeline timing drift, not a defect).
-**Minor false-positive note**: the leading-digit-stripped variant grep flagged `$65.04` — but
-that IS the correct Jacob Debussey figure (no leading digit to strip). Only variants that are
-NOT substrings/correct figures are real defects; the comma-bearing figures are the load-bearing
-checks.
+4 menus / $783.55 (Wednesday noon, ~9% attach). All byte-for-byte checks passed, no duplicate.
+**False-positive note**: the leading-digit-stripped variant grep flagged `$65.04` — that IS a correct advisor
+figure (no leading digit to strip). Only variants that are NOT correct figures/substrings are real defects.
 
 ## 2026-09-16 5pm Daily Closed run — textbook one-shot, 58th consecutive clean "N dollars" build
-10 menus, $1,189.50 labor / $557.63 parts = $1,747.13 (Wednesday 5pm). Advisors: Humberto Dominguez 4 /
-$561.07, Houa Moua 2 / $572.20, Dimetri Reynoso 1 / $133.39, Jacob Debussey 1 / $65.04, Juan Ramirez 1 /
-$146.39, Michael Reyes 1 / $269.04. 88 closed ROs -> 10 carried TEK menu opcodes (~11% attach);
-`all candidate ROs scanned` printed. Pull + ask each inside ONE 180s wait (write_file->background-terminal,
-`/tmp/bc_ask_0916_5pm.py`, `timeout 560`, subprocess arg list). Vision KPI band (crop 460px + 2x LANCZOS on
-a 1226x911 PNG) matched JSON exactly. Terse DONE line correct (id 43414, TOTAL=$1,747.13), her id MATCHED
-himalaya's; her reply DID contain self-correction text ("the total extraction grabbed the first dollar amount
-... the draft is already saved") yet NO duplicate — per the 8/21 refinement the failure was in her
-echo/verification step (POST-append but non-mutating), so dedupe grep confirmed exactly 1 new draft + the
-expected stale noon draft. Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe,
-Subject auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (173,963 bytes), PDF
-**byte-for-byte identical** (56,152 bytes), all 9 figures exactly once, bold total present (`<b>` containing
-match), greeting `Ruben,` count 1 (both parts), footer em-dash present, zero
-' dollars'/USD/EMDASH/CORRECTION/Saturday/Sunday/Monday/Tuesday/Kevin/dfowlkes leftovers, variants = 0.
-Deleted the stale noon draft (43411) per the twice-daily cadence rule → exactly 1 draft (43414);
-Daily-Closed Sent count 0 (zero `BC 9/16` Sent hits at all = Stacey's Opened timing drift, not a defect).
+10 menus / $1,747.13 (Wednesday 5pm, ~11% attach). Her reply contained self-correction text ("the total
+extraction grabbed the first dollar amount") yet NO duplicate — POST-append but non-mutating failure class.
+All byte-for-byte checks passed; deleted the stale noon draft.
 **Note**: the emitted daily JSON `rows` use `ro_number`/`ro_created` (not `date`/`ro`) and carry no
 `total_gross` — compute per-advisor totals as `labor_gross + parts_gross`; the `totals` dict is authoritative.
-**Skill-size housekeeping**: 99,002 bytes pre-prune -> condensed six confirmatory entries (8/30 5pm + 8/31 MTD
-+ 9/3 noon, keeping the weekday step-0 rule, SAFE-PRUNE procedure, and stream-stall safe-retry protocol)
--> 94,592 before appending. SAFE-PRUNE index assertions used; all critical trap headings asserted present;
-re-checked size AFTER.
 
 ## 2026-09-16 6:16pm Closed MTD run — textbook one-shot, 59th consecutive clean "N dollars" build
-165 menus, $20,684.92 labor / $12,319.29 parts = $33,004.21 (Sep 1-16). Advisors: Jacob Debussey
-42 / $5,217.60, Houa Moua 35 / $4,483.31, Humberto Dominguez 25 / $4,803.23, Juan Ramirez 21 /
-$4,992.06, Dimetri Reynoso 17 / $4,171.87, Michael Reyes 13 / $3,691.25, Erik Mercado 10 /
-$4,456.97, Valentine Nolasco 2 / $1,187.92. Master existed (asof 9/15, 155 rows) -> default append;
-90 closed ROs -> 10 carried TEK menu opcodes (~11% attach) -> master 165 rows; `all candidate ROs
-scanned` printed. Pull via `terminal(background=true)` + a SINGLE `process(action="wait", timeout=180)`.
-Vision KPI band (crop 460px + 2x LANCZOS on a 1226x6253 PNG) matched JSON exactly; master `_gross`
-sums matched the emitted report `totals` exactly.
-**write_file->background-terminal ask pattern, returned inside ONE 180s wait** (write_file->
-background-terminal, `/tmp/bc_ask_0916_mtd.py`, `timeout 560`, subprocess arg list) — clean one-shot,
-DONE 43415, `TOTAL=$33,004.21`, her id MATCHED himalaya's, NO self-correction text -> no duplicate.
-All five accumulated prevention lines carried at once ("N dollars" word form + Python-replace,
-"dollar sign before the FIRST digit including the thousands comma", EMDASH token substitution, "leave
-the older draft at the other subject alone", "if your IMAP verification search errors on the em-dash,
-do NOT re-append or rebuild"). She this time used the plain body form `MTD total: $33,004.21.` with
-`<b>$33,004.21</b>` — both steps of the dollars removal + dollar-sign insert done correctly.
-Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject auto-decoded
-with em-dashes, inline PNG **byte-for-byte identical** (1,332,093 bytes), PDF **byte-for-byte
-identical** (83,620 bytes), all 12 figures exactly once, `<b>$33,004.21</b>` bold, greeting `Ruben,`
-count 1 (both parts), footer em-dash present ("Sent from Tekion Open API — live data"), zero
-' dollars'/USD/EMDASH/CORRECTION/Saturday/Sunday/Monday/Tuesday/Kevin/dfowlkes leftovers, zero
-leading-digit-stripped/comma-mangled variants. Exactly 1 MTD 9/16 draft (43415); the sibling 9/16
-Daily Closed draft (43414) left untouched per the twice-daily rule. MTD Sent count 0 (ZERO `BC 9/16`
-Sent hits at all = Stacey's Opened pipeline timing drift, not a defect).
-**Skill-size housekeeping**: 96,891 pre-prune -> consolidated 25 confirmatory 8/6-9/5 entries into one
-(keeping the timeout-560, 5pm-no-older-draft, APPENDUID-intermittent, CORRECTION-grep,
-volume/prefilter, noon->5pm-partial-cut, renderer-path, USD-false-positive, EMDASH-token, and
-zero-menu-valid lessons) -> 89,423 before appending. SAFE-PRUNE index assertions used; all critical
-trap headings asserted present; no duplicate headings; re-checked size AFTER.
+165 menus / $33,004.21 (Sep 1-16). All five prevention lines carried; clean one-shot, all byte-for-byte checks
+passed, no duplicate. She used the plain body form `MTD total: $33,004.21.` with `<b>` — both dollars-removal
+and dollar-sign-insert steps done correctly.
 
 ## 2026-09-17 5pm Daily Closed run — NEW MISS: Stacey rewrote the summary sentence ("yesterday", labor/parts dropped); fixed via self-edit + Message-ID-regenerated re-APPEND
 7 menus, $721.20 labor / $349.67 parts = $1,070.87 (Thursday 5pm). Advisors: Jeremia Navarro 2 /
@@ -1296,3 +1199,26 @@ count 0 (zero `BC 9/17` Sent hits at all = Stacey's Opened pipeline timing drift
 now promoted to the permanent PREVENTION step 5 and VERIFY INDEPENDENTLY sections above.)
 **Skill-size housekeeping**: 95,779 pre-append (already <=97,000 — no prune needed) -> appended ->
 re-checked size AFTER.
+
+## 2026-09-18 noon Daily Closed run — textbook one-shot, 61st consecutive clean "N dollars" build
+5 menus, $522.68 labor / $204.51 parts = $727.19 (Friday noon). Advisors: Houa Moua 2 / $550.86,
+Jacob Debussey 2 / $85.26, Juan Ramirez 1 / $91.07. 44 closed ROs -> 5 carried TEK menu opcodes
+(~11% attach); `all candidate ROs scanned` printed. Pull + ask each inside ONE 180s wait
+(write_file->background-terminal, `/tmp/bc_ask_0918_noon.py`, `timeout 560`, subprocess arg list; all
+five prevention lines + the verbatim-sentence clause + the explicit two-step dollars-delete/dollar-sign-
+insert wording). Vision KPI band (crop 460px + 2x LANCZOS on a 1226x900 PNG) matched JSON exactly.
+Terse DONE line correct (43568, TOTAL=$727.19), id MATCHED himalaya's, NO self-correction text -> no
+duplicate. Verified via the stdlib-`email` parser: To=Restrada, Cc real None, From=Joe, Subject
+auto-decoded with em-dashes, inline PNG **byte-for-byte identical** (110,214 bytes), PDF
+**byte-for-byte identical**, all 6 figures exactly once in BOTH parts, bold total present, BODY-SHAPE gate
+passed (canonical sentence verbatim, "today (Friday, September 18)", labor AND parts figures present,
+zero "yesterday"), greeting `Ruben,` 1 in both parts, footer em-dash present in both parts, zero
+' dollars'/USD/EMDASH/CORRECTION/Kevin/dfowlkes/Saturday/Sunday/Thursday leftovers, variants 0. Exactly
+1 BC 9/18 draft (noon = first run of the day; 9/17 Daily+MTD drafts at other dates untouched).
+Daily-Closed Sent count 0 (zero `BC 9/18` Sent hits = Stacey's Opened timing drift, not a defect).
+Note: the cron prompt still names `python3.11`; it DOES exist in the venv again as of 9/18 (both
+python3.11 and python3.12 listed) — `bin/python3` used anyway, per the Scripts section.
+**Skill-size housekeeping**: 100,091 pre-prune -> condensed 9/5-MTD, 9/15-noon, 9/16-noon/5pm/MTD
+entries in place (kept the transient-IMAP split, `<strong>` accept, variant false-positive, daily-rows
+schema, and POST-append non-mutating lessons) -> 91,259 before appending. SAFE-PRUNE index assertions
+used; re-checked size AFTER.
