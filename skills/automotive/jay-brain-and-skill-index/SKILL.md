@@ -164,7 +164,10 @@ DOZENS of `kb/svc30-*` orphans at once (59 in one run — the ingest wrote the p
 edges). Clear them with `gbrain link kb-index kb/<slug> --link-type references` (hub→page, same
 pattern; a simple while-read loop over the orphan list works — 59/59 ok). Parse the orphan list per
 category: `gbrain orphans` groups output under `[kb]` / `[projects]` / etc. headers. Hub mapping:
-sessions/memory/concepts → `index`, skills/* → `skills-index`, kb/* → `kb-index`. Latecomer streaks
+sessions/memory/concepts → `index`, skills/* → `skills-index`, kb/* → `kb-index`, **agents/* → `index`**
+(seen 2026-09-18: new `agents/jay-sct` page written via `put_page` by another session, untracked in git +
+orphaned; cleared with `gbrain link index agents/jay-sct --link-type references`, and added to index.md's
+`## Agents` list — NOT `## Sessions` — then commit + re-import/embed as usual). Latecomer streaks
 apply here too — the 15-min session-end-sync's KB ingest can commit NEW kb pages mid-run (one run
 had 4 kb + 2 session latecomers after the first orphan pass); loop until `gbrain orphans` = 0.
 
