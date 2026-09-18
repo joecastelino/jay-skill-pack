@@ -706,6 +706,65 @@ you to resubmit. What can I do on my end."**
 
 ---
 
+## 5f. "It went to PREPAID PARTS" — the RO payment-HOLDING account + a missing release JE (BC 1251, 2026-09-18)
+
+Joe's shape: *"I went and looked at journal entries, it went to prepaid parts. I don't know why."*
+Store symptom from the business manager: **"shows closed but never closed."**
+
+### The mechanism (verified BC 1251)
+Every payment taken on an RO is an **`assetFlowType: CASHIERING_EVENT`** JE named
+**`Deposit - Repair Order - <ro#>`** — 2 accounts only: **Dr 225 CASH SALES / Cr <holding account>**.
+The invoice JE (`CUSTOMER_PAY - Repair Order - <ro#>` / `INTERNAL - ...`, `assetFlowType: REPAIR_ORDER`,
+8–17 accounts incl. revenue + tax + cost-of-sale) then **DEBITS the holding account** to release it.
+Healthy RO ⇒ **2 JEs** and the holding account washes to $0. POS/Parts counter sales work identically
+(`Deposit - Part Sale - <so#>`, `SO_DEPOSIT`, Dr payment-method acct / Cr holding).
+
+### Where "PREPAID PARTS" comes from — GLAM, not the RO
+`/accounting/glaccountmapping/list?module=FO_OTHERS` → left-nav **Fixed Operations → Others (2)** →
+card **`Fixed Operations Other`** → **`Fixed Operations (Other)`** table. BC's rows:
+```
+Service Cash Holding Account | All | 204 - PREPAID PARTS
+Parts Cash Holding Account   | All | 204 - PREPAID PARTS
+```
+That single row IS the answer to "why does it go to prepaid parts" — 204 is BC's service+parts payment
+holding account. (SCT instead points Parts Cash Holding at `2045 CASH SALES`, which makes the deposit JE a
+self-cancelling wash — same mechanism, different destination. Do **not** call BC's choice a defect.)
+
+### The real defect: the release JE is MISSING
+Fast detector — pull the RO's JEs and count:
+```python
+# POST /api/accounting/u/v2/transaction/m/search with captured headers
+b["groupBy"]=[]; b["pageInfo"]={"start":0,"rows":30}; b["searchText"]=""
+b["filters"]=[{"field":"refText","operator":"IN","values":["100781"]}]   # works; refId IN [roId] also works
+```
+- Control RO (94831) → `count: 2` (CUSTOMER_PAY + Deposit). RO 98897 → 2.
+- BC **RO 100781 → `count: 1`** = JE **548017** "Deposit - Repair Order - 100781", POSTED, 08/11/26,
+  $678.86, accts `1251_225,1251_204`. **RO 100590 → `count: 1`** = JE **549361**, $129.95, 08/14/26.
+  ⇒ the print-side held, the customer was billed, but **$808.81 was never released out of 204**.
+- ⚠ A JE search that comes back with only the Deposit leg means the *invoice* JE never posted — it is NOT
+  in the Error queue (check the Error tab before assuming it failed; failing ones show
+  `ACCOUNT_INVALID / "GL Account not found: null"`).
+
+### Scope test (cheap, from the holding account's own postings)
+Pull `/api/accounting/u/glAccount/v2/postings/m/search` for the holding acct (`1251_204`,
+`durationType: PREVIOUS_MONTH` + `MONTH_TO_DATE`, `rows:200`, paginate `pageInfo.start`), group by
+`parentRefText`, and flag every **REPAIR_ORDER ref with only ONE line** (never a matching Dr/Cr pair).
+BC Aug–Sep: 946 ROs had the pair, **21 had only one leg**. Cross-check the CoA balance: 204 read
+**−$25,786.14** (a *negative asset* = net credits = stranded deposits) with 5282 posting lines,
+Dr $1,059,056 vs Cr $1,082,659.
+⚠ Contamination: ROs from *today* legitimately show one leg (invoice JE hasn't posted yet), so date
+every flagged RO (`scheduledTime`) before reporting it as stranding.
+
+### Reading a JE without the UI
+`POST /api/accounting/u/v2/transaction/m/search` (captured from the JE list) returns `data.hits[]` with
+`transactionNumber` (= the 7-digit display ID), `description`, `transactionAmount` (DOLLARS),
+`glAccountIds[]`, `status`, `metaData.assetFlowType|payType`, `scheduledTime`, `errors{errorCode,errorMessage}`.
+Filters that WORK: `refText IN`, `refId IN`, `status IN ["ERROR"|"DRAFT"]`. `refText` searchText is fuzzy —
+always also filter `refText IN [<exact>]`. Deep-linking
+`/accounting/journalEntry/transactionId/<txnId>/dealerId/<d>/transactionType/AUTO_POSTING/view` renders
+**blank** — open the JE from the list or read it from this API instead.
+Scope the holding account's own postings with `glAccountId.original IN ["<dealer>_<acct>"]`.
+
 ## 6. Reporting to Joe
 
 He wants: the count, the pattern (grouped by order/creator/journal — not 10 unrelated bullets), the
