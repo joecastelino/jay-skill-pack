@@ -652,6 +652,30 @@ so this is a Tekion-side unlock (or a rebuild), NOT a payer-split write. A payer
 See `tekion-vsc-deductible-vs-fee-code` for how a correct CVSC split renders
 (`<customer> CP Deductible $x / <contract co> CVSC $y`).
 
+#### ⚠️ Cost centers are referenced by 24-hex ID, not by name
+
+When the store answers "it goes to cost center **2105**" (their phrasing on 398856 was *"it goes to service
+contract toyota 2105, that is the cost center"*), you have a **human label** and cannot write the split until
+you resolve it to an id. A working INTERNAL-pay sibling job on the same RO showed the real shape:
+
+```json
+"costCenters":[{"type":"ACCOUNTING","costCenter":"61fe1d8dbfe523000699abdd","value":"100"}]
+```
+
+So: read a healthy job of the TARGET pay type on the same RO and clone its `costCenters` entry rather than
+trying to construct the id. Do **not** assume a numeric store label maps to a GL account of the same
+number — per `tekion-internal-cost-center-gl-routing`, cost-center labels and GL mappings live on different
+layers (e.g. `PDI - 2211` is the cost center while `4440 SLS PRE-DEL SRV-TOY` is its GL mapping target).
+If the sibling job has the same cost center you need, use it; otherwise ask before guessing.
+
+#### Disposition of 398856 (resolved 2026-09-17)
+
+Joe's call after being shown the contract was absent: **bill the customer the full $65.00.** So the deliverable
+became the split rewrite (real customer payer, 100%, `COLLECT_AT_CASHIERING`) + UI invoice — see the RESOLVED
+section. ⚠️ Note the residual: the ESC **never paid**, so the store absorbed nothing but the customer paid
+what a contract would have covered. If a store wants the contract to absorb it retroactively, that is a
+separate **reversal** after the fact, not something fixable from the data that existed on the RO.
+
 ## ⛔ PROOF THAT NO UI FIX EXISTS
 
 Don't keep the store clicking — dump the **disabled** flags and quote them. On 398856 every

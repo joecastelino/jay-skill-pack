@@ -82,10 +82,37 @@ Body is the split object itself (NOT wrapped in `{splitInfo:…}`):
    "costCenters":[{"type":null,"costCenter":"COLLECT_AT_CASHIERING","value":"100"}],
    "postTaxAmount":6500}]}
 ```
-Validation errors you'll see and what they mean:
+Validation errors you'll see and what they mean — **ORDER MATTERS, fix them in this sequence** (each one
+only appears once the previous is satisfied):
 - `splitType/splitBy NotBlank :: must not be blank` → you nested the body under `splitInfo`; flatten it.
+- `RJ1976 "Primary payer should be present"` → add **`primaryPayerId` at the TOP LEVEL** of the body
+  (same id as the primary split's `payerId`). Without it the write always fails, even with a
+  perfectly valid `splits[]`.
 - `RO1365 post.tax.request.amount.mismatch.with.job.post.tax.total` → when `postTax:true` + `splitBy:AMOUNT`,
   **sum of every split's `postTaxAmount` MUST equal the RO bucket's `postTaxTotal`** (from `ro.totals`).
+- HTTP **200 = the split was actually written.** Read the job back to confirm.
+
+### Healthy-split template (copy the shape from a working sibling job on the SAME RO)
+
+Best move is to read a clean job of the same pay type on the same RO and clone its `splitInfo`. Verified
+working CUSTOMER_PAY shape (TL 398856 job 1 fix, 2026-09-17) — one payer, 100%, no phantom:
+
+```json
+{"splitType":"TOTAL","splitBy":"PERCENTAGE","postTax":false,
+ "primaryPayerId":"<customer payerId>",
+ "splits":[{"payerId":"<customer payerId>","subPayType":"CUSTOMER_PAY",
+   "components":[{"splitPercentage":100,"splitAmount":6500,"amountToSplit":6500,
+     "componentId":"<jobId>","component":"JOB","parentComponentId":"<jobId>","homogenousSplit":true}],
+   "costCenters":[{"type":null,"costCenter":"COLLECT_AT_CASHIERING","value":"100"}],
+   "postTaxAmount":6500}]}
+```
+
+An INTERNAL-pay sibling job instead showed: `splitBy:"PERCENTAGE"`, `postTax:false`, 100% to the internal
+payer (`4e8ee417-5fce-4f14-90be-6a2c54908c0b` at TL), and
+`costCenters:[{"type":"ACCOUNTING","costCenter":"<24-hex cost-center id>","value":"100"}]`.
+**Cost centers are referenced by 24-hex id, not by name** — a store saying "goes to cost center 2105" gives
+you a human label you must resolve to an id before you can write it.
+ALWAYS snapshot the ORIGINAL `splitInfo` (verbatim JSON, to a file) before writing — that's the revert path.
 
 ## Reaching the app when React Query hides the call
 

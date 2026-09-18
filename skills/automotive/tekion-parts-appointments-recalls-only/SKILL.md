@@ -49,6 +49,12 @@ triggers:
     exception, NOT a session problem. Re-arm the hook on the current page, then retry.
 - **TL vs SCT**: TL has 31 active campaign codes vs SCT's 3. SCT has NO generic RECALL gap; TL's generic
   RECALL was later created (was blocked on the Skill field on 2026-09-11).
+- **SESSION-DISAMBIGUATION RULE (memory tool was unavailable; Joe corrected Jay 2026-09-18 — "you are
+  getting lost in sessions, this is TOL")**: a bare status question in a Slack thread ("so does this work
+  now?", "did that land?") refers to THAT thread's project. Confirm which project/store the thread is about
+  and pull status from THAT session's history — do NOT answer from a different thread's recent work (Jay
+  answered this TOL question with BC-rewards-scrub status from an unrelated thread). If genuinely unsure,
+  state the assumed project inline and answer for it rather than defaulting to the most recent thing worked on.
 - Why not a list filter: Parts RO Sales → Appointments tab filter fields are only Appointment Date/Time, Appointment Status, Part Status, Counter Person — no opcode/recall field exists, so opcode-level config is the only clean path.
 
 # Tekion — Parts Appointments for Recalls Only (parts-prep flag mass toggle)

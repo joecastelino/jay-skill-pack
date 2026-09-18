@@ -24,6 +24,24 @@ Often followed by: *"I can give you two examples — 331990-1 went to retail, 32
 enumerate every mapping dimension, and find the ONE that differs. Do not theorize
 from the mapping table alone.
 
+## 🛑 STEP ZERO — ESTABLISH THE FIX DATE BEFORE YOU DIAGNOSE ANYTHING
+
+This skill's own history is the cautionary tale. On 2026-09-17 I built a ~4-week
+"GLAM mapping is wrong" story around SO 334499 — with its `createdTime` (9/8) **on screen
+the whole time** — and Joe killed it in one line: *"The fix came on 9/9. This SO was created
+9/8."* Tekion had already shipped the correction; the order was simply one day too early.
+
+**Before theorizing, in this order:**
+1. Ask/establish when the fix or release shipped.
+2. Pull `createdTime` on every artifact and **date it against that boundary**.
+3. Pull the **DAILY** ledger/flag series — never aggregate a window that straddles a fix
+   (a mid-period fix silently mixes broken + fixed records and produces a fake total).
+4. Only then reason about the mechanism.
+
+A broken record that predates the fix is a **backlog/reclass story**, not a config defect.
+Concluding "the mapping is broken" from one pre-fix order is the exact error this section
+exists to prevent.
+
 > This is the **counter-sale / Sales Order** sibling of `tekion-internal-cost-center-gl-routing`
 > (which covers internal REPAIR ORDER cost centers). Different GLAM table, different dimensions.
 
@@ -209,7 +227,10 @@ CODE), but the **flag GLAM reads flipped to taxable** → `Taxable|Wholesale →
 **This is the cleanest single answer to "where did it change": a system-written Tax Exemptions record at
 8/20 03:58, `createdBy:-1`, 7h47m after the NO TAX code landed.** It supersedes all per-customer theorizing.
 
-### D) The fix (one row)
+### D) ⛔ THE RECOMMENDATION BELOW WAS WRONG — READ THE NEXT SECTION FIRST
+
+Everything in (D) was written before Joe revealed the fix date. **Tekion shipped a fix on 9/9;
+DO NOT edit the GLAM row.** (D) is kept only as the reasoning path, not as an action plan.
 
 GLAM → Part & Accessories → **Parts-Counter** → the row
 `All | All | Taxable | Wholesale | All | All → 4740 SLS PRT COUNTER RTL-TOY` — repoint to **4750**.

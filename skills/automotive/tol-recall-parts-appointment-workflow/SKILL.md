@@ -11,12 +11,16 @@ Deployed 2026-09-12 at Toyota of Lancaster (TL, dealer 1092). Mirrors SCT build 
 
 | Component | Status |
 |-----------|--------|
-| Mass-uncheck | 950 OFF, 32 ON (verified) |
-| Keep-list | 30 campaign codes + RECALL |
-| RECALL opcode | Created manually by Joe (Jay's browser: Skill field stuck) |
-| Placeholder part | "RECALL PART - SEE VIN" on RECALL opcode |
-| Notify-immediately | ON |
-| Backlog sweep | NOT run |
+| Mass-uncheck | **981 ACTIVE → 949 OFF, 32 ON** (verified live 2026-09-17 via :9225 in-page fetch) |
+| Keep-list | 31 campaign codes + generic `RECALL` |
+| RECALL opcode | EXISTS, id `RECALL_1092`, ACTIVE, DIAGNOSTICS / Service Type Recalls, flag ON |
+| Placeholder part | **"ORDER PARTS RECALL"** (free-text, no part number → stays UNRESOLVED → queues). NOTE: differs from SCT's "RECALL PART - SEE VIN"; either is fine. |
+| Notify-immediately | **OFF** — most generated requests sit `invisible:true` until the window. SCT was flipped ON. Joe's call. |
+| Backlog sweep | **NOT run — 490 `PART_REQUEST_PENDING` records back to 2025 (only 5 post-flip).** Sweep LAST, after any notify flip (see SECOND WAVE in `tekion-parts-appointments-recalls-only`). |
+
+**Effect proof (Sep 2026):** Sep 13→17 = 905 appts / **8 pending (0.9%)** vs Sep 1–10 = 1,400 appts / **155 pending (11%)** → generation down ~92%.
+
+**KNOWN LEAK (unproven):** the 8 post-flip pending rows are NON-recall (`LOF4CYL`, `TIRE4`, `EXHANGEC`/`RDIFF`/`RBRAKE`, menu `TEK45000VNM`) yet those opcodes read `eligibleForPartPreparation:false`. Their acquisitions carry `sourceRequestedDetail.opcode = null` and a DIFFERENT `requestedBy` user per record → looks like parts the **ADVISOR manually requested on the appointment**, bypassing the opcode-flag generation path. Diagnose via `GET /api/parts/proxy/u/fulfillment/<id>` → `appointmentRequestDetails.partAcquisitions[].sourceRequestedDetail`, not yet confirmed.
 
 ## TL Keep-List (32 opcodes)
 

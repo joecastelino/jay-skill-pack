@@ -43,6 +43,10 @@ only in the **job concern text**, and the opcode is the generic `RECALL`. Method
 2. Fan out `GET /repair-orders/{documentId}/jobs` on each and substring-match the campaign against `job.concern.text` (case-insensitive). ~1,450 calls ≈ 10 min — run it as a **background process with `notify_on_complete`**, never foreground.
 3. Enrich with `/ro-vehicle` (VIN/year/make/model/mileage) and `/ro-customers/{id}`.
 4. Bucket by `status`; everything not CLOSED/INVOICED/VOID is "open" and worth a look. Also check for **duplicate VINs / duplicate customers** (the same car or person booked twice on the same recall).
+5. **Scan the concern text (already in hand from step 2 — costs nothing extra) for two failure/abuse patterns worth calling out separately:**
+   - **Re-do cohort** — concern contains `fail` (e.g. BC 102903 `*** failed rear view camera`, 102987 `failed rear view camera`, 103498 `Failed rear view camera`). These are vehicles where the recall did **not** stick the first time. They are the *most expensive* ones to also miss, and they prove the campaign has a repeat-failure mode at that store.
+   - **Closed without performing** — concern contains `declin` / `return at a later date` / `customer can return` (BC 103126 `*CUSTOMER DECLINED RECALL AT THIS TIME*`, 103009 `customer can return at a later date for the recall`). These ROs are CLOSED with the safety recall still open on the vehicle — report them as a compliance exposure, distinct from the dispatch misses.
+   Present both as their own short lists; Joe treats the customer-declined-closure items as a different (and worse) problem than a dispatch miss.
 
 **BC N262551720 result (for calibration):** 59 ROs in 8 months — it's a mass campaign, not a rare
 event. So "the second one" is never a count of the recall — it's a count of *misses*. Present the open
