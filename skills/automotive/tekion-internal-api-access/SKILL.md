@@ -71,6 +71,17 @@ preTaxTotal/postTaxTotal — the authoritative money), `status`, `invoice`.
 **business-error JSON** (`{"status":"failed","errorDetails":{...}}`) — use that difference to tell
 "wrong path" from "right path, bad request".
 
+**404 inventory (2026-09-18, BC 1251 — don't re-probe):** `/ro/<rid>/parts`,
+`/ro/<rid>/job/<jid>/parts`, `/job/<jid>/part`, `/ro/<rid>/deposits`, `/ro/<rid>/payments`
+all return 404 empty; `/job/<jid>/operations/parts` returns 500 `unexpected.error`.
+Parts deposit / prepaid / SOR search paths 404 everywhere tried
+(`/api/wms/parts/u/{deposit,prepaid,specialOrderRequest,sor,partsOrder}/search`,
+`/api/partTrade/u/{deposit,special-order-request}/search`) ⇒ **there is no exposed
+prepaid-parts or deposit READ API**; that workflow is UI-only. Also note the OpenAPI
+RO-level `/repair-orders/{rid}/operations` does NOT exist — operations are per-job
+(`/repair-orders/{rid}/jobs/{jid}/operations` → `data.roOperations`). Consumer skill:
+`tekion-verify-ro-actually-closed`.
+
 ## Payer-split write shape
 
 Body is the split object itself (NOT wrapped in `{splitInfo:…}`):
