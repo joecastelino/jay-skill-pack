@@ -163,7 +163,14 @@ row = [ro_num, date, Paragraph(customer_name, cell_style), category, ...]
 Widen that column a bit too if names run long (e.g. 1.4in -> 1.5in).
 
 `pypdf.PdfReader` text extraction still works reliably (confirmed 2026-08-18,
-v6.12.2) for confirming page count and that the right numbers/rows are present:
+v6.12.2) for confirming page count and that the right numbers/rows are present
+— **but only from the SYSTEM python (e.g. the tekion-reports scripts), NOT from
+`execute_code`'s sandbox, where it raises `ModuleNotFoundError: No module named
+'pypdf'` (re-confirmed 2026-09-17).** Inside `execute_code` either skip the PDF
+page-count check (the MIME walk + byte-compare already proves the exact file
+arrived) or shell out via `terminal()` to a python that has pypdf installed. `fitz`
+(PyMuPDF) was importable from execute_code as of 2026-08-18 — prefer it there if
+you need page rendering.
 
 ```python
 import imaplib, email, io, pypdf

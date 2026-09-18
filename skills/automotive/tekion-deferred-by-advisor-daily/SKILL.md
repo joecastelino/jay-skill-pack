@@ -351,7 +351,26 @@ runs for **yesterday** (index lag), draft-only to Ruben Cc Joe, delivers to the 
 thread. Sundays return 0 → job reports `[SILENT]` and creates no email.
 Joe asked for 6 AM (he's up by 4) — not the 7:30 AM originally proposed below.
 
+## Reference run (BC / 1251, Thu 9/17/2026) — trailing-7 peak
+41 declined lines · 19 ROs · **$61,935.43** · 14 Critical. Jacob Debussey #1 $30,427.42 (8 lines /
+2 ROs — RO 101977 FRESNO AUTOPLEX 2018 Silverado = engine lifters $9,432.55 + long block $17,447.20,
+both CRITICAL, i.e. one RO = ~$27K of the day; plus 6 CAUTION lines on RO 100893). Then Humberto
+Dominguez $6,791.54, Valentine Nolasco $6,233.14, Jeremia Navarro $5,312.39, Michael Reyes $4,906.85,
+Erik Mercado $2,795.06, Houa Moua $2,612.32, Dale Alexander $2,214.36, Dimetri Reynoso $539.71,
+Louie Vallejo Jr $102.64. Draft UID **43513** (All-Mail 264597). PDF ~89KB/3 files byte-identical.
+Trailing-7: Sat 9/12 $9,193.22 → Sun 9/13 $0 → Mon 9/14 $11,396.66 → Tue 9/15 $13,354.25 →
+Wed 9/16 $28,995.54 → **Thu 9/17 $61,935.43 peak**.
+Recovery: header file PRESENT (2 days old) but its token 401'd with **27.74 days headroom** yet
+still rejected; STEP ZERO-0 session-file merge (29.75 days) fixed it instantly — reconfirms headroom
+is not a validity test. **Stacey's self-reported UID was CORRECT this run (43513 = real IMAP UID)** —
+so don't assume it's always wrong; just verify independently every time (cheap).
+
 ## Pitfalls
+- **`pypdf` is NOT importable from `execute_code`'s sandbox** (2026-09-17, `ModuleNotFoundError: No
+  module named 'pypdf'`). The `jay-gmail-draft-verification` claim that pypdf "works reliably" applies
+  only to the system python used by the tekion-reports scripts, not the execute_code interpreter. For
+  PDF page-count checks inside execute_code either skip it (the MIME walk + byte-compare already proves
+  the exact file arrived) or shell out via `terminal()` to a python that has it.
 - **Stacey's reported `DRAFT_UID` is often a SEQUENCE NUMBER, not the IMAP UID** (2026-08-26):
   she reported `DRAFT_UID=80` for a draft whose real UID was **42675**. The raw fetch response
   makes it obvious: `b'80 (X-GM-LABELS () UID 42675 FLAGS (\Draft))'` — the leading `80` is the
