@@ -441,6 +441,25 @@ icon); Tekion Pay 1 (electronic paper-check); Analytics 1; Communications 1; Per
 is *timing-consistent* with "failures before / works after" but is **not** a documented posting fix —
 say that plainly instead of implying causation.
 
+**6. "Could it have been a payment method?" (Joe, 2026-09-19) — NO; the discriminator is the
+BLANK COUPON REFERENCE on the discount legs.** Payment side was identical on the errored JEs (122656,
+123249) and the clean control (123820): all three = `1188 CASH SALES` "Payment Deposit", no AR / no
+third-party leg. The real difference: the control's `4703`/`4403` lines carry
+**Control/Description = "Coupon Code - 6995"**; both errored JEs' discount legs are **blank**.
+**Method that surfaced it — pull the ACCOUNT-level posting history, not JE-by-JE:**
+`POST /api/accounting/u/glAccount/v2/postings/m/search` scoped
+`glAccountId.original IN ["1891_4403","1891_4703"]`, `durationType MONTH_TO_DATE` (+PREVIOUS_MONTH),
+rows 200, paginate `pageInfo.start`; group by `parentRefText` (RO#) and flag rows whose
+control/description lacks `Coupon Code -`. VC Sept: 66 rows, **14 blank across 6 ROs** —
+138894 (9/1), 141825 (9/3, reversed 9/4), **141821 (9/3)**, 141869 (9/8), **141957 (9/11)**,
+142066 (9/16, reversed 9/17 and reposted WITH the coupon). The 2 error-queue ROs are in that set; every
+coupon-stamped posting posted clean. 4 of the 6 were never refreshed by Jay, so the blank signature
+is native, not a refresh artifact. **Next link (not yet run): what differed in HOW the discount was
+applied on those 6 ROs** (advisor? applied at cashiering/close vs write-up? manual $ discount vs coupon
+pick?) — pull each RO's coupon/discount object via `/api/service-module/u/ro/<id>` and compare.
+Rule: for a "why did X error and Y didn't" question, diff the SAME account's postings across the whole
+period first — the per-JE comparison alone (3 entries) can't see a pattern that the 66-row set shows.
+
 ### Route + mechanics discoveries that cost turns here
 - **Accounting Global Settings = `/accounting/accountSettings`** (KV0020992's tab list: Journal Entry
   Settings · Auto Posting · Schedules · Reconciliation Accounts · General Settings). Add to §1 dead
@@ -915,6 +934,13 @@ but **omits the $50 sublet** (PO 13485) — deposit-release line $628.86 vs $678
 MISCELLANEOUS"` lines. So the engine still cannot produce a correct entry for 100781 → not a mapping
 gap; Tekion-side (sublet ignored). Only visible diff on the sublet job: `laborPreSplits.adjustedPricePerUnit`
 null/`pricingType` null on 100781 vs populated on the control — suggestive, NOT proven.
+
+**Session pitfall (2026-09-19):** the :9223 browser server dies with every Hermes gateway restart AND
+when relaunched via `terminal(background=true)` inside a turn (it's a child of the tool shell — dropped
+twice mid-diagnosis). Relaunch fully detached (`setsid nohup … &` in its own process group), then
+confirm it answers `/screenshot` on the NEXT tool call before any DOM/API work. A 500 from `/eval` can
+also just be your own JS throwing (e.g. kebab selector not found) — check the error text before
+assuming the server is down.
 
 **Mechanics:** RO kebab = `[class*="KebabMenuTrigger"]` (JS MouseEvent dispatch; `/mouse` no-ops);
 "View Posting Preview" sits at y≈715 = off the 720px viewport → click its `ant-v5-dropdown-menu-item`
