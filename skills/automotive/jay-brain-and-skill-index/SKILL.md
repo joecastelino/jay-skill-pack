@@ -170,7 +170,10 @@ orphaned; cleared with `gbrain link index agents/jay-sct --link-type references`
 `## Agents` list — NOT `## Sessions` — then commit + re-import/embed as usual). **agents/* put_page
 pages arrive in STREAKS during an agent-provisioning session** (2026-09-18 16:45 cron: `agents/guru`
 on pass 1, then `agents/guru-sct` surfaced on the sleep-20 confirming pass as the other session renamed
-the profile — each needed its own link→index.md→commit→reimport round; 3 rounds total). Latecomer streaks
+the profile — each needed its own link→index.md→commit→reimport round; 3 rounds total). **memory/* orphans (2026-09-19): backfill-skills-to-brain.py adds `memory/jay-memory-NN` pages as MEMORY.md grows
+but never updates index.md — its `## Memory` line listed only 01-05 while 14 existed. Clear with `gbrain link index
+memory/jay-memory-NN --link-type references` AND extend the single `## Memory` bullet (`· [[jay-memory-NN]]`), not `## Sessions`.**
+Latecomer streaks
 apply here too — the 15-min session-end-sync's KB ingest can commit NEW kb pages mid-run (one run
 had 4 kb + 2 session latecomers after the first orphan pass); loop until `gbrain orphans` = 0.
 
