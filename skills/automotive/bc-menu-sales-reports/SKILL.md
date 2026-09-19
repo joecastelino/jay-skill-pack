@@ -1236,3 +1236,23 @@ BODY-SHAPE gate passed ("today (Friday, September 18)", labor+parts present, no 
 footer em-dash in both parts, zero leftovers/variants. Expunged stale noon 43568 -> exactly 1 draft
 (43583); Daily-Closed Sent count 0 (zero `BC 9/18` Sent hits = Opened timing drift). Noon->5pm delta:
 5/$727.19 -> 7/$1,224.17. Size 93,509 pre-append (no prune needed).
+
+## 2026-09-18 6:16pm Closed MTD run — textbook one-shot, 63rd consecutive clean "N dollars" build
+179 menus, $22,218.08 labor / $13,081.17 parts = $35,299.25 (Sep 1-18). Advisors: Jacob Debussey
+45 / $5,354.52, Houa Moua 39 / $5,390.44, Juan Ramirez 25 / $5,555.27, Humberto Dominguez 25 /
+$4,803.23, Dimetri Reynoso 17 / $4,171.87, Michael Reyes 14 / $3,716.10, Erik Mercado 10 /
+$4,456.97, Valentine Nolasco 2 / $1,187.92, Jeremia Navarro 2 / $662.93. Master existed (asof 9/17,
+172 rows) -> default append; 91 closed ROs -> 7 carried TEK menu opcodes (~8% attach) -> master 179
+rows; `all candidate ROs scanned` printed. Pull inside ONE 180s background wait; render fast in
+foreground. Vision KPI band (crop 460px + 2x LANCZOS on a 1226x6765 PNG) matched JSON exactly;
+master `_gross` sums matched emitted `totals` exactly. Ask via write_file->background-terminal
+(`/tmp/bc_ask_0918_mtd.py`, `timeout 560`, arg list; all prevention lines + verbatim-sentence clause +
+two-step dollars-delete/dollar-sign-insert + "leave 43583/9-17 drafts alone" + em-dash-search clause),
+returned inside ONE wait. DONE 43585 TOTAL=$35,299.25, id MATCHED himalaya's. Her reply had
+self-correction text ("Too many typos... rewrite cleanly with write_file first") but it was PRE-append
+(script authoring), so no duplicate — dedupe grep confirmed exactly 1 MTD 9/18 draft. stdlib-`email`
+verification: To=Restrada, Cc None, From=Joe, Subject em-dashes decoded, PNG byte-identical (1,435,086),
+PDF byte-identical, all 12 figures exactly once in BOTH parts, `<b>$35,299.25</b>` bold, BODY-SHAPE gate
+passed (verbatim sentence, "September 1 through Friday, September 18", labor+parts present, no
+"yesterday"), greeting + footer em-dash in both parts, zero leftovers/variants. Sibling 9/18 Daily Closed
+draft (43583) untouched; MTD Sent count 0 (zero `BC 9/18` Sent hits = Opened timing drift).
