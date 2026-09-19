@@ -96,6 +96,33 @@
 4. `TOHEADER=Kevin <kstapp@sctoyota.com> | SENTTODAY=0`.
 - On-disk sizes: PNG 94,974 / PDF 276,825. Draft-only respected, nothing sent.
 
+## 2026-09-18 — clean run, quota healthy, no self-heal needed
+
+- Pre-flight OPS probe (same validated RO/job pair, unchanged since 8/3): **200** at 19:01 PDT.
+  No same-day index pre-run; no competing consumer (pgrep sweep only matched itself).
+- Used the 9/17 single-script pattern (`run_sct_align_nightly_20260918.sh`, scan→render,
+  flock-guarded) + foreground `tail --pid` at timeout=590 — took 4 tail calls for a 33-min
+  scan (19:01→19:34). Index built 19:02:28; checkpoint advanced steadily; **0 failed**.
+- **260 alignments (236 dedicated + 24 bundled), 260 ROs, 16 advisors, daily pace 14.4.**
+  Window end advanced 1789714799999 → 1789801199999 (fresh index).
+- Top advisor **Jason Sulon solo #1 with 31** (Cristian Gonzalez 25, Juan Jose Perez 22,
+  Artist Battle 21, Robin Porter 20).
+- PNG vision-verified: TOTAL row 236/24/260/260 = KPI, Toyota logo present, 16 real names.
+
+### Stacey verify (all first-try, sleeps 15/10/10/10s, zero timeouts)
+
+1. Build ask clean on the FIRST ask (73s) with paths + on-disk sizes baked in:
+   `DRAFTUID=43586 | TOHEADER=kstapp@sctoyota.com | HTMLPARTBYTES=130226 | PDFPARTBYTES=283138`.
+   HTML cleared PNG*4/3 (97,066*4/3=129,421) by 805 bytes — tight pass = PASS. PDF exact on-disk.
+2. Date-free enumeration → TOTAL_MATCHES=23. **GOTCHA:** my own output filter trimmed the
+   reply to the last 14 lines and cut off the newest (September) entries — don't truncate
+   enumeration output; print it whole. Resolved with a `'September MTD'` substring
+   enumeration → 3 matches (9/16, 9/17, 9/18), **exactly ONE "(through 9/18)"**.
+3. `PDFFILENAME=SCT-Alignment-By-Advisor-MTD-2026-09-18.pdf` (one-L) | `PDFDECODED_BYTES=283138` exact.
+4. `TOHEADER=kstapp@sctoyota.com | SENT_918=0` (Sent search scoped to this night's
+   subject substring — preferred over date-scoped SENT_TODAY).
+- On-disk sizes: PNG 97,066 / PDF 283,138. Draft-only respected, nothing sent.
+
 ## DON'T BABYSIT THE MAIN NIGHTLY — the `tail --pid` waiter + render
 
 The alignbg section already forbids agent-babysat scans (the iteration ceiling silently kills
