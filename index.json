@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-19T10:45:07",
+ "generated": "2026-09-19T11:00:18",
  "skill_count": 228,
  "skills": [
   {
@@ -23,8 +23,8 @@
    "path": "automotive/agent-to-agent-bridge",
    "category": "automotive",
    "description": "Talk directly to other AMG agents (Walter II, Ralph, Don, etc.) from Jay's session via a CLI bridge. Use when Joe asks Jay to coordinate with, relay to, or ask another agent something on the same machine.",
-   "times_used": 121,
-   "last_used": "2026-09-13"
+   "times_used": 122,
+   "last_used": "2026-09-19"
   },
   {
    "name": "tekion-openapi-repair-orders",
