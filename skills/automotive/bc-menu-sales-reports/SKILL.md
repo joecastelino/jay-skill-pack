@@ -1222,3 +1222,17 @@ python3.11 and python3.12 listed) — `bin/python3` used anyway, per the Scripts
 entries in place (kept the transient-IMAP split, `<strong>` accept, variant false-positive, daily-rows
 schema, and POST-append non-mutating lessons) -> 91,259 before appending. SAFE-PRUNE index assertions
 used; re-checked size AFTER.
+
+## 2026-09-18 5pm Daily Closed run — textbook one-shot, 62nd consecutive clean "N dollars" build
+7 menus, $811.96 labor / $412.21 parts = $1,224.17 (Friday 5pm). Advisors: Houa Moua 3 / $827.86,
+Juan Ramirez 2 / $311.05, Jacob Debussey 2 / $85.26. 89 closed ROs -> 7 carried TEK menu opcodes
+(~8% attach); `all candidate ROs scanned` printed. Pull + ask each inside ONE 180s wait
+(write_file->background-terminal, `/tmp/bc_ask_0918_5pm.py`, `timeout 560`, arg list; all prevention
+lines + verbatim-sentence clause + two-step dollars-delete/dollar-sign-insert + "leave noon draft 43568
+alone"). Vision KPI band matched JSON. DONE 43583 TOTAL=$1,224.17, id MATCHED himalaya's, no
+self-correction text, no duplicate. stdlib-`email` verification: To=Restrada, Cc None, From=Joe, PNG
+byte-identical (125,122), PDF byte-identical, all 6 figures once in BOTH parts, `<b>$1,224.17</b>`,
+BODY-SHAPE gate passed ("today (Friday, September 18)", labor+parts present, no "yesterday"), greeting +
+footer em-dash in both parts, zero leftovers/variants. Expunged stale noon 43568 -> exactly 1 draft
+(43583); Daily-Closed Sent count 0 (zero `BC 9/18` Sent hits = Opened timing drift). Noon->5pm delta:
+5/$727.19 -> 7/$1,224.17. Size 93,509 pre-append (no prune needed).
