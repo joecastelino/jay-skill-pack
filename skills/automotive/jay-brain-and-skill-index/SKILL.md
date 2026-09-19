@@ -167,7 +167,10 @@ category: `gbrain orphans` groups output under `[kb]` / `[projects]` / etc. head
 sessions/memory/concepts → `index`, skills/* → `skills-index`, kb/* → `kb-index`, **agents/* → `index`**
 (seen 2026-09-18: new `agents/jay-sct` page written via `put_page` by another session, untracked in git +
 orphaned; cleared with `gbrain link index agents/jay-sct --link-type references`, and added to index.md's
-`## Agents` list — NOT `## Sessions` — then commit + re-import/embed as usual). Latecomer streaks
+`## Agents` list — NOT `## Sessions` — then commit + re-import/embed as usual). **agents/* put_page
+pages arrive in STREAKS during an agent-provisioning session** (2026-09-18 16:45 cron: `agents/guru`
+on pass 1, then `agents/guru-sct` surfaced on the sleep-20 confirming pass as the other session renamed
+the profile — each needed its own link→index.md→commit→reimport round; 3 rounds total). Latecomer streaks
 apply here too — the 15-min session-end-sync's KB ingest can commit NEW kb pages mid-run (one run
 had 4 kb + 2 session latecomers after the first orphan pass); loop until `gbrain orphans` = 0.
 
