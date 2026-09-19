@@ -332,6 +332,21 @@ for uid in data[0].split()[-40:]:
     # fetch '(BODY.PEEK[HEADER.FIELDS (SUBJECT DATE)] X-GM-LABELS)' and look at X-GM-LABELS
 ```
 
+✅ **Verified 2026-09-18 — CLEANEST RUN TO DATE (3 email calls → 1 send + 2 IMAP reads, zero Stacey verify asks).**
+Ready-made script: `scripts/verify_sent_imap.py` in this skill (live copy at
+`/home/itadmin/tekion-reports/verify_sent_imap.py`). Run
+`python3.11 verify_sent_imap.py 18-Sep-2026 "Closed MTD" "9/18/26"` right after the send ask;
+it prints the UID, labels (need `\Sent`), decoded headers, and the BODYSTRUCTURE. Flow that
+worked first try: body-file + one short send ask (`OK BYTES=143588`, byte-exact) → script
+showed UID 56844 labels `"\Inbox" "\Sent"` 18:03:24 PDT, BODYSTRUCTURE
+`("APPLICATION" "OCTET-STREAM" ... ("ATTACHMENT" ("FILENAME" "SCT-...-2026-09-18.pdf")))`
+196,492 base64 ≈ 143,588 decoded. **Do not ask Stacey to verify anymore — read IMAP yourself.**
+⚠️ **Header-decode gotcha (cost one wasted call):** the em-dash subject arrives RFC2047-encoded
+(`=?utf-8?b?...?=`) so a plain substring match on the raw header returns **0 hits** (false
+"not sent"). Always `email.header.decode_header` the Subject before matching — the script does.
+Also: inline `python3 -c '...'` with nested `"` inside a regex breaks under shell quoting — write
+verify code to a file instead.
+
 **The authoritative test is the `\Sent` X-GM-LABEL — not the folder name, not All Mail.**
 A Gmail *draft* appears in All Mail too (labelled `\Draft`), so "found it in All Mail"
 proves nothing. Verified 2026-09-17: the orphaned draft sat in All Mail as UID 56755
