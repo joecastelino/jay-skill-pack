@@ -86,6 +86,14 @@ schedule (e.g. ~/the-goods/data/*.json) and have the agent read the file.
   menu-sales numbers in natural-language prose, she silently drops leading digits
   ($130.04→$30.04, $296.79→$96.79). List numbers in a structured block with "COPY-PASTE
   these exact numbers — do not retype." See `tol-menu-sales-reports` skill trap #9.
+- **Stacey over-deletes on "dedupe" instructions** (2026-09-18, TOL Opened EOD): asked to
+  "DELETE the earlier draft with the SAME subject", she deleted the noon draft AND every other
+  unsent draft sharing the subject STEM (prior days' 09/16 + 09/17 reports), reporting it as
+  "+ 3 other stale drafts cleaned up". Gmail draft deletes skip Trash — unrecoverable. Always
+  scope dedupe as "DELETE ONLY the draft whose Subject is EXACTLY '<full subject incl. date>';
+  do NOT touch drafts for any other date/report", and if her reply mentions extra deletions,
+  run a read-only subject-list right away to see what vanished. Also: `TO "..."` filters in
+  her raw-IMAP Trash/Sent searches stall to exit-124 — filter by SUBJECT + SINCE only.
 - **No em dashes or Unicode in email subjects** (2026-09-08): when handing a draft-email
   request to Stacey, em dashes (`—`, `\u2014`) and other non-ASCII characters in the subject
   line will NOT fail the bridge itself, but will crash Stacey's `imaplib` IMAP duplicate-draft

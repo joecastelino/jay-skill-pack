@@ -451,3 +451,33 @@ SKILL MAINTENANCE: SKILL.md hit the 100,000-char skill_manage limit this run. Fi
 moving the 8/20-8/27 per-run logs into `references/run-log-archive-aug2026.md` (now ~78KB).
 When the next size error appears, archive the OLDEST per-run `## (M/DD ...)` sections the
 same way — never delete procedure/pitfall sections.
+
+
+## (8/22 12:05PM, Opened) Clean one-shot; only the MIME part-listing needed retries
+Hand-off returned in 128s (no exit-124), draft UID 59 (himalaya id 42583) correct FIRST TRY:
+multipart/mixed > related > alternative(text/plain+html) + image/png Content-ID=<scorecard>
++ application/pdf, bold total $456.21. No dedupe needed. Subject-list returned FIRST try (54s)
+with "use raw IMAP, NOT the Gmail API" leading; Sent-check FIRST try (123s) = 6 hits all old
+em-dash-era sends (06/29-07/03), zero today = no leak.
+ONLY the MIME part-listing needed a retry: the first version asked for parts AND a quoted
+bolded total AND a "if that UID is wrong find it by subject" fallback in ONE ask -> exit-124
+at 200s. Sleep 45 + a stripped-down re-ask ("One raw IMAP fetch only... List its MIME parts,
+one line each: mimeType | Content-ID | filename. Reply only with those lines.") returned clean
+at 231s. LESSON: don't bundle the bolded-total quote request into the part-listing ask — that
+free-content-check tip (8/21) makes the ask heavy enough to time out. Ask parts-only.
+Drafts stack is tiny (3 TOL Opened drafts: 08/21, 08/22, plus the perennial 08/02 em-dash one
+UID 20 which has reappeared again — still not a true duplicate, still flag-don't-delete).
+
+## (8/22 8:05PM, Opened) Clean one-shot, zero exit-124s; parts-only part-listing ask confirmed
+Hand-off returned in 79s (no timeout), draft correct FIRST TRY with TRUE dedupe (noon draft
+deleted on her own). All 3 verification asks returned FIRST try with "use raw IMAP, NOT the
+Gmail API" leading: subject-list 25s, MIME part-listing 146s, Sent-check 27s. The 8/22-noon
+lesson held — asking for MIME PARTS ONLY (no bolded-total quote, no extra fallback clauses
+beyond the one-line "if that UID is wrong find it by subject") returned cleanly with no 124.
+BOGUS-UID VARIANT recurred: her save confirmation AND the subject-list both said UID 62, but
+part-listing replied "UID 62 not found. Actual draft is UID 42590" and listed correct MIME
+(multipart/mixed > related > alternative(text/plain+text/html) + image/png Content-ID=scorecard
++ application/pdf). Sent-check = 4 hits, all old em-dash-era sends (06/30-07/03), zero today =
+no leak. Drafts stack tiny (3): 08/21, 08/22, plus the perennial 08/02 em-dash draft UID 20 —
+still not a true duplicate, still flag-don't-delete.
+

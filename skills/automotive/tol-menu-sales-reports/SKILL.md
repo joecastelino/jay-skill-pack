@@ -92,9 +92,18 @@ Use `~/bin/ask-agent stacey "..."`. One message with: recipient `spreston@tol-av
 greeting **"Sean,"**, store "Toyota of Lancaster", the numbers, inline-PNG path, attach-PDF
 path, and **"leave as DRAFTS — do not send."** Same Kevin/SCT layout: greeting / summary
 with bold total / scorecard PNG inline / "Sent from Tekion Open API — live data" / Joe's
-HTML signature. Subjects:
-- `TOL Menu Sales — Opened (MM/DD/YYYY)`
-- `TOL Menu Sales — Closed MTD (Month D–D, YYYY)`
+HTML signature. Subjects (use a plain ASCII hyphen, NOT an em-dash — see the 8/12 note):
+- `TOL Menu Sales - Opened (MM/DD/YYYY)`
+- `TOL Menu Sales - Closed MTD (Month D-D, YYYY)`
+
+**DEDUPE WORDING (mandatory since 9/18 EOD):** phrase the bundled dedupe as
+"DELETE ONLY the draft whose Subject is EXACTLY `TOL Menu Sales - Opened (MM/DD/YYYY)`
+(also its em-dash variant for the SAME date). Do NOT touch any draft for any other date or
+any Closed MTD draft." A looser "delete the earlier draft with this subject" made Stacey
+sweep the whole `TOL Menu Sales - Opened` stem (09/16 + 09/17 drafts gone, reported as
+"3 other stale TOL drafts cleaned up"). Gmail draft deletes do NOT land in Trash — they are
+unrecoverable; only the on-disk PNG/PDF remain for re-drafting. If her reply mentions extra
+deletions beyond the one noon draft, subject-list immediately and tell Joe which days vanished.
 
 ### VERIFY Stacey's draft after hand-off (learned 2026-07-04, 8PM run)
 Stacey's drafts can silently come out wrong — always run a follow-up READ-ONLY ask
@@ -788,33 +797,21 @@ sends (06/29-07/03), zero today = no leak. Lessons distilled from these four:
   uses a hyphen or em-dash. Usually ONE copy = not a true dupe. Flag, never auto-delete.
 - Run verification asks via `execute_code` + `subprocess.run([...])` with an argv LIST (never
   a shell string) — sidesteps every quoting/paren/`&` pitfall.
-## (8/22 12:05PM, Opened) Clean one-shot; only the MIME part-listing needed retries
-Hand-off returned in 128s (no exit-124), draft UID 59 (himalaya id 42583) correct FIRST TRY:
-multipart/mixed > related > alternative(text/plain+html) + image/png Content-ID=<scorecard>
-+ application/pdf, bold total $456.21. No dedupe needed. Subject-list returned FIRST try (54s)
-with "use raw IMAP, NOT the Gmail API" leading; Sent-check FIRST try (123s) = 6 hits all old
-em-dash-era sends (06/29-07/03), zero today = no leak.
-ONLY the MIME part-listing needed a retry: the first version asked for parts AND a quoted
-bolded total AND a "if that UID is wrong find it by subject" fallback in ONE ask -> exit-124
-at 200s. Sleep 45 + a stripped-down re-ask ("One raw IMAP fetch only... List its MIME parts,
-one line each: mimeType | Content-ID | filename. Reply only with those lines.") returned clean
-at 231s. LESSON: don't bundle the bolded-total quote request into the part-listing ask — that
-free-content-check tip (8/21) makes the ask heavy enough to time out. Ask parts-only.
-Drafts stack is tiny (3 TOL Opened drafts: 08/21, 08/22, plus the perennial 08/02 em-dash one
-UID 20 which has reappeared again — still not a true duplicate, still flag-don't-delete).
-
-## (8/22 8:05PM, Opened) Clean one-shot, zero exit-124s; parts-only part-listing ask confirmed
-Hand-off returned in 79s (no timeout), draft correct FIRST TRY with TRUE dedupe (noon draft
-deleted on her own). All 3 verification asks returned FIRST try with "use raw IMAP, NOT the
-Gmail API" leading: subject-list 25s, MIME part-listing 146s, Sent-check 27s. The 8/22-noon
-lesson held — asking for MIME PARTS ONLY (no bolded-total quote, no extra fallback clauses
-beyond the one-line "if that UID is wrong find it by subject") returned cleanly with no 124.
-BOGUS-UID VARIANT recurred: her save confirmation AND the subject-list both said UID 62, but
-part-listing replied "UID 62 not found. Actual draft is UID 42590" and listed correct MIME
-(multipart/mixed > related > alternative(text/plain+text/html) + image/png Content-ID=scorecard
-+ application/pdf). Sent-check = 4 hits, all old em-dash-era sends (06/30-07/03), zero today =
-no leak. Drafts stack tiny (3): 08/21, 08/22, plus the perennial 08/02 em-dash draft UID 20 —
-still not a true duplicate, still flag-don't-delete.
+## (9/18 8:05PM, Opened) CLEAN DRAFT, but DEDUPE OVER-DELETED prior days' Opened drafts
+130 ROs scanned, **5 menus / $541.14** ($458.15 + $82.99). Hachey 4/$473.64 (87.5%), Brenda 1/$67.50.
+Hand-off RC=0 first try (100s); draft correct first try (himalaya 43587 / IMAP UID 162: mixed >
+related > alternative(plain+html) + png CID=scorecard 58,022 + pdf 51,002 = EXACT on-disk). Noon
+draft UID 161 deleted (TRUE dedupe). **NEW TRAP:** she also reported "+ 3 other stale TOL drafts
+cleaned up" — the subject-list confirmed the 09/16 and 09/17 Opened drafts (and likely the noon one
+counted twice) are GONE from Drafts; only Closed-MTD drafts + today's Opened + the perennial 08/02
+remain. The dedupe instruction said "DELETE that earlier draft [same subject]" but she swept the
+whole "TOL Menu Sales - Opened" stem. Trash searches (SUBJECT "Opened (09/1") returned Count: 0, so
+the deleted drafts are not recoverable from Trash (Gmail draft deletes are permanent). Impact is
+low — 09/16 ($?) and 09/17 ($406.39) scorecards are intact on disk (`data/TOL-Menu-Sales-Scorecard-
+2026-09-1[67].{png,pdf}`) and can be re-drafted on request. PREVENTION: word the dedupe as
+"DELETE ONLY the draft whose subject is EXACTLY '<today>' — do NOT touch any draft for any other
+date." Verification: subject-list 34s, part-probe 110s, Sent-check (SINCE-scoped) 21s — all first
+try, one exit-124 on a TO-filtered Trash search (drop TO filters; they stall).
 
 ## (9/15 8:05PM, Closed MTD) TEXTBOOK CLEAN RUN — zero exit-124s, all verification first try
 Append ran FOREGROUND clean in seconds amid 6 concurrent `tekion-scraper` processes: 159 closed
@@ -1116,6 +1113,24 @@ note dash-style varies — em-dash on 1-6/1-11/1-15, hyphen elsewhere), part-pro
 NO bogus-UID, no UID sent in the ask; html + multipart/alternative + image/png CID=scorecard +
 application/pdf), Sent-check short-stem (Sent: 2, both old June 1-29 = token trap 5b, no leak).
 Flag to Joe: 10 unsent Closed-MTD drafts stacked (Sept 1-6 .. 1-16).
+
+## (9/18 8:05PM, Closed MTD) TEXTBOOK CLEAN RUN — zero exit-124s, all 4 asks first try
+Append FOREGROUND clean in ~10s with 5 live `tekion-scraper` procs: 158 closed ROs, prefilter 8
+of 158, 7 new rows. Master 57 -> **64 MTD rows / $9,721.28** ($6,975.05 labor + $2,746.23 parts),
+Sept 1-18, `✓ all candidate ROs scanned (no truncation)`, `complete: true`. MTD leaders: Hachey
+23/$2,992.76 (30.8%), Brenda Hernandez Alvarenga 11/$2,858.17 (29.4%), Alatorre 13/$1,692.78.
+Hand-off RC=0 first try (91s) with the tightly-scoped dedupe wording ("delete ONLY exact subject;
+do NOT touch other date ranges") — she reported "No dedup needed" and the subject-list confirmed
+NOTHING else vanished (11 prior Closed-MTD drafts Sept 1-6..1-17 all still present + today's
+Opened 09/18). Draft correct FIRST TRY: IMAP UID 163 (himalaya 43589), greeting "Sean,", bold
+$9,721.28, mixed > related > alternative(plain+html) + png CID=scorecard 105,295 + pdf 104,154 =
+EXACT on-disk bytes, \Draft flag set. Subject-list 58s, part-probe 92s (exact-subject
+disambiguation form, no UID), SINCE-scoped Sent-check 128s -> Sent: 0. COSMETIC NIT: she renamed
+the attachments with a typo ("TOL-Menu-Sales-Cloed-Scorecard-...") — content/bytes exact, so do
+NOT rebuild over it (rebuild risk > benefit); just flag to Joe. Consider adding "keep the original
+filenames exactly" to the hand-off wording. Note the closed JSON rows carry `ro_created`, not a
+closed date, so "today's adds" can't be isolated from the JSON — use the script's stdout count.
+Flag to Joe: 12 unsent Closed-MTD drafts stacked (Sept 1-6 .. 1-18).
 
 ## (9/18 12:05PM, Opened) CLEAN RUN; one execute_code 300s cap hit on a bundled Sent+flag pair
 88 ROs scanned, **5 menus / $579.97** ($456.35 + $123.62). Hachey 4/$474.67, Brenda 1/$105.30.
