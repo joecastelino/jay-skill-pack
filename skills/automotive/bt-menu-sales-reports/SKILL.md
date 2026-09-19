@@ -391,6 +391,21 @@ MTD advisor leaders (9/17): Jon Lo 29/$9,882.31, Jason Davis 45/$8,102.22, Micha
 23/$5,065.54, Erick Villasenor Gonzalez 3/$3,984.61, Gio Elenes 4/$3,144.49, Randy Vung
 21/$3,125.94 (14 advisors on the board).
 
+### (9/19 run, for Fri 9/18) TEXTBOOK CLEAN — independent IMAP verify now the standard close-out
+282 closed ROs, 13 prefilter hits, 13 new rows, `all candidate ROs scanned`. MTD 178 rows/$41,690.91
+-> **191 rows / $47,471.71** ($34,822.52 labor + $12,649.19 parts). 9/18-dated rows = 7 / $985.33
+(rest of +$5,780.80 = older invoiced ROs closed) — stated both in the body. Hand-off message now
+carries BOTH the DO-NOT-DOUBLE-SEND paragraph AND the 9/18-born "DO NOT FALSELY REPORT SUCCESS —
+end with verbatim sendmail() return / attempts=N / Message-ID" paragraph; Stacey sent in ONE
+attempt on the first try (1m51s, `sendmail() returned: {}`, Message-ID <178982306610.2687121...>).
+Verified from Jay's session with `/tmp/_bt_imap_verify.py` (raw imaplib, creds from himalaya
+config.toml — `login`/`passwd.raw` keys; ~9s): Sent Mail SINCE 18-Sep = 2 hits (9/17's + today's
+exact subject), UID 8902, 06:04:26 PDT, To agarcia / Cc jcastelino, BODYSTRUCTURE mixed > related >
+alternative + png CID scorecard inline + Paged.pdf, 428,040 bytes; INBOX mirror present, Drafts 0.
+Skipped the Stacey Sent-check ask entirely — the self-run IMAP check is faster and definitive.
+MTD leaders: Jon Lo 30/$9,938.02, Jason Davis 46/$8,188.75, Michael Rankin 27/$6,846.79,
+Erick Villasenor Gonzalez 4/$6,426.06 (13 advisors).
+
 ### LOW "closed/invoiced ROs today" can be a REAL store-side close lag, not starvation (2026-08-23)
 The 8/23 run (for 8/22, a Saturday) logged `closed/invoiced ROs today: 3` — far below the
 prior two Saturdays (8/08 = 80, 8/15 = 75) and every weekday (66-263). By the standard

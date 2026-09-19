@@ -365,6 +365,19 @@ still rejected; STEP ZERO-0 session-file merge (29.75 days) fixed it instantly �
 is not a validity test. **Stacey's self-reported UID was CORRECT this run (43513 = real IMAP UID)** —
 so don't assume it's always wrong; just verify independently every time (cheap).
 
+## Reference run (BC / 1251, Fri 9/18/2026)
+22 declined lines · 15 ROs · $22,503.26 · 7 Critical. Houa Moua #1 $7,036.72 (6 lines / 4 ROs —
+RO 101299 2019 Traverse "tear down" $5,714.03), Juan Ramirez $5,089.20 (RO 103470 EXECUTIVE AUTO
+2016 ELR exhaust manifold/cat $5,024.25), Humberto Dominguez $5,041.49 (RO 101238 tear down),
+Dale Alexander $2,566.46 (7 lines / 3 ROs / **all 7 Criticals**, internal recon), Erik Mercado
+$1,882.80, Louie Vallejo Jr $617.59, Jeremia Navarro $269.00, Valentine Nolasco $0.00 (unpriced
+key fob). Draft UID **43590** (All-Mail 265162). Header file PRESENT (1 day old) and pull worked
+first try with zero 401s — no recovery needed. Stacey's UID was correct. HTML 2,619 B.
+**imaplib gotcha:** `M.uid('search','CHARSET','UTF-8','HEADER','Subject',SUBJ)` with the bare
+subject (contains `/` in the date) → `BAD Could not parse command`. The form that works in
+`execute_code` is `M.uid('search', None, f'(HEADER Subject "{SUBJ}")')` — quoted inside parens,
+no CHARSET preamble. Use that one first.
+
 ## Pitfalls
 - **`pypdf` is NOT importable from `execute_code`'s sandbox** (2026-09-17, `ModuleNotFoundError: No
   module named 'pypdf'`). The `jay-gmail-draft-verification` claim that pypdf "works reliably" applies
